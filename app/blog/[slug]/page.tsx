@@ -3,15 +3,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 
 export async function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = getPostBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
   if (!post) return { title: "Post Not Found" };
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
   return {
@@ -23,12 +23,37 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
+// Simple markdown to HTML converter
+function markdownToHtml(md: string): string {
+  return md
+    // Headings
+    .replace(/^### (.*?)$/gm, "<h3 style=\"font-size:20px;font-weight:700;margin:24px 0 12px;color:#c084fc\">$1</h3>")
+    .replace(/^## (.*?)$/gm, "<h2 style=\"font-size:28px;font-weight:800;margin:32px 0 16px;color:#fff\">$1</h2>")
+    .replace(/^# (.*?)$/gm, "<h1 style=\"font-size:36px;font-weight:900;margin:40px 0 20px;color:#fff\">$1</h1>")
+    // Code blocks
+    .replace(/```(.*?)\n([\s\S]*?)```/gm, "<pre style=\"background:#0d0820;border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:16px;overflow-x:auto;margin:16px 0\"><code style=\"color:#c084fc;font-size:13px;font-family:monospace\">$2</code></pre>")
+    // Inline code
+    .replace(/`([^`]+)`/g, "<code style=\"background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.2);border-radius:4px;padding:2px 6px;color:#c084fc;font-family:monospace;font-size:13px\">$1</code>")
+    // Bold
+    .replace(/\*\*(.*?)\*\*/g, "<strong style=\"font-weight:700;color:#fff\">$1</strong>")
+    // Italic
+    .replace(/\*(.*?)\*/g, "<em style=\"font-style:italic\">$1</em>")
+    // Links
+    .replace(/\[(.*?)\]\((.*?)\)/g, "<a href=\"$2\" style=\"color:#a855f7;text-decoration:underline\">$1</a>")
+    // Paragraphs
+    .split("\n\n")
+    .map(p => p.trim() ? `<p style=\"color:#9d8fd4;font-size:16px;line-height:1.8;margin:16px 0\">${p}</p>` : "")
+    .join("");
+}
+
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
   if (!post) notFound();
 
   const allPosts = getAllPosts();
   const related = allPosts.filter((p) => p.slug !== post.slug && p.tag === post.tag).slice(0, 2);
+  const htmlContent = markdownToHtml(post.content);
 
   return (
     <main style={{ background: "#06030f", color: "#e2d9f3", minHeight: "100vh" }}>
@@ -57,12 +82,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      {/* MDX Body */}
+      {/* Markdown Body */}
       <section style={{ padding: "20px 5% 80px" }}>
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
-          <div className="mdx-body">
-            <MDXRemote source={post.content} />
-          </div>
+          <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
         </div>
       </section>
 
