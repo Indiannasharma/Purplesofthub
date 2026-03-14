@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import goldLogo from "@/Assets/images/Purplesoft-Gold-logo.png";
-import purpleLogo from "@/Assets/images/Purple logo.png";
+import goldLogo from "@/Assets/images/Purplesoft svg.png";
+import purpleLogo from "@/Assets/images/Purple-logo.png";
 
 const NAV_LINKS = [
   { label: "Solutions", href: "/#services" },
