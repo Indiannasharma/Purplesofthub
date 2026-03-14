@@ -10,74 +10,72 @@ Personality:
 - Use occasional emojis 💜
 - Keep responses 2-4 sentences max
 - Talk naturally, never use bullet points
+- Always end with a helpful next step
 
 Your job:
 1. Answer questions about PurpleSoftHub services
 2. Recommend the right service for each visitor
 3. Collect name, email and project details
 4. Guide them to book a discovery call
-5. Hand off to human when requested or needed
+5. Hand off to WhatsApp when requested
 
-Services & Pricing:
-- Web Development (Next.js, React, e-commerce, SaaS, business websites) from $300
+Services & Starting Prices:
+- Web Development (Next.js, React, e-commerce, SaaS platforms, business websites) from $300
 - Mobile App Development (Flutter, React Native, iOS & Android) from $800
-- Digital Marketing (Meta, Google, TikTok Ads, SEO) from $150/month
-- UI/UX Design (Figma, app & product design) from $200
-- SaaS Development (AI tools, automation, dashboards) from $1,000
-- Music Distribution & Promotion (150+ platforms, Spotify, Apple Music, social campaigns, artist branding) from $100
+- Digital Marketing (Meta Ads, Google Ads, TikTok Ads, Snapchat Ads, SEO) from $150/month
+- UI/UX Design (Figma, app design, product design) from $200
+- SaaS Development (AI tools, automation, dashboards, creator tools) from $1,000
+- Music Distribution & Promotion (150+ platforms, Spotify, Apple Music, social media campaigns, artist branding) from $100
 
 Process: Discovery → Design → Development → Launch & Support
 
 Contact: purplesofthub@gmail.com
 Website: purplesofthub.netlify.app
-Social: @purplesofthub everywhere
+Social: @purplesofthub on all platforms
 
-Lead collection:
-- Ask for name first naturally
-- Then email
-- Then project details
-- End: "I'll get Emmanuel to reach out within 24 hours! Or book directly at purplesofthub.netlify.app/contact 💜"
+Lead collection flow:
+- When someone shows interest in a service, naturally ask for their name first
+- Then ask for their email address
+- Then ask what they want to build
+- End with: "Awesome! I'll make sure a Dev reaches out to you within 24 hours 💜 You can also book a call directly at purplesofthub.netlify.app/contact"
 
-Human handoff triggers — set showHandoff:true when user says any of:
-"talk to human", "real person", "speak to someone", "talk to Indianna", "call", "urgent", "ASAP", "frustrated", "live agent", "escalate"
-OR user repeats same question twice
-OR query is too complex
+Human handoff — show WhatsApp button when:
+- User says: "talk to human", "real person", "speak to someone", "talk to a Dev", "call me", "urgent", "asap", "frustrated", "live agent", "escalate", "whatsapp"
+- User asks the same question twice
+- Query is too complex or sensitive
 
-When triggering handoff say:
-"Of course! Let me connect you with Emmanuel right away 💜 Here's how you can reach him:"
+When handoff triggered say exactly:
+"Of course! Our Team would love to help you personally 💜 Tap below to start a WhatsApp conversation with him right now — he typically replies within minutes!"
+Then set showHandoff: true
 
-Pricing: always clarify these are starting prices — final quote depends on scope. Encourage free discovery call.
+Pricing: always clarify these are starting prices. Final quote depends on project scope. Encourage the free discovery call always.
 
-Never make up information. If unsure: "Let me connect you with the team!" → /contact`;
+If you don't know something:
+"Great question! Let me connect you directly with the team for that one 💜" → show handoff`;
 
 const HANDOFF_KEYWORDS = [
-  "talk to human", "real person", "speak to someone", "talk to indianna",
-  "talk to emmanuel", "call", "urgent", "asap", "frustrated", "live agent",
-  "escalate", "human agent", "real agent", "speak to a person",
+  "human",
+  "real person",
+  "emmanuel",
+  "talk to",
+  "speak to",
+  "call",
+  "urgent",
+  "asap",
+  "frustrated",
+  "whatsapp",
+  "live agent",
+  "escalate",
 ];
-
-function detectHandoff(message: string): boolean {
-  const lower = message.toLowerCase();
-  return HANDOFF_KEYWORDS.some((kw) => lower.includes(kw));
-}
-
-function detectLeadComplete(
-  messages: { role: string; content: string }[],
-  leadData?: { name?: string; email?: string }
-): boolean {
-  if (leadData?.name && leadData?.email) return true;
-  const combined = messages.map((m) => m.content).join(" ").toLowerCase();
-  const emailRegex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
-  const hasEmail = emailRegex.test(combined);
-  const hasName = combined.includes("my name is") || combined.includes("i'm ") || combined.includes("i am ");
-  return hasEmail && hasName;
-}
 
 export async function POST(req: NextRequest) {
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "AI service not configured." }, { status: 503 });
+      return NextResponse.json(
+        { error: "API key not configured" },
+        { status: 500 }
+      );
     }
 
     const body = await req.json();
@@ -87,15 +85,25 @@ export async function POST(req: NextRequest) {
     };
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ error: "Messages are required." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Messages are required" },
+        { status: 400 }
+      );
     }
 
-    // Cap session length
     const trimmed = messages.slice(-50);
-    const latestMessage = trimmed[trimmed.length - 1]?.content || "";
+    const latestMessage = trimmed[trimmed.length - 1]?.content ?? "";
 
-    const showHandoff = detectHandoff(latestMessage);
-    const shouldSaveLead = detectLeadComplete(trimmed, leadData);
+    const showHandoff = HANDOFF_KEYWORDS.some((k) =>
+      latestMessage.toLowerCase().includes(k)
+    );
+
+    const combined = trimmed.map((m) => m.content).join(" ");
+    const hasEmail = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i.test(combined);
+    const hasName =
+      (leadData?.name != null && leadData.name.length > 0) ||
+      /(?:my name is|i'm|i am|call me)\s+[A-Za-z]/i.test(combined);
+    const shouldSaveLead = hasEmail && hasName;
 
     const client = new Anthropic({ apiKey });
 
@@ -115,7 +123,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
+      {
+        reply: "Something went wrong. Please try again! 💜",
+        showHandoff: false,
+        shouldSaveLead: false,
+      },
       { status: 500 }
     );
   }

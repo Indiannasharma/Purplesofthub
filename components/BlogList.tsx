@@ -30,7 +30,7 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
           placeholder="🔍  Search articles..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ width: "100%", padding: "12px 18px", borderRadius: 50, background: "rgba(255,255,255,.04)", border: "1px solid rgba(168,85,247,.25)", color: "#fff", fontSize: 15, fontFamily: "Outfit", outline: "none" }}
+          style={{ width: "100%", padding: "12px 18px", borderRadius: 50, background: "var(--bg-card)", border: "1px solid rgba(168,85,247,.25)", color: "var(--text-primary)", fontSize: 15, fontFamily: "Outfit", outline: "none" }}
         />
       </div>
 
@@ -68,7 +68,7 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
                       <span style={{ background: "rgba(124,58,237,.2)", border: "1px solid rgba(124,58,237,.3)", borderRadius: 100, padding: "3px 11px", fontSize: 11, color: "#c084fc", fontWeight: 600 }}>{p.tag}</span>
                       <span style={{ fontSize: 12, color: "#5b4d8a" }}>{p.readTime}</span>
                     </div>
-                    <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "#fff", marginBottom: 10, lineHeight: 1.4, flex: 1 }}>{p.title}</div>
+                    <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 10, lineHeight: 1.4, flex: 1 }}>{p.title}</div>
                     <p style={{ color: "#9d8fd4", fontSize: 14, lineHeight: 1.7, marginBottom: 16 }}>{p.description}</p>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: 12, color: "#5b4d8a" }}>{new Date(p.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
