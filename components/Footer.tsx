@@ -1,19 +1,15 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { FaFacebook, FaTwitter, FaTiktok, FaInstagram, FaYoutube } from "react-icons/fa";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 
 const SOCIALS = [
-  { label: "Facebook", href: "https://facebook.com/purplesofthub", bg: "#1877f2", letter: "f" },
-  { label: "Twitter/X", href: "https://twitter.com/purplesofthub", bg: "#000000", letter: "𝕏" },
-  { label: "TikTok", href: "https://tiktok.com/@purplesofthub", bg: "#010101", letter: "T" },
-  {
-    label: "Instagram",
-    href: "https://instagram.com/purplesofthub",
-    bg: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
-    letter: "In",
-  },
-  { label: "YouTube", href: "https://youtube.com/@purplesofthub", bg: "#ff0000", letter: "▶" },
+  { label: "Facebook", href: "https://facebook.com/purplesofthub", icon: FaFacebook },
+  { label: "Twitter", href: "https://twitter.com/purplesofthub", icon: FaTwitter },
+  { label: "TikTok", href: "https://tiktok.com/@purplesofthub", icon: FaTiktok },
+  { label: "Instagram", href: "https://instagram.com/purplesofthub", icon: FaInstagram },
+  { label: "YouTube", href: "https://youtube.com/@purplesofthub", icon: FaYoutube },
 ];
 
 const SERVICE_LINKS = ["Web Development", "Mobile Apps", "Digital Marketing", "UI/UX Design", "SaaS Development", "Music Promo"];
@@ -43,33 +39,37 @@ export default function Footer() {
             <p style={{ color: "#9d8fd4", fontSize: 14, lineHeight: 1.8, maxWidth: 260, marginBottom: 22 }}>
               Building smart digital products for businesses, startups, and creators worldwide.
             </p>
-            <div style={{ display: "flex", gap: 9, flexWrap: "wrap" }}>
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  style={{
-                    width: 38, height: 38, borderRadius: 10,
-                    background: s.bg,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    color: "#ffffff", fontSize: 14, fontWeight: 700,
-                    textDecoration: "none",
-                    transition: "all .2s",
-                    flexShrink: 0,
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = "scale(1.12)";
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(124,58,237,0.5)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = "scale(1)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                >{s.letter}</a>
-              ))}
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              {SOCIALS.map((s) => {
+                const IconComponent = s.icon;
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    style={{
+                      color: "#a855f7",
+                      textDecoration: "none",
+                      transition: "all .2s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.color = "#c084fc";
+                      e.currentTarget.style.transform = "scale(1.2)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.color = "#a855f7";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    <IconComponent size={24} />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
