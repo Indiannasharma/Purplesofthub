@@ -9,12 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@next/third-parties": "^14.2.0",
     "gray-matter": "^4.0.3",
     "mongoose": "^8.3.0",
-    "next": "14.2.0",
-    "next-mdx-remote": "^5.0.0",
-    "nodemailer": "^6.9.13",
+    "next": "^16.1.6",
+    "next-mdx-remote": "^6.0.0",
+    "nodemailer": "^8.0.2",
     "react": "^18",
     "react-dom": "^18",
     "sharp": "^0.34.5"

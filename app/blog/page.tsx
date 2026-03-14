@@ -17,17 +17,17 @@ export default function BlogPage() {
   const posts = getAllPosts();
 
   return (
-    <main style={{ background: "#06030f", color: "#e2d9f3", minHeight: "100vh" }}>
+    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
       <Navbar />
       <section style={{ padding: "120px 5% 60px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
               <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "#7c3aed", textTransform: "uppercase", marginBottom: 14 }}>Resources</p>
-              <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,56px)", fontWeight: 900, color: "#fff", letterSpacing: "-2px", marginBottom: 16 }}>
+              <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,56px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", marginBottom: 16 }}>
                 Tech <span className="grad-text">Insights</span> &amp; Guides
               </h1>
-              <p style={{ color: "#9d8fd4", fontSize: 17, maxWidth: 520, margin: "0 auto" }}>
+              <p style={{ color: "var(--text-muted)", fontSize: 17, maxWidth: 520, margin: "0 auto" }}>
                 Practical articles on web dev, marketing, SaaS, AI, and music — written by the PurpleSoftHub team.
               </p>
             </div>

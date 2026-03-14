@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main style={{ background: "#06030f", color: "#e2d9f3", minHeight: "100vh" }}>
+    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
       <Navbar />
       <section style={{ padding: "120px 5% 100px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.2) 0%,transparent 60%)", pointerEvents: "none" }} />
@@ -21,10 +21,10 @@ export default function ContactPage() {
           {/* Left info */}
           <Reveal>
             <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "#7c3aed", textTransform: "uppercase", marginBottom: 14 }}>Get In Touch</p>
-            <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,56px)", fontWeight: 900, color: "#fff", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
+            <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,56px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
               Let&apos;s Build Something <span className="grad-text">Great Together</span>
             </h1>
-            <p style={{ color: "#9d8fd4", fontSize: 16, lineHeight: 1.85, marginBottom: 40 }}>
+            <p style={{ color: "var(--text-muted)", fontSize: 16, lineHeight: 1.85, marginBottom: 40 }}>
               Whether you need a website, an app, a full SaaS platform, or help growing your music — we&apos;re ready to make it happen. Fill in the form and we&apos;ll be in touch within 24 hours.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -37,7 +37,7 @@ export default function ContactPage() {
                 <div key={label} style={{ display: "flex", gap: 16, alignItems: "center" }}>
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,.15)", border: "1px solid rgba(124,58,237,.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{ic}</div>
                   <div>
-                    <div style={{ fontSize: 12, color: "#5b4d8a", fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                    <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600, marginBottom: 2 }}>{label}</div>
                     <div style={{ fontSize: 15, color: "#c084fc", fontWeight: 500 }}>{val}</div>
                   </div>
                 </div>
@@ -49,8 +49,8 @@ export default function ContactPage() {
           <Reveal delay={0.15}>
             <div>
               <div style={{ marginBottom: 28 }}>
-                <p style={{ fontFamily: "Outfit", fontSize: 20, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Send us a message</p>
-                <p style={{ color: "#9d8fd4", fontSize: 14 }}>Tell us about your project and we&apos;ll get back to you within 24 hours.</p>
+                <p style={{ fontFamily: "Outfit", fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginBottom: 6 }}>Send us a message</p>
+                <p style={{ color: "var(--text-muted)", fontSize: 14 }}>Tell us about your project and we&apos;ll get back to you within 24 hours.</p>
               </div>
               <ContactForm />
             </div>

@@ -52,7 +52,7 @@ const SERVICES = [
 
 export default function ServicesPage() {
   return (
-    <main style={{ background: "#06030f", color: "#e2d9f3", minHeight: "100vh" }}>
+    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
       <Navbar />
 
       {/* Hero */}
@@ -60,10 +60,10 @@ export default function ServicesPage() {
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.2) 0%,transparent 60%)", pointerEvents: "none" }} />
         <Reveal>
           <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "#7c3aed", textTransform: "uppercase", marginBottom: 14 }}>What We Offer</p>
-          <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,60px)", fontWeight: 900, color: "#fff", letterSpacing: "-2px", marginBottom: 16 }}>
+          <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,60px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", marginBottom: 16 }}>
             6 Services. <span className="grad-text">One Powerful Hub.</span>
           </h1>
-          <p style={{ color: "#9d8fd4", fontSize: 18, maxWidth: 560, margin: "0 auto 40px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: 18, maxWidth: 560, margin: "0 auto 40px" }}>
             Everything your business needs to build, launch, market, and grow — under one roof.
           </p>
           <Link href="/contact">
@@ -81,9 +81,9 @@ export default function ServicesPage() {
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
                     <div style={{ width: 56, height: 56, borderRadius: 16, background: `linear-gradient(135deg,${s.color},#a855f7)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>{s.icon}</div>
-                    <div style={{ fontFamily: "Outfit", fontSize: 22, fontWeight: 800, color: "#fff" }}>{s.title}</div>
+                    <div style={{ fontFamily: "Outfit", fontSize: 22, fontWeight: 800, color: "var(--text-primary)" }}>{s.title}</div>
                   </div>
-                  <p style={{ color: "#9d8fd4", fontSize: 15, lineHeight: 1.8, marginBottom: 24 }}>{s.desc}</p>
+                  <p style={{ color: "var(--text-muted)", fontSize: 15, lineHeight: 1.8, marginBottom: 24 }}>{s.desc}</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
                     {s.stack.map(t => (
                       <span key={t} style={{ background: "rgba(124,58,237,.1)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 100, padding: "4px 12px", fontSize: 12, color: "#c084fc", fontWeight: 500 }}>{t}</span>
@@ -94,12 +94,12 @@ export default function ServicesPage() {
                   </Link>
                 </div>
                 <div>
-                  <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#fff", fontSize: 14, marginBottom: 16 }}>What&apos;s Included:</div>
+                  <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--text-primary)", fontSize: 14, marginBottom: 16 }}>What&apos;s Included:</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {s.features.map(f => (
                       <div key={f} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <span style={{ color: "#a855f7", fontSize: 16 }}>✓</span>
-                        <span style={{ color: "#b8a9d9", fontSize: 14 }}>{f}</span>
+                        <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{f}</span>
                       </div>
                     ))}
                   </div>
@@ -114,10 +114,10 @@ export default function ServicesPage() {
       {/* CTA */}
       <section style={{ padding: "80px 5%", textAlign: "center", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)" }}>
         <Reveal>
-          <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3.5vw,44px)", fontWeight: 900, color: "#fff", letterSpacing: "-1.5px", marginBottom: 16 }}>
+          <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3.5vw,44px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", marginBottom: 16 }}>
             Not Sure Which Service You Need?
           </h2>
-          <p style={{ color: "#9d8fd4", fontSize: 16, marginBottom: 36, maxWidth: 480, margin: "0 auto 36px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: 16, marginBottom: 36, maxWidth: 480, margin: "0 auto 36px" }}>
             Book a free discovery call and we&apos;ll help you figure out exactly what your business needs.
           </p>
           <Link href="/contact">

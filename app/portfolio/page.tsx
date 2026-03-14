@@ -66,7 +66,7 @@ export default function PortfolioPage() {
   const filtered = active === "All" ? PROJECTS : PROJECTS.filter(p => p.category === active);
 
   return (
-    <main style={{ background: "#06030f", color: "#e2d9f3", minHeight: "100vh" }}>
+    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
       <Navbar />
 
       {/* Hero */}
@@ -81,12 +81,12 @@ export default function PortfolioPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(36px,5vw,64px)", fontWeight: 900, color: "#fff", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
+            <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(36px,5vw,64px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
               Projects We&apos;re <span className="grad-text">Proud Of</span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
-            <p style={{ color: "#9d8fd4", fontSize: 17, lineHeight: 1.8 }}>
+            <p style={{ color: "var(--text-muted)", fontSize: 17, lineHeight: 1.8 }}>
               Real products. Real results. Here&apos;s a selection of work we&apos;ve built for clients across the world.
             </p>
           </Reveal>
@@ -129,9 +129,9 @@ export default function PortfolioPage() {
                 </div>
 
                 <div>
-                  <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 20, color: "#fff", marginBottom: 6 }}>{p.title}</div>
+                  <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 20, color: "var(--text-primary)", marginBottom: 6 }}>{p.title}</div>
                   <div style={{ fontSize: 12, color: p.color, fontWeight: 600, marginBottom: 10 }}>{p.tag}</div>
-                  <p style={{ color: "#9d8fd4", fontSize: 14, lineHeight: 1.75 }}>{p.description}</p>
+                  <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.75 }}>{p.description}</p>
                 </div>
 
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: "auto" }}>
@@ -155,10 +155,10 @@ export default function PortfolioPage() {
       <section style={{ padding: "80px 5%", textAlign: "center" }}>
         <Reveal>
           <div style={{ maxWidth: 600, margin: "0 auto" }}>
-            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,4vw,48px)", fontWeight: 900, color: "#fff", letterSpacing: "-1.5px", marginBottom: 16 }}>
+            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,4vw,48px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", marginBottom: 16 }}>
               Want to be our <span className="grad-text">next project?</span>
             </h2>
-            <p style={{ color: "#9d8fd4", marginBottom: 32, fontSize: 16 }}>Let&apos;s build something extraordinary together.</p>
+            <p style={{ color: "var(--text-muted)", marginBottom: 32, fontSize: 16 }}>Let&apos;s build something extraordinary together.</p>
             <Link href="/contact">
               <button className="btn-main animate-glow" style={{ padding: "15px 38px", fontSize: 16 }}>Start a Project →</button>
             </Link>

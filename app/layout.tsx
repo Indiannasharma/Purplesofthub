@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import ChatBot from "@/components/ChatBot";
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
@@ -43,12 +45,31 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         {children}
+        <ChatBot />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
+        <Script
+          id="tawk-to"
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+              (function(){
+                var s1=document.createElement("script"),
+                s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/69b4c7d83c743b1c36fd85c2/1jjl2pa98';
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+              })();
+            `,
+          }}
+        />
       </body>
     </html>
   );

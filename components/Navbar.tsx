@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import goldLogo from "@/Assets/images/Purplesoft svg.png";
-import purpleLogo from "@/Assets/images/Purple-logo.png";
+import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 
 const NAV_LINKS = [
   { label: "Solutions", href: "/#services" },
@@ -18,21 +17,35 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false); // default light
 
   useEffect(() => {
+    // Determine initial theme
     const saved = localStorage.getItem("theme");
-    const isDark = saved ? saved === "dark" : true;
+    let isDark = false;
+    if (saved) {
+      isDark = saved === "dark";
+    } else {
+      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
     setDark(isDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
 
   const toggleTheme = () => {
     const next = !dark;
     setDark(next);
-    const theme = next ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
+    if (next) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
   };
 
   useEffect(() => {
@@ -41,68 +54,106 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  const navBg = dark
+    ? scrolled ? "rgba(6,3,15,.97)" : "rgba(6,3,15,.75)"
+    : scrolled ? "rgba(255,255,255,.97)" : "rgba(255,255,255,.88)";
+
+  const navLinkColor = dark ? "#b8a9d9" : "#4a2d6b";
+  const navLinkHover = dark ? "#e2d9f3" : "#7c3aed";
+
   return (
     <nav
       style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         height: 68, padding: "0 5%",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: scrolled ? "rgba(6,3,15,.93)" : "rgba(6,3,15,.6)",
-        backdropFilter: "blur(24px)",
-        borderBottom: "1px solid rgba(124,58,237,.15)",
+        background: navBg,
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        borderBottom: dark
+          ? "1px solid rgba(124,58,237,.18)"
+          : "1px solid rgba(124,58,237,.15)",
+        boxShadow: dark ? "none" : "0 1px 0 rgba(124,58,237,.08)",
         transition: "all .3s",
       }}
     >
       {/* Logo */}
-      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+      <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
         <Image
-          src={dark ? goldLogo : purpleLogo}
-          alt="PurpleSoftHub Logo"
-          height={dark ? 120 : 40}
+          src={purpleLogo}
+          alt="PurpleSoftHub"
+          width={180}
+          height={56}
           style={{ objectFit: "contain" }}
+          priority
         />
       </Link>
 
-      {/* Desktop Nav */}
-      <div className="nav-desktop" style={{ gap: 32, alignItems: "center" }}>
+      {/* Desktop Nav Links */}
+      <div className="nav-desktop" style={{ gap: 28, alignItems: "center" }}>
         {NAV_LINKS.map((l) => (
           <Link key={l.label} href={l.href}
-            style={{ fontSize: 14, fontWeight: 500, color: "#b8a9d9", textDecoration: "none", transition: "color .2s" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#e2d9f3")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#b8a9d9")}
+            style={{ fontSize: 14, fontWeight: 500, color: navLinkColor, textDecoration: "none", transition: "color .2s", whiteSpace: "nowrap" }}
+            onMouseEnter={e => (e.currentTarget.style.color = navLinkHover)}
+            onMouseLeave={e => (e.currentTarget.style.color = navLinkColor)}
           >{l.label}</Link>
         ))}
       </div>
 
-      <div className="nav-desktop" style={{ gap: 12, alignItems: "center" }}>
-        <button onClick={toggleTheme} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="theme-toggle">
+      {/* Desktop Actions */}
+      <div className="nav-desktop" style={{ gap: 10, alignItems: "center" }}>
+        <button
+          onClick={toggleTheme}
+          title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="theme-toggle"
+        >
           {dark ? "☀️" : "🌙"}
         </button>
         <Link href="/contact">
-          <button className="btn-outline" style={{ padding: "9px 20px", fontSize: 14 }}>Book a Call</button>
+          <button className="btn-outline" style={{ padding: "9px 18px", fontSize: 13 }}>Book a Call</button>
         </Link>
         <Link href="/contact">
-          <button className="btn-main" style={{ padding: "9px 22px", fontSize: 14 }}>Start a Project</button>
+          <button className="btn-main" style={{ padding: "9px 20px", fontSize: 13 }}>Start a Project</button>
         </Link>
       </div>
 
       {/* Mobile Controls */}
       <div className="nav-mobile" style={{ gap: 10, alignItems: "center" }}>
-        <button onClick={toggleTheme} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="theme-toggle">
+        <button
+          onClick={toggleTheme}
+          title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="theme-toggle"
+        >
           {dark ? "☀️" : "🌙"}
         </button>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          style={{ background: "none", border: "1px solid rgba(124,58,237,.3)", borderRadius: 8, color: "#fff", fontSize: 18, padding: "6px 10px", cursor: "pointer" }}
+          style={{
+            background: "none",
+            border: `1px solid ${dark ? "rgba(124,58,237,.3)" : "rgba(124,58,237,.25)"}`,
+            borderRadius: 8, color: dark ? "#fff" : "#4a2d6b",
+            fontSize: 18, padding: "6px 10px", cursor: "pointer",
+          }}
         >{mobileOpen ? "✕" : "☰"}</button>
       </div>
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div style={{ position: "fixed", top: 68, left: 0, right: 0, background: "rgba(6,3,15,.98)", backdropFilter: "blur(24px)", borderBottom: "1px solid rgba(124,58,237,.2)", padding: "20px 5% 28px", zIndex: 99 }}>
+        <div style={{
+          position: "fixed", top: 68, left: 0, right: 0,
+          background: dark ? "rgba(6,3,15,.98)" : "rgba(255,255,255,.98)",
+          backdropFilter: "blur(24px)",
+          borderBottom: "1px solid rgba(124,58,237,.15)",
+          padding: "20px 5% 28px", zIndex: 99,
+        }}>
           {NAV_LINKS.map((l) => (
             <Link key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
-              style={{ display: "block", padding: "13px 0", borderBottom: "1px solid rgba(255,255,255,.04)", color: "#9d8fd4", fontSize: 16, textDecoration: "none" }}>
+              style={{
+                display: "block", padding: "13px 0",
+                borderBottom: `1px solid ${dark ? "rgba(255,255,255,.04)" : "rgba(124,58,237,.08)"}`,
+                color: dark ? "#9d8fd4" : "#4a2d6b",
+                fontSize: 16, textDecoration: "none",
+              }}>
               {l.label}
             </Link>
           ))}
