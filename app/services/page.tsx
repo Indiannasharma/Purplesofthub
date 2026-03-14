@@ -77,7 +77,7 @@ export default function ServicesPage() {
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 28 }}>
           {SERVICES.map((s, i) => (
             <Reveal key={s.title} delay={i * 0.05}>
-              <div className="glass-card" style={{ padding: "40px 36px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" }}>
+              <div className="glass-card service-inner-grid" style={{ padding: "40px 36px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
                     <div style={{ width: 56, height: 56, borderRadius: 16, background: `linear-gradient(135deg,${s.color},#a855f7)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>{s.icon}</div>

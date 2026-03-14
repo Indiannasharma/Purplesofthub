@@ -56,7 +56,7 @@ export default function NewsletterSignup() {
                 ⚠️ {message}
               </div>
             )}
-            <div style={{ display: "flex", gap: 10, maxWidth: 460, margin: "0 auto", flexWrap: "wrap" }}>
+            <div className="newsletter-row" style={{ display: "flex", gap: 10, maxWidth: 460, margin: "0 auto", flexWrap: "wrap" }}>
               <input
                 type="email"
                 placeholder="your@email.com"

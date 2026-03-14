@@ -264,3 +264,123 @@ body { font-family: 'Outfit', sans-serif; background: #06030f; color: #e2d9f3; o
 
 /* Scrollbar */
 [data-theme="light"] ::-webkit-scrollbar-track { background: #f0ebff; }
+
+/* ══════════════════════════════
+   NAVBAR RESPONSIVE CLASSES
+══════════════════════════════ */
+.nav-desktop {
+  display: none;
+}
+.nav-mobile {
+  display: flex;
+}
+@media (min-width: 768px) {
+  .nav-desktop { display: flex; }
+  .nav-mobile  { display: none;  }
+}
+
+/* ══════════════════════════════
+   GLOBAL RESPONSIVE LAYOUT
+══════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── Sections padding ── */
+  section {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+  }
+
+  /* ── All 2-col grids → 1 col ── */
+  [style*="grid-template-columns: 1fr 1fr"],
+  [style*="gridTemplateColumns: \"1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Homepage hero ── */
+  #home > div {
+    grid-template-columns: 1fr !important;
+  }
+  #home > div > div:last-child {
+    display: none !important;
+  }
+
+  /* ── Music section ── */
+  #music > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Contact page ── */
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Services inner grid ── */
+  .service-inner-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Footer grid → stack ── */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* ── Reduce font sizes ── */
+  h1 { letter-spacing: -1px !important; }
+
+  /* ── Stat numbers row → wrap ── */
+  .hero-stats {
+    gap: 20px !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* ── CTA button rows ── */
+  .cta-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .cta-row a, .cta-row button {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* ── Blog/Portfolio minmax fix ── */
+  [style*="minmax(320px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="minmax(280px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="minmax(300px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="minmax(310px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="minmax(290px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="minmax(220px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Process & testimonial min cards ── */
+  [style*="minmax(230px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Worldwide flags row ── */
+  [style*="justifyContent: \"center\""] {
+    justify-content: flex-start !important;
+  }
+
+  /* ── Newsletter input row ── */
+  .newsletter-row {
+    flex-direction: column !important;
+  }
+  .newsletter-row input,
+  .newsletter-row button {
+    width: 100% !important;
+    border-radius: 12px !important;
+  }
+}

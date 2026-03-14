@@ -64,7 +64,7 @@ export default function Navbar() {
       </Link>
 
       {/* Desktop Nav */}
-      <div className="hidden md:flex" style={{ gap: 32, alignItems: "center" }}>
+      <div className="nav-desktop" style={{ gap: 32, alignItems: "center" }}>
         {NAV_LINKS.map((l) => (
           <Link key={l.label} href={l.href}
             style={{ fontSize: 14, fontWeight: 500, color: "#b8a9d9", textDecoration: "none", transition: "color .2s" }}
@@ -74,12 +74,10 @@ export default function Navbar() {
         ))}
       </div>
 
-      <div className="hidden md:flex" style={{ gap: 12, alignItems: "center" }}>
-        <button
-          onClick={toggleTheme}
-          title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="theme-toggle"
-        >{dark ? "☀️" : "🌙"}</button>
+      <div className="nav-desktop" style={{ gap: 12, alignItems: "center" }}>
+        <button onClick={toggleTheme} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="theme-toggle">
+          {dark ? "☀️" : "🌙"}
+        </button>
         <Link href="/contact">
           <button className="btn-outline" style={{ padding: "9px 20px", fontSize: 14 }}>Book a Call</button>
         </Link>
@@ -88,13 +86,11 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* Mobile Hamburger */}
-      <div className="flex md:hidden" style={{ gap: 10, alignItems: "center" }}>
-        <button
-          onClick={toggleTheme}
-          title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="theme-toggle"
-        >{dark ? "☀️" : "🌙"}</button>
+      {/* Mobile Controls */}
+      <div className="nav-mobile" style={{ gap: 10, alignItems: "center" }}>
+        <button onClick={toggleTheme} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="theme-toggle">
+          {dark ? "☀️" : "🌙"}
+        </button>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           style={{ background: "none", border: "1px solid rgba(124,58,237,.3)", borderRadius: 8, color: "#fff", fontSize: 18, padding: "6px 10px", cursor: "pointer" }}
