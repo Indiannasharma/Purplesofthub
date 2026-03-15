@@ -1,26 +1,33 @@
 "use client";
 import { useState } from "react";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const captchaEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
   const handleSubmit = async () => {
     if (!email.trim()) { setStatus("error"); setMessage("Please enter your email."); return; }
+    if (captchaEnabled && !captchaToken) { setStatus("error"); setMessage("Please complete the captcha."); return; }
     setStatus("loading");
     setMessage("");
     try {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, captchaToken }),
       });
       const data = await res.json();
       if (res.ok) {
         setStatus("success");
         setMessage(data.message || "You're subscribed!");
         setEmail("");
+        setCaptchaToken("");
+        setCaptchaReset((v) => v + 1);
       } else {
         setStatus("error");
         setMessage(data.error || "Something went wrong.");
@@ -54,6 +61,11 @@ export default function NewsletterSignup() {
             {status === "error" && message && (
               <div style={{ background: "rgba(239,68,68,.1)", border: "1px solid rgba(239,68,68,.3)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, color: "#fca5a5", fontSize: 14 }}>
                 ⚠️ {message}
+              </div>
+            )}
+            {captchaEnabled && (
+              <div style={{ marginBottom: "16px", display: "flex", justifyContent: "center" }}>
+                <TurnstileWidget onVerify={setCaptchaToken} resetSignal={captchaReset} theme="dark" />
               </div>
             )}
             <div className="newsletter-row" style={{ display: "flex", gap: 10, maxWidth: 460, margin: "0 auto", flexWrap: "wrap" }}>

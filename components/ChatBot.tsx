@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 interface Message {
   id: string;
@@ -45,6 +46,9 @@ export default function ChatBot() {
   const [leadSaved, setLeadSaved] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [bubbleVisible, setBubbleVisible] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const captchaEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -131,6 +135,18 @@ export default function ChatBot() {
   const sendMessage = async (text?: string) => {
     const content = (text ?? input).trim();
     if (!content || isLoading) return;
+    if (captchaEnabled && !captchaToken) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: uid(),
+          role: "assistant",
+          content: "Please complete the captcha before sending a message.",
+          timestamp: new Date(),
+        },
+      ]);
+      return;
+    }
 
     setInput("");
     setShowNotificationDot(false);
@@ -154,6 +170,7 @@ export default function ChatBot() {
         body: JSON.stringify({
           messages: updated.map((m) => ({ role: m.role, content: m.content })),
           leadData,
+          captchaToken,
         }),
       });
 
@@ -190,6 +207,10 @@ export default function ChatBot() {
       ]);
     } finally {
       setIsLoading(false);
+      if (captchaEnabled) {
+        setCaptchaToken("");
+        setCaptchaReset((v) => v + 1);
+      }
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   };
@@ -661,6 +682,11 @@ export default function ChatBot() {
           )}
 
           {/* Input area */}
+          {captchaEnabled && (
+            <div style={{ padding: "0 12px 10px", display: "flex", justifyContent: "center" }}>
+              <TurnstileWidget onVerify={setCaptchaToken} resetSignal={captchaReset} theme="dark" />
+            </div>
+          )}
           <div
             style={{
               padding: "10px 12px 14px",

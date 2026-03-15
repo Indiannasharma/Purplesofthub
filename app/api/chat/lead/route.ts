@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import connectDB from "@/lib/mongodb";
 import ChatLead from "@/lib/models/ChatLead";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req.headers);
+    const rl = rateLimit(`chatlead:${ip}`, { windowMs: 10 * 60 * 1000, max: 10 });
+    if (!rl.ok) {
+      const retryAfterSec = Math.ceil((rl.resetAt - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later.", retryAfterSec },
+        { status: 429, headers: { "Retry-After": retryAfterSec.toString() } }
+      );
+    }
     const EMAIL_USER = process.env.EMAIL_USER;
     const EMAIL_PASS = process.env.EMAIL_PASS;
 

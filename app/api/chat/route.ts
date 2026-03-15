@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
+import { verifyTurnstile } from "@/lib/verifyCaptcha";
 
 const SYSTEM_PROMPT = `You are Puri, the friendly AI assistant for PurpleSoftHub — a digital innovation studio based in Nigeria serving clients worldwide.
 
@@ -70,6 +72,16 @@ const HANDOFF_KEYWORDS = [
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req.headers);
+    const rl = rateLimit(`chat:${ip}`, { windowMs: 5 * 60 * 1000, max: 20 });
+    if (!rl.ok) {
+      const retryAfterSec = Math.ceil((rl.resetAt - Date.now()) / 1000);
+      return NextResponse.json(
+        { reply: "Too many requests. Please try again later.", showHandoff: false, shouldSaveLead: false, retryAfterSec },
+        { status: 429, headers: { "Retry-After": retryAfterSec.toString() } }
+      );
+    }
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
@@ -79,10 +91,19 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { messages, leadData } = body as {
+    const { messages, leadData, captchaToken } = body as {
       messages: { role: "user" | "assistant"; content: string }[];
       leadData?: { name?: string; email?: string };
+      captchaToken?: string;
     };
+
+    const captcha = await verifyTurnstile(captchaToken, ip);
+    if (!captcha.ok) {
+      return NextResponse.json(
+        { reply: captcha.error || "Captcha verification failed.", showHandoff: false, shouldSaveLead: false },
+        { status: 400 }
+      );
+    }
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(

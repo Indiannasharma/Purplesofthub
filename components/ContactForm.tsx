@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 const SERVICES = [
   "Web Development", "Mobile App Development", "Digital Marketing",
@@ -10,10 +11,17 @@ export default function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", service: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const captchaEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.message) {
       setErrorMsg("Please fill in all required fields.");
+      return;
+    }
+    if (captchaEnabled && !captchaToken) {
+      setErrorMsg("Please complete the captcha.");
       return;
     }
     setStatus("loading");
@@ -22,12 +30,14 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, captchaToken }),
       });
       const data = await res.json();
       if (res.ok) {
         setStatus("success");
         setForm({ name: "", email: "", service: "", message: "" });
+        setCaptchaToken("");
+        setCaptchaReset((v) => v + 1);
       } else {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
@@ -96,6 +106,12 @@ export default function ContactForm() {
           style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,.04)", border: "1px solid rgba(168,85,247,.2)", color: "#fff", fontSize: 15, resize: "vertical", fontFamily: "Outfit" }}
         />
       </div>
+
+      {captchaEnabled && (
+        <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
+          <TurnstileWidget onVerify={setCaptchaToken} resetSignal={captchaReset} theme="dark" />
+        </div>
+      )}
 
       <button
         className="btn-main"
