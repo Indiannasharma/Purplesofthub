@@ -10,6 +10,19 @@ const PORTFOLIO_SLUGS = [
   "collinskind-fashion",
 ];
 
+const SERVICE_SLUGS = [
+  "web-development",
+  "mobile-app-development",
+  "digital-marketing",
+  "ui-ux-design",
+  "saas-development",
+  "music-distribution",
+  "branding-design",
+  "social-media-management",
+  "seo",
+  "ecommerce-development",
+];
+
 const BLOG_SLUGS = [
   "why-your-business-needs-a-website-2026",
   "how-ai-is-changing-web-development",
@@ -23,7 +36,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/portfolio`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
     { url: `${SITE_URL}/blog`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${SITE_URL}/privacy`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.3 },
+    { url: `${SITE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.3 },
   ];
+
+  const servicePages = SERVICE_SLUGS.map((slug) => ({
+    url: `${SITE_URL}/services/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
 
   const portfolioPages = PORTFOLIO_SLUGS.map((slug) => ({
     url: `${SITE_URL}/portfolio/${slug}`,
@@ -39,5 +62,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...portfolioPages, ...blogPages];
+  return [...staticPages, ...servicePages, ...portfolioPages, ...blogPages];
 }

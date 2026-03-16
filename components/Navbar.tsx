@@ -34,7 +34,7 @@ const NAV_LINKS = [
   { label: "Portfolio", href: "/portfolio" },
   { label: "Music", href: "/#music" },
   { label: "Blog", href: "/blog" },
-  { label: "About Us", href: "/#about" },
+  { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 

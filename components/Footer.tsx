@@ -13,7 +13,7 @@ const SOCIALS = [
 ];
 
 const SERVICE_LINKS = ["Web Development", "Mobile Apps", "Digital Marketing", "UI/UX Design", "SaaS Development", "Music Promo"];
-const COMPANY_LINKS: [string, string][] = [["About Us", "/#about"], ["Portfolio", "/portfolio"], ["Blog", "/blog"], ["Contact", "/contact"]];
+const COMPANY_LINKS: [string, string][] = [["About Us", "/about"], ["Portfolio", "/portfolio"], ["Blog", "/blog"], ["Contact", "/contact"]];
 
 export default function Footer() {
   return (
@@ -119,8 +119,8 @@ export default function Footer() {
         }}>
           <div style={{ color: "#5b4d8a", fontSize: 13 }}>© 2026 Purplesofthub. All rights reserved.</div>
           <div style={{ display: "flex", gap: 24 }}>
-            {["Privacy Policy", "Terms of Service"].map((t) => (
-              <Link key={t} href="/"
+            {[["Privacy Policy", "/privacy"], ["Terms of Service", "/terms"]].map(([t, h]) => (
+              <Link key={t} href={h}
                 style={{ color: "#5b4d8a", fontSize: 13, textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#a855f7")}
                 onMouseLeave={e => (e.currentTarget.style.color = "#5b4d8a")}
