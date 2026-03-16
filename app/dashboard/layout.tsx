@@ -24,7 +24,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  if (!isLoaded) return null
+  if (!isLoaded) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#06030f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#9d8fd4', fontSize: 14 }}>Loading…</div>
+      </div>
+    )
+  }
 
   const sidebarContent = (
     <div
