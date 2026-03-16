@@ -107,8 +107,10 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#fff", fontSize: 14, marginBottom: 18 }}>Contact</div>
-            <div style={{ color: "#c084fc", fontSize: 13, marginBottom: 11 }}>purplesofthub@gmail.com</div>
-            <div style={{ color: "#c084fc", fontSize: 13, marginBottom: 11 }}>purplesofthub.netlify.app</div>
+            <div style={{ color: "#c084fc", fontSize: 13, marginBottom: 11 }}>hello@purplesofthub.com</div>
+            <div style={{ fontSize: 13, marginBottom: 11 }}>
+              <a href="https://purplesofthub.com" target="_blank" rel="noopener noreferrer" style={{ color: "#c084fc", textDecoration: "none" }}>purplesofthub.com</a>
+            </div>
             <Link href="/contact">
               <button className="btn-main" style={{ marginTop: 12, padding: "9px 18px", fontSize: 13 }}>
                 Book a Discovery Call

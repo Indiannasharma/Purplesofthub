@@ -49,9 +49,8 @@ export default function Navbar() {
     let isDark = false;
     if (saved) {
       isDark = saved === "dark";
-    } else {
-      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
+    // No OS fallback — default is always light mode
     setDark(isDark);
     if (isDark) {
       document.documentElement.classList.add("dark");

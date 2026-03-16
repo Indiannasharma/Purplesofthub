@@ -23,7 +23,7 @@ const jsonLd = {
       name: "PurpleSoftHub",
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.ico` },
-      contactPoint: { "@type": "ContactPoint", email: "purplesofthub@gmail.com", contactType: "customer service" },
+      contactPoint: { "@type": "ContactPoint", email: "hello@purplesofthub.com", contactType: "customer service" },
       sameAs: ["https://twitter.com/purplesofthub", "https://instagram.com/purplesofthub", "https://facebook.com/purplesofthub"],
     },
     {

@@ -52,10 +52,10 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
     provider: {
       "@type": "Organization",
       name: "PurpleSoftHub",
-      url: "https://purplesofthub.netlify.app",
+      url: "https://purplesofthub.com",
     },
     areaServed: "Worldwide",
-    url: `https://purplesofthub.netlify.app/services/${service.slug}`,
+    url: `https://purplesofthub.com/services/${service.slug}`,
   };
 
   return (

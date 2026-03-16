@@ -121,8 +121,8 @@ export default function PrivacyPage() {
               </h3>
               <p style={{ color: "var(--text-muted)", fontSize: 15, marginBottom: 24, lineHeight: 1.7 }}>
                 Contact us at{" "}
-                <a href="mailto:purplesofthub@gmail.com" style={{ color: "var(--accent)", textDecoration: "none" }}>
-                  purplesofthub@gmail.com
+                <a href="mailto:hello@purplesofthub.com" style={{ color: "var(--accent)", textDecoration: "none" }}>
+                  hello@purplesofthub.com
                 </a>
               </p>
               <Link href="/contact">

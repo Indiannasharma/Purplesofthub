@@ -30,7 +30,7 @@ export default function ContactPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               {[
                 ["📧", "Email Us", "hello@purplesofthub.com"],
-                ["🌐", "Website", "purplesofthub.netlify.app"],
+                ["🌐", "Website", "purplesofthub.com"],
                 ["📱", "Social", "@purplesofthub"],
                 ["⏰", "Response Time", "Within 24 hours"],
               ].map(([ic, label, val]) => (
