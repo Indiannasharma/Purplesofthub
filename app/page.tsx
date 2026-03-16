@@ -107,7 +107,7 @@ export default function Home() {
             </Reveal>
             <Reveal delay={0.4}>
               <div className="hero-stats" style={{ display: "flex", gap: 36 }}>
-                {[["50+", "Projects Shipped"], ["6", "Core Services"], ["98%", "Client Satisfaction"]].map(([n, l]) => (
+                {[["50+", "Projects Shipped"], ["10", "Core Services"], ["98%", "Client Satisfaction"]].map(([n, l]) => (
                   <div key={l}>
                     <div style={{ fontFamily: "Outfit", fontSize: 28, fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px" }}>{n}</div>
                     <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 500, marginTop: 2 }}>{l}</div>
@@ -179,7 +179,7 @@ export default function Home() {
             <div style={{ textAlign: "center", marginBottom: 60 }}>
               <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>What We Build</p>
               <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,48px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", marginBottom: 14 }}>
-                6 Services. <span className="grad-text">One Powerful Hub.</span>
+                10 Services. <span className="grad-text">One Powerful Hub.</span>
               </h2>
               <p style={{ color: "var(--text-muted)", fontSize: 16, maxWidth: 500, margin: "0 auto" }}>Everything your business needs to grow — under one roof.</p>
             </div>
