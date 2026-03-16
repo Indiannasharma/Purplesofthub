@@ -60,9 +60,9 @@ const PROCESS = [
 ];
 
 const TESTIMONIALS = [
-  { name: "Amara Osei", role: "CEO, BrightPath Ventures", text: "PurpleSoftHub transformed our online presence. Leads doubled within a month of launch.", initials: "AO" },
-  { name: "James Whitfield", role: "Founder, StackFlow", text: "They delivered our MVP faster than any agency we've worked with. Quality was world-class.", initials: "JW" },
-  { name: "DJ Motive", role: "Independent Artist", text: "Went from zero to 500K streams in 3 months. Their music promo is on another level.", initials: "DM" },
+  { name: "Juliet Owusu", role: "C.E.O, 24 Hours Content Hub", text: "PurpleSoftHub built our studio website from scratch and nailed every detail. The online booking system alone transformed how we operate — clients book sessions seamlessly and our brand finally looks as premium as our service.", initials: "JO" },
+  { name: "Emmanuel Delytesome", role: "C.E.O, Starzz Properties", text: "They delivered a real estate platform that actually generates leads. The property listings, enquiry system and overall design gave Starzz Properties a professional edge we never had before. Highly recommend the team.", initials: "ED" },
+  { name: "Collins Kind", role: "Fashion Designer, Collins Kind", text: "Working with PurpleSoftHub was a game changer. They built my website, set up my Meta Ads and crafted a brand identity that speaks to my audience. My online presence is now as bold as my designs.", initials: "CK" },
 ];
 
 export default function Home() {
