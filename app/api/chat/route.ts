@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { getClientIp, rateLimit } from "@/lib/rateLimit";
+import { getClientIp, checkRateLimit, rateLimiters } from "@/lib/rateLimit";
+import { redis } from "@/lib/redis";
 import { verifyTurnstile } from "@/lib/verifyCaptcha";
 
 const SYSTEM_PROMPT = `You are Puri, the friendly AI assistant for PurpleSoftHub — a digital innovation studio based in Nigeria serving clients worldwide.
@@ -73,7 +74,7 @@ const HANDOFF_KEYWORDS = [
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req.headers);
-    const rl = rateLimit(`chat:${ip}`, { windowMs: 5 * 60 * 1000, max: 20 });
+    const rl = await checkRateLimit(rateLimiters.chat, ip);
     if (!rl.ok) {
       const retryAfterSec = Math.ceil((rl.resetAt - Date.now()) / 1000);
       return NextResponse.json(
@@ -91,10 +92,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { messages, leadData, captchaToken } = body as {
+    const { messages, leadData, captchaToken, sessionId } = body as {
       messages: { role: "user" | "assistant"; content: string }[];
       leadData?: { name?: string; email?: string };
       captchaToken?: string;
+      sessionId?: string;
     };
 
     const captcha = await verifyTurnstile(captchaToken, ip);
@@ -112,7 +114,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const trimmed = messages.slice(-50);
+    // Use Redis-stored history when sessionId is provided
+    type ChatMessage = { role: "user" | "assistant"; content: string }
+    let trimmed: ChatMessage[]
+    if (sessionId) {
+      const stored = await redis.lrange<ChatMessage>(`chat:${sessionId}`, 0, 49)
+      const latest = messages[messages.length - 1]
+      trimmed = stored.length > 0 ? [...stored, latest] : messages.slice(-50)
+    } else {
+      trimmed = messages.slice(-50)
+    }
     const latestMessage = trimmed[trimmed.length - 1]?.content ?? "";
 
     const showHandoff = HANDOFF_KEYWORDS.some((k) =>
@@ -139,6 +150,15 @@ export async function POST(req: NextRequest) {
       response.content[0].type === "text"
         ? response.content[0].text
         : "I'm having trouble responding right now. Please try again! 💜";
+
+    // Persist conversation to Redis (TTL: 1 hour)
+    if (sessionId) {
+      const userMsg = trimmed[trimmed.length - 1]
+      const pipe = redis.pipeline()
+      pipe.rpush(`chat:${sessionId}`, userMsg, { role: "assistant" as const, content: reply })
+      pipe.expire(`chat:${sessionId}`, 3600)
+      await pipe.exec()
+    }
 
     return NextResponse.json({ reply, showHandoff, shouldSaveLead });
   } catch (error) {

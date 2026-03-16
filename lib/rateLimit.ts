@@ -1,34 +1,41 @@
-type RateLimitState = {
-  count: number;
-  resetAt: number;
-};
+import { Ratelimit } from '@upstash/ratelimit'
+import { redis } from './redis'
 
-const store = new Map<string, RateLimitState>();
-
-export function rateLimit(
-  key: string,
-  opts: { windowMs: number; max: number }
-) {
-  const now = Date.now();
-  const state = store.get(key);
-  if (!state || now > state.resetAt) {
-    const resetAt = now + opts.windowMs;
-    store.set(key, { count: 1, resetAt });
-    return { ok: true, remaining: opts.max - 1, resetAt };
-  }
-
-  if (state.count >= opts.max) {
-    return { ok: false, remaining: 0, resetAt: state.resetAt };
-  }
-
-  state.count += 1;
-  return { ok: true, remaining: opts.max - state.count, resetAt: state.resetAt };
+export const rateLimiters = {
+  contact: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '10 m'),
+    prefix: 'rl:contact',
+  }),
+  chat: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(20, '5 m'),
+    prefix: 'rl:chat',
+  }),
+  chatLead: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '10 m'),
+    prefix: 'rl:chatLead',
+  }),
+  newsletter: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '10 m'),
+    prefix: 'rl:newsletter',
+  }),
 }
 
-export function getClientIp(headers: Headers) {
-  const forwarded = headers.get("x-forwarded-for");
+export async function checkRateLimit(
+  limiter: Ratelimit,
+  key: string
+): Promise<{ ok: boolean; remaining: number; resetAt: number }> {
+  const { success, remaining, reset } = await limiter.limit(key)
+  return { ok: success, remaining, resetAt: reset }
+}
+
+export function getClientIp(headers: Headers): string {
+  const forwarded = headers.get('x-forwarded-for')
   if (forwarded) {
-    return forwarded.split(",")[0]?.trim() || "unknown";
+    return forwarded.split(',')[0]?.trim() || 'unknown'
   }
-  return headers.get("x-real-ip") || "unknown";
+  return headers.get('x-real-ip') || 'unknown'
 }

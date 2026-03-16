@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import connectDB from "@/lib/mongodb";
 import Contact from "@/lib/models/Contact";
-import { getClientIp, rateLimit } from "@/lib/rateLimit";
+import { getClientIp, checkRateLimit, rateLimiters } from "@/lib/rateLimit";
 import { verifyTurnstile } from "@/lib/verifyCaptcha";
 
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req.headers);
-    const rl = rateLimit(`contact:${ip}`, { windowMs: 10 * 60 * 1000, max: 5 });
+    const rl = await checkRateLimit(rateLimiters.contact, ip);
     if (!rl.ok) {
       const retryAfterSec = Math.ceil((rl.resetAt - Date.now()) / 1000);
       return NextResponse.json(

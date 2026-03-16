@@ -37,6 +37,14 @@ function uid() {
 }
 
 export default function ChatBot() {
+  const [sessionId] = useState<string>(() => {
+    if (typeof window === 'undefined') return ''
+    const stored = sessionStorage.getItem('puri_session')
+    if (stored) return stored
+    const id = crypto.randomUUID()
+    sessionStorage.setItem('puri_session', id)
+    return id
+  })
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -171,6 +179,7 @@ export default function ChatBot() {
           messages: updated.map((m) => ({ role: m.role, content: m.content })),
           leadData,
           captchaToken,
+          sessionId: sessionId || undefined,
         }),
       });
 

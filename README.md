@@ -37,7 +37,7 @@ EMAIL_USER=hello@purplesofthub.com
 EMAIL_PASS=your_gmail_app_password
 EMAIL_TO=hello@purplesofthub.com
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_SITE_URL=https://purplesofthub.netlify.app
+NEXT_PUBLIC_SITE_URL=https://purplesofthub.com
 ```
 
 ### 3. Run the development server
