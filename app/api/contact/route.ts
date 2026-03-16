@@ -5,6 +5,15 @@ import Contact from "@/lib/models/Contact";
 import { getClientIp, checkRateLimit, rateLimiters } from "@/lib/rateLimit";
 import { verifyTurnstile } from "@/lib/verifyCaptcha";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req.headers);
@@ -36,7 +45,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: "Please provide a valid email address." },
@@ -81,64 +90,72 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const safeName    = escapeHtml(name.trim());
+    const safeEmail   = escapeHtml(email.trim());
+    const safeService = escapeHtml(service?.trim() || "");
+    const safeMessage = escapeHtml(message.trim());
+
+    let emailSent = false;
     try {
       // ── Notification to PurpleSoftHub team ──────────────
       await transporter.sendMail({
         from: `"PurpleSoftHub Website" <${EMAIL_USER}>`,
         to: EMAIL_TO,
-        subject: `🚀 New Project Inquiry from ${name}`,
+        subject: `🚀 New Project Inquiry from ${safeName}`,
         html: `
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#06030f;color:#e2d9f3;padding:32px;border-radius:16px;border:1px solid rgba(124,58,237,0.3);">
             <div style="text-align:center;margin-bottom:32px;">
               <h1 style="color:#a855f7;font-size:24px;margin:0;">💜 New Inquiry — PurpleSoftHub</h1>
             </div>
             <table style="width:100%;border-collapse:collapse;">
-              <tr><td style="padding:10px 0;color:#9d8fd4;font-size:14px;width:100px;">Name</td><td style="padding:10px 0;color:#fff;font-weight:600;">${name}</td></tr>
-              <tr><td style="padding:10px 0;color:#9d8fd4;font-size:14px;">Email</td><td style="padding:10px 0;color:#fff;">${email}</td></tr>
-              <tr><td style="padding:10px 0;color:#9d8fd4;font-size:14px;">Service</td><td style="padding:10px 0;color:#a855f7;font-weight:600;">${service || "Not specified"}</td></tr>
+              <tr><td style="padding:10px 0;color:#9d8fd4;font-size:14px;width:100px;">Name</td><td style="padding:10px 0;color:#fff;font-weight:600;">${safeName}</td></tr>
+              <tr><td style="padding:10px 0;color:#9d8fd4;font-size:14px;">Email</td><td style="padding:10px 0;color:#fff;">${safeEmail}</td></tr>
+              <tr><td style="padding:10px 0;color:#9d8fd4;font-size:14px;">Service</td><td style="padding:10px 0;color:#a855f7;font-weight:600;">${safeService || "Not specified"}</td></tr>
             </table>
             <div style="margin-top:24px;padding:20px;background:rgba(124,58,237,0.1);border-radius:12px;border:1px solid rgba(124,58,237,0.2);">
               <p style="color:#9d8fd4;font-size:13px;margin-bottom:8px;">Message:</p>
-              <p style="color:#e2d9f3;line-height:1.7;">${message}</p>
+              <p style="color:#e2d9f3;line-height:1.7;">${safeMessage}</p>
             </div>
             <div style="margin-top:24px;text-align:center;">
-              <a href="mailto:${email}" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:700;">Reply to ${name}</a>
+              <a href="mailto:${safeEmail}" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:700;">Reply to ${safeName}</a>
             </div>
             <p style="text-align:center;color:#3d2f60;font-size:12px;margin-top:24px;">PurpleSoftHub — purplesofthub.com</p>
           </div>
         `,
       });
-  
+
       // ── Auto-reply to client ─────────────────────────────
       await transporter.sendMail({
         from: `"PurpleSoftHub" <${EMAIL_USER}>`,
-        to: email,
+        to: safeEmail,
         subject: "We received your message — PurpleSoftHub 💜",
         html: `
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#06030f;color:#e2d9f3;padding:32px;border-radius:16px;border:1px solid rgba(124,58,237,0.3);">
-            <h1 style="color:#a855f7;font-size:22px;margin-bottom:16px;">Hi ${name}! 👋</h1>
+            <h1 style="color:#a855f7;font-size:22px;margin-bottom:16px;">Hi ${safeName}! 👋</h1>
             <p style="color:#b8a9d9;line-height:1.8;margin-bottom:16px;">
               Thank you for reaching out to <strong style="color:#a855f7;">PurpleSoftHub</strong>. We've received your message and our team will get back to you within <strong style="color:#fff;">24 hours</strong>.
             </p>
-            ${service ? `<p style="color:#b8a9d9;margin-bottom:16px;">Service requested: <strong style="color:#a855f7;">${service}</strong></p>` : ""}
+            ${safeService ? `<p style="color:#b8a9d9;margin-bottom:16px;">Service requested: <strong style="color:#a855f7;">${safeService}</strong></p>` : ""}
             <div style="padding:20px;background:rgba(124,58,237,0.1);border-radius:12px;border:1px solid rgba(124,58,237,0.2);margin:24px 0;">
               <p style="color:#9d8fd4;font-size:13px;margin-bottom:8px;">Your message:</p>
-              <p style="color:#e2d9f3;line-height:1.7;">${message}</p>
+              <p style="color:#e2d9f3;line-height:1.7;">${safeMessage}</p>
             </div>
             <p style="color:#9d8fd4;line-height:1.8;">
-              While you wait, feel free to explore our services at <a href="https://purplesofthub.com" style="color:#a855f7;">purplesofthub.com</a>
+              While you wait, feel free to explore our services at <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"}" style="color:#a855f7;">purplesofthub.com</a>
             </p>
             <p style="color:#b8a9d9;margin-top:24px;">With 💜,<br/><strong style="color:#fff;">The PurpleSoftHub Team</strong></p>
             <p style="text-align:center;color:#3d2f60;font-size:12px;margin-top:28px;">© 2026 PurpleSoftHub. All rights reserved.</p>
           </div>
         `,
       });
+
+      emailSent = true;
     } catch (emailError) {
       console.error("Contact email error:", emailError);
     }
 
     return NextResponse.json(
-      { success: true, message: "Message sent successfully!" },
+      { success: true, message: "Message sent successfully!", emailSent },
       { status: 200 }
     );
   } catch (error) {

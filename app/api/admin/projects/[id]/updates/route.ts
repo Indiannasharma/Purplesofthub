@@ -47,11 +47,12 @@ async function sendProjectUpdateEmail({
   })
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     const body = await req.json()
     const message = String(body?.message || '').trim()
 
@@ -61,22 +62,22 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     await connectDB()
     const project = await Project.findByIdAndUpdate(
-      params.id,
+      id,
       { $push: { updates: { message, createdAt: new Date() } } },
       { new: true }
-    ).lean()
+    ).lean() as ({ client?: unknown; title?: string; [key: string]: unknown }) | null
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
     }
 
-    const client = await User.findById(project.client).lean()
+    const client = await User.findById(project.client).lean() as { email?: string; firstName?: string } | null
     if (client?.email) {
-      const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://purplesofthub.com'}/dashboard/projects/${project._id}`
+      const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://purplesofthub.com'}/dashboard/projects/${id}`
       await sendProjectUpdateEmail({
         to: client.email,
         name: client.firstName || '',
-        projectTitle: project.title,
+        projectTitle: String(project.title || ''),
         updateMessage: message,
         dashboardUrl,
       })

@@ -91,13 +91,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
-    const { messages, leadData, captchaToken, sessionId } = body as {
-      messages: { role: "user" | "assistant"; content: string }[];
-      leadData?: { name?: string; email?: string };
-      captchaToken?: string;
-      sessionId?: string;
-    };
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const messages = Array.isArray(body.messages) ? body.messages as { role: "user" | "assistant"; content: string }[] : null;
+    const leadData = body.leadData as { name?: string; email?: string } | undefined;
+    const captchaToken = typeof body.captchaToken === "string" ? body.captchaToken : undefined;
+    const sessionId = typeof body.sessionId === "string" ? body.sessionId : undefined;
 
     const captcha = await verifyTurnstile(captchaToken, ip);
     if (!captcha.ok) {
@@ -107,7 +111,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    if (!messages || messages.length === 0) {
       return NextResponse.json(
         { error: "Messages are required" },
         { status: 400 }
@@ -153,11 +157,15 @@ export async function POST(req: NextRequest) {
 
     // Persist conversation to Redis (TTL: 1 hour)
     if (sessionId) {
-      const userMsg = trimmed[trimmed.length - 1]
-      const pipe = redis.pipeline()
-      pipe.rpush(`chat:${sessionId}`, userMsg, { role: "assistant" as const, content: reply })
-      pipe.expire(`chat:${sessionId}`, 3600)
-      await pipe.exec()
+      try {
+        const userMsg = trimmed[trimmed.length - 1]
+        const pipe = redis.pipeline()
+        pipe.rpush(`chat:${sessionId}`, userMsg, { role: "assistant" as const, content: reply })
+        pipe.expire(`chat:${sessionId}`, 3600)
+        await pipe.exec()
+      } catch (redisError) {
+        console.error("Redis pipeline error — session history not persisted:", redisError)
+      }
     }
 
     return NextResponse.json({ reply, showHandoff, shouldSaveLead });

@@ -3,11 +3,12 @@ import connectDB from '@/lib/mongodb'
 import { requireAdmin } from '@/lib/auth'
 import Task from '@/lib/models/Task'
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string; taskId: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string; taskId: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id, taskId } = await params
     const body = await req.json()
     const update: Record<string, unknown> = {}
 
@@ -18,7 +19,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string; 
 
     await connectDB()
     const task = await Task.findOneAndUpdate(
-      { _id: params.taskId, project: params.id },
+      { _id: taskId, project: id },
       { $set: update },
       { new: true }
     ).lean()
@@ -34,13 +35,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string; 
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string; taskId: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string; taskId: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id, taskId } = await params
     await connectDB()
-    const task = await Task.findOneAndDelete({ _id: params.taskId, project: params.id }).lean()
+    const task = await Task.findOneAndDelete({ _id: taskId, project: id }).lean()
     if (!task) {
       return NextResponse.json({ error: 'Task not found.' }, { status: 404 })
     }

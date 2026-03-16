@@ -23,13 +23,14 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, '')
 }
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const service = await Service.findById(params.id).lean()
+    const service = await Service.findById(id).lean()
     if (!service) {
       return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
     }
@@ -40,11 +41,12 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     const body = await req.json()
     const update: Record<string, unknown> = {}
 
@@ -72,7 +74,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (body?.order !== undefined) update.order = Number(body.order || 0)
 
     await connectDB()
-    const service = await Service.findByIdAndUpdate(params.id, { $set: update }, { new: true }).lean()
+    const service = await Service.findByIdAndUpdate(id, { $set: update }, { new: true }).lean()
 
     if (!service) {
       return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
@@ -89,13 +91,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const service = await Service.findByIdAndDelete(params.id).lean()
+    const service = await Service.findByIdAndDelete(id).lean()
     if (!service) {
       return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
     }

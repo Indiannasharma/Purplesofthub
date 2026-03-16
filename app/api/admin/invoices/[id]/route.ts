@@ -17,13 +17,14 @@ function normalizeItems(items: Array<{ description?: string; quantity?: number; 
   })
 }
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const invoice = await Invoice.findById(params.id)
+    const invoice = await Invoice.findById(id)
       .populate('client', 'firstName lastName email phone company country')
       .populate('project', 'title')
       .lean()
@@ -39,11 +40,12 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     const body = await req.json()
     const update: Record<string, unknown> = {}
 
@@ -68,7 +70,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (body?.paymentMethod !== undefined) update.paymentMethod = String(body.paymentMethod)
 
     await connectDB()
-    const invoice = await Invoice.findByIdAndUpdate(params.id, { $set: update }, { new: true }).lean()
+    const invoice = await Invoice.findByIdAndUpdate(id, { $set: update }, { new: true }).lean()
 
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found.' }, { status: 404 })
@@ -81,13 +83,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const invoice = await Invoice.findByIdAndDelete(params.id).lean()
+    const invoice = await Invoice.findByIdAndDelete(id).lean()
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found.' }, { status: 404 })
     }

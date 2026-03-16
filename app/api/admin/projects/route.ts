@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       dueDate: body?.dueDate ? new Date(body.dueDate) : undefined,
     })
 
-    const client = await User.findById(clientId).lean()
+    const client = await User.findById(clientId).lean() as { email?: string; firstName?: string } | null
     if (client?.email) {
       const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://purplesofthub.com'}/dashboard/projects/${project._id}`
       await sendProjectStartedEmail({

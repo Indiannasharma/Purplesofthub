@@ -3,13 +3,14 @@ import connectDB from '@/lib/mongodb'
 import { requireAdmin } from '@/lib/auth'
 import Task from '@/lib/models/Task'
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const tasks = await Task.find({ project: params.id }).sort({ order: 1, createdAt: 1 }).lean()
+    const tasks = await Task.find({ project: id }).sort({ order: 1, createdAt: 1 }).lean()
     return NextResponse.json({ tasks }, { status: 200 })
   } catch (error) {
     console.error('Admin project tasks GET error:', error)
@@ -17,11 +18,12 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     const body = await req.json()
     const title = String(body?.title || '').trim()
 
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     await connectDB()
     const task = await Task.create({
-      project: params.id,
+      project: id,
       title,
       description: String(body?.description || ''),
       status: body?.status || 'todo',

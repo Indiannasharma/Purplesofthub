@@ -5,13 +5,14 @@ import Project from '@/lib/models/Project'
 import Task from '@/lib/models/Task'
 import File from '@/lib/models/File'
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const project = await Project.findById(params.id)
+    const project = await Project.findById(id)
       .populate('client', 'firstName lastName email avatar')
       .populate('service', 'name category')
       .lean()
@@ -21,8 +22,8 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
     }
 
     const [tasks, files] = await Promise.all([
-      Task.find({ project: project._id }).sort({ order: 1, createdAt: 1 }).lean(),
-      File.find({ project: project._id }).sort({ createdAt: -1 }).lean(),
+      Task.find({ project: id }).sort({ order: 1, createdAt: 1 }).lean(),
+      File.find({ project: id }).sort({ createdAt: -1 }).lean(),
     ])
 
     return NextResponse.json({ project, tasks, files }, { status: 200 })
@@ -32,11 +33,12 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     const body = await req.json()
     const update: Record<string, unknown> = {}
 
@@ -48,7 +50,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (body?.dueDate !== undefined) update.dueDate = body.dueDate ? new Date(body.dueDate) : null
 
     await connectDB()
-    const project = await Project.findByIdAndUpdate(params.id, { $set: update }, { new: true }).lean()
+    const project = await Project.findByIdAndUpdate(id, { $set: update }, { new: true }).lean()
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
@@ -61,18 +63,19 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
   if (!admin.ok) return admin.response
 
   try {
+    const { id } = await params
     await connectDB()
-    const project = await Project.findByIdAndDelete(params.id).lean()
+    const project = await Project.findByIdAndDelete(id).lean()
     if (!project) {
       return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
     }
-    await Task.deleteMany({ project: project._id })
-    await File.deleteMany({ project: project._id })
+    await Task.deleteMany({ project: id })
+    await File.deleteMany({ project: id })
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error('Admin project DELETE error:', error)

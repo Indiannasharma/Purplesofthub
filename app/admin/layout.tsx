@@ -60,15 +60,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push('/sign-in')
       return
     }
-    const role = (user.publicMetadata as { role?: string })?.role
-    if (role !== 'admin') {
+    const userRole = typeof user.publicMetadata?.role === 'string' ? user.publicMetadata.role : null
+    if (!userRole || userRole !== 'admin') {
       router.push('/dashboard')
     }
   }, [isLoaded, user, router])
 
-  if (!isLoaded || !user) return null
-  const role = (user.publicMetadata as { role?: string })?.role
-  if (role !== 'admin') return null
+  const role = typeof user?.publicMetadata?.role === 'string' ? user.publicMetadata.role : null
+
+  if (!isLoaded || !user || role !== 'admin') {
+    return (
+      <div style={{ minHeight: '100vh', background: '#06030f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#9d8fd4', fontSize: 14 }}>Redirecting…</div>
+      </div>
+    )
+  }
 
   const sidebarContent = (
     <div
