@@ -12,7 +12,14 @@ const SOCIALS = [
   { label: "YouTube", href: "https://youtube.com/@purplesofthub", icon: FaYoutube },
 ];
 
-const SERVICE_LINKS = ["Web Development", "Mobile Apps", "Digital Marketing", "UI/UX Design", "SaaS Development", "Music Promo"];
+const SERVICE_LINKS: [string, string][] = [
+  ["Web Development", "/services/web-development"],
+  ["Mobile Apps", "/services/mobile-app-development"],
+  ["Digital Marketing", "/services/digital-marketing"],
+  ["UI/UX Design", "/services/ui-ux-design"],
+  ["SaaS Development", "/services/saas-development"],
+  ["Music Promo", "/services/music-promotion"],
+];
 const COMPANY_LINKS: [string, string][] = [["About Us", "/about"], ["Portfolio", "/portfolio"], ["Blog", "/blog"], ["Contact", "/contact"]];
 
 export default function Footer() {
@@ -76,8 +83,8 @@ export default function Footer() {
           {/* Services */}
           <div>
             <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#fff", fontSize: 14, marginBottom: 18 }}>Services</div>
-            {SERVICE_LINKS.map((l) => (
-              <Link key={l} href="/#services"
+            {SERVICE_LINKS.map(([l, h]) => (
+              <Link key={l} href={h}
                 style={{ display: "block", color: "#9d8fd4", fontSize: 13, marginBottom: 11, textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#a855f7")}
                 onMouseLeave={e => (e.currentTarget.style.color = "#9d8fd4")}

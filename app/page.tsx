@@ -38,12 +38,12 @@ const jsonLd = {
 };
 
 const SERVICES = [
-  { icon: "🌐", title: "Web Development", desc: "Business sites, SaaS platforms, e-commerce stores & custom dashboards built to convert.", tags: ["Next.js", "React", "Tailwind"] },
-  { icon: "📱", title: "Mobile App Development", desc: "Cross-platform Flutter & React Native apps for iOS and Android that users love.", tags: ["Flutter", "React Native", "iOS/Android"] },
-  { icon: "📣", title: "Digital Marketing", desc: "Meta, Google, TikTok & Snapchat ads — plus SEO strategies that drive real growth.", tags: ["Meta Ads", "Google Ads", "SEO"] },
-  { icon: "🎨", title: "UI/UX Design", desc: "Pixel-perfect product design grounded in user psychology and conversion principles.", tags: ["Figma", "Prototyping", "Research"] },
-  { icon: "⚙️", title: "SaaS Development", desc: "AI tools, automation dashboards and creator platforms built from MVP to scale.", tags: ["SaaS", "AI Tools", "Automation"] },
-  { icon: "🎵", title: "Music Distribution", desc: "Get your music on 150+ platforms and grow your fanbase with targeted promo.", tags: ["Spotify", "Apple Music", "Promotion"] },
+  { icon: "🌐", title: "Web Development", desc: "Business sites, SaaS platforms, e-commerce stores & custom dashboards built to convert.", tags: ["Next.js", "React", "Tailwind"], href: "/services/web-development" },
+  { icon: "📱", title: "Mobile App Development", desc: "Cross-platform Flutter & React Native apps for iOS and Android that users love.", tags: ["Flutter", "React Native", "iOS/Android"], href: "/services/mobile-app-development" },
+  { icon: "📣", title: "Digital Marketing", desc: "Meta, Google, TikTok & Snapchat ads — plus SEO strategies that drive real growth.", tags: ["Meta Ads", "Google Ads", "SEO"], href: "/services/digital-marketing" },
+  { icon: "🎨", title: "UI/UX Design", desc: "Pixel-perfect product design grounded in user psychology and conversion principles.", tags: ["Figma", "Prototyping", "Research"], href: "/services/ui-ux-design" },
+  { icon: "⚙️", title: "SaaS Development", desc: "AI tools, automation dashboards and creator platforms built from MVP to scale.", tags: ["SaaS", "AI Tools", "Automation"], href: "/services/saas-development" },
+  { icon: "🎵", title: "Music Promotion", desc: "Get your music on 150+ platforms and grow your fanbase with targeted promo.", tags: ["Spotify", "Apple Music", "Promotion"], href: "/services/music-promotion" },
 ];
 
 const SUCCESS = [
@@ -151,9 +151,9 @@ export default function Home() {
       <section style={{ padding: "0 5% 80px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
           {[
-            { icon: "💻", title: "Digital Solutions", sub: "Web, Mobile & Marketing", cta: "Learn More", href: "#services", color: "#4f46e5" },
+            { icon: "💻", title: "Digital Solutions", sub: "Web, Mobile & Marketing", cta: "View Services", href: "/services", color: "#4f46e5" },
             { icon: "🎓", title: "Purplesofthub Academy", sub: "Learn In-Demand Tech Skills", cta: "View Courses", href: "/blog", color: "#7c3aed" },
-            { icon: "🎵", title: "Music Distribution", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "#music", color: "#86198f" },
+            { icon: "🎵", title: "Music Promotion", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "/services/music-promotion", color: "#86198f" },
           ].map((c, i) => (
             <Reveal key={c.title} delay={i * 0.1}>
               <div className="glass-card" style={{ padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
@@ -187,15 +187,18 @@ export default function Home() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(310px,1fr))", gap: 20 }}>
             {SERVICES.map((s, i) => (
               <Reveal key={s.title} delay={i * 0.05}>
-                <div className="glass-card" style={{ padding: "30px 26px" }}>
+                <div className="glass-card" style={{ padding: "30px 26px", display: "flex", flexDirection: "column" }}>
                   <div style={{ fontSize: 38, marginBottom: 16 }}>{s.icon}</div>
                   <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 10 }}>{s.title}</div>
-                  <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.75, marginBottom: 18 }}>{s.desc}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+                  <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.75, marginBottom: 18, flex: 1 }}>{s.desc}</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 18 }}>
                     {s.tags.map(t => (
                       <span key={t} style={{ background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.25)", borderRadius: 100, padding: "3px 11px", fontSize: 12, color: "var(--accent)", fontWeight: 500 }}>{t}</span>
                     ))}
                   </div>
+                  <Link href={s.href}>
+                    <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Learn More →</span>
+                  </Link>
                 </div>
               </Reveal>
             ))}

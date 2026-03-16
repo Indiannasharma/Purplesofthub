@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import services, { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
+import FaqAccordion from "@/app/services/_components/FaqAccordion";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -43,12 +44,40 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
   const related = getRelatedServices(service.relatedServices);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: service.metaDescription,
+    provider: {
+      "@type": "Organization",
+      name: "PurpleSoftHub",
+      url: "https://purplesofthub.netlify.app",
+    },
+    areaServed: "Worldwide",
+    url: `https://purplesofthub.netlify.app/services/${service.slug}`,
+  };
+
   return (
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
+      {/* ── BREADCRUMB ── */}
+      <div style={{ padding: "100px 5% 0" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-muted)" }}>
+            <Link href="/" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Home</Link>
+            <span style={{ color: "rgba(168,85,247,.4)" }}>›</span>
+            <Link href="/services" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Services</Link>
+            <span style={{ color: "rgba(168,85,247,.4)" }}>›</span>
+            <span style={{ color: "var(--accent)", fontWeight: 600 }}>{service.title}</span>
+          </div>
+        </div>
+      </div>
+
       {/* ── HERO ── */}
-      <section style={{ padding: "120px 5% 80px", position: "relative", overflow: "hidden" }}>
+      <section style={{ padding: "40px 5% 80px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", width: 800, height: 800, borderRadius: "50%", background: `radial-gradient(circle,${service.color}22 0%,transparent 65%)`, top: "-20%", left: "-10%", pointerEvents: "none" }} />
         <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle,rgba(168,85,247,.12) 0%,transparent 65%)", bottom: "-10%", right: "0", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
@@ -108,10 +137,10 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             </div>
           </Reveal>
         </div>
-        <style>{`@media(max-width:768px){section > div[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}}`}</style>
+        <style>{`@media(max-width:768px){.hero-grid{grid-template-columns:1fr!important}}`}</style>
       </section>
 
-      {/* ── OVERVIEW + FEATURES ── */}
+      {/* ── OVERVIEW + PRICING CARD ── */}
       <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }}>
           <Reveal>
@@ -123,39 +152,70 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <p style={{ color: "var(--text-muted)", fontSize: 15, lineHeight: 1.85, marginBottom: 28 }}>
                 {service.overview}
               </p>
-              {/* Benefits */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Feature pills */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {service.features.map((f) => (
+                  <span key={f} style={{ background: "rgba(124,58,237,.1)", border: "1px solid rgba(168,85,247,.25)", borderRadius: 100, padding: "5px 14px", fontSize: 12, color: "var(--accent)", fontWeight: 500 }}>{f}</span>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Pricing card */}
+          <Reveal delay={0.15}>
+            <div className="glass-card" style={{ padding: "36px 32px", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
+              <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
+                Custom Quote
+              </div>
+              <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
+                Every project is unique. Tell us about your goals and we&apos;ll craft a tailored proposal with clear, transparent pricing.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
                 {service.benefits.map((b) => (
-                  <div key={b} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ color: "#a855f7", fontSize: 16, flexShrink: 0 }}>✓</span>
+                  <div key={b} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ color: "#a855f7", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
                     <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{b}</span>
                   </div>
                 ))}
               </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.15}>
-            <div className="glass-card" style={{ padding: "32px 28px" }}>
-              <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 15, color: "var(--text-primary)", marginBottom: 20 }}>
-                What&apos;s Included:
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {service.features.map((f) => (
-                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg,#7c3aed,#a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, flexShrink: 0 }}>✓</div>
-                    <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{f}</span>
-                  </div>
-                ))}
-              </div>
+              <Link href="/contact">
+                <button className="btn-main" style={{ width: "100%", padding: "13px", fontSize: 15, textAlign: "center" }}>
+                  Get a Quote →
+                </button>
+              </Link>
             </div>
           </Reveal>
         </div>
-        <style>{`@media(max-width:768px){section > div[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}}`}</style>
+      </section>
+
+      {/* ── FEATURES GRID ── */}
+      <section style={{ padding: "90px 5%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>WHAT&apos;S INCLUDED</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,46px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>
+                Everything You <span className="grad-text">Get</span>
+              </h2>
+            </div>
+          </Reveal>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
+            {service.features.map((f, i) => (
+              <Reveal key={f} delay={i * 0.05}>
+                <div className="glass-card" style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg,#7c3aed,#a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>✓</div>
+                  <span style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.5 }}>{f}</span>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ── PROCESS ── */}
-      <section style={{ padding: "90px 5%" }}>
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -181,7 +241,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* ── TECHNOLOGIES ── */}
-      <section style={{ padding: "80px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+      <section style={{ padding: "80px 5%" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
           <Reveal>
             <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>TOOLS & TECH</p>
@@ -199,8 +259,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      {/* ── FAQs ── */}
-      <section style={{ padding: "90px 5%" }}>
+      {/* ── FAQs (ACCORDION) ── */}
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 56 }}>
@@ -210,25 +270,13 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               </h2>
             </div>
           </Reveal>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {service.faqs.map((faq, i) => (
-              <Reveal key={i} delay={i * 0.07}>
-                <div className="glass-card" style={{ padding: "28px 32px", position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", top: 0, left: 0, width: 3, bottom: 0, background: "linear-gradient(180deg,#7c3aed,#a855f7)", borderRadius: "4px 0 0 4px" }} />
-                  <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 16, color: "var(--text-primary)", marginBottom: 10 }}>
-                    {faq.q}
-                  </div>
-                  <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.8 }}>{faq.a}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <FaqAccordion faqs={service.faqs} />
         </div>
       </section>
 
       {/* ── RELATED SERVICES ── */}
       {related.length > 0 && (
-        <section style={{ padding: "80px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <section style={{ padding: "80px 5%" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <Reveal>
               <div style={{ textAlign: "center", marginBottom: 48 }}>
@@ -268,7 +316,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               → Ready to Get Started? ←
             </div>
             <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(30px,5vw,54px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
-              Let&apos;s Build Something <span className="grad-text">Extraordinary</span>
+              Ready to Get Started with <span className="grad-text">{service.title}</span>?
             </h2>
             <p style={{ color: "var(--text-muted)", fontSize: 17, marginBottom: 40, lineHeight: 1.7 }}>
               Book a free discovery call and let&apos;s talk about your {service.shortTitle.toLowerCase()} project.
