@@ -512,3 +512,86 @@ html:not(.dark) [style*="color: #5b4d8a"],
 html:not(.dark) [style*="color:#5b4d8a"] {
   color: var(--text-muted) !important;
 }
+
+/* ══════════════════════════════
+   GLOBAL OVERFLOW PREVENTION
+══════════════════════════════ */
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ══════════════════════════════
+   SERVICES OVERVIEW — RESPONSIVE
+   (ServicesContent.tsx classes)
+══════════════════════════════ */
+@media (max-width: 639px) {
+  .svc-tabs-row {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+  }
+  .svc-tabs-row::-webkit-scrollbar { display: none; }
+  .svc-cards-grid { grid-template-columns: 1fr !important; }
+  .svc-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .svc-cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ══════════════════════════════
+   SERVICE SLUG PAGE — RESPONSIVE
+   ([slug]/page.tsx classes)
+══════════════════════════════ */
+@media (max-width: 1024px) {
+  .svc-overview-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+}
+@media (max-width: 768px) {
+  .svc-breadcrumb { padding: 90px 16px 0 !important; }
+  .svc-hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .svc-hero-card { padding: 24px 20px !important; max-width: 100% !important; }
+  .svc-hero-emoji { width: 64px !important; height: 64px !important; font-size: 32px !important; }
+  .svc-hero-btns { flex-direction: column !important; }
+  .svc-hero-btns a, .svc-hero-btns button { width: 100% !important; text-align: center !important; }
+  .svc-cta-btns { flex-direction: column !important; align-items: center !important; }
+  .svc-cta-btns a, .svc-cta-btns button { width: 100% !important; max-width: 340px !important; }
+}
+@media (max-width: 640px) {
+  .svc-breadcrumb { padding: 80px 12px 0 !important; font-size: 12px !important; }
+}
+
+/* ══════════════════════════════
+   HELPER RESPONSIVE CLASSES
+══════════════════════════════ */
+.two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.four-col-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .two-col-grid   { grid-template-columns: 1fr !important; }
+  .four-col-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+}
+.hero-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px) {
+  .hero-btns { flex-direction: column; }
+  .hero-btns a,
+  .hero-btns button { width: 100% !important; text-align: center !important; }
+}

@@ -43,7 +43,7 @@ const SERVICES = [
   { icon: "📣", title: "Digital Marketing", desc: "Meta, Google, TikTok & Snapchat ads — plus SEO strategies that drive real growth.", tags: ["Meta Ads", "Google Ads", "SEO"], href: "/services/digital-marketing" },
   { icon: "🎨", title: "UI/UX Design", desc: "Pixel-perfect product design grounded in user psychology and conversion principles.", tags: ["Figma", "Prototyping", "Research"], href: "/services/ui-ux-design" },
   { icon: "⚙️", title: "SaaS Development", desc: "AI tools, automation dashboards and creator platforms built from MVP to scale.", tags: ["SaaS", "AI Tools", "Automation"], href: "/services/saas-development" },
-  { icon: "🎵", title: "Music Promotion", desc: "Get your music on 150+ platforms and grow your fanbase with targeted promo.", tags: ["Spotify", "Apple Music", "Promotion"], href: "/services/music-promotion" },
+  { icon: "🎵", title: "Music Promotion", desc: "Get your music on 150+ platforms and grow your fanbase with targeted promo.", tags: ["Spotify", "Apple Music", "Promotion"], href: "/services/music-distribution" },
 ];
 
 const SUCCESS = [
@@ -203,6 +203,13 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
+          <Reveal delay={0.3}>
+            <div style={{ textAlign: "center", marginTop: 48 }}>
+              <Link href="/services">
+                <button className="btn-outline" style={{ padding: "13px 32px", fontSize: 15 }}>View All 10 Services →</button>
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 

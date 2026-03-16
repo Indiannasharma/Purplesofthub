@@ -59,14 +59,14 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   };
 
   return (
-    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
+    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {/* ── BREADCRUMB ── */}
-      <div style={{ padding: "100px 5% 0" }}>
+      <div className="svc-breadcrumb" style={{ padding: "100px 5% 0" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-muted)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-muted)", flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Home</Link>
             <span style={{ color: "rgba(168,85,247,.4)" }}>›</span>
             <Link href="/services" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Services</Link>
@@ -82,7 +82,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle,rgba(168,85,247,.12) 0%,transparent 65%)", bottom: "-10%", right: "0", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
 
-        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+        <div className="svc-hero-grid" style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
           <div>
             <Reveal>
               <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 20, fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: 1 }}>
@@ -106,7 +106,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               </p>
             </Reveal>
             <Reveal delay={0.25}>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+              <div className="svc-hero-btns" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <Link href="/contact">
                   <button className="btn-main animate-glow" style={{ padding: "14px 30px", fontSize: 15 }}>Start a Project</button>
                 </Link>
@@ -119,8 +119,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
           {/* Right — icon card */}
           <Reveal delay={0.2}>
-            <div className="glass-card animate-float" style={{ padding: "48px 40px", textAlign: "center" }}>
-              <div style={{ width: 88, height: 88, borderRadius: 24, background: `linear-gradient(135deg,${service.color},#a855f7)`, margin: "0 auto 24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44, boxShadow: `0 16px 48px ${service.color}44` }}>
+            <div className="glass-card animate-float svc-hero-card" style={{ padding: "48px 40px", textAlign: "center" }}>
+              <div className="svc-hero-emoji" style={{ width: 88, height: 88, borderRadius: 24, background: `linear-gradient(135deg,${service.color},#a855f7)`, margin: "0 auto 24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44, boxShadow: `0 16px 48px ${service.color}44` }}>
                 {service.icon}
               </div>
               <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 8 }}>
@@ -137,12 +137,11 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             </div>
           </Reveal>
         </div>
-        <style>{`@media(max-width:768px){.hero-grid{grid-template-columns:1fr!important}}`}</style>
       </section>
 
       {/* ── OVERVIEW + PRICING CARD ── */}
       <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }}>
+        <div className="svc-overview-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }}>
           <Reveal>
             <div>
               <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>OVERVIEW</p>
@@ -321,7 +320,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             <p style={{ color: "var(--text-muted)", fontSize: 17, marginBottom: 40, lineHeight: 1.7 }}>
               Book a free discovery call and let&apos;s talk about your {service.shortTitle.toLowerCase()} project.
             </p>
-            <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            <div className="svc-cta-btns" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
               <Link href="/contact">
                 <button className="btn-main animate-glow" style={{ padding: "16px 38px", fontSize: 16 }}>Start a Project</button>
               </Link>
@@ -333,7 +332,27 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         </Reveal>
       </section>
 
+      {/* ── RESPONSIVE STYLES ── */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .svc-overview-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+        }
+        @media (max-width: 768px) {
+          .svc-breadcrumb { padding: 90px 16px 0 !important; }
+          .svc-hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .svc-hero-card { padding: 24px 20px !important; max-width: 100% !important; }
+          .svc-hero-emoji { width: 64px !important; height: 64px !important; font-size: 32px !important; }
+          .svc-hero-btns { flex-direction: column !important; }
+          .svc-hero-btns a, .svc-hero-btns button { width: 100% !important; text-align: center !important; box-sizing: border-box !important; }
+          .svc-cta-btns { flex-direction: column !important; align-items: center !important; }
+          .svc-cta-btns a, .svc-cta-btns button { width: 100% !important; max-width: 340px !important; }
+        }
+        @media (max-width: 640px) {
+          .svc-breadcrumb { padding: 80px 12px 0 !important; font-size: 12px !important; }
+        }
+      `}</style>
       <Footer />
     </main>
   );
 }
+

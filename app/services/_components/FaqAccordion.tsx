@@ -25,7 +25,7 @@ export default function FaqAccordion({ faqs }: { faqs: ServiceFaq[] }) {
           </div>
           {open === i && (
             <div style={{ padding: "0 28px 22px" }}>
-              <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.8 }}>{faq.a}</p>
+              <p style={{ color: "var(--text-muted)", fontSize: 16, lineHeight: 1.8 }}>{faq.a}</p>
             </div>
           )}
         </div>

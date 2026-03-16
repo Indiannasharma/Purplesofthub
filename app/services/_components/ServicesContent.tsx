@@ -23,7 +23,7 @@ export default function ServicesContent({ services }: { services: Service[] }) {
       <section style={{ padding: "0 5% 80px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           {/* Tabs */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 48, justifyContent: "center" }}>
+          <div className="svc-tabs-row" style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 48, justifyContent: "center" }}>
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
@@ -46,7 +46,7 @@ export default function ServicesContent({ services }: { services: Service[] }) {
           </div>
 
           {/* Cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 24 }}>
+          <div className="svc-cards-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 24 }}>
             {filtered.map((s) => (
               <Link key={s.slug} href={`/services/${s.slug}`} style={{ textDecoration: "none", display: "block" }}>
                 <div
@@ -90,7 +90,7 @@ export default function ServicesContent({ services }: { services: Service[] }) {
 
       {/* ── STATS STRIP ── */}
       <section style={{ padding: "60px 5%", background: "rgba(124,58,237,.06)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 24, textAlign: "center" }}>
+        <div className="svc-stats-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 24, textAlign: "center" }}>
           {STATS.map((stat) => (
             <div key={stat.label}>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(36px,4vw,52px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 8 }}>
