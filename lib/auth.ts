@@ -8,7 +8,9 @@ export async function requireAdmin() {
     return { ok: false as const, response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
   }
 
-  const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role
+  const role =
+    (sessionClaims?.publicMetadata as { role?: string } | undefined)?.role ||
+    (sessionClaims?.metadata as { role?: string } | undefined)?.role
   if (role !== 'admin') {
     return { ok: false as const, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
   }

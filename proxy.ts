@@ -27,7 +27,9 @@ export default clerkMiddleware(async (auth, req) => {
 
   if (isAdminRoute(req)) {
     const { sessionClaims } = await auth()
-    const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role
+    const role =
+      (sessionClaims?.publicMetadata as { role?: string } | undefined)?.role ||
+      (sessionClaims?.metadata as { role?: string } | undefined)?.role
     if (role !== 'admin') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
