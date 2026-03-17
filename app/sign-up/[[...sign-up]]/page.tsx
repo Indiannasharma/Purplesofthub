@@ -81,6 +81,8 @@ export default function SignUpPage() {
       </div>
 
       <SignUp
+        redirectUrl="/dashboard"
+        afterSignUpUrl="/dashboard"
         appearance={{
           variables: {
             colorPrimary: '#7c3aed',

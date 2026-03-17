@@ -37,8 +37,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       style={{
         width: 240,
         minHeight: '100vh',
-        background: '#0a0618',
-        borderRight: '1px solid rgba(124,58,237,.15)',
+        background: 'linear-gradient(180deg, rgba(10,6,24,0.95), rgba(6,4,16,0.9))',
+        borderRight: '1px solid rgba(124,58,237,.25)',
+        boxShadow: 'inset -1px 0 0 rgba(124,58,237,.15)',
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
@@ -144,7 +145,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   )
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#06030f' }}>
+    <div className="dash-shell" style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Desktop Sidebar */}
       <div className="dash-sidebar-desktop">{sidebarContent}</div>
 
@@ -171,16 +172,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Main content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div className="dash-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Top bar */}
         <div
+          className="dash-topbar"
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 32px',
-            borderBottom: '1px solid rgba(124,58,237,.1)',
-            background: '#06030f',
+            borderBottom: '1px solid rgba(124,58,237,.2)',
             position: 'sticky',
             top: 0,
             zIndex: 10,
@@ -224,10 +225,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Page content */}
-        <main style={{ flex: 1, padding: 32, color: '#e2d9f3' }}>{children}</main>
+        <main className="dash-content" style={{ flex: 1, padding: 32, color: '#e2d9f3' }}>
+          {children}
+        </main>
       </div>
 
       <style>{`
+        .dash-shell {
+          background:
+            radial-gradient(circle at 20% 20%, rgba(124,58,237,0.25), transparent 40%),
+            radial-gradient(circle at 80% 10%, rgba(236,72,153,0.2), transparent 35%),
+            radial-gradient(circle at 60% 80%, rgba(59,130,246,0.18), transparent 35%),
+            #05020c;
+          font-family: 'Sora', 'Outfit', sans-serif;
+        }
+        .dash-topbar {
+          backdrop-filter: blur(18px);
+          background: linear-gradient(135deg, rgba(9,6,22,0.9), rgba(8,6,20,0.6));
+        }
+        .dash-content {
+          position: relative;
+        }
+        .dash-content::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
+          background-size: 48px 48px;
+          pointer-events: none;
+          opacity: 0.4;
+        }
+        .dash-content > * {
+          position: relative;
+          z-index: 1;
+        }
         @media (max-width: 768px) {
           .dash-sidebar-desktop { display: none !important; }
           .dash-hamburger { display: block !important; }

@@ -23,6 +23,20 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   draft: { bg: 'rgba(107,114,128,.15)', color: '#9ca3af' },
 }
 
+const PANEL_STYLE = {
+  background: 'linear-gradient(135deg, rgba(14,9,30,0.95), rgba(10,7,22,0.85))',
+  border: '1px solid rgba(124,58,237,0.25)',
+  boxShadow: '0 18px 50px rgba(6,3,15,.55), inset 0 0 20px rgba(124,58,237,.08)',
+  borderRadius: 16,
+} as const
+
+const STAT_CARD_STYLE = {
+  background: 'linear-gradient(135deg, rgba(18,12,36,0.95), rgba(9,6,20,0.9))',
+  border: '1px solid rgba(124,58,237,.3)',
+  borderRadius: 18,
+  boxShadow: '0 20px 60px rgba(6,3,15,.6), inset 0 0 24px rgba(124,58,237,.12)',
+} as const
+
 async function getClientData(clerkId: string) {
   await connectDB()
 
@@ -66,10 +80,19 @@ export default async function DashboardPage() {
     <div>
       {/* Welcome */}
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 900, color: '#e2d9f3', marginBottom: 4 }}>
-          Hey {firstName}! 💜
+        <h1
+          style={{
+            fontSize: 30,
+            fontWeight: 900,
+            marginBottom: 4,
+            background: 'linear-gradient(135deg, #ffffff, #c4b5fd, #a855f7)',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+          }}
+        >
+          Hey {firstName}! ????
         </h1>
-        <p style={{ color: '#9d8fd4', fontSize: 14 }}>
+        <p style={{ color: '#b8a9ff', fontSize: 14 }}>
           Here&apos;s what&apos;s happening with your projects today.
         </p>
         <p style={{ color: '#3d2f60', fontSize: 13, marginTop: 4 }}>
@@ -99,9 +122,7 @@ export default async function DashboardPage() {
           <div
             key={card.label}
             style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(124,58,237,.18)',
-              borderRadius: 16,
+              ...STAT_CARD_STYLE,
               padding: 24,
             }}
           >
@@ -110,7 +131,7 @@ export default async function DashboardPage() {
                 width: 40,
                 height: 40,
                 borderRadius: 10,
-                background: 'linear-gradient(135deg, rgba(124,58,237,.3), rgba(168,85,247,.2))',
+                background: 'linear-gradient(135deg, rgba(124,58,237,.45), rgba(236,72,153,.25))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -137,9 +158,7 @@ export default async function DashboardPage() {
         {activeProjects.length === 0 ? (
           <div
             style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(124,58,237,.18)',
-              borderRadius: 16,
+              ...PANEL_STYLE,
               padding: 40,
               textAlign: 'center',
             }}
@@ -176,9 +195,7 @@ export default async function DashboardPage() {
                 <div
                   key={String(project._id)}
                   style={{
-                    background: 'rgba(255,255,255,.04)',
-                    border: '1px solid rgba(124,58,237,.18)',
-                    borderRadius: 16,
+                    ...PANEL_STYLE,
                     padding: 24,
                   }}
                 >
@@ -304,9 +321,7 @@ export default async function DashboardPage() {
         {invoices.length === 0 ? (
           <div
             style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(124,58,237,.18)',
-              borderRadius: 16,
+              ...PANEL_STYLE,
               padding: 32,
               textAlign: 'center',
             }}
@@ -316,9 +331,7 @@ export default async function DashboardPage() {
         ) : (
           <div
             style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(124,58,237,.18)',
-              borderRadius: 16,
+              ...PANEL_STYLE,
               overflow: 'hidden',
             }}
           >
@@ -444,9 +457,7 @@ export default async function DashboardPage() {
         <section>
           <div
             style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(124,58,237,.2)',
-              borderRadius: 16,
+              ...PANEL_STYLE,
               padding: 40,
               textAlign: 'center',
             }}

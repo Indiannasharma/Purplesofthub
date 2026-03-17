@@ -5,14 +5,23 @@ export async function getCached<T>(
   ttlSeconds: number,
   fetchFn: () => Promise<T>
 ): Promise<T> {
-  const cached = await redis.get<T>(key)
-  if (cached !== null) return cached
-  const data = await fetchFn()
-  await redis.set(key, data, { ex: ttlSeconds })
-  return data
+  try {
+    const cached = await redis.get<T>(key)
+    if (cached !== null) return cached
+    const data = await fetchFn()
+    await redis.set(key, data, { ex: ttlSeconds })
+    return data
+  } catch (error) {
+    console.error('Cache error, falling back to direct fetch:', error)
+    return fetchFn()
+  }
 }
 
 export async function invalidateCache(...keys: string[]): Promise<void> {
   if (keys.length === 0) return
-  await redis.del(...keys)
+  try {
+    await redis.del(...keys)
+  } catch (error) {
+    console.error('Cache invalidate error:', error)
+  }
 }
