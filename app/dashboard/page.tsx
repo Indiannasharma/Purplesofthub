@@ -47,10 +47,15 @@ async function getClientData(clerkId: string) {
 
   const [projects, invoices, files] = await Promise.all([
     Project.find({ client: userId })
+      .select('title status progress dueDate updates service')
       .sort({ updatedAt: -1 })
       .populate('service', 'name category')
       .lean(),
-    Invoice.find({ client: userId }).sort({ createdAt: -1 }).limit(5).lean(),
+    Invoice.find({ client: userId })
+      .select('invoiceNumber total currency status dueDate')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean(),
     File.countDocuments({ client: userId }),
   ])
 

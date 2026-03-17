@@ -31,4 +31,7 @@ const InvoiceSchema = new Schema(
   { timestamps: true }
 )
 
+InvoiceSchema.index({ client: 1, createdAt: -1 })
+InvoiceSchema.index({ status: 1 })
+
 export default models.Invoice || mongoose.model('Invoice', InvoiceSchema)

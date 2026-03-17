@@ -16,4 +16,7 @@ const UserSchema = new Schema(
   { timestamps: true }
 )
 
+UserSchema.index({ clerkId: 1 })
+UserSchema.index({ email: 1 })
+
 export default models.User || mongoose.model('User', UserSchema)

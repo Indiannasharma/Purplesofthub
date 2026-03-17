@@ -26,4 +26,7 @@ const ProjectSchema = new Schema(
   { timestamps: true }
 )
 
+ProjectSchema.index({ client: 1, updatedAt: -1 })
+ProjectSchema.index({ status: 1 })
+
 export default models.Project || mongoose.model('Project', ProjectSchema)

@@ -20,4 +20,7 @@ const FileSchema = new Schema(
   { timestamps: true }
 )
 
+FileSchema.index({ client: 1, createdAt: -1 })
+FileSchema.index({ project: 1, createdAt: -1 })
+
 export default models.File || mongoose.model('File', FileSchema)
