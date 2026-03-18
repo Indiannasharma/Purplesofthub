@@ -22,16 +22,21 @@ const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
-    await auth.protect()
-  }
+    const { userId, sessionClaims } = await auth()
 
-  if (isAdminRoute(req)) {
-    const { sessionClaims } = await auth()
-    const role =
-      (sessionClaims?.publicMetadata as { role?: string } | undefined)?.role ||
-      (sessionClaims?.metadata as { role?: string } | undefined)?.role
-    if (role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', req.url))
+    if (!userId) {
+      const signInUrl = new URL('/sign-in', req.url)
+      signInUrl.searchParams.set('redirect_url', req.url)
+      return NextResponse.redirect(signInUrl)
+    }
+
+    if (isAdminRoute(req)) {
+      const role =
+        (sessionClaims?.publicMetadata as { role?: string } | undefined)?.role ||
+        (sessionClaims?.metadata as { role?: string } | undefined)?.role
+      if (role !== 'admin') {
+        return NextResponse.redirect(new URL('/dashboard', req.url))
+      }
     }
   }
 })
