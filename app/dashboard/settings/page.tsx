@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/mongodb";
 import User from "@/lib/models/User";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +16,21 @@ type ClientUser = {
 };
 
 export default async function DashboardSettingsPage() {
+  let userId: string | null = null;
   let user: ClientUser | null = null;
   let dbError = false;
 
   try {
-    const { userId } = await auth();
+    ({ userId } = await auth());
+  } catch {
+    redirect("/sign-in");
+  }
+
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  try {
     await connectDB();
     user = (await User.findOne({ clerkId: userId }).lean()) as ClientUser | null;
   } catch {

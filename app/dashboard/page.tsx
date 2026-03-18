@@ -6,6 +6,7 @@ import Invoice from "@/lib/models/Invoice";
 import Service from "@/lib/models/Service";
 import MonthlySalesChart from "@/src/components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "@/src/components/ecommerce/StatisticsChart";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ type DbUser = { _id: string };
 type InvoiceAgg = { outstanding: number; paid: number };
 
 export default async function ClientDashboardPage() {
+  let userId: string | null = null;
   let user: DbUser | null = null;
   let activeProjects = 0;
   let pendingProjects = 0;
@@ -22,7 +24,16 @@ export default async function ClientDashboardPage() {
   let dbError = false;
 
   try {
-    const { userId } = await auth();
+    ({ userId } = await auth());
+  } catch {
+    redirect("/sign-in");
+  }
+
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  try {
     await connectDB();
     user = (await User.findOne({ clerkId: userId }).select("_id").lean()) as DbUser | null;
 

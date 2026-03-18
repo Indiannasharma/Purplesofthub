@@ -20,7 +20,7 @@ export default async function AdminClientsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Clients</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white/90">Clients</h1>
         <span className="text-sm text-gray-400">
           {dbError ? 'data unavailable' : `${clients.length} total`}
         </span>
