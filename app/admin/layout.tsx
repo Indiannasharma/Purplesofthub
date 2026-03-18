@@ -1,41 +1,32 @@
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { SidebarProvider } from '@/src/context/SidebarContext'
-import AdminSidebar from '@/src/components/admin/AdminSidebar'
-import AdminHeader from '@/src/components/admin/AdminHeader'
+"use client";
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const { userId, sessionClaims } = await auth()
+import React from "react";
+import { useSidebar } from "@/context/SidebarContext";
+import AppHeader from "@/layout/AppHeader";
+import Backdrop from "@/layout/Backdrop";
+import AdminSidebar from "@/layout/AdminSidebar";
 
-  if (!userId) redirect('/sign-in')
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
-  const claims = sessionClaims as Record<string, unknown> & {
-    publicMetadata?: { role?: string }
-    metadata?: { role?: string }
-  }
-  const role =
-    claims?.publicMetadata?.role ||
-    claims?.metadata?.role
-
-  if (role !== 'admin') redirect('/dashboard')
+  const mainContentMargin = isMobileOpen
+    ? "ml-0"
+    : isExpanded || isHovered
+    ? "lg:ml-[290px]"
+    : "lg:ml-[90px]";
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen xl:flex bg-gray-950 text-white">
-        <AdminSidebar />
-        <div className="flex-1 transition-all duration-300 ease-in-out lg:ml-[290px]">
-          <AdminHeader />
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {children}
-            </div>
-          </main>
+    <div className="min-h-screen xl:flex">
+      <AdminSidebar />
+      <Backdrop />
+      <div
+        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
+      >
+        <AppHeader />
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+          {children}
         </div>
       </div>
-    </SidebarProvider>
-  )
+    </div>
+  );
 }

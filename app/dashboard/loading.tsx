@@ -1,13 +1,16 @@
 export default function DashboardLoading() {
   return (
-    <div className="animate-pulse">
-      <div className="mb-6 h-8 w-40 rounded-lg bg-gray-800" />
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-28 rounded-xl bg-gray-800" />
+    <div className="space-y-4">
+      <div className="h-6 w-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={`client-skeleton-${index}`}
+            className="h-28 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+          />
         ))}
       </div>
-      <div className="h-64 rounded-xl bg-gray-800" />
+      <div className="h-48 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
     </div>
-  )
+  );
 }

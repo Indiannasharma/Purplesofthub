@@ -1,31 +1,36 @@
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { SidebarProvider } from '@/src/context/SidebarContext'
-import ClientSidebar from '@/src/components/client/ClientSidebar'
-import ClientHeader from '@/src/components/client/ClientHeader'
+"use client";
 
-export default async function DashboardLayout({
+import React from "react";
+import { useSidebar } from "@/context/SidebarContext";
+import AppHeader from "@/layout/AppHeader";
+import Backdrop from "@/layout/Backdrop";
+import ClientSidebar from "@/layout/ClientSidebar";
+
+export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const { userId } = await auth()
+  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
-  if (!userId) redirect('/sign-in')
+  const mainContentMargin = isMobileOpen
+    ? "ml-0"
+    : isExpanded || isHovered
+    ? "lg:ml-[290px]"
+    : "lg:ml-[90px]";
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen xl:flex bg-gray-950 text-white">
-        <ClientSidebar />
-        <div className="flex-1 transition-all duration-300 ease-in-out lg:ml-[290px]">
-          <ClientHeader />
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {children}
-            </div>
-          </main>
+    <div className="min-h-screen xl:flex">
+      <ClientSidebar />
+      <Backdrop />
+      <div
+        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
+      >
+        <AppHeader />
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+          {children}
         </div>
       </div>
-    </SidebarProvider>
-  )
+    </div>
+  );
 }

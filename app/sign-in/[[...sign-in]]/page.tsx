@@ -1,109 +1,59 @@
-import { SignIn } from '@clerk/nextjs'
-import Image from 'next/image'
-import Link from 'next/link'
-import purpleLogo from '@/Assets/images/Purplesoft-logo-main.png'
-import ClerkThemeFix from '@/components/ClerkThemeFix'
-
-const clerkElements = {
-  card: {
-    boxShadow: '0 0 40px rgba(124,58,237,0.2)',
-    border: '1px solid rgba(124,58,237,0.2)',
-    backgroundColor: '#0d0820',
-  },
-  headerTitle: { color: '#e2d9f3' },
-  headerSubtitle: { color: '#9d8fd4' },
-  socialButtonsBlockButton: {
-    backgroundColor: '#1a0f35',
-    border: '1px solid rgba(124,58,237,0.3)',
-    color: '#e2d9f3',
-  },
-  socialButtonsBlockButtonText: { color: '#e2d9f3' },
-  dividerLine: { backgroundColor: 'rgba(124,58,237,0.2)' },
-  dividerText: { color: '#9d8fd4' },
-  formFieldLabel: { color: '#9d8fd4' },
-  formFieldInput: {
-    backgroundColor: '#1a0f35',
-    borderColor: 'rgba(124,58,237,0.3)',
-    color: '#e2d9f3',
-  },
-  formButtonPrimary: {
-    background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-    color: '#ffffff',
-  },
-  footerActionText: { color: '#9d8fd4' },
-  footerActionLink: { color: '#a855f7' },
-  alternativeMethodsBlockButton: {
-    backgroundColor: '#1a0f35',
-    border: '1px solid rgba(124,58,237,0.3)',
-    color: '#e2d9f3',
-  },
-}
+import { SignIn } from "@clerk/nextjs";
+import GridShape from "@/components/common/GridShape";
+import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function SignInPage() {
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background: '#111827',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-      }}
-    >
-      <ClerkThemeFix />
+    <div className="relative min-h-screen bg-white dark:bg-gray-900">
+      <div className="relative flex min-h-screen flex-col lg:flex-row">
+        <div className="flex w-full flex-1 items-center justify-center px-6 py-10 lg:w-1/2">
+          <div className="w-full max-w-md">
+            <Link
+              href="/"
+              className="mb-8 inline-flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            >
+              Back to website
+            </Link>
+            <h1 className="text-title-md font-semibold text-gray-800 dark:text-white/90">
+              Sign in
+            </h1>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Welcome back! Sign in to access your dashboard.
+            </p>
+            <div className="mt-8">
+              <SignIn
+                forceRedirectUrl="/dashboard"
+                appearance={{
+                  variables: {
+                    colorPrimary: "#7c3aed",
+                    fontFamily: "Outfit, sans-serif",
+                  },
+                }}
+              />
+            </div>
+          </div>
+        </div>
 
-      <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-        <Image
-          src={purpleLogo}
-          alt="PurpleSoftHub"
-          width={120}
-          height={40}
-          style={{ objectFit: 'contain', height: 'auto' }}
-          priority
-        />
-        <h1
-          style={{
-            fontSize: '1.75rem',
-            fontWeight: 800,
-            color: '#e2d9f3',
-            marginTop: '1rem',
-            marginBottom: '0.25rem',
-            fontFamily: 'Outfit, sans-serif',
-          }}
-        >
-          Welcome back 💜
-        </h1>
-        <p style={{ color: '#9d8fd4', fontSize: '0.95rem', fontFamily: 'Outfit, sans-serif' }}>
-          Sign in to your PurpleSoftHub account
-        </p>
+        <div className="relative hidden w-1/2 items-center justify-center bg-brand-950 dark:bg-white/5 lg:flex">
+          <GridShape />
+          <div className="relative z-10 flex max-w-xs flex-col items-center text-center">
+            <Image
+              width={230}
+              height={48}
+              src="/images/logo/auth-logo.svg"
+              alt="PurpleSoftHub"
+            />
+            <p className="mt-4 text-sm text-gray-300">
+              Welcome to PurpleSoftHub Client Portal.
+            </p>
+          </div>
+        </div>
       </div>
-
-      <SignIn
-        fallbackRedirectUrl="/dashboard"
-        forceRedirectUrl="/dashboard"
-        appearance={{
-          variables: {
-            colorPrimary: '#7c3aed',
-            colorBackground: '#0d0820',
-            colorInputBackground: '#1a0f35',
-            colorInputText: '#e2d9f3',
-            colorText: '#e2d9f3',
-            colorTextSecondary: '#9d8fd4',
-            borderRadius: '12px',
-            fontFamily: 'Outfit, sans-serif',
-          },
-          elements: clerkElements,
-        }}
-      />
-
-      <p style={{ marginTop: '1.25rem', color: '#9d8fd4', fontSize: '0.875rem', fontFamily: 'Outfit, sans-serif' }}>
-        Don&apos;t have an account?{' '}
-        <Link href="/sign-up" style={{ color: '#a855f7', fontWeight: 600, textDecoration: 'none' }}>
-          Sign up →
-        </Link>
-      </p>
-    </main>
-  )
+      <div className="fixed bottom-6 right-6 z-50 hidden sm:block">
+        <ThemeTogglerTwo />
+      </div>
+    </div>
+  );
 }
