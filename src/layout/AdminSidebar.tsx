@@ -49,7 +49,8 @@ const ENGAGE_ITEMS: NavItem[] = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } =
+    useSidebar();
 
   const isActive = (path: string) => pathname === path;
 
@@ -67,6 +68,9 @@ export default function AdminSidebar() {
           <li key={item.path}>
             <Link
               href={item.path}
+              onClick={() => {
+                if (isMobileOpen) toggleMobileSidebar();
+              }}
               className={`menu-item group ${
                 isActive(item.path) ? "menu-item-active" : "menu-item-inactive"
               }`}

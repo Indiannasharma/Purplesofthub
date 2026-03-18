@@ -1,4 +1,30 @@
-export default function AdminDashboardPage() {
+import connectDB from "@/lib/mongodb";
+import User from "@/lib/models/User";
+import Project from "@/lib/models/Project";
+import Invoice from "@/lib/models/Invoice";
+import Service from "@/lib/models/Service";
+import StatisticsChart from "@/src/components/ecommerce/StatisticsChart";
+import MonthlySalesChart from "@/src/components/ecommerce/MonthlySalesChart";
+
+type RevenueAgg = { paidRevenue: number };
+
+export default async function AdminDashboardPage() {
+  await connectDB();
+
+  const [totalClients, activeProjects, invoicesSent, activeServices, revenueResult] =
+    await Promise.all([
+      User.countDocuments({ role: "client" }),
+      Project.countDocuments({ status: { $ne: "completed" } }),
+      Invoice.countDocuments({ status: { $in: ["sent", "paid", "overdue"] } }),
+      Service.countDocuments({ isActive: true }),
+      Invoice.aggregate<RevenueAgg>([
+        { $match: { status: "paid" } },
+        { $group: { _id: null, paidRevenue: { $sum: "$total" } } },
+      ]),
+    ]);
+
+  const paidRevenue = revenueResult[0]?.paidRevenue || 0;
+
   return (
     <div className="space-y-6">
       <div>
@@ -6,64 +32,51 @@ export default function AdminDashboardPage() {
           Admin Overview
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Monitor clients, projects, and revenue in one place.
+          Monitor clients, projects, invoices, and growth from one dashboard.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: "Total Clients", value: "—" },
-          { label: "Active Projects", value: "—" },
-          { label: "Invoices Sent", value: "—" },
-          { label: "Revenue (NGN)", value: "—" },
-        ].map((card) => (
-          <div
-            key={card.label}
-            className="rounded-xl border border-gray-200 bg-white p-5 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900"
-          >
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {card.label}
-            </p>
-            <h2 className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-              {card.value}
-            </h2>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <MetricCard label="Total Clients" value={String(totalClients)} />
+        <MetricCard label="Active Projects" value={String(activeProjects)} />
+        <MetricCard label="Invoices Sent" value={String(invoicesSent)} />
+        <MetricCard label="Active Services" value={String(activeServices)} />
+        <MetricCard label="Revenue (NGN)" value={`N${Number(paidRevenue).toLocaleString("en-NG")}`} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <StatisticsChart />
+        <MonthlySalesChart />
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Quick Actions
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">Quick Actions</h2>
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {[
-              { label: "Create Project", href: "/admin/projects/new" },
-              { label: "Create Invoice", href: "/admin/invoices/new" },
-              { label: "Add Service", href: "/admin/services/new" },
-              { label: "View Clients", href: "/admin/clients" },
-            ].map((action) => (
-              <a
-                key={action.label}
-                href={action.href}
-                className="rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 dark:border-gray-800 dark:text-gray-300 dark:hover:border-brand-700"
-              >
-                {action.label}
-              </a>
-            ))}
+            <a href="/admin/projects/new" className="rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 dark:border-gray-800 dark:text-gray-300 dark:hover:border-brand-700">Create Project</a>
+            <a href="/admin/invoices/new" className="rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 dark:border-gray-800 dark:text-gray-300 dark:hover:border-brand-700">Create Invoice</a>
+            <a href="/admin/services/new" className="rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 dark:border-gray-800 dark:text-gray-300 dark:hover:border-brand-700">Add Service</a>
+            <a href="/admin/clients" className="rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 dark:border-gray-800 dark:text-gray-300 dark:hover:border-brand-700">View Clients</a>
           </div>
         </div>
-
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Activity Feed
-          </h2>
-          <div className="mt-4 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-            <p>Latest client signups and payments will appear here.</p>
-            <p>Connect data sources to activate live metrics.</p>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">Operational Notes</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+            <p>Use Services to control what clients can order.</p>
+            <p>Keep project updates frequent so clients see progress in real time.</p>
+            <p>Send invoices immediately after delivery milestones.</p>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+      <h2 className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">{value}</h2>
     </div>
   );
 }

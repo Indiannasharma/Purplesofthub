@@ -34,7 +34,7 @@ const MAIN_ITEMS: NavItem[] = [
 
 export default function ClientSidebar() {
   const pathname = usePathname();
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar();
 
   const isActive = (path: string) => pathname === path;
 
@@ -102,6 +102,9 @@ export default function ClientSidebar() {
                 <li key={item.path}>
                   <Link
                     href={item.path}
+                    onClick={() => {
+                      if (isMobileOpen) toggleMobileSidebar();
+                    }}
                     className={`menu-item group ${
                       isActive(item.path) ? "menu-item-active" : "menu-item-inactive"
                     }`}
@@ -128,3 +131,4 @@ export default function ClientSidebar() {
     </aside>
   );
 }
+

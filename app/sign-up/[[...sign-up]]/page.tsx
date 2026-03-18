@@ -7,9 +7,9 @@ import Link from "next/link";
 export default function SignUpPage() {
   return (
     <div className="relative min-h-screen bg-white dark:bg-gray-900">
-      <div className="relative flex min-h-screen flex-col lg:flex-row">
-        <div className="flex w-full flex-1 items-center justify-center px-6 py-10 lg:w-1/2">
-          <div className="w-full max-w-md">
+      <div className="relative flex min-h-screen flex-col xl:flex-row">
+        <div className="flex w-full flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-10 xl:w-1/2">
+          <div className="w-full max-w-lg">
             <Link
               href="/"
               className="mb-8 inline-flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
@@ -36,14 +36,15 @@ export default function SignUpPage() {
           </div>
         </div>
 
-        <div className="relative hidden w-1/2 items-center justify-center bg-brand-950 dark:bg-white/5 lg:flex">
+        <div className="relative hidden w-1/2 items-center justify-center bg-brand-950 dark:bg-white/5 xl:flex">
           <GridShape />
-          <div className="relative z-10 flex max-w-xs flex-col items-center text-center">
+          <div className="relative z-10 flex max-w-sm flex-col items-center text-center">
             <Image
-              width={230}
-              height={48}
-              src="/images/logo/auth-logo.svg"
+              width={280}
+              height={78}
+              src="/images/logo/purplesoft-logo-main.png"
               alt="PurpleSoftHub"
+              priority
             />
             <p className="mt-4 text-sm text-gray-300">
               Build. Launch. Grow with PurpleSoftHub.
