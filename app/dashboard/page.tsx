@@ -7,6 +7,8 @@ import Service from "@/lib/models/Service";
 import MonthlySalesChart from "@/src/components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "@/src/components/ecommerce/StatisticsChart";
 
+export const dynamic = "force-dynamic";
+
 type DbUser = { _id: string };
 type InvoiceAgg = { outstanding: number; paid: number };
 

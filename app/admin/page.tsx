@@ -6,6 +6,8 @@ import Service from "@/lib/models/Service";
 import StatisticsChart from "@/src/components/ecommerce/StatisticsChart";
 import MonthlySalesChart from "@/src/components/ecommerce/MonthlySalesChart";
 
+export const dynamic = "force-dynamic";
+
 type RevenueAgg = { paidRevenue: number };
 
 export default async function AdminDashboardPage() {

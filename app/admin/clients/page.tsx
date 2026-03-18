@@ -2,6 +2,8 @@ import Link from 'next/link'
 import connectDB from '@/lib/mongodb'
 import User from '@/lib/models/User'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminClientsPage() {
   await connectDB()
   const clients = await User.find({ role: 'client' })

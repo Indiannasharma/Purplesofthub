@@ -2,6 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/mongodb";
 import User from "@/lib/models/User";
 
+export const dynamic = "force-dynamic";
+
 type ClientUser = {
   firstName?: string;
   lastName?: string;

@@ -1,6 +1,8 @@
 import connectDB from "@/lib/mongodb";
 import Service from "@/lib/models/Service";
 
+export const dynamic = "force-dynamic";
+
 const categoryLabels: Record<string, string> = {
   "web-development": "Web Development",
   "mobile-apps": "Mobile Apps",
