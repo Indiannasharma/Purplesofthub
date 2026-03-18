@@ -44,7 +44,7 @@ export default function SignUpPage() {
     <main
       style={{
         minHeight: '100vh',
-        background: '#06030f',
+        background: '#111827',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -81,8 +81,8 @@ export default function SignUpPage() {
       </div>
 
       <SignUp
-        redirectUrl="/dashboard"
-        afterSignUpUrl="/dashboard"
+        fallbackRedirectUrl="/dashboard"
+        forceRedirectUrl="/dashboard"
         appearance={{
           variables: {
             colorPrimary: '#7c3aed',

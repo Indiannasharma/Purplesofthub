@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 
@@ -43,6 +43,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dark, setDark] = useState(false); // default light
+  const { user, isSignedIn } = useUser();
+  const isAdmin = user?.publicMetadata?.role === 'admin';
+  const portalHref = isAdmin ? '/admin' : '/dashboard';
+  const portalLabel = isAdmin ? 'Admin Panel' : 'Dashboard';
 
   useEffect(() => {
     // Determine initial theme
@@ -133,22 +137,22 @@ export default function Navbar() {
         >
           {dark ? <SunIcon /> : <MoonIcon />}
         </button>
-        <SignedOut>
+        {!isSignedIn && (
           <Link href="/sign-in">
             <button className="btn-outline" style={{ padding: "9px 18px", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
               Client Login
             </button>
           </Link>
-        </SignedOut>
-        <SignedIn>
-          <Link href="/dashboard">
+        )}
+        {isSignedIn && (
+          <Link href={portalHref}>
             <button className="btn-outline" style={{ padding: "9px 18px", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              Dashboard
+              {portalLabel}
             </button>
           </Link>
-        </SignedIn>
+        )}
         <Link href="/contact">
           <button className="btn-main" style={{ padding: "9px 20px", fontSize: 13 }}>Start a Project</button>
         </Link>
@@ -195,22 +199,22 @@ export default function Navbar() {
             </Link>
           ))}
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-            <SignedOut>
+            {!isSignedIn && (
               <Link href="/sign-in" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
                 <button className="btn-outline" style={{ width: "100%", padding: 14, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                   Client Login
                 </button>
               </Link>
-            </SignedOut>
-            <SignedIn>
-              <Link href="/dashboard" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
+            )}
+            {isSignedIn && (
+              <Link href={portalHref} onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
                 <button className="btn-outline" style={{ width: "100%", padding: 14, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                  Dashboard
+                  {portalLabel}
                 </button>
               </Link>
-            </SignedIn>
+            )}
             <Link href="/contact" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
               <button className="btn-main" style={{ width: "100%", padding: 14, fontSize: 15 }}>
                 Start a Project

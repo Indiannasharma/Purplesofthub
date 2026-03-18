@@ -1,10 +1,8 @@
 export const dynamic = 'force-dynamic'
 
-import { getCached } from '@/lib/cache'
 import connectDB from '@/lib/mongodb'
 import User from '@/lib/models/User'
 import Project from '@/lib/models/Project'
-import Payment from '@/lib/models/Payment'
 import Invoice from '@/lib/models/Invoice'
 import ChatLead from '@/lib/models/ChatLead'
 import Subscriber from '@/lib/models/Subscriber'
@@ -12,316 +10,138 @@ import Link from 'next/link'
 
 async function getAdminStats() {
   await connectDB()
-
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-
-  const [
-    totalClients,
-    activeProjects,
-    revenueResult,
-    pendingInvoices,
-    newLeads,
-    subscribers,
-    recentClients,
-    recentPayments,
-    recentLeads,
-  ] = await Promise.all([
-    User.countDocuments({ role: 'client', isActive: true }),
-    Project.countDocuments({ status: { $in: ['planning', 'design', 'development', 'review'] } }),
-    Payment.aggregate([
-      { $match: { status: 'success' } },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]),
-    Invoice.countDocuments({ status: { $in: ['sent', 'overdue'] } }),
-    ChatLead.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
-    Subscriber.countDocuments({}),
-    User.find({ role: 'client' }).sort({ createdAt: -1 }).limit(5).lean(),
-    Payment.find({ status: 'success' })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .populate('client', 'firstName lastName email')
-      .lean(),
-    ChatLead.find({}).sort({ createdAt: -1 }).limit(5).lean(),
-  ])
-
-  const totalRevenue = revenueResult[0]?.total ?? 0
-
-  return {
-    totalClients,
-    activeProjects,
-    totalRevenue,
-    pendingInvoices,
-    newLeads,
-    subscribers,
-    recentClients,
-    recentPayments,
-    recentLeads,
-  }
+  const [totalClients, activeProjects, pendingInvoices, newLeads, totalSubscribers, recentClients] =
+    await Promise.all([
+      User.countDocuments({ role: 'client' }),
+      Project.countDocuments({ status: { $nin: ['completed', 'cancelled'] } }),
+      Invoice.countDocuments({ status: { $in: ['sent', 'overdue'] } }),
+      ChatLead.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
+      Subscriber.countDocuments({ status: 'active' }),
+      User.find({ role: 'client' }).sort({ createdAt: -1 }).limit(5).lean(),
+    ])
+  return { totalClients, activeProjects, pendingInvoices, newLeads, totalSubscribers, recentClients }
 }
 
-function timeAgo(date: Date | string) {
-  const now = Date.now()
-  const diff = now - new Date(date).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
-}
+const statCards = [
+  { key: 'totalClients',     icon: '👥', label: 'Total Clients',     href: '/admin/clients' },
+  { key: 'activeProjects',   icon: '📦', label: 'Active Projects',   href: '/admin/projects' },
+  { key: 'pendingInvoices',  icon: '🧾', label: 'Pending Invoices',  href: '/admin/invoices' },
+  { key: 'newLeads',         icon: '💬', label: 'Leads (7 days)',    href: '/admin/leads' },
+  { key: 'totalSubscribers', icon: '📧', label: 'Subscribers',       href: '/admin/subscribers' },
+]
 
-const statCards = (stats: Awaited<ReturnType<typeof getAdminStats>>) => [
-  { icon: '👥', label: 'Total Clients', value: stats.totalClients, color: '#60a5fa' },
-  { icon: '📦', label: 'Active Projects', value: stats.activeProjects, color: '#a855f7' },
-  {
-    icon: '💰',
-    label: 'Total Revenue',
-    value: `₦${stats.totalRevenue.toLocaleString()}`,
-    color: '#4ade80',
-  },
-  { icon: '🧾', label: 'Pending Invoices', value: stats.pendingInvoices, color: '#facc15' },
-  { icon: '💬', label: 'New Chat Leads', value: stats.newLeads, color: '#fb923c' },
-  { icon: '📧', label: 'Subscribers', value: stats.subscribers, color: '#f472b6' },
+const quickActions = [
+  { label: '+ New Project',   href: '/admin/projects/new' },
+  { label: '+ New Invoice',   href: '/admin/invoices/new' },
+  { label: '+ New Blog Post', href: '/admin/blog/new' },
+  { label: 'Chat Leads',      href: '/admin/leads' },
+  { label: 'Subscribers',     href: '/admin/subscribers' },
+  { label: 'All Clients',     href: '/admin/clients' },
 ]
 
 export default async function AdminDashboard() {
-  const stats = await getCached('admin:stats', 60, getAdminStats)
-  const cards = statCards(stats)
+  const stats = await getAdminStats()
 
   return (
-    <div>
-      <div style={{ marginBottom: 32 }}>
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: 900,
-            color: '#e2d9f3',
-            marginBottom: 4,
-          }}
+    <>
+      {/* Page header */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Admin Dashboard</h2>
+          <p className="text-sm text-gray-400 mt-0.5">Welcome back, Emmanuel 💜</p>
+        </div>
+        <Link
+          href="/admin/projects/new"
+          className="rounded-full bg-brand-500 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-600 transition-all"
         >
-          Dashboard
-        </h1>
-        <p style={{ color: '#9d8fd4', fontSize: 14 }}>
-          {new Date().toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
+          + New Project
+        </Link>
       </div>
 
-      {/* Stat Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-          gap: 20,
-          marginBottom: 40,
-        }}
-      >
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            style={{
-              background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(124,58,237,.18)',
-              borderRadius: 16,
-              padding: 24,
-            }}
+      {/* Stat cards */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        {statCards.map(({ key, icon, label, href }) => (
+          <Link
+            key={key}
+            href={href}
+            className="group flex flex-col gap-3 rounded-xl border border-gray-800 bg-gray-900 p-5 hover:border-brand-500/50 transition-all"
           >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
-                background: 'linear-gradient(135deg, rgba(124,58,237,.3), rgba(168,85,247,.2))',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 18,
-                marginBottom: 14,
-              }}
-            >
-              {card.icon}
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-2xl">
+              {icon}
             </div>
-            <div style={{ fontSize: 13, color: '#9d8fd4', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-              {card.label}
+            <div>
+              <p className="text-2xl font-bold text-white">{(stats as Record<string, unknown>)[key] as number}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{label}</p>
             </div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: '#fff' }}>
-              {card.value}
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
 
-      {/* Two columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
-        {/* Recent Activity */}
-        <div
-          style={{
-            background: 'rgba(255,255,255,.04)',
-            border: '1px solid rgba(124,58,237,.18)',
-            borderRadius: 16,
-            padding: 24,
-          }}
-        >
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#e2d9f3', marginBottom: 20 }}>
-            Recent Activity
-          </h2>
-
-          {stats.recentClients.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#3d2f60', textTransform: 'uppercase', marginBottom: 12 }}>
-                New Clients
-              </div>
-              {stats.recentClients.map((c: Record<string, unknown>) => (
-                <div
-                  key={String(c._id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 0',
-                    borderBottom: '1px solid rgba(124,58,237,.08)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#fff',
-                        fontSize: 13,
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {String(c.firstName || '?')[0]}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 13, color: '#e2d9f3', fontWeight: 500 }}>
-                        {String(c.firstName || '')} {String(c.lastName || '')}
-                      </div>
-                      <div style={{ fontSize: 11, color: '#9d8fd4' }}>{String(c.email || '')}</div>
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 11, color: '#3d2f60' }}>{timeAgo(c.createdAt as string)}</div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {stats.recentPayments.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#3d2f60', textTransform: 'uppercase', marginBottom: 12 }}>
-                Recent Payments
-              </div>
-              {stats.recentPayments.map((p: Record<string, unknown>) => {
-                const client = p.client as Record<string, unknown> | null
-                return (
-                  <div
-                    key={String(p._id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 0',
-                      borderBottom: '1px solid rgba(124,58,237,.08)',
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontSize: 13, color: '#e2d9f3', fontWeight: 500 }}>
-                        ₦{Number(p.amount).toLocaleString()}
-                      </div>
-                      <div style={{ fontSize: 11, color: '#9d8fd4' }}>
-                        {client ? `${String(client.firstName || '')} ${String(client.lastName || '')}` : 'Unknown'}
-                      </div>
-                    </div>
-                    <div style={{ fontSize: 11, color: '#3d2f60' }}>{timeAgo(p.createdAt as string)}</div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          {stats.recentLeads.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#3d2f60', textTransform: 'uppercase', marginBottom: 12 }}>
-                Chat Leads
-              </div>
-              {stats.recentLeads.map((l: Record<string, unknown>) => (
-                <div
-                  key={String(l._id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 0',
-                    borderBottom: '1px solid rgba(124,58,237,.08)',
-                  }}
-                >
-                  <div style={{ fontSize: 13, color: '#e2d9f3' }}>{String(l.email || l.name || 'Lead')}</div>
-                  <div style={{ fontSize: 11, color: '#3d2f60' }}>{timeAgo(l.createdAt as string)}</div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {stats.recentClients.length === 0 &&
-            stats.recentPayments.length === 0 &&
-            stats.recentLeads.length === 0 && (
-              <p style={{ color: '#3d2f60', fontSize: 14 }}>No recent activity yet.</p>
-            )}
-        </div>
-
-        {/* Quick Actions */}
-        <div
-          style={{
-            background: 'rgba(255,255,255,.04)',
-            border: '1px solid rgba(124,58,237,.18)',
-            borderRadius: 16,
-            padding: 24,
-            alignSelf: 'start',
-          }}
-        >
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#e2d9f3', marginBottom: 20 }}>
-            Quick Actions
-          </h2>
-          {[
-            { label: '+ New Project', href: '/admin/projects/new' },
-            { label: '+ New Invoice', href: '/admin/invoices/new' },
-            { label: '+ New Blog Post', href: '/admin/blog/new' },
-            { label: 'View Chat Leads', href: '/admin/leads' },
-            { label: 'View Subscribers', href: '/admin/subscribers' },
-          ].map((action) => (
+      {/* Quick actions */}
+      <div className="mb-6 rounded-xl border border-gray-800 bg-gray-900 p-5">
+        <h5 className="mb-4 text-sm font-semibold text-white">Quick Actions</h5>
+        <div className="flex flex-wrap gap-2">
+          {quickActions.map((a) => (
             <Link
-              key={action.href}
-              href={action.href}
-              style={{
-                display: 'block',
-                padding: '12px 16px',
-                borderRadius: 10,
-                background: 'rgba(124,58,237,.08)',
-                border: '1px solid rgba(124,58,237,.15)',
-                color: '#a855f7',
-                fontSize: 14,
-                fontWeight: 600,
-                textDecoration: 'none',
-                marginBottom: 10,
-                transition: 'all .2s',
-              }}
+              key={a.label}
+              href={a.href}
+              className="rounded-full border border-brand-500/50 px-4 py-1.5 text-xs font-medium text-brand-400 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all"
             >
-              {action.label}
+              {a.label}
             </Link>
           ))}
         </div>
       </div>
-    </div>
+
+      {/* Recent clients */}
+      <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
+          <h5 className="text-sm font-semibold text-white">Recent Clients</h5>
+          <Link href="/admin/clients" className="text-xs text-brand-400 hover:underline">
+            View All →
+          </Link>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-800">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Joined</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(stats.recentClients as Array<Record<string, unknown>>).map((client) => (
+                <tr key={String(client._id)} className="border-b border-gray-800 hover:bg-gray-800/50">
+                  <td className="px-6 py-4 font-medium text-white">
+                    {String(client.firstName || '')} {String(client.lastName || '')}
+                  </td>
+                  <td className="px-6 py-4 text-gray-400">{String(client.email || '')}</td>
+                  <td className="px-6 py-4 text-gray-400">
+                    {new Date(String(client.createdAt)).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <Link
+                      href={`/admin/clients/${String(client._id)}`}
+                      className="text-xs text-brand-400 hover:underline"
+                    >
+                      View →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+              {stats.recentClients.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-10 text-center text-gray-500 text-sm">
+                    No clients yet. Share your site to get started!
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   )
 }
