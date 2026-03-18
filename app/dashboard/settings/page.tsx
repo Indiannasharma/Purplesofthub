@@ -15,10 +15,16 @@ type ClientUser = {
 };
 
 export default async function DashboardSettingsPage() {
-  const { userId } = await auth();
-  await connectDB();
+  let user: ClientUser | null = null;
+  let dbError = false;
 
-  const user = (await User.findOne({ clerkId: userId }).lean()) as ClientUser | null;
+  try {
+    const { userId } = await auth();
+    await connectDB();
+    user = (await User.findOne({ clerkId: userId }).lean()) as ClientUser | null;
+  } catch {
+    dbError = true;
+  }
   const fullName = `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || "Client";
 
   return (
@@ -30,6 +36,11 @@ export default async function DashboardSettingsPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Manage your profile details and account preferences.
         </p>
+        {dbError && (
+          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">
+            Profile data is temporarily unavailable. Showing limited view.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">

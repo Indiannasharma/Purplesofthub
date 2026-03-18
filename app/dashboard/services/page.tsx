@@ -28,11 +28,17 @@ type ServiceItem = {
 };
 
 export default async function DashboardServicesPage() {
-  await connectDB();
+  let services: ServiceItem[] = [];
+  let dbError = false;
 
-  const services = (await Service.find({ isActive: true })
-    .sort({ order: 1, createdAt: -1 })
-    .lean()) as ServiceItem[];
+  try {
+    await connectDB();
+    services = (await Service.find({ isActive: true })
+      .sort({ order: 1, createdAt: -1 })
+      .lean()) as ServiceItem[];
+  } catch {
+    dbError = true;
+  }
 
   const grouped = services.reduce<Record<string, ServiceItem[]>>((acc, service) => {
     const key = service.category || "other";
@@ -50,6 +56,11 @@ export default async function DashboardServicesPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Browse active PurpleSoftHub services and pricing.
         </p>
+        {dbError && (
+          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">
+            Services are temporarily unavailable. Please refresh shortly.
+          </p>
+        )}
       </div>
 
       {services.length === 0 ? (

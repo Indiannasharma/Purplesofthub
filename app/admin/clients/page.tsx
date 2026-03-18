@@ -5,19 +5,33 @@ import User from '@/lib/models/User'
 export const dynamic = 'force-dynamic'
 
 export default async function AdminClientsPage() {
-  await connectDB()
-  const clients = await User.find({ role: 'client' })
-    .sort({ createdAt: -1 })
-    .lean() as Array<Record<string, unknown>>
+  let clients = [] as Array<Record<string, unknown>>
+  let dbError = false
+
+  try {
+    await connectDB()
+    clients = await User.find({ role: 'client' })
+      .sort({ createdAt: -1 })
+      .lean() as Array<Record<string, unknown>>
+  } catch {
+    dbError = true
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Clients</h1>
-        <span className="text-sm text-gray-400">{clients.length} total</span>
+        <span className="text-sm text-gray-400">
+          {dbError ? 'data unavailable' : `${clients.length} total`}
+        </span>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        {dbError ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-200">
+            Client data is temporarily unavailable. Please refresh in a moment.
+          </div>
+        ) : (
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -57,6 +71,7 @@ export default async function AdminClientsPage() {
             })}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   )

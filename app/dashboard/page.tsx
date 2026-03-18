@@ -13,40 +13,52 @@ type DbUser = { _id: string };
 type InvoiceAgg = { outstanding: number; paid: number };
 
 export default async function ClientDashboardPage() {
-  const { userId } = await auth();
-  await connectDB();
+  let user: DbUser | null = null;
+  let activeProjects = 0;
+  let pendingProjects = 0;
+  const sharedFiles = 0;
+  let activeServices = 0;
+  let invoiceTotals: InvoiceAgg[] = [];
+  let dbError = false;
 
-  const user = (await User.findOne({ clerkId: userId }).select("_id").lean()) as DbUser | null;
+  try {
+    const { userId } = await auth();
+    await connectDB();
+    user = (await User.findOne({ clerkId: userId }).select("_id").lean()) as DbUser | null;
 
-  if (!user) {
+    if (user) {
+      [activeProjects, pendingProjects, activeServices, invoiceTotals] =
+        await Promise.all([
+          Project.countDocuments({ client: user._id, status: { $ne: "completed" } }),
+          Project.countDocuments({ client: user._id, status: "planning" }),
+          Service.countDocuments({ isActive: true }),
+          Invoice.aggregate<InvoiceAgg>([
+            { $match: { client: user._id } },
+            {
+              $group: {
+                _id: null,
+                outstanding: {
+                  $sum: {
+                    $cond: [{ $in: ["$status", ["draft", "sent", "overdue"]] }, "$total", 0],
+                  },
+                },
+                paid: { $sum: { $cond: [{ $eq: ["$status", "paid"] }, "$total", 0] } },
+              },
+            },
+          ]),
+        ]);
+    }
+  } catch {
+    dbError = true;
+  }
+
+  if (!dbError && !user) {
     return (
       <div className="rounded-2xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
         Profile not found yet. Please sign out and sign in again.
       </div>
     );
   }
-
-  const [activeProjects, pendingProjects, sharedFiles, activeServices, invoiceTotals] =
-    await Promise.all([
-      Project.countDocuments({ client: user._id, status: { $ne: "completed" } }),
-      Project.countDocuments({ client: user._id, status: "planning" }),
-      0,
-      Service.countDocuments({ isActive: true }),
-      Invoice.aggregate<InvoiceAgg>([
-        { $match: { client: user._id } },
-        {
-          $group: {
-            _id: null,
-            outstanding: {
-              $sum: {
-                $cond: [{ $in: ["$status", ["draft", "sent", "overdue"]] }, "$total", 0],
-              },
-            },
-            paid: { $sum: { $cond: [{ $eq: ["$status", "paid"] }, "$total", 0] } },
-          },
-        },
-      ]),
-    ]);
 
   const totals = invoiceTotals[0] || { outstanding: 0, paid: 0 };
 
@@ -59,6 +71,11 @@ export default async function ClientDashboardPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Track your projects, invoices, and delivery progress in one place.
         </p>
+        {dbError && (
+          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">
+            Live dashboard data is temporarily unavailable. Showing fallback values.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

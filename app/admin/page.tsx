@@ -11,19 +11,29 @@ export const dynamic = "force-dynamic";
 type RevenueAgg = { paidRevenue: number };
 
 export default async function AdminDashboardPage() {
-  await connectDB();
+  let totalClients = 0;
+  let activeProjects = 0;
+  let invoicesSent = 0;
+  let activeServices = 0;
+  let revenueResult: RevenueAgg[] = [];
+  let dbError = false;
 
-  const [totalClients, activeProjects, invoicesSent, activeServices, revenueResult] =
-    await Promise.all([
-      User.countDocuments({ role: "client" }),
-      Project.countDocuments({ status: { $ne: "completed" } }),
-      Invoice.countDocuments({ status: { $in: ["sent", "paid", "overdue"] } }),
-      Service.countDocuments({ isActive: true }),
-      Invoice.aggregate<RevenueAgg>([
-        { $match: { status: "paid" } },
-        { $group: { _id: null, paidRevenue: { $sum: "$total" } } },
-      ]),
-    ]);
+  try {
+    await connectDB();
+    [totalClients, activeProjects, invoicesSent, activeServices, revenueResult] =
+      await Promise.all([
+        User.countDocuments({ role: "client" }),
+        Project.countDocuments({ status: { $ne: "completed" } }),
+        Invoice.countDocuments({ status: { $in: ["sent", "paid", "overdue"] } }),
+        Service.countDocuments({ isActive: true }),
+        Invoice.aggregate<RevenueAgg>([
+          { $match: { status: "paid" } },
+          { $group: { _id: null, paidRevenue: { $sum: "$total" } } },
+        ]),
+      ]);
+  } catch {
+    dbError = true;
+  }
 
   const paidRevenue = revenueResult[0]?.paidRevenue || 0;
 
@@ -36,6 +46,11 @@ export default async function AdminDashboardPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Monitor clients, projects, invoices, and growth from one dashboard.
         </p>
+        {dbError && (
+          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">
+            Live data is temporarily unavailable. Showing fallback values.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
