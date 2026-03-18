@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { SidebarProvider } from '@/src/context/SidebarContext'
-import { ThemeProvider } from '@/src/context/ThemeContext'
 import AdminSidebar from '@/src/components/admin/AdminSidebar'
 import AdminHeader from '@/src/components/admin/AdminHeader'
 
@@ -25,20 +24,18 @@ export default async function AdminLayout({
   if (role !== 'admin') redirect('/dashboard')
 
   return (
-    <ThemeProvider>
-      <SidebarProvider>
-        <div className="min-h-screen xl:flex dark:bg-boxdark-2 dark:text-bodydark1">
-          <AdminSidebar />
-          <div className="flex-1 transition-all duration-300 ease-in-out lg:ml-[290px]">
-            <AdminHeader />
-            <main>
-              <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-                {children}
-              </div>
-            </main>
-          </div>
+    <SidebarProvider>
+      <div className="min-h-screen xl:flex bg-gray-950 text-white">
+        <AdminSidebar />
+        <div className="flex-1 transition-all duration-300 ease-in-out lg:ml-[290px]">
+          <AdminHeader />
+          <main>
+            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+              {children}
+            </div>
+          </main>
         </div>
-      </SidebarProvider>
-    </ThemeProvider>
+      </div>
+    </SidebarProvider>
   )
 }
