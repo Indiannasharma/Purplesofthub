@@ -6,6 +6,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState ,useEffect,useRef} from "react";
+import PageBreadcrumb from "@/src/components/common/PageBreadCrumb";
 
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -99,6 +100,11 @@ const AppHeader: React.FC = () => {
               alt="Logo"
             />
           </Link>
+          
+          {/* Breadcrumb for dashboard pages */}
+          <div className="hidden lg:block">
+            <PageBreadcrumb pageTitle="Dashboard" />
+          </div>
 
           <button
             onClick={toggleApplicationMenu}
