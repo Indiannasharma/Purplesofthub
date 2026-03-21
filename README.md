@@ -140,7 +140,7 @@ purplesofthub/
 ## 🔮 Future Phases
 
 - **Phase 2:** Portfolio page, case studies, MDX blog
-- **Phase 3:** Client dashboard, project tracking, login (Clerk)
+- **Phase 3:** Client dashboard, project tracking, login (Supabase Auth)
 - **Phase 4:** SaaS tools, AI services, automation platform
 
 ---
