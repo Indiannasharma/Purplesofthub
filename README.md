@@ -6,7 +6,7 @@ A full-stack Next.js 16 website for PurpleSoftHub digital innovation studio with
 
 - **Framework:** Next.js 16 (App Router, Turbopack)
 - **Styling:** Tailwind CSS + Custom CSS
-- **Database:** MongoDB (via Mongoose) + Supabase PostgreSQL
+- **Database:** Supabase PostgreSQL
 - **Authentication:** Supabase Auth (JWT-based)
 - **Email:** Nodemailer (Gmail)
 - **Analytics:** Google Analytics 4
@@ -40,9 +40,6 @@ Edit `.env.local` with your real values:
 NEXT_PUBLIC_SUPABASE_URL=https://japscxueoenflsucqtry.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
-
-# ─── MongoDB ───────────────────────────────────────
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.xxxxx.mongodb.net/purplesofthub
 
 # ─── Email (Gmail) ─────────────────────────────────
 EMAIL_USER=hello@purplesofthub.com
@@ -92,15 +89,6 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🍃 Setting Up MongoDB
-
-1. Go to [mongodb.com](https://mongodb.com) and create a free cluster
-2. Create a database user with read/write permissions
-3. Get your connection string and add to `MONGODB_URI`
-4. Whitelist `0.0.0.0/0` in Network Access (or Vercel IPs)
-
----
-
 ## 📊 Setting Up Google Analytics
 
 1. Go to [analytics.google.com](https://analytics.google.com)
@@ -122,11 +110,11 @@ Open [http://localhost:3000](http://localhost:3000)
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `MONGODB_URI`
    - `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_TO`
    - `NEXT_PUBLIC_GA_ID`
    - `ANTHROPIC_API_KEY`
-   - All other API keys
+   - `CLOUDINARY_CLOUD_NAME`
+   - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
 6. Click **Deploy**
 7. Future pushes to `main` branch will auto-deploy
 
@@ -183,12 +171,11 @@ purplesofthub/
 │   ├── ContactForm.tsx
 │   └── Reveal.tsx
 ├── lib/
-│   ├── mongodb.ts                    ← MongoDB connection
 │   ├── supabase.ts                   ← Supabase client
 │   └── models/
-│       ├── Contact.ts
 │       ├── Client.ts
-│       └── Project.ts
+│       ├── Project.ts
+│       └── Invoice.ts
 ├── .env.local.example
 ├── next.config.mjs
 ├── tailwind.config.js
