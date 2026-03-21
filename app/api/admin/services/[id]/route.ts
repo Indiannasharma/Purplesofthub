@@ -1,26 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
-import Service from '@/lib/models/Service'
 import { requireAdmin } from '@/lib/auth'
-
-const CATEGORY_VALUES = [
-  'web-development',
-  'mobile-apps',
-  'digital-marketing',
-  'ui-ux-design',
-  'saas-development',
-  'music-promotion',
-  'content-creation',
-  'seo',
-  'social-media',
-]
+import { createClient } from '@/lib/supabase/server'
 
 function slugify(input: string) {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
+  return input.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -29,14 +12,13 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   try {
     const { id } = await params
-    await connectDB()
-    const service = await Service.findById(id).lean()
-    if (!service) {
-      return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
-    }
-    return NextResponse.json({ service }, { status: 200 })
+    const supabase = await createClient()
+
+    const { data: service, error } = await supabase.from('services').select('*').eq('id', id).single()
+    if (error || !service) return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
+    return NextResponse.json({ service })
   } catch (error) {
-    console.error('Admin services GET by id error:', error)
+    console.error('Admin service GET error:', error)
     return NextResponse.json({ error: 'Failed to fetch service.' }, { status: 500 })
   }
 }
@@ -48,45 +30,35 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const update: Record<string, unknown> = {}
+    const supabase = await createClient()
 
+    const update: Record<string, unknown> = {}
     if (body?.name !== undefined) update.name = String(body.name).trim()
     if (body?.slug !== undefined) update.slug = slugify(String(body.slug))
-    if (body?.category !== undefined) {
-      const category = String(body.category).trim()
-      if (category && !CATEGORY_VALUES.includes(category)) {
-        return NextResponse.json({ error: 'Invalid category.' }, { status: 400 })
-      }
-      update.category = category
-    }
-
-    if (body?.shortDesc !== undefined) update.shortDesc = String(body.shortDesc)
+    if (body?.category !== undefined) update.category = String(body.category)
+    if (body?.shortDesc !== undefined) update.short_desc = String(body.shortDesc)
+    if (body?.short_desc !== undefined) update.short_desc = String(body.short_desc)
     if (body?.description !== undefined) update.description = String(body.description)
-    if (body?.features !== undefined) {
-      update.features = Array.isArray(body.features) ? body.features.filter(Boolean) : []
-    }
-    if (body?.priceNGN !== undefined) update.priceNGN = Number(body.priceNGN || 0)
-    if (body?.priceUSD !== undefined) update.priceUSD = Number(body.priceUSD || 0)
-    if (body?.deliveryDays !== undefined) update.deliveryDays = Number(body.deliveryDays || 0)
+    if (body?.features !== undefined) update.features = Array.isArray(body.features) ? body.features.filter(Boolean) : []
+    if (body?.priceNGN !== undefined) update.price_ngn = Number(body.priceNGN)
+    if (body?.priceUSD !== undefined) update.price_usd = Number(body.priceUSD)
+    if (body?.deliveryDays !== undefined) update.delivery_days = Number(body.deliveryDays)
     if (body?.icon !== undefined) update.icon = String(body.icon)
-    if (body?.isActive !== undefined) update.isActive = Boolean(body.isActive)
-    if (body?.isFeatured !== undefined) update.isFeatured = Boolean(body.isFeatured)
-    if (body?.order !== undefined) update.order = Number(body.order || 0)
+    if (body?.isActive !== undefined) update.is_active = Boolean(body.isActive)
+    if (body?.isFeatured !== undefined) update.is_featured = Boolean(body.isFeatured)
+    if (body?.order !== undefined) update.order = Number(body.order)
 
-    await connectDB()
-    const service = await Service.findByIdAndUpdate(id, { $set: update }, { new: true }).lean()
+    const { data: service, error } = await supabase
+      .from('services').update(update).eq('id', id).select().single()
 
-    if (!service) {
+    if (error) {
+      if (error.code === '23505') return NextResponse.json({ error: 'Slug already exists.' }, { status: 409 })
       return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
     }
 
-    return NextResponse.json({ service }, { status: 200 })
-  } catch (error: unknown) {
-    const err = error as { code?: number }
-    if (err?.code === 11000) {
-      return NextResponse.json({ error: 'Slug already exists.' }, { status: 409 })
-    }
-    console.error('Admin services PUT error:', error)
+    return NextResponse.json({ service })
+  } catch (error) {
+    console.error('Admin service PUT error:', error)
     return NextResponse.json({ error: 'Failed to update service.' }, { status: 500 })
   }
 }
@@ -97,14 +69,13 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
 
   try {
     const { id } = await params
-    await connectDB()
-    const service = await Service.findByIdAndDelete(id).lean()
-    if (!service) {
-      return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
-    }
-    return NextResponse.json({ success: true }, { status: 200 })
+    const supabase = await createClient()
+
+    const { error } = await supabase.from('services').delete().eq('id', id)
+    if (error) return NextResponse.json({ error: 'Service not found.' }, { status: 404 })
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Admin services DELETE error:', error)
+    console.error('Admin service DELETE error:', error)
     return NextResponse.json({ error: 'Failed to delete service.' }, { status: 500 })
   }
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getClientIp, checkRateLimit, rateLimiters } from "@/lib/rateLimit";
 import { redis } from "@/lib/redis";
-import { verifyTurnstile } from "@/lib/verifyCaptcha";
+import { verifyCaptcha } from "@/lib/verifyCaptcha";
 
 const SYSTEM_PROMPT = `You are Puri, the friendly AI assistant for PurpleSoftHub — a digital innovation studio based in Nigeria serving clients worldwide.
 
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     const captchaToken = typeof body.captchaToken === "string" ? body.captchaToken : undefined;
     const sessionId = typeof body.sessionId === "string" ? body.sessionId : undefined;
 
-    const captcha = await verifyTurnstile(captchaToken, ip);
+    const captcha = await verifyCaptcha(captchaToken, ip);
     if (!captcha.ok) {
       return NextResponse.json(
         { reply: captcha.error || "Captcha verification failed.", showHandoff: false, shouldSaveLead: false },

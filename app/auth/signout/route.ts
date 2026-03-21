@@ -1,10 +1,10 @@
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 
-export const createClient = async () => {
+export async function POST() {
   const cookieStore = await cookies()
-
-  return createServerClient(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -13,15 +13,17 @@ export const createClient = async () => {
           return cookieStore.getAll()
         },
         setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options)
-            })
-          } catch {
-            // Called from a Server Component — safe to ignore
-          }
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
         },
       },
     }
+  )
+
+  await supabase.auth.signOut()
+
+  return NextResponse.redirect(
+    new URL('/', process.env.NEXT_PUBLIC_SITE_URL!)
   )
 }

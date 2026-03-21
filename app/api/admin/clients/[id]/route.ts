@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
 import { requireAdmin } from '@/lib/auth'
-import User from '@/lib/models/User'
-import Project from '@/lib/models/Project'
-import Invoice from '@/lib/models/Invoice'
-import File from '@/lib/models/File'
-import ChatLead from '@/lib/models/ChatLead'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
@@ -13,23 +8,22 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   try {
     const { id } = await params
-    await connectDB()
-    const client = await User.findById(id).lean() as { _id: unknown; email?: string; [key: string]: unknown } | null
-    if (!client) {
-      return NextResponse.json({ error: 'Client not found.' }, { status: 404 })
-    }
+    const supabase = await createClient()
 
-    const [projects, invoices, files, chatLeads] = await Promise.all([
-      Project.find({ client: id })
-        .sort({ updatedAt: -1 })
-        .populate('service', 'name category')
-        .lean(),
-      Invoice.find({ client: id }).sort({ createdAt: -1 }).lean(),
-      File.find({ client: id }).sort({ createdAt: -1 }).lean(),
-      ChatLead.find({ email: client.email ?? '' }).sort({ createdAt: -1 }).lean(),
-    ])
+    const { data: client, error } = await supabase
+      .from('profiles').select('*').eq('id', id).single()
 
-    return NextResponse.json({ client, projects, invoices, files, chatLeads }, { status: 200 })
+    if (error || !client) return NextResponse.json({ error: 'Client not found.' }, { status: 404 })
+
+    const [{ data: projects }, { data: invoices }, { data: files }, { data: chatLeads }] =
+      await Promise.all([
+        supabase.from('projects').select('*').eq('client_id', id).order('updated_at', { ascending: false }),
+        supabase.from('invoices').select('*').eq('client_id', id).order('created_at', { ascending: false }),
+        supabase.from('files').select('*').eq('client_id', id).order('created_at', { ascending: false }),
+        supabase.from('chat_leads').select('*').eq('email', client.email).order('created_at', { ascending: false }),
+      ])
+
+    return NextResponse.json({ client, projects, invoices, files, chatLeads })
   } catch (error) {
     console.error('Admin client GET error:', error)
     return NextResponse.json({ error: 'Failed to fetch client.' }, { status: 500 })
@@ -43,20 +37,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const isActive = Boolean(body?.isActive)
+    const supabase = await createClient()
 
-    await connectDB()
-    const client = await User.findByIdAndUpdate(
-      id,
-      { $set: { isActive } },
-      { new: true }
-    ).lean()
+    const update: Record<string, unknown> = {}
+    if (body?.full_name !== undefined) update.full_name = String(body.full_name)
+    if (body?.role !== undefined) update.role = String(body.role)
 
-    if (!client) {
-      return NextResponse.json({ error: 'Client not found.' }, { status: 404 })
-    }
+    const { data: client, error } = await supabase
+      .from('profiles').update(update).eq('id', id).select().single()
 
-    return NextResponse.json({ client }, { status: 200 })
+    if (error || !client) return NextResponse.json({ error: 'Client not found.' }, { status: 404 })
+
+    return NextResponse.json({ client })
   } catch (error) {
     console.error('Admin client PUT error:', error)
     return NextResponse.json({ error: 'Failed to update client.' }, { status: 500 })

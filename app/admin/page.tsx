@@ -1,14 +1,11 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useSession } from '@supabase/auth-helpers-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { FiUsers, FiBox, FiFileText, FiDollarSign } from 'react-icons/fi'
 
 export default function AdminPage() {
-  const { data: session } = useSession()
-
   const { data, isLoading, error } = useQuery({
     queryKey: ['dashboard'],
     queryFn: async () => {

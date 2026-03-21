@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
 import { requireAdmin } from '@/lib/auth'
-import Project from '@/lib/models/Project'
-import Task from '@/lib/models/Task'
-import File from '@/lib/models/File'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin()
@@ -11,22 +8,19 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   try {
     const { id } = await params
-    await connectDB()
-    const project = await Project.findById(id)
-      .populate('client', 'firstName lastName email avatar')
-      .populate('service', 'name category')
-      .lean()
+    const supabase = await createClient()
 
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
-    }
+    const { data: project, error } = await supabase
+      .from('projects').select('*, profiles:client_id(email, full_name)').eq('id', id).single()
 
-    const [tasks, files] = await Promise.all([
-      Task.find({ project: id }).sort({ order: 1, createdAt: 1 }).lean(),
-      File.find({ project: id }).sort({ createdAt: -1 }).lean(),
+    if (error || !project) return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
+
+    const [{ data: tasks }, { data: files }] = await Promise.all([
+      supabase.from('tasks').select('*').eq('project_id', id).order('order', { ascending: true }),
+      supabase.from('files').select('*').eq('project_id', id).order('created_at', { ascending: false }),
     ])
 
-    return NextResponse.json({ project, tasks, files }, { status: 200 })
+    return NextResponse.json({ project, tasks: tasks ?? [], files: files ?? [] })
   } catch (error) {
     console.error('Admin project GET error:', error)
     return NextResponse.json({ error: 'Failed to fetch project.' }, { status: 500 })
@@ -40,23 +34,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params
     const body = await req.json()
-    const update: Record<string, unknown> = {}
+    const supabase = await createClient()
 
+    const update: Record<string, unknown> = {}
     if (body?.title !== undefined) update.title = String(body.title).trim()
     if (body?.description !== undefined) update.description = String(body.description)
     if (body?.status !== undefined) update.status = String(body.status)
     if (body?.progress !== undefined) update.progress = Number(body.progress || 0)
-    if (body?.startDate !== undefined) update.startDate = body.startDate ? new Date(body.startDate) : null
-    if (body?.dueDate !== undefined) update.dueDate = body.dueDate ? new Date(body.dueDate) : null
+    if (body?.start_date !== undefined) update.start_date = body.start_date || null
+    if (body?.end_date !== undefined) update.end_date = body.end_date || null
+    if (body?.budget !== undefined) update.budget = body.budget ? Number(body.budget) : null
 
-    await connectDB()
-    const project = await Project.findByIdAndUpdate(id, { $set: update }, { new: true }).lean()
+    const { data: project, error } = await supabase
+      .from('projects').update(update).eq('id', id).select().single()
 
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
-    }
-
-    return NextResponse.json({ project }, { status: 200 })
+    if (error || !project) return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
+    return NextResponse.json({ project })
   } catch (error) {
     console.error('Admin project PUT error:', error)
     return NextResponse.json({ error: 'Failed to update project.' }, { status: 500 })
@@ -69,14 +62,16 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
 
   try {
     const { id } = await params
-    await connectDB()
-    const project = await Project.findByIdAndDelete(id).lean()
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
-    }
-    await Task.deleteMany({ project: id })
-    await File.deleteMany({ project: id })
-    return NextResponse.json({ success: true }, { status: 200 })
+    const supabase = await createClient()
+
+    await Promise.all([
+      supabase.from('tasks').delete().eq('project_id', id),
+      supabase.from('files').delete().eq('project_id', id),
+    ])
+
+    const { error } = await supabase.from('projects').delete().eq('id', id)
+    if (error) return NextResponse.json({ error: 'Project not found.' }, { status: 404 })
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Admin project DELETE error:', error)
     return NextResponse.json({ error: 'Failed to delete project.' }, { status: 500 })

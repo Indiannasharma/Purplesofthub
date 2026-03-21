@@ -1,11 +1,26 @@
 "use client"
 
 import { useSidebar } from '@/src/context/SidebarContext'
-import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function AdminHeader() {
   const { toggleSidebar, toggleMobileSidebar } = useSidebar()
+  const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) setEmail(session.user.email ?? '')
+    })
+  }, [])
+
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
 
   const handleToggle = () => {
     if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
@@ -46,7 +61,15 @@ export default function AdminHeader() {
         >
           + New Project
         </Link>
-        <UserButton />
+        <div className="flex items-center gap-2">
+          {email && <span className="hidden text-xs text-gray-400 sm:block">{email}</span>}
+          <button
+            onClick={handleSignOut}
+            className="rounded-lg border border-gray-700 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-800 hover:text-white transition-all"
+          >
+            Sign Out
+          </button>
+        </div>
       </div>
     </header>
   )

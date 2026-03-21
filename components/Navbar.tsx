@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
+import { createClient } from "@/lib/supabase/client";
 
 function SunIcon() {
   return (
@@ -43,10 +43,47 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dark, setDark] = useState(false); // default light
-  const { user, isSignedIn } = useUser();
-  const isAdmin = user?.publicMetadata?.role === 'admin';
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const portalHref = isAdmin ? '/admin' : '/dashboard';
   const portalLabel = isAdmin ? 'Admin Panel' : 'Dashboard';
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setIsSignedIn(true);
+        const role =
+          session.user.user_metadata?.role ||
+          session.user.app_metadata?.role ||
+          'client';
+        setIsAdmin(role === 'admin');
+      } else {
+        setIsSignedIn(false);
+        setIsAdmin(false);
+      }
+    };
+
+    getSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsSignedIn(true);
+        const role =
+          session.user.user_metadata?.role ||
+          session.user.app_metadata?.role ||
+          'client';
+        setIsAdmin(role === 'admin');
+      } else {
+        setIsSignedIn(false);
+        setIsAdmin(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     // Determine initial theme

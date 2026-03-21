@@ -1,21 +1,44 @@
 'use client'
 
-import { useSession, signOut } from '@supabase/auth-helpers-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FiMenu, FiBell, FiUser, FiLogOut, FiSun, FiMoon, FiSettings } from 'react-icons/fi'
-import { useTheme } from 'next-themes'
+import { createClient } from '@/lib/supabase/client'
 
 interface HeaderProps {
   onMenuClick: () => void
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const { data: session } = useSession()
-  const { theme, setTheme } = useTheme()
+  const [email, setEmail] = useState('')
+  const [dark, setDark] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
+  useEffect(() => {
+    const saved = localStorage.getItem('theme')
+    setDark(saved === 'dark')
+
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) setEmail(session.user.email ?? '')
+    })
+  }, [])
+
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
+    const next = !dark
+    setDark(next)
+    if (next) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }
+
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/'
   }
 
   return (
@@ -52,7 +75,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             onClick={toggleTheme}
             className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+            {dark ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
           </button>
 
           {/* Notifications */}
@@ -68,7 +91,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               className="flex items-center p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
             >
               <FiUser className="w-5 h-5 mr-2" />
-              <span className="hidden md:inline">{session?.user?.email}</span>
+              <span className="hidden md:inline">{email}</span>
               <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -85,7 +108,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                   Settings
                 </a>
                 <button
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <FiLogOut className="w-4 h-4 mr-2" />
