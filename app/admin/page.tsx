@@ -1,162 +1,168 @@
-'use client'
+import type { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-import { useQuery } from '@tanstack/react-query'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
-import { FiUsers, FiBox, FiFileText, FiDollarSign } from 'react-icons/fi'
+export const metadata: Metadata = {
+  title: 'Admin Dashboard | PurpleSoftHub',
+  description: 'PurpleSoftHub Admin Dashboard',
+}
 
-export default function AdminPage() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['dashboard'],
-    queryFn: async () => {
-      const res = await fetch('/api/dashboard')
-      if (!res.ok) {
-        throw new Error('Failed to fetch dashboard data')
-      }
-      return res.json()
-    },
-  })
+export default async function AdminPage() {
+  const supabase = await createClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Overview</h1>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow animate-pulse">
-              <div className="p-6">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  if (!session) redirect('/sign-in')
 
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Overview</h1>
-        </div>
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <p className="text-red-600 dark:text-red-400">Failed to load dashboard data. Please try again.</p>
-        </div>
-      </div>
-    )
-  }
+  // Fetch real stats from Supabase
+  const [
+    { count: totalClients },
+    { count: activeProjects },
+    { count: pendingInvoices },
+    { count: newLeads },
+    { count: totalSubscribers },
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'client'),
+    supabase
+      .from('projects')
+      .select('*', { count: 'exact', head: true })
+      .not('status', 'eq', 'completed'),
+    supabase
+      .from('invoices')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['pending', 'overdue']),
+    supabase
+      .from('chat_leads')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+    supabase
+      .from('newsletter_subscribers')
+      .select('*', { count: 'exact', head: true }),
+  ])
 
-  if (!data) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Overview</h1>
-        </div>
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-          <p className="text-yellow-600 dark:text-yellow-400">No data available.</p>
-        </div>
-      </div>
-    )
-  }
-
-  const { role, stats, recentClients, recentProjects } = data
+  // Fetch recent clients
+  const { data: recentClients } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('role', 'client')
+    .order('created_at', { ascending: false })
+    .limit(5)
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Overview</h1>
-        <Badge variant="secondary">Administrator</Badge>
+    <>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-black dark:text-white">Admin Dashboard</h2>
+        <p className="text-sm text-bodydark2 mt-1">Welcome back Emmanuel 💜</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
-            <FiUsers className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalClients}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <FiBox className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProjects}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <FiDollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-            <FiBox className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProjects}</div>
-          </CardContent>
-        </Card>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 mb-8">
+        {[
+          {
+            title: 'Total Clients',
+            value: totalClients || 0,
+            icon: '👥',
+            color: 'bg-brand-500/10',
+          },
+          {
+            title: 'Active Projects',
+            value: activeProjects || 0,
+            icon: '📦',
+            color: 'bg-brand-500/10',
+          },
+          {
+            title: 'Pending Invoices',
+            value: pendingInvoices || 0,
+            icon: '🧾',
+            color: 'bg-yellow-500/10',
+          },
+          {
+            title: 'Chat Leads (7d)',
+            value: newLeads || 0,
+            icon: '💬',
+            color: 'bg-green-500/10',
+          },
+        ].map((stat) => (
+          <div
+            key={stat.title}
+            className="rounded-xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark"
+          >
+            <div className={`w-12 h-12 rounded-full ${stat.color} flex items-center justify-center text-2xl mb-4`}>
+              {stat.icon}
+            </div>
+            <h4 className="text-3xl font-bold text-black dark:text-white mb-1">{stat.value}</h4>
+            <p className="text-sm text-bodydark2">{stat.title}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Clients</CardTitle>
-            <CardDescription>Last 5 registered clients</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+      {/* Second row */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-8">
+        <div className="rounded-xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
+          <h5 className="font-semibold text-black dark:text-white mb-1">📧 Newsletter Subscribers</h5>
+          <p className="text-4xl font-bold text-brand-500">{totalSubscribers || 0}</p>
+        </div>
+        <div className="rounded-xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
+          <h5 className="font-semibold text-black dark:text-white mb-1">🚀 Quick Actions</h5>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {[
+              ['+New Project', '/admin/projects/new'],
+              ['+New Invoice', '/admin/invoices/new'],
+              ['+Blog Post', '/admin/blog/new'],
+              ['View Leads', '/admin/leads'],
+            ].map(([label, href]) => (
+              <a
+                key={label}
+                href={href}
+                className="text-xs font-medium border border-brand-500 text-brand-500 rounded-full px-3 py-1.5 hover:bg-brand-500 hover:text-white transition-all"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent clients */}
+      <div className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark">
+        <div className="px-6 py-4 border-b border-stroke dark:border-strokedark flex justify-between items-center">
+          <h5 className="font-semibold text-black dark:text-white">Recent Clients</h5>
+          <a href="/admin/clients" className="text-sm text-brand-500 hover:underline">
+            View All →
+          </a>
+        </div>
+        <div className="p-6">
+          {!recentClients?.length ? (
+            <p className="text-sm text-bodydark2 text-center py-4">No clients yet</p>
+          ) : (
+            <div className="space-y-3">
               {recentClients.map((client: any) => (
-                <div key={client.id} className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{client.full_name || client.email}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{client.email}</p>
+                <div
+                  key={client.id}
+                  className="flex items-center justify-between py-2 border-b border-stroke dark:border-strokedark last:border-0"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold">
+                      {(client.full_name?.[0] || client.email?.[0])?.toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-black dark:text-white">{client.full_name || 'No name'}</p>
+                      <p className="text-xs text-bodydark2">{client.email}</p>
+                    </div>
                   </div>
-                  <Badge variant="outline">Client</Badge>
+                  <span className="text-xs text-bodydark2">
+                    {new Date(client.created_at).toLocaleDateString()}
+                  </span>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Projects</CardTitle>
-            <CardDescription>Last 5 created projects</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentProjects.map((project: any) => (
-                <div key={project.id} className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{project.title}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{project.status}</p>
-                  </div>
-                  <Badge variant="outline">{project.progress}%</Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }

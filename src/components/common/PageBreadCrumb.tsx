@@ -32,7 +32,7 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
               >
                 <path
                   d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
-                  stroke="currentColor"
+                  stroke=""
                   strokeWidth="1.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
