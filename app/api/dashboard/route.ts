@@ -3,14 +3,14 @@ import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user || error) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const userId = session.user.id
-  const userRole = session.user.user_metadata?.role
+  const userId = user.id
+  const userRole = user.user_metadata?.role || user.app_metadata?.role
 
   // Fetch dashboard data based on user role
   if (userRole === 'admin') {

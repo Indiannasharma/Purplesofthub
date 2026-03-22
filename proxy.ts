@@ -23,10 +23,7 @@ export async function proxy(req: NextRequest) {
     }
   )
 
-  // Refresh session if expired
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
   const { pathname } = req.nextUrl
 
@@ -42,6 +39,7 @@ export async function proxy(req: NextRequest) {
     '/terms',
     '/sign-in',
     '/sign-up',
+    '/forgot-password',
   ]
 
   const isPublicRoute = publicRoutes.some(
@@ -54,13 +52,12 @@ export async function proxy(req: NextRequest) {
     pathname.startsWith('/api/newsletter') ||
     pathname.startsWith('/api/webhooks')
 
-  // Allow public routes and public APIs
   if (isPublicRoute || isPublicApi) {
     return res
   }
 
-  // No session → redirect to sign-in
-  if (!session) {
+  // No user → redirect to sign-in
+  if (!user) {
     const signInUrl = new URL('/sign-in', req.url)
     signInUrl.searchParams.set('redirectTo', pathname)
     return NextResponse.redirect(signInUrl)
@@ -68,8 +65,8 @@ export async function proxy(req: NextRequest) {
 
   // Get user role from metadata
   const role =
-    session.user.user_metadata?.role ||
-    session.user.app_metadata?.role ||
+    user.user_metadata?.role ||
+    user.app_metadata?.role ||
     'client'
 
   // Admin route protection

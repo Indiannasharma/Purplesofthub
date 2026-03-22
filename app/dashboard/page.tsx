@@ -3,13 +3,11 @@ import { redirect } from 'next/navigation'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (!session) redirect('/sign-in')
+  if (!user || error) redirect('/sign-in')
 
-  const userId = session.user.id
+  const userId = user.id
 
   // Get user profile
   const { data: profile } = await supabase
@@ -35,7 +33,7 @@ export default async function DashboardPage() {
     .limit(5)
 
   const firstName =
-    profile?.full_name?.split(' ')[0] || session.user.email?.split('@')[0] || 'there'
+    profile?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'there'
 
   const activeProjects = projects?.filter((p) => p.status !== 'completed').length || 0
   const pendingInvoices = invoices?.filter((i) => i.status === 'pending' || i.status === 'overdue').length || 0

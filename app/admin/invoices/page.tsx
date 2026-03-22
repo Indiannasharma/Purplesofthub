@@ -4,11 +4,11 @@ import AdminInvoicesTable from '@/src/components/tables/AdminInvoicesTable'
 
 export default async function AdminInvoicesPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (!session) redirect('/sign-in')
+  if (!user || error) redirect('/sign-in')
 
-  const role = session.user.user_metadata?.role || session.user.app_metadata?.role
+  const role = user.user_metadata?.role || user.app_metadata?.role
   if (role !== 'admin') redirect('/dashboard')
 
   const { data: invoices } = await supabase

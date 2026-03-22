@@ -11,8 +11,8 @@ export default function ClientHeader() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) setEmail(session.user.email ?? '')
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setEmail(user.email ?? '')
     })
   }, [])
 

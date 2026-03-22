@@ -26,11 +26,9 @@ export async function requireAdmin() {
     }
   )
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user || error) {
     return {
       ok: false as const,
       response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
@@ -38,8 +36,8 @@ export async function requireAdmin() {
   }
 
   const role =
-    session.user.user_metadata?.role ||
-    session.user.app_metadata?.role ||
+    user.user_metadata?.role ||
+    user.app_metadata?.role ||
     'client'
 
   if (role !== 'admin') {
@@ -49,5 +47,5 @@ export async function requireAdmin() {
     }
   }
 
-  return { ok: true as const, userId: session.user.id }
+  return { ok: true as const, userId: user.id }
 }
