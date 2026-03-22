@@ -1,9 +1,33 @@
-export default function DashboardSettings() {
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import ClientSettingsForm from '@/src/components/Client/SettingsForm'
+
+export default async function ClientSettingsPage() {
+  const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+
+  if (!user || error) redirect('/sign-in')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
   return (
-    <div className="rounded-xl border border-stroke bg-white p-8 shadow-sm dark:border-strokedark dark:bg-boxdark text-center">
-      <p className="text-5xl mb-4">🚧</p>
-      <h5 className="font-semibold text-black dark:text-white mb-2 text-lg">Coming Soon</h5>
-      <p className="text-sm text-bodydark2">This page is being built. Check back soon!</p>
-    </div>
+    <>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-black dark:text-white">Settings</h2>
+        <p className="text-sm text-bodydark2 mt-1">Manage your account</p>
+      </div>
+
+      <div className="max-w-2xl">
+        <ClientSettingsForm
+          userId={user.id}
+          userEmail={user.email || ''}
+          profile={profile}
+        />
+      </div>
+    </>
   )
 }
