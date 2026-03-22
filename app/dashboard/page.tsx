@@ -47,7 +47,12 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-8">
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: '12px',
+        marginBottom: '32px',
+      }}>
         {[
           {
             title: 'Active Projects',
@@ -71,13 +76,49 @@ export default async function DashboardPage() {
           <a
             key={stat.title}
             href={stat.href}
-            className="rounded-xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark hover:border-brand-500 transition-all block"
+            style={{
+              display: 'block',
+              background: 'rgba(124,58,237,0.08)',
+              border: '1px solid rgba(124,58,237,0.15)',
+              borderRadius: '16px',
+              padding: '16px',
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                'rgba(124,58,237,0.4)'
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                'rgba(124,58,237,0.15)'
+            }}
           >
-            <div className="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center text-2xl mb-4">
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: 'rgba(124,58,237,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '18px',
+              marginBottom: '12px',
+            }}>
               {stat.icon}
             </div>
-            <h4 className="text-3xl font-bold text-black dark:text-white mb-1">{stat.value}</h4>
-            <p className="text-sm text-bodydark2">{stat.title}</p>
+            <h4 style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: '#ffffff',
+              margin: '0 0 4px',
+            }}>{stat.value}</h4>
+            <p style={{
+              fontSize: '12px',
+              color: '#9d8fd4',
+              margin: 0,
+            }}>{stat.title}</p>
           </a>
         ))}
       </div>
