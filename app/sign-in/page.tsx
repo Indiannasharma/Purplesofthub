@@ -97,7 +97,8 @@ export default function SignInPage() {
             </div>
           )}
 
-          {/* Google Sign In */}
+          {/* Google Sign In - Disabled until configured in Supabase */}
+          {/*
           <button
             onClick={handleGoogleSignIn}
             disabled={loading}
@@ -113,12 +114,12 @@ export default function SignInPage() {
             Continue with Google
           </button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px" style={{ background: 'rgba(124,58,237,0.2)' }} />
             <span className="text-sm" style={{ color: '#6b7280' }}>or</span>
             <div className="flex-1 h-px" style={{ background: 'rgba(124,58,237,0.2)' }} />
           </div>
+          */}
 
           {/* Email + Password */}
           <div className="space-y-4">
