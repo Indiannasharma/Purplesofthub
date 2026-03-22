@@ -4,6 +4,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import {
+  FadeInUp,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedCard,
+  FadeIn
+} from "@/components/motion";
+import { CountUp } from "@/components/motion/CountUp";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -107,9 +115,15 @@ export default function Home() {
             </Reveal>
             <Reveal delay={0.4}>
               <div className="hero-stats" style={{ display: "flex", gap: 36 }}>
-                {[["50+", "Projects Shipped"], ["10", "Core Services"], ["98%", "Client Satisfaction"]].map(([n, l]) => (
+                {[
+                  [50, "Projects Shipped", "+"],
+                  [10, "Core Services", ""],
+                  [98, "Client Satisfaction", "%"]
+                ].map(([n, l, suffix]) => (
                   <div key={l}>
-                    <div style={{ fontFamily: "Outfit", fontSize: 28, fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px" }}>{n}</div>
+                    <div style={{ fontFamily: "Outfit", fontSize: 28, fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px" }}>
+                      <CountUp end={n as number} duration={2} suffix={suffix as string} />
+                    </div>
                     <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 500, marginTop: 2 }}>{l}</div>
                   </div>
                 ))}
@@ -149,14 +163,14 @@ export default function Home() {
 
       {/* ── FEATURE CARDS ── */}
       <section style={{ padding: "0 5% 80px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
+        <StaggerContainer style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
           {[
             { icon: "💻", title: "Digital Solutions", sub: "Web, Mobile & Marketing", cta: "View Services", href: "/services", color: "#4f46e5" },
             { icon: "🎓", title: "Purplesofthub Academy", sub: "Learn In-Demand Tech Skills", cta: "View Courses", href: "/blog", color: "#7c3aed" },
             { icon: "🎵", title: "Music Promotion", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "/services/music-promotion", color: "#86198f" },
-          ].map((c, i) => (
-            <Reveal key={c.title} delay={i * 0.1}>
-              <div className="glass-card" style={{ padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
+          ].map((c) => (
+            <StaggerItem key={c.title}>
+              <AnimatedCard className="glass-card" style={{ padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,${c.color},#a855f7)` }} />
                 <div style={{ fontSize: 32, marginBottom: 14 }}>{c.icon}</div>
                 <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 18, color: "var(--text-primary)", marginBottom: 8 }}>{c.title}</div>
@@ -166,10 +180,10 @@ export default function Home() {
                     {c.cta} →
                   </button>
                 </Link>
-              </div>
-            </Reveal>
+              </AnimatedCard>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </section>
 
       {/* ── SERVICES ── */}
@@ -184,10 +198,10 @@ export default function Home() {
               <p style={{ color: "var(--text-muted)", fontSize: 16, maxWidth: 500, margin: "0 auto" }}>Everything your business needs to grow — under one roof.</p>
             </div>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(310px,1fr))", gap: 20 }}>
-            {SERVICES.map((s, i) => (
-              <Reveal key={s.title} delay={i * 0.05}>
-                <div className="glass-card" style={{ padding: "30px 26px", display: "flex", flexDirection: "column" }}>
+          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(310px,1fr))", gap: 20 }}>
+            {SERVICES.map((s) => (
+              <StaggerItem key={s.title}>
+                <AnimatedCard className="glass-card" style={{ padding: "30px 26px", display: "flex", flexDirection: "column" }}>
                   <div style={{ fontSize: 38, marginBottom: 16 }}>{s.icon}</div>
                   <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 10 }}>{s.title}</div>
                   <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.75, marginBottom: 18, flex: 1 }}>{s.desc}</p>
@@ -199,10 +213,10 @@ export default function Home() {
                   <Link href={s.href}>
                     <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Learn More →</span>
                   </Link>
-                </div>
-              </Reveal>
+                </AnimatedCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
           <Reveal delay={0.3}>
             <div style={{ textAlign: "center", marginTop: 48 }}>
               <Link href="/services">
@@ -258,10 +272,10 @@ export default function Home() {
               <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,42px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px" }}>✦ Our Success Stories ✦</h2>
             </div>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 20 }}>
-            {SUCCESS.map((s, i) => (
-              <Reveal key={s.tag} delay={i * 0.1}>
-                <div className="glass-card" style={{ padding: "28px 24px", position: "relative", overflow: "hidden" }}>
+          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 20 }}>
+            {SUCCESS.map((s) => (
+              <StaggerItem key={s.tag}>
+                <AnimatedCard className="glass-card" style={{ padding: "28px 24px", position: "relative", overflow: "hidden" }}>
                   <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,#7c3aed,#a855f7)" }} />
                   <div style={{ fontSize: 32, marginBottom: 12 }}>{s.icon}</div>
                   <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 18 }}>{s.tag}</div>
@@ -271,10 +285,10 @@ export default function Home() {
                       <span style={{ fontSize: 13, color: label === "Result" ? "var(--accent)" : "var(--text-muted)", fontWeight: label === "Result" ? 700 : 400 }}>{val}</span>
                     </div>
                   ))}
-                </div>
-              </Reveal>
+                </AnimatedCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
@@ -287,18 +301,18 @@ export default function Home() {
               <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,48px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>Our <span className="grad-text">Process</span></h2>
             </div>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 20 }}>
-            {PROCESS.map((p, i) => (
-              <Reveal key={p.n} delay={i * 0.1}>
-                <div className="glass-card" style={{ padding: "32px 24px", textAlign: "center" }}>
+          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 20 }}>
+            {PROCESS.map((p) => (
+              <StaggerItem key={p.n}>
+                <AnimatedCard className="glass-card" style={{ padding: "32px 24px", textAlign: "center" }}>
                   <div style={{ fontFamily: "Outfit", fontSize: 44, fontWeight: 900, color: "rgba(124,58,237,.25)", marginBottom: 12 }}>{p.n}</div>
                   <div style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg,#7c3aed,#a855f7)", margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{p.icon}</div>
                   <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 10 }}>{p.title}</div>
                   <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7 }}>{p.desc}</p>
-                </div>
-              </Reveal>
+                </AnimatedCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
@@ -313,10 +327,10 @@ export default function Home() {
               </h2>
             </div>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
-            {TESTIMONIALS.map((t, i) => (
-              <Reveal key={t.name} delay={i * 0.1}>
-                <div className="glass-card" style={{ padding: "30px 26px" }}>
+          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
+            {TESTIMONIALS.map((t) => (
+              <StaggerItem key={t.name}>
+                <AnimatedCard className="glass-card" style={{ padding: "30px 26px" }}>
                   <div style={{ color: "var(--accent)", fontSize: 32, marginBottom: 14 }}>❝</div>
                   <p style={{ color: "var(--text-secondary)", fontSize: 15, lineHeight: 1.8, marginBottom: 24, fontStyle: "italic" }}>{t.text}</p>
                   <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
@@ -326,22 +340,22 @@ export default function Home() {
                       <div style={{ fontSize: 12, color: "var(--accent)" }}>{t.role}</div>
                     </div>
                   </div>
-                </div>
-              </Reveal>
+                </AnimatedCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* ── WORLDWIDE ── */}
       <section style={{ padding: "80px 5%", textAlign: "center" }}>
-        <Reveal>
+        <FadeInUp>
           <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3vw,38px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px", marginBottom: 10 }}>
             Empowering Businesses <span className="grad-text">Worldwide</span>
           </h2>
           <p style={{ color: "var(--text-muted)", marginBottom: 44, fontSize: 15 }}>Partner with us to elevate your business</p>
-        </Reveal>
-        <Reveal delay={0.1}>
+        </FadeInUp>
+        <FadeInUp delay={0.1}>
           <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 14 }}>
             {[["🇺🇸","🇦🇺"],["🇬🇧","🇵🇪"],["🇨🇦","🇳🇬"],["🇮🇹","🇿🇦"]].map((pair, i) => (
               <div key={i} className="glass-card" style={{ padding: "12px 18px", display: "flex", gap: 8, fontSize: 24 }}>
@@ -355,14 +369,14 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </Reveal>
+        </FadeInUp>
       </section>
 
       {/* ── FINAL CTA ── */}
       <section style={{ padding: "100px 5%", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.16) 0%,transparent 65%)", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
-        <Reveal>
+        <FadeInUp>
           <div style={{ position: "relative", zIndex: 2, maxWidth: 680, margin: "0 auto" }}>
             <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 20 }}>→ Let&apos;s Build Your Next Project ←</div>
             <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,5vw,62px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
@@ -378,7 +392,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </Reveal>
+        </FadeInUp>
       </section>
 
       <NewsletterSignup />

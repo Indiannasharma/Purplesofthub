@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 import { createClient } from "@/lib/supabase/client";
 
@@ -127,7 +128,16 @@ export default function Navbar() {
   const navLinkHover = dark ? "#e2d9f3" : "#7c3aed";
 
   return (
-    <nav
+    <motion.nav
+      animate={{
+        backgroundColor: scrolled
+          ? navBg
+          : navBg,
+        borderBottomColor: scrolled
+          ? (dark ? "rgba(124,58,237,.18)" : "rgba(124,58,237,.15)")
+          : (dark ? "rgba(124,58,237,.08)" : "rgba(124,58,237,.08)"),
+      }}
+      transition={{ duration: 0.3 }}
       style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         height: 68, padding: "0 5%",
@@ -139,7 +149,6 @@ export default function Navbar() {
           ? "1px solid rgba(124,58,237,.18)"
           : "1px solid rgba(124,58,237,.15)",
         boxShadow: dark ? "none" : "0 1px 0 rgba(124,58,237,.08)",
-        transition: "all .3s",
       }}
     >
       {/* Logo */}
@@ -216,50 +225,61 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {mobileOpen && (
-        <div style={{
-          position: "fixed", top: 68, left: 0, right: 0,
-          background: dark ? "rgba(6,3,15,.98)" : "rgba(255,255,255,.98)",
-          backdropFilter: "blur(24px)",
-          borderBottom: "1px solid rgba(124,58,237,.15)",
-          padding: "20px 5% 28px", zIndex: 99,
-        }}>
-          {NAV_LINKS.map((l) => (
-            <Link key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
-              style={{
-                display: "block", padding: "13px 0",
-                borderBottom: `1px solid ${dark ? "rgba(255,255,255,.04)" : "rgba(124,58,237,.08)"}`,
-                color: dark ? "#9d8fd4" : "#4a2d6b",
-                fontSize: 16, textDecoration: "none",
-              }}>
-              {l.label}
-            </Link>
-          ))}
-          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-            {!isSignedIn && (
-              <Link href="/sign-in" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                <button className="btn-outline" style={{ width: "100%", padding: 14, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                  Client Login
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              duration: 0.25,
+              ease: [0.21, 0.47, 0.32, 0.98]
+            }}
+            style={{
+              position: "fixed", top: 68, left: 0, right: 0,
+              background: dark ? "rgba(6,3,15,.98)" : "rgba(255,255,255,.98)",
+              backdropFilter: "blur(24px)",
+              borderBottom: "1px solid rgba(124,58,237,.15)",
+              padding: "20px 5% 28px", zIndex: 99,
+              overflow: "hidden",
+            }}>
+            {NAV_LINKS.map((l) => (
+              <Link key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
+                style={{
+                  display: "block", padding: "13px 0",
+                  borderBottom: `1px solid ${dark ? "rgba(255,255,255,.04)" : "rgba(124,58,237,.08)"}`,
+                  color: dark ? "#9d8fd4" : "#4a2d6b",
+                  fontSize: 16, textDecoration: "none",
+                }}>
+                {l.label}
+              </Link>
+            ))}
+            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+              {!isSignedIn && (
+                <Link href="/sign-in" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
+                  <button className="btn-outline" style={{ width: "100%", padding: 14, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    Client Login
+                  </button>
+                </Link>
+              )}
+              {isSignedIn && (
+                <Link href={portalHref} onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
+                  <button className="btn-outline" style={{ width: "100%", padding: 14, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    {portalLabel}
+                  </button>
+                </Link>
+              )}
+              <Link href="/contact" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
+                <button className="btn-main" style={{ width: "100%", padding: 14, fontSize: 15 }}>
+                  Start a Project
                 </button>
               </Link>
-            )}
-            {isSignedIn && (
-              <Link href={portalHref} onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                <button className="btn-outline" style={{ width: "100%", padding: 14, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                  {portalLabel}
-                </button>
-              </Link>
-            )}
-            <Link href="/contact" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-              <button className="btn-main" style={{ width: "100%", padding: 14, fontSize: 15 }}>
-                Start a Project
-              </button>
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 }

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FaFacebook, FaTwitter, FaTiktok, FaInstagram, FaYoutube } from "react-icons/fa";
+import { FadeIn } from "@/components/motion";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 
 const SOCIALS = [
@@ -24,12 +25,13 @@ const COMPANY_LINKS: [string, string][] = [["About Us", "/about"], ["Portfolio",
 
 export default function Footer() {
   return (
-    <footer style={{
-      background: "var(--footer-bg)",
-      borderTop: "1px solid rgba(124,58,237,.2)",
-      padding: "56px 5% 28px",
-    }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <FadeIn>
+      <footer style={{
+        background: "var(--footer-bg)",
+        borderTop: "1px solid rgba(124,58,237,.2)",
+        padding: "56px 5% 28px",
+      }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 48 }}>
 
           {/* Brand */}
@@ -137,7 +139,8 @@ export default function Footer() {
             ))}
           </div>
         </div>
-      </div>
-    </footer>
+        </div>
+      </footer>
+    </FadeIn>
   );
 }
