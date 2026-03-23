@@ -151,6 +151,7 @@ export default function SignInPage() {
         <button
           onClick={handleGoogleSignIn}
           disabled={googleLoading || loading}
+          className="google-btn"
           style={{
             width: '100%',
             display: 'flex',
@@ -168,14 +169,6 @@ export default function SignInPage() {
             marginBottom: '20px',
             transition: 'all 0.2s',
             opacity: googleLoading || loading ? 0.7 : 1,
-          }}
-          onMouseEnter={(e) => {
-            if (!googleLoading && !loading) {
-              (e.target as HTMLButtonElement).style.background = '#f5f5f5'
-            }
-          }}
-          onMouseLeave={(e) => {
-            (e.target as HTMLButtonElement).style.background = '#fff'
           }}
         >
           {/* Google SVG icon */}
@@ -398,6 +391,19 @@ export default function SignInPage() {
           </Link>
         </p>
       </div>
+      <style>{`
+        .google-btn:hover {
+          background: #f5f5f5 !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .google-btn:active {
+          transform: translateY(0);
+        }
+        .google-btn {
+          transition: all 0.2s ease;
+        }
+      `}</style>
     </div>
   )
 }
