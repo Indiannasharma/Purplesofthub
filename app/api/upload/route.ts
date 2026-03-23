@@ -1,17 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { v2 as cloudinary } from 'cloudinary'
 
-// Configure Cloudinary only if all env vars are present
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME
-const apiKey = process.env.CLOUDINARY_API_KEY
-const apiSecret = process.env.CLOUDINARY_API_SECRET
+// Lazy-load Cloudinary to avoid import-time config validation
+let cloudinary: any = null
 
-if (cloudName && apiKey && apiSecret) {
-  cloudinary.config({
-    cloud_name: cloudName,
-    api_key: apiKey,
-    api_secret: apiSecret,
-  })
+function getCloudinary() {
+  if (!cloudinary) {
+    const { v2 } = require('cloudinary')
+    cloudinary = v2
+
+    // Configure Cloudinary only if all env vars are present
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME
+    const apiKey = process.env.CLOUDINARY_API_KEY
+    const apiSecret = process.env.CLOUDINARY_API_SECRET
+
+    if (cloudName && apiKey && apiSecret) {
+      cloudinary.config({
+        cloud_name: cloudName,
+        api_key: apiKey,
+        api_secret: apiSecret,
+      })
+    }
+  }
+  return cloudinary
 }
 
 export async function POST(request: NextRequest) {
@@ -43,14 +53,14 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
 
     const result = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader
+      getCloudinary().uploader
         .upload_stream(
           {
             folder: `purplesofthub/clients/${userId}`,
             resource_type: 'auto',
             use_filename: true,
           },
-          (error, result) => {
+          (error: any, result: any) => {
             if (error) reject(error)
             else resolve(result)
           }

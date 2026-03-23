@@ -1,4 +1,13 @@
-import { v2 as cloudinary } from 'cloudinary'
+// Lazy load Cloudinary only when needed to avoid import-time config validation
+let cloudinary: any = null
+
+function getCloudinaryInstance() {
+  if (!cloudinary) {
+    const { v2 } = require('cloudinary')
+    cloudinary = v2
+  }
+  return cloudinary
+}
 
 export function getCloudinaryConfig() {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME
@@ -6,20 +15,24 @@ export function getCloudinaryConfig() {
   const apiSecret = process.env.CLOUDINARY_API_SECRET
 
   if (!cloudName || !apiKey || !apiSecret) {
-    throw new Error('Cloudinary credentials not configured')
+    return null
   }
 
-  cloudinary.config({
+  const cloud = getCloudinaryInstance()
+  cloud.config({
     cloud_name: cloudName,
     api_key: apiKey,
     api_secret: apiSecret,
   })
 
-  return cloudinary
+  return cloud
 }
 
 export async function uploadFile(file: string, folder: string = 'purplesofthub') {
   const cloud = getCloudinaryConfig()
+  if (!cloud) {
+    throw new Error('Cloudinary credentials not configured')
+  }
   const result = await cloud.uploader.upload(file, {
     folder,
     resource_type: 'auto',
@@ -34,5 +47,8 @@ export async function uploadFile(file: string, folder: string = 'purplesofthub')
 
 export async function deleteFile(publicId: string) {
   const cloud = getCloudinaryConfig()
+  if (!cloud) {
+    throw new Error('Cloudinary credentials not configured')
+  }
   return await cloud.uploader.destroy(publicId)
 }
