@@ -1,8 +1,30 @@
 'use client'
 
-import AdminSidebar from '@/components/admin/AdminSidebar'
-import AdminHeader from '@/components/admin/AdminHeader'
-import { SidebarProvider } from '@/context/SidebarContext'
+import AppSidebar from '@/layout/AppSidebar'
+import AppHeader from '@/layout/AppHeader'
+import Backdrop from '@/layout/Backdrop'
+import { SidebarProvider, useSidebar } from '@/context/SidebarContext'
+
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isExpanded, isHovered, isMobileOpen } = useSidebar()
+
+  const mainContentMargin = isMobileOpen
+    ? 'ml-0'
+    : isExpanded || isHovered
+    ? 'lg:ml-[290px]'
+    : 'lg:ml-[90px]'
+
+  return (
+    <div className="min-h-screen xl:flex">
+      <AppSidebar />
+      <Backdrop />
+      <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
+        <AppHeader />
+        <div className="p-4 mx-auto max-w-[1408px] md:p-6">{children}</div>
+      </div>
+    </div>
+  )
+}
 
 export default function AdminLayoutClient({
   children,
@@ -11,15 +33,7 @@ export default function AdminLayoutClient({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-gray-900">
-        <AdminSidebar />
-        <div className="flex flex-1 flex-col lg:ml-[90px]">
-          <AdminHeader />
-          <main className="flex-1 overflow-auto">
-            <div className="p-6">{children}</div>
-          </main>
-        </div>
-      </div>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
     </SidebarProvider>
   )
 }

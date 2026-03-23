@@ -8,14 +8,25 @@ import {
   BoxCubeIcon,
   CalenderIcon,
   ChevronDownIcon,
+  ChatIcon,
+  DollarLineIcon,
+  FileIcon,
+  FolderIcon,
   GridIcon,
+  GroupIcon,
   HorizontaLDots,
   ListIcon,
+  MailIcon,
   PageIcon,
+  PaperPlaneIcon,
   PieChartIcon,
   PlugInIcon,
+  ShootingStarIcon,
   TableIcon,
+  UserIcon,
   UserCircleIcon,
+  VideoIcon,
+  BoxIconLine,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 
@@ -26,73 +37,116 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
+// Admin sidebar menu
+const adminNavItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
+    path: "/admin",
   },
 ];
 
-const othersItems: NavItem[] = [
+const adminOthersItems: NavItem[] = [
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
+    icon: <FileIcon />,
+    name: "Blog",
+    path: "/admin/blog",
   },
   {
     icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
+    name: "Services",
+    path: "/admin/services",
   },
   {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
+    icon: <ShootingStarIcon />,
+    name: "Promotions",
+    path: "/admin/promotions",
+  },
+  {
+    icon: <GroupIcon />,
+    name: "Clients",
+    path: "/admin/clients",
+  },
+  {
+    icon: <ChatIcon />,
+    name: "Chat Leads",
+    path: "/admin/leads",
+  },
+  {
+    icon: <MailIcon />,
+    name: "Subscribers",
+    path: "/admin/subscribers",
   },
 ];
+
+const adminMoreItems: NavItem[] = [
+  {
+    icon: <BoxIconLine />,
+    name: "Projects",
+    path: "/admin/projects",
+  },
+  {
+    icon: <VideoIcon />,
+    name: "Music Promos",
+    path: "/admin/music",
+  },
+  {
+    icon: <DollarLineIcon />,
+    name: "Invoices",
+    path: "/admin/invoices",
+  },
+  {
+    icon: <PaperPlaneIcon />,
+    name: "Payments",
+    path: "/admin/payments",
+  },
+];
+
+// Client sidebar menu
+const clientNavItems: NavItem[] = [
+  {
+    icon: <GridIcon />,
+    name: "Overview",
+    path: "/dashboard",
+  },
+  {
+    icon: <BoxCubeIcon />,
+    name: "Services",
+    path: "/dashboard/services",
+  },
+  {
+    icon: <BoxIconLine />,
+    name: "My Projects",
+    path: "/dashboard/projects",
+  },
+  {
+    icon: <VideoIcon />,
+    name: "Music Promotion",
+    path: "/dashboard/music",
+  },
+  {
+    icon: <FolderIcon />,
+    name: "My Files",
+    path: "/dashboard/files",
+  },
+  {
+    icon: <DollarLineIcon />,
+    name: "Invoices",
+    path: "/dashboard/invoices",
+  },
+];
+
+const clientOthersItems: NavItem[] = [
+  {
+    icon: <UserIcon />,
+    name: "Settings",
+    path: "/dashboard/settings",
+  },
+];
+
+// Default to client view (will be overridden based on user role)
+const navItems = clientNavItems;
+const othersItems = clientOthersItems;
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -310,29 +364,17 @@ const AppSidebar: React.FC = () => {
       >
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
-          ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
+              src="/Purplesoft-logo-main.png"
+              alt="PurpleSoftHub"
+              width={150}
+              height={40}
+              className="object-contain"
             />
+          ) : (
+            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+              P
+            </div>
           )}
         </Link>
       </div>
