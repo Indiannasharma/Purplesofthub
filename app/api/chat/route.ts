@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     // Use Redis-stored history when sessionId is provided
     type ChatMessage = { role: "user" | "assistant"; content: string }
     let trimmed: ChatMessage[]
-    if (sessionId) {
+    if (sessionId && redis) {
       const stored = await redis.lrange<ChatMessage>(`chat:${sessionId}`, 0, 49)
       const latest = messages[messages.length - 1]
       trimmed = stored.length > 0 ? [...stored, latest] : messages.slice(-50)
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         : "I'm having trouble responding right now. Please try again! 💜";
 
     // Persist conversation to Redis (TTL: 1 hour)
-    if (sessionId) {
+    if (sessionId && redis) {
       try {
         const userMsg = trimmed[trimmed.length - 1]
         const pipe = redis.pipeline()

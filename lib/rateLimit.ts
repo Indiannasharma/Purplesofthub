@@ -1,33 +1,49 @@
 import { Ratelimit } from '@upstash/ratelimit'
 import { redis } from './redis'
 
-export const rateLimiters = {
-  contact: new Ratelimit({
+// Only create rate limiters if Redis is configured
+type RateLimiters = {
+  contact?: Ratelimit
+  chat?: Ratelimit
+  chatLead?: Ratelimit
+  newsletter?: Ratelimit
+}
+
+const rateLimiters: RateLimiters = {}
+
+if (redis) {
+  rateLimiters.contact = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(5, '10 m'),
     prefix: 'rl:contact',
-  }),
-  chat: new Ratelimit({
+  })
+  rateLimiters.chat = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(20, '5 m'),
     prefix: 'rl:chat',
-  }),
-  chatLead: new Ratelimit({
+  })
+  rateLimiters.chatLead = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(10, '10 m'),
     prefix: 'rl:chatLead',
-  }),
-  newsletter: new Ratelimit({
+  })
+  rateLimiters.newsletter = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(5, '10 m'),
     prefix: 'rl:newsletter',
-  }),
+  })
 }
 
+export { rateLimiters }
+
 export async function checkRateLimit(
-  limiter: Ratelimit,
+  limiter: Ratelimit | undefined,
   key: string
 ): Promise<{ ok: boolean; remaining: number; resetAt: number }> {
+  // If rate limiter is not configured, allow all requests
+  if (!limiter) {
+    return { ok: true, remaining: 999, resetAt: Date.now() + 600000 }
+  }
   const { success, remaining, reset } = await limiter.limit(key)
   return { ok: success, remaining, resetAt: reset }
 }
