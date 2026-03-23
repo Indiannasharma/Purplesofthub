@@ -76,6 +76,7 @@ export default async function DashboardPage() {
           <a
             key={stat.title}
             href={stat.href}
+            className="stat-card"
             style={{
               display: 'block',
               background: 'rgba(124,58,237,0.08)',
@@ -85,14 +86,6 @@ export default async function DashboardPage() {
               textDecoration: 'none',
               transition: 'all 0.2s',
               cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                'rgba(124,58,237,0.4)'
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                'rgba(124,58,237,0.15)'
             }}
           >
             <div style={{
@@ -197,6 +190,11 @@ export default async function DashboardPage() {
           Get Started →
         </a>
       </div>
+      <style>{`
+        .stat-card:hover {
+          border-color: rgba(124, 58, 237, 0.4) !important;
+        }
+      `}</style>
     </>
   )
 }
