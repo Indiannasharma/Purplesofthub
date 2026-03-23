@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 export default function SignInPage() {
   const router = useRouter()
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function SignUpPage() {
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')

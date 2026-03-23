@@ -8,7 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function ForgotPasswordPage() {
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
