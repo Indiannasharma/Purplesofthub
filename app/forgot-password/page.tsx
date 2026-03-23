@@ -1,127 +1,102 @@
 'use client'
-
-export const dynamic = 'force-dynamic'
-
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import Image from 'next/image'
 import Link from 'next/link'
+import Image from 'next/image'
 
-export default function ForgotPasswordPage() {
-  const [supabase] = useState(() => createClient())
+export default function ForgotPassword() {
   const [email, setEmail] = useState('')
+  const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [sent, setSent] = useState(false)
 
   const handleReset = async () => {
     if (!email) return
     setLoading(true)
     setError('')
 
+    const supabase = createClient()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`
     })
 
     if (error) {
       setError(error.message)
-      setLoading(false)
-      return
+    } else {
+      setSent(true)
     }
-
-    setSent(true)
     setLoading(false)
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 py-10"
-      style={{ background: '#060311' }}
-    >
-      <div className="w-full max-w-sm sm:max-w-md">
-
+    <div className="flex min-h-screen items-center justify-center bg-gray-2 dark:bg-boxdark-2 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-stroke bg-white p-8 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="text-center mb-8">
-          <Image
-            src="/images/logo/purplesoft-logo-main.png"
-            alt="PurpleSoftHub"
-            width={180}
-            height={54}
-            className="mx-auto mb-5"
-            priority
-          />
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: '#ffffff' }}>
-            Reset your password
-          </h1>
-          <p className="text-sm sm:text-base" style={{ color: '#9ca3af' }}>
-            {sent
-              ? 'Check your email for a reset link.'
-              : "Enter your email and we'll send you a reset link."}
+          <Link href="/" className="inline-block mb-4">
+            <Image
+              src="/Purplesoft-logo-main.png"
+              alt="PurpleSoftHub"
+              width={140}
+              height={40}
+              className="mx-auto"
+            />
+          </Link>
+          <h2 className="text-2xl font-bold text-black dark:text-white mb-1">
+            Reset Password
+          </h2>
+          <p className="text-sm text-bodydark2">
+            Enter your email to receive a reset link
           </p>
         </div>
 
-        <div
-          className="rounded-2xl p-6 sm:p-8 space-y-5"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(124,58,237,0.2)' }}
-        >
-          {error && (
-            <div
-              className="text-sm px-4 py-3 rounded-lg"
-              style={{
-                background: 'rgba(239,68,68,0.1)',
-                border: '1px solid rgba(239,68,68,0.3)',
-                color: '#f87171',
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          {sent ? (
-            <p className="text-center text-sm" style={{ color: '#a855f7' }}>
-              Email sent! Check your inbox.
+        {sent ? (
+          <div className="text-center py-4">
+            <p className="text-4xl mb-4">📧</p>
+            <p className="font-semibold text-black dark:text-white mb-2">
+              Check your email!
             </p>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ color: '#d1d5db' }}>
-                  Email address
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  onKeyDown={(e) => e.key === 'Enter' && handleReset()}
-                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(124,58,237,0.25)',
-                    color: '#ffffff',
-                  }}
-                  onFocus={(e) => { e.target.style.borderColor = 'rgba(124,58,237,0.7)' }}
-                  onBlur={(e) => { e.target.style.borderColor = 'rgba(124,58,237,0.25)' }}
-                />
+            <p className="text-sm text-bodydark2 mb-6">
+              We sent a password reset link to {email}
+            </p>
+            <Link href="/sign-in" className="text-primary hover:underline text-sm font-medium">
+              ← Back to Sign In
+            </Link>
+          </div>
+        ) : (
+          <>
+            {error && (
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 px-4 py-3 text-sm text-red-600 dark:text-red-400">
+                {error}
               </div>
-              <button
-                onClick={handleReset}
-                disabled={loading || !email}
-                className="w-full font-semibold py-3 rounded-xl transition-all disabled:opacity-50"
-                style={{
-                  background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                  color: '#ffffff',
-                }}
-              >
-                {loading ? 'Sending…' : 'Send Reset Link'}
-              </button>
+            )}
+            <div className="mb-5">
+              <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+                Email address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleReset()}
+                placeholder="you@example.com"
+                className="w-full rounded-lg border border-stroke bg-transparent px-4 py-3 text-sm text-black outline-none focus:border-primary dark:border-strokedark dark:text-white"
+              />
             </div>
-          )}
-        </div>
-
-        <p className="text-center text-sm mt-6" style={{ color: '#6b7280' }}>
-          <Link href="/sign-in" className="font-medium hover:underline" style={{ color: '#a855f7' }}>
-            &larr; Back to sign in
-          </Link>
-        </p>
+            <button
+              onClick={handleReset}
+              disabled={loading || !email}
+              className="w-full rounded-lg bg-primary py-3 px-4 text-sm font-semibold text-white hover:bg-opacity-90 transition-all disabled:opacity-50"
+            >
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+            <p className="mt-5 text-center text-sm text-bodydark2">
+              Remember your password?{' '}
+              <Link href="/sign-in" className="text-primary font-medium hover:underline">
+                Sign in →
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     </div>
   )
