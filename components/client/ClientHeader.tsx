@@ -1,7 +1,6 @@
 "use client"
 
 import { useSidebar } from '@/context/SidebarContext'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -52,12 +51,6 @@ export default function ClientHeader() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Link
-          href="/dashboard/services"
-          className="hidden items-center gap-2 rounded-full border border-brand-500 px-4 py-1.5 text-xs font-semibold text-brand-400 hover:bg-brand-500 hover:text-white transition-all sm:flex"
-        >
-          + New Service
-        </Link>
         <div className="flex items-center gap-2">
           {email && <span className="hidden text-xs text-gray-400 sm:block">{email}</span>}
           <button
