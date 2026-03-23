@@ -3,6 +3,7 @@
 import AppSidebar from '@/layout/AppSidebar'
 import AppHeader from '@/layout/AppHeader'
 import Backdrop from '@/layout/Backdrop'
+import { ThemeProvider } from '@/context/ThemeContext'
 import { SidebarProvider, useSidebar } from '@/context/SidebarContext'
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
@@ -32,8 +33,10 @@ export default function AdminLayoutClient({
   children: React.ReactNode
 }) {
   return (
-    <SidebarProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
-    </SidebarProvider>
+    <ThemeProvider>
+      <SidebarProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
+      </SidebarProvider>
+    </ThemeProvider>
   )
 }

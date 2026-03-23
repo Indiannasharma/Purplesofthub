@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { SidebarProvider } from "@/context/SidebarContext";
-import { ThemeProvider } from "@/context/ThemeContext";
 import { Providers } from "@/app/Providers";
 import ChatBot from "@/components/ChatBot";
 import "./globals.css";
@@ -72,12 +70,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className="dark:bg-gray-900">
         <Providers>
-          <ThemeProvider>
-            <SidebarProvider>
-              {children}
-              <ChatBot />
-            </SidebarProvider>
-          </ThemeProvider>
+          {children}
+          <ChatBot />
         </Providers>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
