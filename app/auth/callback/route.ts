@@ -1,10 +1,11 @@
-import { createServerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const next = requestUrl.searchParams.get('next') ?? '/dashboard'
 
   if (code) {
     const cookieStore = await cookies()
@@ -25,8 +26,23 @@ export async function GET(request: NextRequest) {
       }
     )
 
-    await supabase.auth.exchangeCodeForSession(code)
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error) {
+      // Check user role and redirect accordingly
+      const { data: { user } } = await supabase.auth.getUser()
+      const role = user?.user_metadata?.role || user?.app_metadata?.role
+
+      if (role === 'admin') {
+        return NextResponse.redirect(new URL('/admin', request.url))
+      }
+
+      return NextResponse.redirect(new URL(next, request.url))
+    }
   }
 
-  return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Auth failed — redirect to sign-in with error
+  return NextResponse.redirect(
+    new URL('/sign-in?error=auth_failed', request.url)
+  )
 }
