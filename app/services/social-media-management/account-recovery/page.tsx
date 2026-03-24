@@ -153,12 +153,7 @@ export default function AccountRecoveryPage() {
   return (
     <>
       {/* Page header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #06030f 0%, #0d0520 100%)',
-        borderBottom: '1px solid rgba(124,58,237,0.15)',
-        padding: '60px 24px 40px',
-        textAlign: 'center',
-      }}>
+      <div className="recovery-page-header">
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <div style={{
             display: 'inline-flex',
@@ -174,10 +169,9 @@ export default function AccountRecoveryPage() {
               🔐 Digital Marketing Services
             </span>
           </div>
-          <h1 style={{
+          <h1 className="recovery-heading" style={{
             fontSize: 'clamp(28px, 5vw, 48px)',
             fontWeight: 900,
-            color: '#fff',
             margin: '0 0 16px',
             lineHeight: 1.1,
             letterSpacing: '-0.5px',
@@ -192,9 +186,8 @@ export default function AccountRecoveryPage() {
               Account Recovery
             </span>
           </h1>
-          <p style={{
+          <p className="recovery-subtext" style={{
             fontSize: '17px',
-            color: '#9d8fd4',
             margin: '0 0 24px',
             lineHeight: 1.6,
             maxWidth: '560px',
@@ -268,7 +261,6 @@ export default function AccountRecoveryPage() {
           <p style={{
             fontSize: '11px',
             fontWeight: 700,
-            color: '#6b5fa0',
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
             marginBottom: '12px',
@@ -296,6 +288,7 @@ export default function AccountRecoveryPage() {
                 setAgreed(false)
                 setSubmitError('')
               }}
+              className="recovery-sidebar-btn"
               style={{
                 width: '100%',
                 display: 'flex',
@@ -348,14 +341,12 @@ export default function AccountRecoveryPage() {
             <p style={{
               fontSize: '12px',
               fontWeight: 700,
-              color: '#a855f7',
               margin: '0 0 8px',
             }}>
               ℹ️ Important
             </p>
             <ul style={{
               fontSize: '12px',
-              color: '#6b5fa0',
               margin: 0,
               paddingLeft: '16px',
               lineHeight: 1.8,
@@ -368,11 +359,10 @@ export default function AccountRecoveryPage() {
           </div>
         </div>
 
-        {/* ── MAIN CONTENT ── */}
+          {/* ── MAIN CONTENT ── */}
         <div style={{ flex: 1, minWidth: '300px' }}>
           {/* Platform header */}
-          <div style={{
-            background: 'rgba(10,6,24,0.8)',
+          <div className="recovery-card" style={{
             border: `1px solid ${activePlatform.border}`,
             borderRadius: '16px',
             padding: '24px',
@@ -396,17 +386,15 @@ export default function AccountRecoveryPage() {
               {activePlatform.icon}
             </div>
             <div>
-              <h2 style={{
+              <h2 className="recovery-heading" style={{
                 fontSize: '20px',
                 fontWeight: 800,
-                color: '#fff',
                 margin: '0 0 4px',
               }}>
                 {activePlatform.name} Account Recovery
               </h2>
-              <p style={{
+              <p className="recovery-subtext" style={{
                 fontSize: '13px',
-                color: '#9d8fd4',
                 margin: 0,
               }}>
                 Professional recovery service for your {activePlatform.name} account
@@ -425,17 +413,15 @@ export default function AccountRecoveryPage() {
                 padding: '24px',
                 marginBottom: '24px',
               }}>
-                <h3 style={{
+                <h3 className="recovery-heading" style={{
                   fontSize: '16px',
                   fontWeight: 700,
-                  color: '#fff',
                   margin: '0 0 12px',
                 }}>
                   📘 Facebook Account Recovery Service
                 </h3>
-                <p style={{
+                <p className="recovery-subtext" style={{
                   fontSize: '14px',
-                  color: '#9d8fd4',
                   lineHeight: 1.7,
                   margin: '0 0 12px',
                 }}>
@@ -455,9 +441,8 @@ export default function AccountRecoveryPage() {
                     '✅ Two-factor auth issues',
                     '✅ Suspicious login recovery',
                   ].map(item => (
-                    <div key={item} style={{
+                    <div key={item} className="recovery-subtext" style={{
                       fontSize: '13px',
-                      color: '#9d8fd4',
                     }}>
                       {item}
                     </div>
@@ -466,24 +451,21 @@ export default function AccountRecoveryPage() {
               </div>
 
               {/* Support Form */}
-              <div style={{
-                background: 'rgba(10,6,24,0.8)',
+              <div className="recovery-card" style={{
                 border: '1px solid rgba(124,58,237,0.15)',
                 borderRadius: '16px',
                 padding: '28px',
                 marginBottom: '24px',
               }}>
-                <h3 style={{
+                <h3 className="recovery-heading" style={{
                   fontSize: '18px',
                   fontWeight: 800,
-                  color: '#fff',
                   margin: '0 0 6px',
                 }}>
                   Support Form
                 </h3>
-                <p style={{
+                <p className="recovery-subtext" style={{
                   fontSize: '13px',
-                  color: '#6b5fa0',
                   margin: '0 0 24px',
                 }}>
                   Please fill in all fields accurately. Incorrect information may delay your recovery.
@@ -491,13 +473,13 @@ export default function AccountRecoveryPage() {
                 <div style={{ display: 'grid', gap: '18px' }}>
                   {/* Full Name */}
                   <div>
-                    <label style={labelStyle}>Full Name *</label>
+                    <label className="recovery-label">Full Name *</label>
                     <input
                       type="text"
                       value={form.fullName}
                       onChange={e => updateForm('fullName', e.target.value)}
                       placeholder="Enter your full name"
-                      style={inputStyle}
+                      className="recovery-input"
                       onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                       onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                     />
@@ -505,13 +487,13 @@ export default function AccountRecoveryPage() {
 
                   {/* Facebook Handle */}
                   <div>
-                    <label style={labelStyle}>What is your Facebook Handle? *</label>
+                    <label className="recovery-label">What is your Facebook Handle? *</label>
                     <input
                       type="text"
                       value={form.facebookHandle}
                       onChange={e => updateForm('facebookHandle', e.target.value)}
                       placeholder="e.g. facebook.com/yourhandle or @yourname"
-                      style={inputStyle}
+                      className="recovery-input"
                       onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                       onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                     />
@@ -524,25 +506,25 @@ export default function AccountRecoveryPage() {
                     gap: '14px',
                   }}>
                     <div>
-                      <label style={labelStyle}>First Name *</label>
+                      <label className="recovery-label">First Name *</label>
                       <input
                         type="text"
                         value={form.firstName}
                         onChange={e => updateForm('firstName', e.target.value)}
                         placeholder="First name"
-                        style={inputStyle}
+                        className="recovery-input"
                         onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                         onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                       />
                     </div>
                     <div>
-                      <label style={labelStyle}>Surname *</label>
+                      <label className="recovery-label">Surname *</label>
                       <input
                         type="text"
                         value={form.surname}
                         onChange={e => updateForm('surname', e.target.value)}
                         placeholder="Surname"
-                        style={inputStyle}
+                        className="recovery-input"
                         onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                         onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                       />
@@ -551,13 +533,13 @@ export default function AccountRecoveryPage() {
 
                   {/* Email */}
                   <div>
-                    <label style={labelStyle}>What is your Email Address? *</label>
+                    <label className="recovery-label">What is your Email Address? *</label>
                     <input
                       type="email"
                       value={form.email}
                       onChange={e => updateForm('email', e.target.value)}
                       placeholder="your@email.com"
-                      style={inputStyle}
+                      className="recovery-input"
                       onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                       onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                     />
@@ -565,13 +547,13 @@ export default function AccountRecoveryPage() {
 
                   {/* Phone */}
                   <div>
-                    <label style={labelStyle}>What is your Preferred Phone Number? *</label>
+                    <label className="recovery-label">What is your Preferred Phone Number? *</label>
                     <input
                       type="tel"
                       value={form.phone}
                       onChange={e => updateForm('phone', e.target.value)}
                       placeholder="+234 800 000 0000"
-                      style={inputStyle}
+                      className="recovery-input"
                       onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                       onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                     />
@@ -579,11 +561,12 @@ export default function AccountRecoveryPage() {
 
                   {/* Support Type Dropdown */}
                   <div>
-                    <label style={labelStyle}>What do you need support with? *</label>
+                    <label className="recovery-label">What do you need support with? *</label>
                     <select
                       value={form.supportType}
                       onChange={e => updateForm('supportType', e.target.value)}
-                      style={{ ...inputStyle, cursor: 'pointer' }}
+                      className="recovery-input"
+                      style={{ cursor: 'pointer' }}
                     >
                       <option value="">— Select an option —</option>
                       <option value="hacked">Account Hacked</option>
@@ -593,10 +576,9 @@ export default function AccountRecoveryPage() {
 
                   {/* ID Upload */}
                   <div>
-                    <label style={labelStyle}>Upload Means of Identification *</label>
-                    <p style={{
+                    <label className="recovery-label">Upload Means of Identification *</label>
+                    <p className="recovery-subtext" style={{
                       fontSize: '12px',
-                      color: '#6b5fa0',
                       margin: '0 0 8px',
                     }}>
                       Accepted: Digital NIN, International Passport, National ID Card, Driver's License
@@ -647,13 +629,14 @@ export default function AccountRecoveryPage() {
 
                   {/* Additional Info */}
                   <div>
-                    <label style={labelStyle}>Please provide additional information regarding the issue *</label>
+                    <label className="recovery-label">Please provide additional information regarding the issue *</label>
                     <textarea
                       value={form.additionalInfo}
                       onChange={e => updateForm('additionalInfo', e.target.value)}
                       placeholder="Describe when you lost access, what happened, any relevant details that could help us recover your account..."
                       rows={5}
-                      style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }}
+                      className="recovery-input"
+                      style={{ resize: 'vertical', minHeight: '120px' }}
                       onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
                       onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
                     />
@@ -662,17 +645,15 @@ export default function AccountRecoveryPage() {
               </div>
 
               {/* Terms & Conditions */}
-              <div style={{
-                background: 'rgba(10,6,24,0.8)',
+              <div className="recovery-card" style={{
                 border: '1px solid rgba(124,58,237,0.15)',
                 borderRadius: '16px',
                 padding: '24px',
                 marginBottom: '24px',
               }}>
-                <h3 style={{
+                <h3 className="recovery-heading" style={{
                   fontSize: '16px',
                   fontWeight: 700,
-                  color: '#fff',
                   margin: '0 0 16px',
                   display: 'flex',
                   alignItems: 'center',
@@ -680,18 +661,7 @@ export default function AccountRecoveryPage() {
                 }}>
                   📋 Terms & Conditions
                 </h3>
-                <div style={{
-                  background: 'rgba(124,58,237,0.04)',
-                  border: '1px solid rgba(124,58,237,0.1)',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  marginBottom: '16px',
-                  maxHeight: '200px',
-                  overflowY: 'auto',
-                  fontSize: '13px',
-                  color: '#9d8fd4',
-                  lineHeight: 1.8,
-                }}>
+                <div className="recovery-terms-box">
                   <p style={{ fontWeight: 700, color: '#c084fc', margin: '0 0 8px' }}>
                     Account Recovery Service — Terms & Conditions
                   </p>
@@ -752,9 +722,8 @@ export default function AccountRecoveryPage() {
                       flexShrink: 0,
                     }}
                   />
-                  <span style={{
+                  <span className="recovery-subtext" style={{
                     fontSize: '13px',
-                    color: '#9d8fd4',
                     lineHeight: 1.6,
                   }}>
                     I have read and agree to the <strong style={{ color: '#a855f7' }}>Terms & Conditions</strong> and <strong style={{ color: '#a855f7' }}>Privacy Policy</strong>. I understand that payment is <strong style={{ color: '#ef4444' }}>NON-REFUNDABLE</strong> and recovery takes <strong style={{ color: '#f59e0b' }}>14–30 business days</strong>.
@@ -819,10 +788,9 @@ export default function AccountRecoveryPage() {
                   </>
                 )}
               </button>
-              <p style={{
+              <p className="recovery-subtext" style={{
                 textAlign: 'center',
                 fontSize: '12px',
-                color: '#6b5fa0',
                 margin: '12px 0 0',
               }}>
                 🔒 Secured by Paystack · Payment is non-refundable · 14–30 business days
@@ -840,17 +808,15 @@ export default function AccountRecoveryPage() {
                 padding: '28px',
                 marginBottom: '24px',
               }}>
-                <h3 style={{
+                <h3 className="recovery-heading" style={{
                   fontSize: '18px',
                   fontWeight: 700,
-                  color: '#fff',
                   margin: '0 0 12px',
                 }}>
                   📸 Instagram Account Recovery
                 </h3>
-                <p style={{
+                <p className="recovery-subtext" style={{
                   fontSize: '14px',
-                  color: '#9d8fd4',
                   lineHeight: 1.7,
                   margin: '0 0 20px',
                 }}>
@@ -870,7 +836,7 @@ export default function AccountRecoveryPage() {
                     '✅ Email/phone change recovery',
                     '✅ Two-factor auth recovery',
                   ].map(item => (
-                    <div key={item} style={{ fontSize: '13px', color: '#9d8fd4' }}>
+                    <div key={item} className="recovery-subtext" style={{ fontSize: '13px' }}>
                       {item}
                     </div>
                   ))}
@@ -894,9 +860,8 @@ export default function AccountRecoveryPage() {
                     }}>
                       Contact Us to Get Started
                     </p>
-                    <p style={{
+                    <p className="recovery-subtext" style={{
                       fontSize: '13px',
-                      color: '#9d8fd4',
                       margin: 0,
                     }}>
                       Instagram recovery form is available via WhatsApp. Chat with us to begin your recovery process.
@@ -904,8 +869,7 @@ export default function AccountRecoveryPage() {
                   </div>
                 </div>
               </div>
-              <div style={{
-                background: 'rgba(10,6,24,0.8)',
+              <div className="recovery-card" style={{
                 border: '1px solid rgba(124,58,237,0.15)',
                 borderRadius: '16px',
                 padding: '28px',
@@ -919,9 +883,8 @@ export default function AccountRecoveryPage() {
                 }}>
                   ₦{INSTAGRAM_PRICE_NGN.toLocaleString()}
                 </p>
-                <p style={{
+                <p className="recovery-subtext" style={{
                   fontSize: '15px',
-                  color: '#6b5fa0',
                   margin: '0 0 20px',
                 }}>
                   ${INSTAGRAM_PRICE_USD} USD · Non-refundable · 14–30 business days
@@ -961,17 +924,15 @@ export default function AccountRecoveryPage() {
                 padding: '28px',
                 marginBottom: '24px',
               }}>
-                <h3 style={{
+                <h3 className="recovery-heading" style={{
                   fontSize: '18px',
                   fontWeight: 700,
-                  color: '#fff',
                   margin: '0 0 12px',
                 }}>
                   🎵 TikTok Account Recovery
                 </h3>
-                <p style={{
+                <p className="recovery-subtext" style={{
                   fontSize: '14px',
-                  color: '#9d8fd4',
                   lineHeight: 1.7,
                   margin: '0 0 20px',
                 }}>
@@ -991,7 +952,7 @@ export default function AccountRecoveryPage() {
                     '✅ Phone/email recovery',
                     '✅ Creator account restoration',
                   ].map(item => (
-                    <div key={item} style={{ fontSize: '13px', color: '#9d8fd4' }}>
+                    <div key={item} className="recovery-subtext" style={{ fontSize: '13px' }}>
                       {item}
                     </div>
                   ))}
@@ -1015,9 +976,8 @@ export default function AccountRecoveryPage() {
                     }}>
                       Contact Us to Get Started
                     </p>
-                    <p style={{
+                    <p className="recovery-subtext" style={{
                       fontSize: '13px',
-                      color: '#9d8fd4',
                       margin: 0,
                     }}>
                       TikTok recovery is handled via WhatsApp consultation. Message us to begin.
@@ -1025,8 +985,7 @@ export default function AccountRecoveryPage() {
                   </div>
                 </div>
               </div>
-              <div style={{
-                background: 'rgba(10,6,24,0.8)',
+              <div className="recovery-card" style={{
                 border: '1px solid rgba(124,58,237,0.15)',
                 borderRadius: '16px',
                 padding: '28px',
@@ -1040,9 +999,8 @@ export default function AccountRecoveryPage() {
                 }}>
                   ₦{FACEBOOK_PRICE_NGN.toLocaleString()}
                 </p>
-                <p style={{
+                <p className="recovery-subtext" style={{
                   fontSize: '15px',
-                  color: '#6b5fa0',
                   margin: '0 0 20px',
                 }}>
                   ${FACEBOOK_PRICE_USD} USD · Non-refundable · 14–30 business days
@@ -1096,6 +1054,36 @@ export default function AccountRecoveryPage() {
             display: none !important;
           }
         }
+        /* Fix form text visibility */
+        input:not([type="checkbox"])
+        :not([type="radio"])
+        :not([type="range"])
+        :not([type="submit"])
+        :not([type="button"]),
+        textarea,
+        select {
+          color: #1a1a1a !important;
+        }
+
+        .dark input:not([type="checkbox"])
+        :not([type="radio"])
+        :not([type="range"]),
+        .dark textarea,
+        .dark select {
+          color: #ffffff !important;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+          color: #9d8fd4 !important;
+          opacity: 1 !important;
+        }
+
+        .dark input::placeholder,
+        .dark textarea::placeholder {
+          color: #6b5fa0 !important;
+          opacity: 1 !important;
+        }
       `}</style>
     </>
   )
@@ -1106,7 +1094,6 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: '13px',
   fontWeight: 600,
-  color: '#9d8fd4',
   marginBottom: '8px',
 }
 
@@ -1117,9 +1104,8 @@ const inputStyle: React.CSSProperties = {
   borderRadius: '10px',
   padding: '12px 14px',
   fontSize: '14px',
-  color: 'var(--input-text, #1a1a1a)',
   outline: 'none',
-  transition: 'border-color 0.2s',
   boxSizing: 'border-box',
   fontFamily: 'inherit',
+  transition: 'border-color 0.2s',
 }

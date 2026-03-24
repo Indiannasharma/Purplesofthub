@@ -45,7 +45,7 @@ export default function NewsletterSignup() {
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
           NEWSLETTER
         </div>
-        <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 900, color: "#fff", letterSpacing: "-1px", marginBottom: 12 }}>
+        <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3.5vw,40px)", fontWeight: 900, color: "inherit", letterSpacing: "-1px", marginBottom: 12 }}>
           Stay in the <span className="grad-text">Loop</span>
         </h2>
         <p style={{ color: "#9d8fd4", fontSize: 15, lineHeight: 1.75, marginBottom: 32 }}>
@@ -75,7 +75,7 @@ export default function NewsletterSignup() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                style={{ flex: 1, minWidth: 200, padding: "13px 18px", borderRadius: 50, background: "rgba(255,255,255,.05)", border: "1px solid rgba(168,85,247,.25)", color: "#fff", fontSize: 15, fontFamily: "Outfit", outline: "none" }}
+                style={{ flex: 1, minWidth: 200, padding: "13px 18px", borderRadius: 50, background: "rgba(255,255,255,.05)", border: "1px solid rgba(168,85,247,.25)", color: "inherit", fontSize: 15, fontFamily: "Outfit", outline: "none" }}
               />
               <button
                 className="btn-main"

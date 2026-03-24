@@ -21,7 +21,7 @@ export default function WhatsAppButton() {
         right: '64px',
         background: '#1a1a2e',
         border: '1px solid rgba(124,58,237,0.2)',
-        color: '#fff',
+        color: 'inherit',
         fontSize: '13px',
         fontWeight: 500,
         padding: '8px 14px',

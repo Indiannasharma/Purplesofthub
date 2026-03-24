@@ -84,7 +84,7 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#fff", fontSize: 14, marginBottom: 18 }}>Services</div>
+            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "inherit", fontSize: 14, marginBottom: 18 }}>Services</div>
             {SERVICE_LINKS.map(([l, h]) => (
               <Link key={l} href={h}
                 style={{ display: "block", color: "#9d8fd4", fontSize: 13, marginBottom: 11, textDecoration: "none", transition: "color .2s" }}
@@ -96,7 +96,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#fff", fontSize: 14, marginBottom: 18 }}>Company</div>
+            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "inherit", fontSize: 14, marginBottom: 18 }}>Company</div>
             {COMPANY_LINKS.map(([l, h]) => (
               <Link key={l} href={h}
                 style={{ display: "block", color: "#9d8fd4", fontSize: 13, marginBottom: 11, textDecoration: "none", transition: "color .2s" }}
@@ -108,7 +108,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#fff", fontSize: 14, marginBottom: 18 }}>Contact</div>
+            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "inherit", fontSize: 14, marginBottom: 18 }}>Contact</div>
             <div style={{ color: "#c084fc", fontSize: 13, marginBottom: 11 }}>hello@purplesofthub.com</div>
             <div style={{ fontSize: 13, marginBottom: 11 }}>
               <a href="https://purplesofthub.com" target="_blank" rel="noopener noreferrer" style={{ color: "#c084fc", textDecoration: "none" }}>purplesofthub.com</a>

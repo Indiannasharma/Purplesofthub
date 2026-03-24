@@ -576,3 +576,34 @@ select:focus {
   outline: none !important;
   box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
 }
+
+/* Fix form text visibility */
+input:not([type="checkbox"])
+:not([type="radio"])
+:not([type="range"])
+:not([type="submit"])
+:not([type="button"]),
+textarea,
+select {
+  color: #1a1a1a !important;
+}
+
+.dark input:not([type="checkbox"])
+:not([type="radio"])
+:not([type="range"]),
+.dark textarea,
+.dark select {
+  color: #ffffff !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9d8fd4 !important;
+  opacity: 1 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6b5fa0 !important;
+  opacity: 1 !important;
+}

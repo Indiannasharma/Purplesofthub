@@ -52,7 +52,7 @@ export default function ContactForm() {
     return (
       <div style={{ textAlign: "center", padding: "52px 32px", background: "rgba(124,58,237,.1)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 24 }}>
         <div style={{ fontSize: 60, marginBottom: 20 }}>🎉</div>
-        <div style={{ fontFamily: "Outfit", fontSize: 24, fontWeight: 800, color: "#fff", marginBottom: 10 }}>Message Sent!</div>
+        <div style={{ fontFamily: "Outfit", fontSize: 24, fontWeight: 800, color: "inherit", marginBottom: 10 }}>Message Sent!</div>
         <p style={{ color: "#9d8fd4", marginBottom: 24, fontSize: 15 }}>
           Thanks for reaching out! We'll get back to you within 24 hours. Check your email for a confirmation.
         </p>
