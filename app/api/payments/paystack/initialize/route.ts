@@ -1,18 +1,23 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   const supabase = await createClient()
 
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (!user) {
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { invoiceId, amount, currency, email, metadata, callback_url } = await request.json()
+
+  // Use provided email or user email
+  const paystackEmail = email || user?.email
+  if (!paystackEmail) {
     return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
+      { error: 'Email is required' },
+      { status: 400 }
     )
   }
-
-  const { invoiceId, amount, currency } = await request.json()
 
   const paystackSecret = process.env.PAYSTACK_SECRET_KEY
   if (!paystackSecret) {
@@ -28,6 +33,29 @@ export async function POST(request: Request) {
         ? Math.round(amount * 100)
         : Math.round(amount * 100)
 
+    // Build request body
+    const requestBody: any = {
+      email: paystackEmail,
+      amount: amountInSmallestUnit,
+      currency: currency || 'NGN',
+      reference: `${invoiceId || 'txn'}_${Date.now()}`,
+      callback_url: callback_url || `${process.env.NEXT_PUBLIC_SITE_URL}/api/payments/paystack/verify`,
+    }
+
+    // Add metadata if provided
+    if (metadata) {
+      requestBody.metadata = {
+        ...metadata,
+        ...(user && { user_id: user.id }),
+        ...(invoiceId && { invoice_id: invoiceId }),
+      }
+    } else if (invoiceId || user) {
+      requestBody.metadata = {
+        ...(invoiceId && { invoice_id: invoiceId }),
+        ...(user && { user_id: user.id }),
+      }
+    }
+
     const response = await fetch(
       'https://api.paystack.co/transaction/initialize',
       {
@@ -36,24 +64,7 @@ export async function POST(request: Request) {
           'Authorization': `Bearer ${paystackSecret}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          email: user.email,
-          amount: amountInSmallestUnit,
-          currency: currency || 'NGN',
-          reference: `inv_${invoiceId}_${Date.now()}`,
-          callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/payments/paystack/verify`,
-          metadata: {
-            invoice_id: invoiceId,
-            user_id: user.id,
-            custom_fields: [
-              {
-                display_name: 'Invoice ID',
-                variable_name: 'invoice_id',
-                value: invoiceId
-              }
-            ]
-          }
-        })
+        body: JSON.stringify(requestBody)
       }
     )
 
