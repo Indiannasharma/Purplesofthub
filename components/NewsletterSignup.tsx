@@ -10,31 +10,45 @@ export default function NewsletterSignup() {
   const [captchaReset, setCaptchaReset] = useState(0);
   const captchaEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
-  const handleSubmit = async () => {
-    if (!email.trim()) { setStatus("error"); setMessage("Please enter your email."); return; }
-    if (captchaEnabled && !captchaToken) { setStatus("error"); setMessage("Please complete the captcha."); return; }
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    
+    if (!email || !email.includes('@')) {
+      setMessage('Please enter a valid email')
+      setStatus("error")
+      return
+    }
+
     setStatus("loading");
     setMessage("");
+    setStatus("idle")
+
     try {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, captchaToken }),
+        body: JSON.stringify({ 
+          email: email.trim(),
+          source: 'homepage'
+        }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setStatus("success");
-        setMessage(data.message || "You're subscribed!");
-        setEmail("");
-        setCaptchaToken("");
-        setCaptchaReset((v) => v + 1);
-      } else {
-        setStatus("error");
-        setMessage(data.error || "Something went wrong.");
+      if (!res.ok) {
+        setMessage(data.error || "Failed to subscribe. Please try again.")
+        setStatus("error")
+        return
       }
-    } catch {
-      setStatus("error");
-      setMessage("Network error. Please try again.");
+      
+      setStatus("success");
+      setMessage(data.message || "Successfully subscribed! Check your inbox for a welcome email.");
+      setEmail("");
+      setCaptchaToken("");
+      setCaptchaReset((v) => v + 1);
+    } catch (err) {
+      setMessage("Connection error. Please check your internet and try again.")
+      setStatus("error")
+    } finally {
+      setStatus("loading")
     }
   };
 
