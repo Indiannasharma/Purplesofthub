@@ -514,7 +514,7 @@ const services: Service[] = [
         a: "No — we handle everything from concept to design to posting. We just need your brand guidelines and any product photos you want to use.",
       },
     ],
-    relatedServices: ["facebook-ads", "content-creation", "google-ads"],
+    relatedServices: ["facebook-ads", "content-creation", "google-ads", "account-recovery"],
     metaTitle: "Social Media Management — PurpleSoftHub",
     metaDescription:
       "Professional social media management for Instagram, Facebook, TikTok and more. Grow your brand consistently.",
@@ -834,6 +834,69 @@ const services: Service[] = [
       "Shopify development",
       "ecommerce website Nigeria",
       "online store Nigeria",
+    ],
+  },
+
+  {
+    slug: "account-recovery",
+    title: "Social Media Account Recovery",
+    shortTitle: "Account Recovery",
+    tagline: "Recover hacked or disabled social media accounts fast",
+    category: "Digital Marketing",
+    icon: "🔐",
+    color: "#7c3aed",
+    heroDescription:
+      "Professional account recovery service for hacked, disabled, or locked Facebook, Instagram, and TikTok accounts. Fast, secure, and reliable recovery.",
+    overview:
+      "Lost access to your social media account? Our expert team specialises in recovering hacked or disabled accounts across all major platforms. We work directly with platform support systems to restore your account access quickly and securely.",
+    features: [
+      "Facebook Account Recovery",
+      "Instagram Account Recovery",
+      "TikTok Account Recovery",
+      "Hacked Account Recovery",
+      "Disabled Account Appeals",
+      "Identity Verification Support",
+      "Two-Factor Auth Issues",
+      "Account Security Audit",
+    ],
+    process: [
+      { step: "01", title: "Assessment", desc: "Review your account situation and gather necessary information." },
+      { step: "02", title: "Documentation", desc: "Prepare identity verification and account proof documents." },
+      { step: "03", title: "Recovery", desc: "Submit recovery requests through official platform channels." },
+      { step: "04", title: "Restoration", desc: "Restore account access and implement security measures." },
+    ],
+    technologies: ["Facebook API", "Instagram API", "TikTok API", "Identity Verification Systems"],
+    benefits: [
+      "Quick recovery process",
+      "Expert team guidance",
+      "Confidential handling",
+      "Secure account restoration",
+    ],
+    faqs: [
+      {
+        q: "How long does account recovery take?",
+        a: "Recovery takes 14–30 business days depending on the platform and account situation. We work with official support channels for the fastest recovery.",
+      },
+      {
+        q: "What information do I need to provide?",
+        a: "You'll need valid government ID (NIN, Passport, Driver's License), email address, phone number, and details about your account.",
+      },
+      {
+        q: "What's the success rate?",
+        a: "We have a high success rate for hacked accounts and disabled accounts. Final recovery depends on platform policies and account verification.",
+      },
+    ],
+    relatedServices: ["social-media-management", "facebook-ads", "content-creation"],
+    metaTitle: "Social Media Account Recovery — PurpleSoftHub",
+    metaDescription:
+      "Professional social media account recovery for Facebook, Instagram, and TikTok. Recover hacked or disabled accounts securely.",
+    keywords: [
+      "account recovery",
+      "hacked account recovery",
+      "Facebook account recovery",
+      "Instagram account recovery",
+      "TikTok account recovery",
+      "disabled account recovery",
     ],
   },
 ];
