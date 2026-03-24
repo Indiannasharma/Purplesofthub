@@ -43,9 +43,17 @@ export async function POST(request: NextRequest) {
       )
 
       await supabase.from('account_recovery_requests').insert({
-        ...data,
+        full_name: data.fullName,
+        facebook_handle: data.facebookHandle,
+        first_name: data.firstName,
+        surname: data.surname,
+        email: data.email,
+        phone: data.phone,
+        support_type: data.supportType,
+        additional_info: data.additionalInfo,
+        platform: data.platform,
+        amount: data.amount,
         status: 'pending_payment',
-        created_at: new Date().toISOString(),
       })
     } catch (dbErr) {
       console.error('DB error:', dbErr)
