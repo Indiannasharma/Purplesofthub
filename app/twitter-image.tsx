@@ -46,7 +46,7 @@ export default async function Image() {
           zIndex: 1,
         }}>
           <img
-            src="https://www.purplesofthub.com/images/logo/purplesoft-logo-main.png"
+            src="/Assets/images/Purplesoft-logo-main.png"
             width="220"
             height="64"
             style={{
