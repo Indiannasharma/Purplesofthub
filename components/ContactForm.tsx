@@ -80,7 +80,7 @@ export default function ContactForm() {
             type={type} placeholder={ph}
             value={form[field as keyof typeof form]}
             onChange={e => setForm({ ...form, [field]: e.target.value })}
-            style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,.04)", border: "1px solid rgba(168,85,247,.2)", color: "#fff", fontSize: 15 }}
+            style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,.04)", border: "1px solid rgba(168,85,247,.2)", color: "var(--input-text, #1a1a1a)", fontSize: 15 }}
           />
         </div>
       ))}
@@ -90,7 +90,7 @@ export default function ContactForm() {
         <select
           value={form.service}
           onChange={e => setForm({ ...form, service: e.target.value })}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(10,5,25,.9)", border: "1px solid rgba(168,85,247,.2)", color: form.service ? "#fff" : "#5b4d8a", fontSize: 15 }}
+          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(10,5,25,.9)", border: "1px solid rgba(168,85,247,.2)", color: "var(--input-text, #1a1a1a)", fontSize: 15 }}
         >
           <option value="">Select a service...</option>
           {SERVICES.map(s => <option key={s} value={s} style={{ background: "#0d0820" }}>{s}</option>)}
@@ -103,7 +103,7 @@ export default function ContactForm() {
           rows={5} placeholder="Tell us about your project..."
           value={form.message}
           onChange={e => setForm({ ...form, message: e.target.value })}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,.04)", border: "1px solid rgba(168,85,247,.2)", color: "#fff", fontSize: 15, resize: "vertical", fontFamily: "Outfit" }}
+          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,.04)", border: "1px solid rgba(168,85,247,.2)", color: "var(--input-text, #1a1a1a)", fontSize: 15, resize: "vertical", fontFamily: "Outfit" }}
         />
       </div>
 
