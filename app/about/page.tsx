@@ -56,7 +56,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section style={{ minHeight: "60vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", padding: "130px 5% 80px" }}>
+      <section style={{ minHeight: "60vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", padding: "clamp(60px, 10vw, 130px) 5% clamp(40px, 8vw, 80px)" }}>
         <div style={{ position: "absolute", width: 800, height: 800, borderRadius: "50%", background: "radial-gradient(circle,rgba(109,40,217,.18) 0%,transparent 65%)", top: "-20%", left: "-15%", pointerEvents: "none" }} />
         <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle,rgba(168,85,247,.14) 0%,transparent 65%)", bottom: "-10%", right: "0%", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
@@ -82,8 +82,8 @@ export default function AboutPage() {
       </section>
 
       {/* ── MISSION ── */}
-      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+      <section style={{ padding: "clamp(50px, 8vw, 90px) 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px, 5vw, 64px)", alignItems: "center" }}>
           {/* Left */}
           <Reveal>
             <div>
@@ -126,11 +126,10 @@ export default function AboutPage() {
             </div>
           </Reveal>
         </div>
-        <style>{`@media(max-width:768px){section > div[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}}`}</style>
       </section>
 
       {/* ── WHAT WE DO ── */}
-      <section style={{ padding: "90px 5%" }}>
+      <section style={{ padding: "clamp(50px, 8vw, 90px) 5%" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -158,7 +157,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── OUR APPROACH ── */}
-      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+      <section style={{ padding: "clamp(50px, 8vw, 90px) 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -187,7 +186,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── WHY WORK WITH US ── */}
-      <section style={{ padding: "90px 5%" }}>
+      <section style={{ padding: "clamp(50px, 8vw, 90px) 5%" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -213,7 +212,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section style={{ padding: "100px 5%", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <section style={{ padding: "clamp(50px, 10vw, 100px) 5%", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.16) 0%,transparent 65%)", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
         <Reveal>
@@ -240,6 +239,46 @@ export default function AboutPage() {
       </section>
 
       <Footer />
+
+      <style>{`
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+          /* Mission section: 2-column to 1-column */
+          section > div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
+
+          /* Reduce bottom margin on section headers */
+          div[style*="marginBottom: 60"] {
+            margin-bottom: 40px !important;
+          }
+
+          /* Card padding reduction */
+          div[style*="padding: 30px 26px"],
+          div[style*="padding: 32px 24px"],
+          div[style*="padding: 32px 28px"],
+          div[style*="padding: 36px 32px"] {
+            padding: 20px 16px !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          /* Extra small screens */
+          div[style*="marginBottom: 60"] {
+            margin-bottom: 32px !important;
+          }
+
+          /* Reduce gaps further on very small screens */
+          div[style*="gap: 20"] {
+            gap: 12px !important;
+          }
+
+          /* Tighter badge wrapping */
+          div[style*="gap: 10"] {
+            gap: 8px !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }
