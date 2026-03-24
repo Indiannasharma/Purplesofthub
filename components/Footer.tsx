@@ -21,16 +21,12 @@ const SERVICE_LINKS: [string, string][] = [
   ["SaaS Development", "/services/saas-development"],
   ["Music Promo", "/services/music-promotion"],
 ];
-const COMPANY_LINKS: [string, string][] = [["About Us", "/about"], ["Portfolio", "/portfolio"], ["Blog", "/blog"], ["Contact", "/contact"]];
+const COMPANY_LINKS: [string, string][] = [["About Us", "/about"], ["Portfolio", "/portfolio"], ["Blog", "/blog"], ["Donate 💜", "/donate"], ["Contact", "/contact"]];
 
 export default function Footer() {
   return (
     <FadeIn>
-      <footer style={{
-        background: "var(--footer-bg)",
-        borderTop: "1px solid rgba(124,58,237,.2)",
-        padding: "56px 5% 28px",
-      }}>
+      <footer className="footer-section">
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 48 }}>
 
@@ -45,7 +41,7 @@ export default function Footer() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            <p style={{ color: "#9d8fd4", fontSize: 14, lineHeight: 1.8, maxWidth: 260, marginBottom: 22 }}>
+            <p className="footer-tagline">
               Building smart digital products for businesses, startups, and creators worldwide.
             </p>
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -84,31 +80,27 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "inherit", fontSize: 14, marginBottom: 18 }}>Services</div>
+            <div className="footer-heading">Services</div>
             {SERVICE_LINKS.map(([l, h]) => (
               <Link key={l} href={h}
-                style={{ display: "block", color: "#9d8fd4", fontSize: 13, marginBottom: 11, textDecoration: "none", transition: "color .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#a855f7")}
-                onMouseLeave={e => (e.currentTarget.style.color = "#9d8fd4")}
+                className="footer-link"
               >{l}</Link>
             ))}
           </div>
 
           {/* Company */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "inherit", fontSize: 14, marginBottom: 18 }}>Company</div>
+            <div className="footer-heading">Company</div>
             {COMPANY_LINKS.map(([l, h]) => (
               <Link key={l} href={h}
-                style={{ display: "block", color: "#9d8fd4", fontSize: 13, marginBottom: 11, textDecoration: "none", transition: "color .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#a855f7")}
-                onMouseLeave={e => (e.currentTarget.style.color = "#9d8fd4")}
+                className="footer-link"
               >{l}</Link>
             ))}
           </div>
 
           {/* Contact */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "inherit", fontSize: 14, marginBottom: 18 }}>Contact</div>
+            <div className="footer-heading">Contact</div>
             <div style={{ color: "#c084fc", fontSize: 13, marginBottom: 11 }}>hello@purplesofthub.com</div>
             <div style={{ fontSize: 13, marginBottom: 11 }}>
               <a href="https://purplesofthub.com" target="_blank" rel="noopener noreferrer" style={{ color: "#c084fc", textDecoration: "none" }}>purplesofthub.com</a>
@@ -128,18 +120,68 @@ export default function Footer() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           flexWrap: "wrap", gap: 12,
         }}>
-          <div style={{ color: "#5b4d8a", fontSize: 13 }}>© 2026 Purplesofthub. All rights reserved.</div>
+          <div className="footer-copyright">© 2026 Purplesofthub. All rights reserved.</div>
           <div style={{ display: "flex", gap: 24 }}>
             {[["Privacy Policy", "/privacy"], ["Terms of Service", "/terms"]].map(([t, h]) => (
               <Link key={t} href={h}
-                style={{ color: "#5b4d8a", fontSize: 13, textDecoration: "none", transition: "color .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#a855f7")}
-                onMouseLeave={e => (e.currentTarget.style.color = "#5b4d8a")}
+                className="footer-link"
               >{t}</Link>
             ))}
           </div>
         </div>
         </div>
+
+        <style jsx>{`
+          .footer-section {
+            background: #f8f5ff;
+            border-top: 1px solid rgba(124,58,237,0.15);
+          }
+          .dark .footer-section {
+            background: #06030f;
+            border-top: 1px solid rgba(124,58,237,0.15);
+          }
+          .footer-heading {
+            color: #1a1a1a !important;
+            font-weight: 700;
+            font-family: Outfit;
+            font-size: 14px;
+            margin-bottom: 18px;
+          }
+          .dark .footer-heading {
+            color: #ffffff !important;
+          }
+          .footer-link {
+            color: #6b5fa0 !important;
+            text-decoration: none;
+            transition: color 0.2s;
+            display: block;
+            font-size: 13px;
+            margin-bottom: 11px;
+          }
+          .dark .footer-link {
+            color: #9d8fd4 !important;
+          }
+          .footer-link:hover {
+            color: #7c3aed !important;
+          }
+          .footer-copyright {
+            color: #9d8fd4 !important;
+            font-size: 13px;
+          }
+          .dark .footer-copyright {
+            color: #6b5fa0 !important;
+          }
+          .footer-tagline {
+            color: #6b5fa0 !important;
+            line-height: 1.7;
+            font-size: 14px;
+            max-width: 260px;
+            margin-bottom: 22px;
+          }
+          .dark .footer-tagline {
+            color: #9d8fd4 !important;
+          }
+        `}</style>
       </footer>
     </FadeIn>
   );
