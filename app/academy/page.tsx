@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import purpleLogo from '@/Assets/images/Purplesoft-logo-main.png'
 export default function AcademyPage() {
   const [dots, setDots] = useState('.')
   // Animated dots
@@ -86,7 +87,7 @@ export default function AcademyPage() {
         <div style={{ marginBottom: '32px' }}>
           <Link href="/">
             <Image
-              src="/Purplesoft-logo-main.png"
+              src={purpleLogo}
               alt="PurpleSoftHub"
               width={160}
               height={48}
