@@ -357,15 +357,9 @@ export default function Home() {
         </FadeInUp>
         <FadeInUp delay={0.1}>
           <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 14 }}>
-            {[["🇺🇸","🇦🇺"],["🇬🇧","🇵🇪"],["🇨🇦","🇳🇬"],["🇮🇹","🇿🇦"]].map((pair, i) => (
+            {[["🇺🇸","🇦🇺"],["🇬🇧","🇵🇪"],["🇨🇦","🇳🇬"],["🇳🇬","🇿🇦"]].map((pair, i) => (
               <div key={i} className="glass-card" style={{ padding: "12px 18px", display: "flex", gap: 8, fontSize: 24 }}>
                 {pair.map(f => <span key={f}>{f}</span>)}
-              </div>
-            ))}
-            {["Flutter", "Shopify", "Next.js", "Firebase"].map(t => (
-              <div key={t} className="glass-card" style={{ padding: "12px 20px", display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 16 }}>⚡</span>
-                <span style={{ fontWeight: 700, color: "var(--accent)", fontSize: 14 }}>{t}</span>
               </div>
             ))}
           </div>
