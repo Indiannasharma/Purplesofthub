@@ -31,8 +31,10 @@ const PLATFORMS = [
   },
 ]
 
-const PRICE_NGN = 42000
-const PRICE_USD = 30
+const FACEBOOK_PRICE_NGN = 42000
+const FACEBOOK_PRICE_USD = 30
+const INSTAGRAM_PRICE_NGN = 75000
+const INSTAGRAM_PRICE_USD = 50
 
 export default function AccountRecoveryPage() {
   const router = useRouter()
@@ -104,7 +106,8 @@ export default function AccountRecoveryPage() {
         formData.append('idFile', form.idFile)
       }
       formData.append('platform', activeTab)
-      formData.append('amount', String(PRICE_NGN))
+      const amount = activeTab === 'facebook' ? FACEBOOK_PRICE_NGN : INSTAGRAM_PRICE_NGN
+      formData.append('amount', String(amount))
 
       // Save to API
       await fetch('/api/account-recovery', {
@@ -120,7 +123,7 @@ export default function AccountRecoveryPage() {
         },
         body: JSON.stringify({
           email: form.email,
-          amount: PRICE_NGN,
+          amount: activeTab === 'facebook' ? FACEBOOK_PRICE_NGN : INSTAGRAM_PRICE_NGN,
           currency: 'NGN',
           metadata: {
             service: 'account-recovery',
@@ -208,26 +211,26 @@ export default function AccountRecoveryPage() {
             flexWrap: 'wrap',
           }}>
             <div style={{
-              background: 'rgba(124,58,237,0.15)',
-              border: '1px solid rgba(124,58,237,0.3)',
+              background: 'rgba(24,119,242,0.15)',
+              border: '1px solid rgba(24,119,242,0.3)',
               borderRadius: '100px',
               padding: '8px 20px',
-              color: '#c084fc',
-              fontSize: '15px',
+              color: '#60a5fa',
+              fontSize: '14px',
               fontWeight: 700,
             }}>
-              ₦{PRICE_NGN.toLocaleString()} NGN
+              📘 Facebook — ₦42,000 / $30
             </div>
             <div style={{
-              background: 'rgba(16,185,129,0.1)',
-              border: '1px solid rgba(16,185,129,0.3)',
+              background: 'rgba(225,48,108,0.15)',
+              border: '1px solid rgba(225,48,108,0.3)',
               borderRadius: '100px',
               padding: '8px 20px',
-              color: '#10b981',
-              fontSize: '15px',
+              color: '#f472b6',
+              fontSize: '14px',
               fontWeight: 700,
             }}>
-              ${PRICE_USD} USD
+              📸 Instagram — ₦75,000 / $50
             </div>
             <div style={{
               background: 'rgba(245,158,11,0.1)',
@@ -812,7 +815,7 @@ export default function AccountRecoveryPage() {
                   </>
                 ) : (
                   <>
-                    🔐 Submit & Pay ₦{PRICE_NGN.toLocaleString()} / ${PRICE_USD}
+                    🔐 Submit & Pay ₦{FACEBOOK_PRICE_NGN.toLocaleString()} / ${FACEBOOK_PRICE_USD}
                   </>
                 )}
               </button>
@@ -914,14 +917,14 @@ export default function AccountRecoveryPage() {
                   color: '#a855f7',
                   margin: '0 0 4px',
                 }}>
-                  ₦{PRICE_NGN.toLocaleString()}
+                  ₦{INSTAGRAM_PRICE_NGN.toLocaleString()}
                 </p>
                 <p style={{
                   fontSize: '15px',
                   color: '#6b5fa0',
                   margin: '0 0 20px',
                 }}>
-                  ${PRICE_USD} USD · Non-refundable · 14–30 business days
+                  ${INSTAGRAM_PRICE_USD} USD · Non-refundable · 14–30 business days
                 </p>
                 <Link
                   href="https://wa.me/message/BPNJE7CPON3OJ1"
@@ -1035,14 +1038,14 @@ export default function AccountRecoveryPage() {
                   color: '#a855f7',
                   margin: '0 0 4px',
                 }}>
-                  ₦{PRICE_NGN.toLocaleString()}
+                  ₦{FACEBOOK_PRICE_NGN.toLocaleString()}
                 </p>
                 <p style={{
                   fontSize: '15px',
                   color: '#6b5fa0',
                   margin: '0 0 20px',
                 }}>
-                  ${PRICE_USD} USD · Non-refundable · 14–30 business days
+                  ${FACEBOOK_PRICE_USD} USD · Non-refundable · 14–30 business days
                 </p>
                 <Link
                   href="https://wa.me/message/BPNJE7CPON3OJ1"
