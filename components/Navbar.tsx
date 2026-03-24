@@ -32,7 +32,7 @@ function MoonIcon() {
 
 const NAV_LINKS = [
   { label: "Services", href: "/services" },
-  { label: "Academy", href: "/blog" },
+  { label: "Academy", href: "/academy" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Music", href: "/#music" },
   { label: "Blog", href: "/blog" },
