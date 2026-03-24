@@ -131,7 +131,7 @@ export default function AccountRecoveryPage() {
             fullName: form.fullName,
             phone: form.phone,
           },
-          callback_url: `${window.location.origin}/services/account-recovery/success`,
+          callback_url: `${window.location.origin}/services/social-media-management/account-recovery/success`,
         }),
       })
 
