@@ -37,51 +37,42 @@ export default async function Image() {
           display: 'flex',
         }} />
 
-        {/* Logo + Name */}
+        {/* Logo */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '20px',
+          justifyContent: 'center',
           marginBottom: '28px',
           zIndex: 1,
         }}>
-          <div style={{
-            width: '80px',
-            height: '80px',
-            borderRadius: '20px',
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '42px',
-            fontWeight: '900',
-            color: 'white',
-          }}>
-            P
-          </div>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            <span style={{
-              fontSize: '52px',
-              fontWeight: '900',
-              color: '#ffffff',
-              letterSpacing: '-2px',
-              lineHeight: '1',
+          <img
+            src="https://www.purplesofthub.com/images/logo/purplesoft-logo-main.png"
+            width="220"
+            height="64"
+            style={{
+              objectFit: 'contain',
               display: 'flex',
-            }}>
-              PurpleSoftHub
-            </span>
-            <span style={{
-              fontSize: '22px',
-              color: '#a855f7',
-              fontWeight: '600',
-              display: 'flex',
-            }}>
-              Digital Innovation Studio
-            </span>
-          </div>
+            }}
+            alt="PurpleSoftHub"
+          />
+        </div>
+
+        {/* Digital Innovation Studio */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '32px',
+          zIndex: 1,
+        }}>
+          <span style={{
+            fontSize: '22px',
+            color: '#a855f7',
+            fontWeight: '600',
+            display: 'flex',
+          }}>
+            Digital Innovation Studio
+          </span>
         </div>
 
         {/* Services row */}
@@ -133,27 +124,6 @@ export default async function Image() {
           </span>
         </div>
 
-        {/* Nigeria flag */}
-        <div style={{
-          position: 'absolute',
-          bottom: '24px',
-          right: '32px',
-          fontSize: '28px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          color: '#6b5fa0',
-          zIndex: 1,
-        }}>
-          <span>🇳🇬</span>
-          <span style={{
-            fontSize: '14px',
-            color: '#6b5fa0',
-            display: 'flex',
-          }}>
-            Lagos, Nigeria
-          </span>
-        </div>
       </div>
     ),
     { ...size }

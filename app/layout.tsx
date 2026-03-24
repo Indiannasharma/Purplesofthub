@@ -48,6 +48,33 @@ export const metadata: Metadata = {
     description: "Professional web development, mobile apps, digital marketing and music promotion from Lagos, Nigeria.",
     images: ["/opengraph-image"],
   },
+  icons: {
+    icon: [
+      {
+        url: '/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        url: '/android-chrome-192x192.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        url: '/android-chrome-192x192.png',
+        sizes: '16x16',
+        type: 'image/png',
+      },
+    ],
+    apple: [
+      {
+        url: '/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+    ],
+    shortcut: '/android-chrome-192x192.png',
+  },
   robots: {
     index: true,
     follow: true,
