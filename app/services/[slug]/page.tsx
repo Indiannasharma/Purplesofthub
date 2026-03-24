@@ -107,8 +107,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             </Reveal>
             <Reveal delay={0.25}>
               <div className="svc-hero-btns" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Link href="/contact">
-                  <button className="btn-main animate-glow" style={{ padding: "14px 30px", fontSize: 15 }}>Start a Project</button>
+                <Link href={service.ctaLink ?? "/contact"}>
+                  <button className="btn-main animate-glow" style={{ padding: "14px 30px", fontSize: 15 }}>{service.cta ?? "Start a Project"}</button>
                 </Link>
                 <Link href="/contact">
                   <button className="btn-outline" style={{ padding: "14px 30px", fontSize: 15 }}>Book a Free Call →</button>
@@ -321,8 +321,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               Book a free discovery call and let&apos;s talk about your {service.shortTitle.toLowerCase()} project.
             </p>
             <div className="svc-cta-btns" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/contact">
-                <button className="btn-main animate-glow" style={{ padding: "16px 38px", fontSize: 16 }}>Start a Project</button>
+              <Link href={service.ctaLink ?? "/contact"}>
+                <button className="btn-main animate-glow" style={{ padding: "16px 38px", fontSize: 16 }}>{service.cta ?? "Start a Project"}</button>
               </Link>
               <Link href="/services">
                 <button className="btn-outline" style={{ padding: "16px 38px", fontSize: 16 }}>All Services →</button>

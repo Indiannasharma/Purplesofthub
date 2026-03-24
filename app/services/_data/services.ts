@@ -28,6 +28,8 @@ export interface Service {
   metaTitle: string;
   metaDescription: string;
   keywords: string[];
+  cta?: string;
+  ctaLink?: string;
 }
 
 const services: Service[] = [
@@ -887,6 +889,8 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["social-media-management", "facebook-ads", "content-creation"],
+    cta: "Start Account Recovery 🔐",
+    ctaLink: "/services/social-media-management/account-recovery",
     metaTitle: "Social Media Account Recovery — PurpleSoftHub",
     metaDescription:
       "Professional social media account recovery for Facebook, Instagram, and TikTok. Recover hacked or disabled accounts securely.",
