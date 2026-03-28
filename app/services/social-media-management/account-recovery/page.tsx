@@ -1,8 +1,9 @@
 'use client'
+
 import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
+import Image from 'next/image'
+import Navbar from '@/components/Navbar'
 
 const PLATFORMS = [
   {
@@ -10,41 +11,66 @@ const PLATFORMS = [
     name: 'Facebook',
     icon: '📘',
     color: '#1877F2',
-    bg: 'rgba(24,119,242,0.1)',
-    border: 'rgba(24,119,242,0.3)',
+    gradient: 'linear-gradient(135deg, #1877F2, #0d65d9)',
+    bg: 'rgba(24,119,242,0.08)',
+    border: 'rgba(24,119,242,0.25)',
+    price_ngn: 42000,
+    price_usd: 30,
+    hasForm: true,
   },
   {
     id: 'instagram',
     name: 'Instagram',
     icon: '📸',
     color: '#E1306C',
-    bg: 'rgba(225,48,108,0.1)',
-    border: 'rgba(225,48,108,0.3)',
+    gradient: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
+    bg: 'rgba(225,48,108,0.08)',
+    border: 'rgba(225,48,108,0.25)',
+    price_ngn: 75000,
+    price_usd: 50,
+    hasForm: false,
   },
   {
     id: 'tiktok',
     name: 'TikTok',
     icon: '🎵',
     color: '#010101',
-    bg: 'rgba(0,0,0,0.08)',
-    border: 'rgba(0,0,0,0.2)',
+    gradient: 'linear-gradient(135deg, #010101, #69C9D0)',
+    bg: 'rgba(105,201,208,0.08)',
+    border: 'rgba(105,201,208,0.25)',
+    price_ngn: 75000,
+    price_usd: 50,
+    hasForm: false,
   },
 ]
 
-const FACEBOOK_PRICE_NGN = 42000
-const FACEBOOK_PRICE_USD = 30
-const INSTAGRAM_PRICE_NGN = 75000
-const INSTAGRAM_PRICE_USD = 50
+const inputClass = `
+  w-full px-4 py-3 rounded-xl
+  border transition-all duration-200
+  text-sm font-medium
+  outline-none
+  bg-white dark:bg-gray-900
+  border-gray-200 dark:border-gray-700
+  text-gray-900 dark:text-white
+  placeholder-gray-400
+  dark:placeholder-gray-500
+  focus:border-purple-500
+  dark:focus:border-purple-400
+  focus:ring-2 focus:ring-purple-500/20
+`
+
+const labelClass = `
+  block text-sm font-600 mb-2
+  text-gray-700 dark:text-gray-300
+`
 
 export default function AccountRecoveryPage() {
-  const router = useRouter()
   const [activeTab, setActiveTab] = useState('facebook')
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [agreed, setAgreed] = useState(false)
-  const [showTerms, setShowTerms] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
+
   const [form, setForm] = useState({
     fullName: '',
     facebookHandle: '',
@@ -58,1054 +84,939 @@ export default function AccountRecoveryPage() {
     idFileName: '',
   })
 
-  const updateForm = (field: string, value: string | File | null) => {
-    setForm(prev => ({ ...prev, [field]: value }))
-  }
+  const update = (field: string, value: string | File | null) =>
+    setForm(p => ({ ...p, [field]: value }))
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      updateForm('idFile', file)
-      updateForm('idFileName', file.name)
+      update('idFile', file)
+      update('idFileName', file.name)
     }
   }
 
-  const isFormValid = () => {
-    return (
-      form.fullName &&
-      form.facebookHandle &&
-      form.firstName &&
-      form.surname &&
-      form.email &&
-      form.phone &&
-      form.supportType &&
-      form.additionalInfo &&
-      form.idFile &&
-      agreed
-    )
-  }
+  const isValid = () =>
+    form.fullName && form.facebookHandle &&
+    form.firstName && form.surname &&
+    form.email && form.phone &&
+    form.supportType &&
+    form.additionalInfo &&
+    form.idFile && agreed
+
+  const activePlatform = PLATFORMS.find(p => p.id === activeTab)!
 
   const handleSubmitAndPay = async () => {
-    if (!isFormValid()) {
-      setSubmitError('Please fill all fields, upload ID and agree to terms')
+    if (!isValid()) {
+      setSubmitError(
+        'Please fill all fields, upload your ID and agree to the terms.'
+      )
       return
     }
-
     setSubmitting(true)
     setSubmitError('')
 
     try {
-      // Save form data first
       const formData = new FormData()
-      Object.entries(form).forEach(([key, value]) => {
-        if (value && key !== 'idFile') {
-          formData.append(key, value as string)
-        }
+      Object.entries(form).forEach(([k, v]) => {
+        if (v && k !== 'idFile') formData.append(k, v as string)
       })
-      if (form.idFile) {
-        formData.append('idFile', form.idFile)
-      }
+      if (form.idFile) formData.append('idFile', form.idFile)
       formData.append('platform', activeTab)
-      const amount = activeTab === 'facebook' ? FACEBOOK_PRICE_NGN : INSTAGRAM_PRICE_NGN
-      formData.append('amount', String(amount))
+      formData.append('amount', '42000')
 
-      // Save to API
       await fetch('/api/account-recovery', {
         method: 'POST',
         body: formData,
       })
 
-      // Initialize Paystack payment
       const res = await fetch('/api/payments/paystack/initialize', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: form.email,
-          amount: activeTab === 'facebook' ? FACEBOOK_PRICE_NGN : INSTAGRAM_PRICE_NGN,
+          amount: 42000,
           currency: 'NGN',
           metadata: {
             service: 'account-recovery',
             platform: activeTab,
             fullName: form.fullName,
-            phone: form.phone,
           },
           callback_url: `${window.location.origin}/services/social-media-management/account-recovery/success`,
         }),
       })
-
       const data = await res.json()
       if (data.authorization_url) {
         window.location.href = data.authorization_url
       } else {
-        setSubmitError(data.error || 'Payment initialization failed')
+        setSubmitError(data.error || 'Payment failed. Please try again.')
       }
-    } catch (err) {
+    } catch {
       setSubmitError('Something went wrong. Please try again.')
     }
-
     setSubmitting(false)
   }
 
-  const activePlatform = PLATFORMS.find(p => p.id === activeTab)!
-
   return (
     <>
-      {/* Page header */}
-      <div className="recovery-page-header">
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(124,58,237,0.1)',
-            border: '1px solid rgba(124,58,237,0.3)',
-            borderRadius: '100px',
-            padding: '6px 16px',
-            marginBottom: '20px',
-          }}>
-            <span style={{ fontSize: '13px', color: '#a855f7', fontWeight: 600 }}>
-              🔐 Digital Marketing Services
+      <Navbar />
+
+      {/* ── HERO SECTION ── */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #06030f 0%, #0d0520 60%, #1a0535 100%)',
+          padding: 'clamp(60px, 8vw, 100px) 24px 80px',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Glow */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '-100px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '600px',
+            height: '600px',
+            background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            maxWidth: '700px',
+            margin: '0 auto',
+          }}
+        >
+          {/* Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(124,58,237,0.15)',
+              border: '1px solid rgba(124,58,237,0.3)',
+              borderRadius: '100px',
+              padding: '6px 18px',
+              marginBottom: '24px',
+            }}
+          >
+            <span
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: '#a855f7',
+                animation: 'pulse 2s infinite',
+                display: 'inline-block',
+              }}
+            />
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                color: '#a855f7',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Social Media Management
             </span>
           </div>
-          <h1 className="recovery-heading" style={{
-            fontSize: 'clamp(28px, 5vw, 48px)',
-            fontWeight: 900,
-            margin: '0 0 16px',
-            lineHeight: 1.1,
-            letterSpacing: '-0.5px',
-          }}>
+
+          <h1
+            style={{
+              fontSize: 'clamp(32px, 5vw, 56px)',
+              fontWeight: 900,
+              color: '#fff',
+              margin: '0 0 20px',
+              lineHeight: 1.1,
+              letterSpacing: '-0.5px',
+            }}
+          >
             Social Media{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7, #c084fc)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
               Account Recovery
             </span>
           </h1>
-          <p className="recovery-subtext" style={{
-            fontSize: '17px',
-            margin: '0 0 24px',
-            lineHeight: 1.6,
-            maxWidth: '560px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}>
-            Professional account recovery service for hacked or disabled social media accounts. Fast, secure and reliable.
+
+          <p
+            style={{
+              fontSize: 'clamp(15px, 2vw, 18px)',
+              color: '#9d8fd4',
+              margin: '0 0 36px',
+              lineHeight: 1.7,
+              maxWidth: '520px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            Professional recovery for hacked or disabled social media accounts.
+            Secure, confidential and reliable.
           </p>
-          {/* Price badges */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '12px',
-            flexWrap: 'wrap',
-          }}>
-            <div style={{
-              background: 'rgba(24,119,242,0.15)',
-              border: '1px solid rgba(24,119,242,0.3)',
-              borderRadius: '100px',
-              padding: '8px 20px',
-              color: '#60a5fa',
-              fontSize: '14px',
-              fontWeight: 700,
-            }}>
-              📘 Facebook — ₦42,000 / $30
-            </div>
-            <div style={{
-              background: 'rgba(225,48,108,0.15)',
-              border: '1px solid rgba(225,48,108,0.3)',
-              borderRadius: '100px',
-              padding: '8px 20px',
-              color: '#f472b6',
-              fontSize: '14px',
-              fontWeight: 700,
-            }}>
-              📸 Instagram — ₦75,000 / $50
-            </div>
-            <div style={{
-              background: 'rgba(245,158,11,0.1)',
-              border: '1px solid rgba(245,158,11,0.3)',
-              borderRadius: '100px',
-              padding: '8px 20px',
-              color: '#f59e0b',
-              fontSize: '13px',
-              fontWeight: 600,
-            }}>
-              ⏱ 14–30 Business Days
-            </div>
+
+          {/* Stats row */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 'clamp(20px, 4vw, 48px)',
+              flexWrap: 'wrap',
+            }}
+          >
+            {[
+              { value: '14–30', label: 'Business Days' },
+              { value: '100%', label: 'Confidential' },
+              { value: '3', label: 'Platforms' },
+            ].map(stat => (
+              <div key={stat.label} style={{ textAlign: 'center' }}>
+                <p
+                  style={{
+                    fontSize: 'clamp(24px, 3vw, 32px)',
+                    fontWeight: 900,
+                    color: '#fff',
+                    margin: '0 0 4px',
+                    background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {stat.value}
+                </p>
+                <p
+                  style={{
+                    fontSize: '12px',
+                    color: '#6b5fa0',
+                    margin: 0,
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main content */}
-      <div style={{
-        maxWidth: '1100px',
-        margin: '0 auto',
-        padding: '40px 16px',
-        display: 'flex',
-        gap: '28px',
-        alignItems: 'flex-start',
-        flexWrap: 'wrap',
-      }}>
-        {/* ── LEFT SIDEBAR ── */}
-        <div style={{
-          width: '220px',
-          flexShrink: 0,
-          position: 'sticky',
-          top: '80px',
+      {/* ── MAIN CONTENT ── */}
+      <section
+        style={{
+          maxWidth: '1100px',
+          margin: '0 auto',
+          padding: 'clamp(40px, 5vw, 64px) 16px',
         }}
-        className="account-recovery-sidebar">
-          <p style={{
-            fontSize: '11px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: '12px',
-            paddingLeft: '4px',
-          }}>
-            Select Platform
-          </p>
-          {PLATFORMS.map(platform => (
+      >
+        {/* Platform tabs */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '40px', flexWrap: 'wrap' }}>
+          {PLATFORMS.map(p => (
             <button
-              key={platform.id}
+              key={p.id}
               onClick={() => {
-                setActiveTab(platform.id)
-                setForm({
-                  fullName: '',
-                  facebookHandle: '',
-                  firstName: '',
-                  surname: '',
-                  email: '',
-                  phone: '',
-                  supportType: '',
-                  additionalInfo: '',
-                  idFile: null,
-                  idFileName: '',
-                })
-                setAgreed(false)
+                setActiveTab(p.id)
                 setSubmitError('')
+                setAgreed(false)
               }}
-              className="recovery-sidebar-btn"
               style={{
-                width: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                padding: '14px 16px',
-                borderRadius: '12px',
-                marginBottom: '8px',
-                border: activeTab === platform.id
-                  ? `2px solid ${platform.color}`
-                  : '2px solid rgba(124,58,237,0.1)',
-                background: activeTab === platform.id
-                  ? platform.bg
-                  : 'transparent',
+                gap: '10px',
+                padding: '12px 24px',
+                borderRadius: '100px',
+                border: activeTab === p.id ? `2px solid ${p.color}` : '2px solid rgba(124,58,237,0.15)',
+                background: activeTab === p.id ? p.bg : 'transparent',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
-                textAlign: 'left',
+                fontWeight: 700,
+                fontSize: '14px',
+                color: activeTab === p.id ? p.color : '#6b5fa0',
               }}
             >
-              <span style={{ fontSize: '24px' }}>
-                {platform.icon}
+              <span style={{ fontSize: '20px' }}>{p.icon}</span>
+              {p.name}
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  background: activeTab === p.id ? p.bg : 'rgba(124,58,237,0.08)',
+                  border: `1px solid ${activeTab === p.id ? p.border : 'rgba(124,58,237,0.15)'}`,
+                  color: activeTab === p.id ? p.color : '#9d8fd4',
+                  padding: '2px 8px',
+                  borderRadius: '100px',
+                }}
+              >
+                ${p.price_usd}
               </span>
-              <span style={{
-                fontSize: '14px',
-                fontWeight: activeTab === platform.id ? 700 : 500,
-                color: activeTab === platform.id
-                  ? platform.color
-                  : '#9d8fd4',
-              }}>
-                {platform.name}
-              </span>
-              {activeTab === platform.id && (
-                <span style={{
-                  marginLeft: 'auto',
-                  fontSize: '10px',
-                  color: platform.color,
-                }}>●</span>
-              )}
             </button>
           ))}
-
-          {/* Info box */}
-          <div style={{
-            background: 'rgba(124,58,237,0.06)',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '12px',
-            padding: '16px',
-            marginTop: '20px',
-          }}>
-            <p style={{
-              fontSize: '12px',
-              fontWeight: 700,
-              margin: '0 0 8px',
-            }}>
-              ℹ️ Important
-            </p>
-            <ul style={{
-              fontSize: '12px',
-              margin: 0,
-              paddingLeft: '16px',
-              lineHeight: 1.8,
-            }}>
-              <li>14–30 business days</li>
-              <li>Non-refundable</li>
-              <li>Valid ID required</li>
-              <li>Secure & confidential</li>
-            </ul>
-          </div>
         </div>
 
-          {/* ── MAIN CONTENT ── */}
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          {/* Platform header */}
-          <div className="recovery-card" style={{
-            border: `1px solid ${activePlatform.border}`,
-            borderRadius: '16px',
-            padding: '24px',
-            marginBottom: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}>
-            <div style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '14px',
-              background: activePlatform.bg,
-              border: `1px solid ${activePlatform.border}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '28px',
-              flexShrink: 0,
-            }}>
-              {activePlatform.icon}
-            </div>
-            <div>
-              <h2 className="recovery-heading" style={{
-                fontSize: '20px',
-                fontWeight: 800,
-                margin: '0 0 4px',
-              }}>
-                {activePlatform.name} Account Recovery
-              </h2>
-              <p className="recovery-subtext" style={{
-                fontSize: '13px',
-                margin: 0,
-              }}>
-                Professional recovery service for your {activePlatform.name} account
-              </p>
-            </div>
-          </div>
-
-          {/* ── FACEBOOK TAB ── */}
-          {activeTab === 'facebook' && (
-            <div>
-              {/* Service description */}
-              <div style={{
-                background: 'rgba(24,119,242,0.06)',
-                border: '1px solid rgba(24,119,242,0.2)',
-                borderRadius: '16px',
-                padding: '24px',
-                marginBottom: '24px',
-              }}>
-                <h3 className="recovery-heading" style={{
-                  fontSize: '16px',
-                  fontWeight: 700,
-                  margin: '0 0 12px',
-                }}>
-                  📘 Facebook Account Recovery Service
-                </h3>
-                <p className="recovery-subtext" style={{
-                  fontSize: '14px',
-                  lineHeight: 1.7,
-                  margin: '0 0 12px',
-                }}>
-                  Our expert team specialises in recovering Facebook accounts that have been hacked, disabled, or locked. We work directly with Facebook's support systems to restore access to your account.
-                </p>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '12px',
-                  marginTop: '16px',
-                }}>
-                  {[
-                    '✅ Hacked account recovery',
-                    '✅ Disabled account appeal',
-                    '✅ Identity verification support',
-                    '✅ Account access restoration',
-                    '✅ Two-factor auth issues',
-                    '✅ Suspicious login recovery',
-                  ].map(item => (
-                    <div key={item} className="recovery-subtext" style={{
-                      fontSize: '13px',
-                    }}>
-                      {item}
-                    </div>
-                  ))}
+        {/* Two column layout */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 360px',
+            gap: '28px',
+            alignItems: 'start',
+          }}
+          className="recovery-grid"
+        >
+          {/* ── LEFT — FORM ── */}
+          <div>
+            {/* Facebook form */}
+            {activeTab === 'facebook' && (
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid rgba(24,119,242,0.2)',
+                  borderRadius: '24px',
+                  padding: 'clamp(24px, 4vw, 40px)',
+                  boxShadow: '0 4px 40px rgba(24,119,242,0.06)',
+                }}
+                className="dark:bg-gray-900 dark:border-blue-900/30"
+              >
+                {/* Form header */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    marginBottom: '32px',
+                    paddingBottom: '24px',
+                    borderBottom: '1px solid rgba(124,58,237,0.1)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      borderRadius: '14px',
+                      background: 'rgba(24,119,242,0.1)',
+                      border: '1px solid rgba(24,119,242,0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '26px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    📘
+                  </div>
+                  <div>
+                    <h2
+                      style={{
+                        fontSize: '22px',
+                        fontWeight: 800,
+                        margin: '0 0 4px',
+                        color: '#1a1a1a',
+                      }}
+                      className="dark:text-white"
+                    >
+                      Support Form
+                    </h2>
+                    <p
+                      style={{
+                        fontSize: '13px',
+                        color: '#6b5fa0',
+                        margin: 0,
+                      }}
+                      className="dark:text-gray-400"
+                    >
+                      Fill in all fields accurately. Incorrect info may delay recovery.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Support Form */}
-              <div className="recovery-card" style={{
-                border: '1px solid rgba(124,58,237,0.15)',
-                borderRadius: '16px',
-                padding: '28px',
-                marginBottom: '24px',
-              }}>
-                <h3 className="recovery-heading" style={{
-                  fontSize: '18px',
-                  fontWeight: 800,
-                  margin: '0 0 6px',
-                }}>
-                  Support Form
-                </h3>
-                <p className="recovery-subtext" style={{
-                  fontSize: '13px',
-                  margin: '0 0 24px',
-                }}>
-                  Please fill in all fields accurately. Incorrect information may delay your recovery.
-                </p>
-                <div style={{ display: 'grid', gap: '18px' }}>
+                <div style={{ display: 'grid', gap: '20px' }}>
                   {/* Full Name */}
                   <div>
-                    <label className="recovery-label">Full Name *</label>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                      Full Name *
+                    </label>
                     <input
                       type="text"
                       value={form.fullName}
-                      onChange={e => updateForm('fullName', e.target.value)}
+                      onChange={e => update('fullName', e.target.value)}
                       placeholder="Enter your full name"
-                      className="recovery-input"
-                      onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                      onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
+                      style={{
+                        width: '100%',
+                        padding: '13px 16px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(124,58,237,0.2)',
+                        background: '#f9f9ff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        color: '#1a1a1a',
+                      }}
+                      className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
+                      onFocus={e => {
+                        e.currentTarget.style.borderColor = '#7c3aed'
+                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'
+                      }}
+                      onBlur={e => {
+                        e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'
+                        e.currentTarget.style.boxShadow = 'none'
+                      }}
                     />
                   </div>
 
                   {/* Facebook Handle */}
                   <div>
-                    <label className="recovery-label">What is your Facebook Handle? *</label>
-                    <input
-                      type="text"
-                      value={form.facebookHandle}
-                      onChange={e => updateForm('facebookHandle', e.target.value)}
-                      placeholder="e.g. facebook.com/yourhandle or @yourname"
-                      className="recovery-input"
-                      onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                      onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
-                    />
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                      Facebook Handle *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: '#9d8fd4', pointerEvents: 'none' }}>
+                        facebook.com/
+                      </span>
+                      <input
+                        type="text"
+                        value={form.facebookHandle}
+                        onChange={e => update('facebookHandle', e.target.value)}
+                        placeholder="yourprofilename"
+                        style={{
+                          width: '100%',
+                          padding: '13px 16px',
+                          paddingLeft: '106px',
+                          borderRadius: '12px',
+                          border: '1.5px solid rgba(124,58,237,0.2)',
+                          background: '#f9f9ff',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'all 0.2s',
+                          boxSizing: 'border-box',
+                          fontFamily: 'inherit',
+                          color: '#1a1a1a',
+                        }}
+                        className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
+                        onFocus={e => {
+                          e.currentTarget.style.borderColor = '#7c3aed'
+                          e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'
+                        }}
+                        onBlur={e => {
+                          e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'
+                          e.currentTarget.style.boxShadow = 'none'
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  {/* First Name + Surname */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '14px',
-                  }}>
-                    <div>
-                      <label className="recovery-label">First Name *</label>
-                      <input
-                        type="text"
-                        value={form.firstName}
-                        onChange={e => updateForm('firstName', e.target.value)}
-                        placeholder="First name"
-                        className="recovery-input"
-                        onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                        onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
-                      />
-                    </div>
-                    <div>
-                      <label className="recovery-label">Surname *</label>
-                      <input
-                        type="text"
-                        value={form.surname}
-                        onChange={e => updateForm('surname', e.target.value)}
-                        placeholder="Surname"
-                        className="recovery-input"
-                        onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                        onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
-                      />
-                    </div>
+                  {/* First + Surname */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    {[
+                      { label: 'First Name *', field: 'firstName', placeholder: 'First name' },
+                      { label: 'Surname *', field: 'surname', placeholder: 'Surname' },
+                    ].map(f => (
+                      <div key={f.field}>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                          {f.label}
+                        </label>
+                        <input
+                          type="text"
+                          value={form[f.field as keyof typeof form] as string}
+                          onChange={e => update(f.field, e.target.value)}
+                          placeholder={f.placeholder}
+                          style={{
+                            width: '100%',
+                            padding: '13px 16px',
+                            borderRadius: '12px',
+                            border: '1.5px solid rgba(124,58,237,0.2)',
+                            background: '#f9f9ff',
+                            fontSize: '14px',
+                            outline: 'none',
+                            transition: 'all 0.2s',
+                            boxSizing: 'border-box',
+                            fontFamily: 'inherit',
+                            color: '#1a1a1a',
+                          }}
+                          className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
+                          onFocus={e => {
+                            e.currentTarget.style.borderColor = '#7c3aed'
+                            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'
+                          }}
+                          onBlur={e => {
+                            e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'
+                            e.currentTarget.style.boxShadow = 'none'
+                          }}
+                        />
+                      </div>
+                    ))}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="recovery-label">What is your Email Address? *</label>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                      Email Address *
+                    </label>
                     <input
                       type="email"
                       value={form.email}
-                      onChange={e => updateForm('email', e.target.value)}
+                      onChange={e => update('email', e.target.value)}
                       placeholder="your@email.com"
-                      className="recovery-input"
-                      onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                      onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
+                      style={{
+                        width: '100%',
+                        padding: '13px 16px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(124,58,237,0.2)',
+                        background: '#f9f9ff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        color: '#1a1a1a',
+                      }}
+                      className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
+                      onFocus={e => {
+                        e.currentTarget.style.borderColor = '#7c3aed'
+                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'
+                      }}
+                      onBlur={e => {
+                        e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'
+                        e.currentTarget.style.boxShadow = 'none'
+                      }}
                     />
                   </div>
 
                   {/* Phone */}
                   <div>
-                    <label className="recovery-label">What is your Preferred Phone Number? *</label>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                      Preferred Phone Number *
+                    </label>
                     <input
                       type="tel"
                       value={form.phone}
-                      onChange={e => updateForm('phone', e.target.value)}
+                      onChange={e => update('phone', e.target.value)}
                       placeholder="+234 800 000 0000"
-                      className="recovery-input"
-                      onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                      onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
+                      style={{
+                        width: '100%',
+                        padding: '13px 16px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(124,58,237,0.2)',
+                        background: '#f9f9ff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        color: '#1a1a1a',
+                      }}
+                      className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
+                      onFocus={e => {
+                        e.currentTarget.style.borderColor = '#7c3aed'
+                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'
+                      }}
+                      onBlur={e => {
+                        e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'
+                        e.currentTarget.style.boxShadow = 'none'
+                      }}
                     />
                   </div>
 
-                  {/* Support Type Dropdown */}
+                  {/* Support type */}
                   <div>
-                    <label className="recovery-label">What do you need support with? *</label>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                      What do you need support with? *
+                    </label>
                     <select
                       value={form.supportType}
-                      onChange={e => updateForm('supportType', e.target.value)}
-                      className="recovery-input"
-                      style={{ cursor: 'pointer' }}
+                      onChange={e => update('supportType', e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '13px 16px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(124,58,237,0.2)',
+                        background: '#f9f9ff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        color: form.supportType ? '#1a1a1a' : '#9d8fd4',
+                        cursor: 'pointer',
+                        appearance: 'none',
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239d8fd4' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 14px center',
+                        paddingRight: '40px',
+                      }}
+                      className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
                     >
                       <option value="">— Select an option —</option>
-                      <option value="hacked">Account Hacked</option>
-                      <option value="disabled">Disabled Account</option>
+                      <option value="hacked">🔓 Account Hacked</option>
+                      <option value="disabled">🚫 Disabled Account</option>
                     </select>
                   </div>
 
-                  {/* ID Upload */}
+                  {/* File upload */}
                   <div>
-                    <label className="recovery-label">Upload Means of Identification *</label>
-                    <p className="recovery-subtext" style={{
-                      fontSize: '12px',
-                      margin: '0 0 8px',
-                    }}>
-                      Accepted: Digital NIN, International Passport, National ID Card, Driver's License
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '4px', color: '#374151' }} className="dark:text-gray-300">
+                      Upload Means of Identification *
+                    </label>
+                    <p style={{ fontSize: '12px', color: '#9d8fd4', margin: '0 0 10px' }}>
+                      Accepted: Digital NIN, International Passport, National ID, Driver's License
                     </p>
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      onChange={handleFileChange}
-                      accept="image/*,.pdf"
-                      style={{ display: 'none' }}
-                    />
+                    <input ref={fileRef} type="file" onChange={handleFile} accept="image/*,.pdf" style={{ display: 'none' }} />
                     <button
                       onClick={() => fileRef.current?.click()}
                       style={{
                         width: '100%',
-                        border: '2px dashed rgba(124,58,237,0.3)',
-                        borderRadius: '12px',
-                        padding: '20px',
-                        background: form.idFileName ? 'rgba(124,58,237,0.08)' : 'transparent',
+                        border: `2px dashed ${form.idFileName ? '#7c3aed' : 'rgba(124,58,237,0.25)'}`,
+                        borderRadius: '14px',
+                        padding: '28px 20px',
+                        background: form.idFileName ? 'rgba(124,58,237,0.05)' : '#f9f9ff',
                         cursor: 'pointer',
                         textAlign: 'center',
                         transition: 'all 0.2s',
                       }}
+                      className="dark:bg-gray-800/50"
                     >
                       {form.idFileName ? (
-                        <div>
-                          <p style={{ fontSize: '20px', margin: '0 0 6px' }}>✅</p>
-                          <p style={{ fontSize: '13px', color: '#a855f7', fontWeight: 600, margin: 0 }}>
-                            {form.idFileName}
-                          </p>
-                          <p style={{ fontSize: '12px', color: '#6b5fa0', margin: '4px 0 0' }}>
-                            Click to change file
-                          </p>
-                        </div>
+                        <>
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(124,58,237,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '20px' }}>
+                            ✅
+                          </div>
+                          <p style={{ fontSize: '13px', fontWeight: 700, color: '#7c3aed', margin: '0 0 4px' }}>{form.idFileName}</p>
+                          <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>Click to change file</p>
+                        </>
                       ) : (
-                        <div>
-                          <p style={{ fontSize: '28px', margin: '0 0 8px' }}>📎</p>
-                          <p style={{ fontSize: '14px', color: '#9d8fd4', fontWeight: 600, margin: '0 0 4px' }}>
+                        <>
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '20px' }}>
+                            📎
+                          </div>
+                          <p style={{ fontSize: '14px', fontWeight: 700, color: '#1a1a1a', margin: '0 0 4px' }} className="dark:text-white">
                             Click to upload your ID
                           </p>
-                          <p style={{ fontSize: '12px', color: '#6b5fa0', margin: 0 }}>
-                            JPG, PNG or PDF — Max 5MB
-                          </p>
-                        </div>
+                          <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>JPG, PNG or PDF — Max 5MB</p>
+                        </>
                       )}
                     </button>
                   </div>
 
-                  {/* Additional Info */}
+                  {/* Additional info */}
                   <div>
-                    <label className="recovery-label">Please provide additional information regarding the issue *</label>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
+                      Additional Information *
+                    </label>
                     <textarea
                       value={form.additionalInfo}
-                      onChange={e => updateForm('additionalInfo', e.target.value)}
-                      placeholder="Describe when you lost access, what happened, any relevant details that could help us recover your account..."
+                      onChange={e => update('additionalInfo', e.target.value)}
+                      placeholder="Describe when you lost access, what happened, any details that could help us recover your account faster..."
                       rows={5}
-                      className="recovery-input"
-                      style={{ resize: 'vertical', minHeight: '120px' }}
-                      onFocus={e => { e.target.style.borderColor = '#7c3aed' }}
-                      onBlur={e => { e.target.style.borderColor = 'rgba(124,58,237,0.2)' }}
+                      style={{
+                        width: '100%',
+                        padding: '13px 16px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(124,58,237,0.2)',
+                        background: '#f9f9ff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        boxSizing: 'border-box',
+                        fontFamily: 'inherit',
+                        color: '#1a1a1a',
+                        resize: 'vertical',
+                        minHeight: '120px',
+                      }}
+                      className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
+                      onFocus={e => {
+                        e.currentTarget.style.borderColor = '#7c3aed'
+                        e.currentTarget.style.boxShadow = '0 0 0 3px rgba(124,58,237,0.1)'
+                      }}
+                      onBlur={e => {
+                        e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'
+                        e.currentTarget.style.boxShadow = 'none'
+                      }}
                     />
                   </div>
-                </div>
-              </div>
 
-              {/* Terms & Conditions */}
-              <div className="recovery-card" style={{
-                border: '1px solid rgba(124,58,237,0.15)',
-                borderRadius: '16px',
-                padding: '24px',
-                marginBottom: '24px',
-              }}>
-                <h3 className="recovery-heading" style={{
-                  fontSize: '16px',
-                  fontWeight: 700,
-                  margin: '0 0 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}>
-                  📋 Terms & Conditions
-                </h3>
-                <div className="recovery-terms-box">
-                  <p style={{ fontWeight: 700, color: '#c084fc', margin: '0 0 8px' }}>
-                    Account Recovery Service — Terms & Conditions
-                  </p>
-                  <p>
-                    <strong style={{ color: '#fff' }}>1. Service Timeline:</strong> Account recovery takes between <strong style={{ color: '#f59e0b' }}>14 to 30 business days</strong> from the date of successful payment and submission of all required documents. Timelines may vary depending on platform response times which are beyond our control.
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>2. Non-Refundable Policy:</strong> <strong style={{ color: '#ef4444' }}>ALL PAYMENTS ARE STRICTLY NON-REFUNDABLE.</strong> By making payment you acknowledge that you are paying for our professional services and time regardless of the outcome. Social media platforms have their own policies and final decisions which PurpleSoftHub cannot override or guarantee.
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>3. No Guarantee of Recovery:</strong> While we have a high success rate, PurpleSoftHub cannot guarantee 100% account recovery in all cases. Final decisions rest with the social media platform (Facebook, Instagram, TikTok).
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>4. Accurate Information:</strong> You must provide accurate and truthful information. Any false information provided may result in failure of recovery and forfeiture of payment without refund.
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>5. Identity Verification:</strong> A valid government-issued ID (NIN, Passport, National ID, Driver's License) is required. Your ID is used solely for account verification purposes and is handled with strict confidentiality.
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>6. Privacy:</strong> All personal information provided is kept strictly confidential and is only used for the purpose of account recovery. We do not share your information with third parties.
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>7. Communication:</strong> You will receive regular updates via email and WhatsApp throughout the recovery process. Please ensure your contact details are accurate.
-                  </p>
-                  <br />
-                  <p>
-                    <strong style={{ color: '#fff' }}>8. Payment:</strong> Service fee is <strong style={{ color: '#a855f7' }}>₦42,000 NGN / $30 USD</strong> per account recovery attempt. Payment is processed securely via Paystack.
-                  </p>
-                  <br />
-                  <p style={{ fontWeight: 700, color: '#ef4444' }}>
-                    ⚠️ IMPORTANT: By proceeding with payment you confirm that you have read, understood and agreed to all terms and conditions above. Payment is NON-REFUNDABLE under any circumstances.
-                  </p>
-                </div>
+                  {/* Terms */}
+                  <div style={{ background: 'rgba(124,58,237,0.04)', border: '1px solid rgba(124,58,237,0.12)', borderRadius: '14px', padding: '20px' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
+                    <p style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a', margin: '0 0 12px' }} className="dark:text-white">
+                      📋 Terms & Conditions
+                    </p>
+                    <div style={{ maxHeight: '160px', overflowY: 'auto', fontSize: '12px', lineHeight: 1.8, color: '#6b5fa0', marginBottom: '16px', paddingRight: '8px' }} className="dark:text-gray-400">
+                      <p>
+                        <strong style={{ color: '#1a1a1a' }} className="dark:text-white">
+                          1. Timeline:
+                        </strong>{' '}
+                        Recovery takes <strong style={{ color: '#f59e0b' }}>14–30 business days</strong>. Platform response times are beyond our control.
+                      </p>
+                      <br />
+                      <p>
+                        <strong style={{ color: '#1a1a1a' }} className="dark:text-white">
+                          2. Non-Refundable:
+                        </strong>{' '}
+                        <strong style={{ color: '#ef4444' }}>ALL PAYMENTS ARE STRICTLY NON-REFUNDABLE.</strong> You are paying for professional services and time regardless of outcome.
+                      </p>
+                      <br />
+                      <p>
+                        <strong style={{ color: '#1a1a1a' }} className="dark:text-white">
+                          3. No Guarantee:
+                        </strong>{' '}
+                        While we have a high success rate, PurpleSoftHub cannot guarantee 100% recovery. Final decisions rest with the platform.
+                      </p>
+                      <br />
+                      <p>
+                        <strong style={{ color: '#1a1a1a' }} className="dark:text-white">
+                          4. Accurate Info:
+                        </strong>{' '}
+                        You must provide truthful information. False information may result in failure and forfeiture of payment without refund.
+                      </p>
+                      <br />
+                      <p>
+                        <strong style={{ color: '#1a1a1a' }} className="dark:text-white">
+                          5. Privacy:
+                        </strong>{' '}
+                        All personal information is kept strictly confidential and used only for account recovery purposes.
+                      </p>
+                    </div>
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={agreed}
+                        onChange={e => setAgreed(e.target.checked)}
+                        style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: '#7c3aed', cursor: 'pointer', flexShrink: 0 }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#6b5fa0', lineHeight: 1.6 }} className="dark:text-gray-400">
+                        I agree to the <strong style={{ color: '#7c3aed' }}> Terms & Conditions</strong>. I understand payment is{' '}
+                        <strong style={{ color: '#ef4444' }}> NON-REFUNDABLE</strong> and recovery takes{' '}
+                        <strong style={{ color: '#f59e0b' }}> 14–30 business days</strong>.
+                      </span>
+                    </label>
+                  </div>
 
-                {/* Agreement checkbox */}
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '12px',
-                  cursor: 'pointer',
-                }}>
-                  <input
-                    type="checkbox"
-                    checked={agreed}
-                    onChange={e => setAgreed(e.target.checked)}
+                  {/* Error */}
+                  {submitError && (
+                    <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '12px', padding: '14px 16px', fontSize: '13px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      ⚠️ {submitError}
+                    </div>
+                  )}
+
+                  {/* Submit button */}
+                  <button
+                    onClick={handleSubmitAndPay}
+                    disabled={submitting || !isValid()}
                     style={{
-                      width: '18px',
-                      height: '18px',
-                      marginTop: '2px',
-                      accentColor: '#7c3aed',
-                      cursor: 'pointer',
-                      flexShrink: 0,
+                      width: '100%',
+                      padding: '16px',
+                      borderRadius: '14px',
+                      border: 'none',
+                      background: isValid() ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'rgba(124,58,237,0.2)',
+                      color: '#fff',
+                      fontSize: '16px',
+                      fontWeight: 800,
+                      cursor: isValid() ? 'pointer' : 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '10px',
+                      boxShadow: isValid() ? '0 8px 30px rgba(124,58,237,0.35)' : 'none',
+                      transition: 'all 0.2s',
+                      letterSpacing: '0.01em',
                     }}
-                  />
-                  <span className="recovery-subtext" style={{
-                    fontSize: '13px',
-                    lineHeight: 1.6,
-                  }}>
-                    I have read and agree to the <strong style={{ color: '#a855f7' }}>Terms & Conditions</strong> and <strong style={{ color: '#a855f7' }}>Privacy Policy</strong>. I understand that payment is <strong style={{ color: '#ef4444' }}>NON-REFUNDABLE</strong> and recovery takes <strong style={{ color: '#f59e0b' }}>14–30 business days</strong>.
-                  </span>
-                </label>
-              </div>
+                  >
+                    {submitting ? (
+                      <>
+                        <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                        Processing...
+                      </>
+                    ) : (
+                      <>🔐 Submit & Pay ₦42,000 / $30</>
+                    )}
+                  </button>
 
-              {/* Error message */}
-              {submitError && (
-                <div style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  border: '1px solid rgba(239,68,68,0.3)',
-                  borderRadius: '10px',
-                  padding: '12px 16px',
-                  marginBottom: '16px',
-                  fontSize: '13px',
-                  color: '#f87171',
-                }}>
-                  ⚠️ {submitError}
+                  <p style={{ textAlign: 'center', fontSize: '12px', color: '#9d8fd4', margin: '-8px 0 0' }}>
+                    🔒 Secured by Paystack · Non-refundable · 14–30 business days
+                  </p>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Payment button */}
-              <button
-                onClick={handleSubmitAndPay}
-                disabled={submitting || !isFormValid()}
-                style={{
-                  width: '100%',
-                  background: isFormValid()
-                    ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
-                    : 'rgba(124,58,237,0.3)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '14px',
-                  padding: '18px 24px',
-                  fontSize: '16px',
-                  fontWeight: 800,
-                  cursor: isFormValid() ? 'pointer' : 'not-allowed',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  transition: 'all 0.2s',
-                  boxShadow: isFormValid() ? '0 8px 30px rgba(124,58,237,0.4)' : 'none',
-                }}
-              >
-                {submitting ? (
-                  <>
-                    <div style={{
-                      width: '20px',
-                      height: '20px',
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      borderTop: '2px solid #fff',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite',
-                    }} />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    🔐 Submit & Pay ₦{FACEBOOK_PRICE_NGN.toLocaleString()} / ${FACEBOOK_PRICE_USD}
-                  </>
-                )}
-              </button>
-              <p className="recovery-subtext" style={{
-                textAlign: 'center',
-                fontSize: '12px',
-                margin: '12px 0 0',
-              }}>
-                🔒 Secured by Paystack · Payment is non-refundable · 14–30 business days
+            {/* Instagram + TikTok — WhatsApp */}
+            {(activeTab === 'instagram' || activeTab === 'tiktok') && (
+              <div style={{ background: '#ffffff', border: `1px solid ${activePlatform.border}`, borderRadius: '24px', padding: 'clamp(24px, 4vw, 40px)', textAlign: 'center' }} className="dark:bg-gray-900">
+                <div style={{ width: '80px', height: '80px', borderRadius: '20px', background: activePlatform.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', margin: '0 auto 24px' }}>
+                  {activePlatform.icon}
+                </div>
+
+                <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#1a1a1a', margin: '0 0 12px' }} className="dark:text-white">
+                  {activePlatform.name} Account Recovery
+                </h2>
+
+                <p style={{ fontSize: '15px', color: '#6b5fa0', lineHeight: 1.7, margin: '0 0 32px', maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto' }} className="dark:text-gray-400">
+                  {activePlatform.name} recovery is handled via WhatsApp consultation. Message us to begin your recovery process.
+                </p>
+
+                <div style={{ background: 'rgba(124,58,237,0.04)', border: '1px solid rgba(124,58,237,0.12)', borderRadius: '16px', padding: '20px', marginBottom: '28px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', textAlign: 'left' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
+                  {['✅ Hacked account recovery', '✅ Disabled account appeal', '✅ Login verification issues', '✅ Two-factor auth recovery', '✅ Email/phone recovery', '✅ Account restoration'].map(item => (
+                    <div key={item} style={{ fontSize: '13px', color: '#6b5fa0' }} className="dark:text-gray-400">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+
+                <p style={{ fontSize: '28px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px' }}>₦{activePlatform.price_ngn.toLocaleString()}</p>
+                <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 24px' }}>
+                  ${activePlatform.price_usd} USD · Non-refundable · 14–30 days
+                </p>
+
+                <Link
+                  href="https://wa.me/message/BPNJE7CPON3OJ1"
+                  target="_blank"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: '#25D366', color: '#fff', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontWeight: 700, fontSize: '15px', boxShadow: '0 4px 20px rgba(37,211,102,0.3)' }}
+                >
+                  💬 Start {activePlatform.name} Recovery
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* ── RIGHT — INFO SIDEBAR ── */}
+          <div style={{ position: 'sticky', top: '90px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* Price card */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(168,85,247,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '20px', padding: '24px' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
+              <p style={{ fontSize: '12px', fontWeight: 700, color: '#9d8fd4', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px' }}>
+                Service Fee
               </p>
-            </div>
-          )}
-
-          {/* ── INSTAGRAM TAB ── */}
-          {activeTab === 'instagram' && (
-            <div>
-              <div style={{
-                background: 'rgba(225,48,108,0.06)',
-                border: '1px solid rgba(225,48,108,0.2)',
-                borderRadius: '16px',
-                padding: '28px',
-                marginBottom: '24px',
-              }}>
-                <h3 className="recovery-heading" style={{
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  margin: '0 0 12px',
-                }}>
-                  📸 Instagram Account Recovery
-                </h3>
-                <p className="recovery-subtext" style={{
-                  fontSize: '14px',
-                  lineHeight: 1.7,
-                  margin: '0 0 20px',
-                }}>
-                  We help recover Instagram accounts that have been hacked, disabled or locked. Our team works through official Meta channels to restore your account access.
-                </p>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '10px',
-                  marginBottom: '20px',
-                }}>
-                  {[
-                    '✅ Hacked account recovery',
-                    '✅ Disabled account appeal',
-                    '✅ Impersonation reports',
-                    '✅ Login verification issues',
-                    '✅ Email/phone change recovery',
-                    '✅ Two-factor auth recovery',
-                  ].map(item => (
-                    <div key={item} className="recovery-subtext" style={{ fontSize: '13px' }}>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div style={{
-                  background: 'rgba(245,158,11,0.1)',
-                  border: '1px solid rgba(245,158,11,0.3)',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                }}>
-                  <span style={{ fontSize: '24px' }}>💬</span>
-                  <div>
-                    <p style={{
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      color: '#f59e0b',
-                      margin: '0 0 4px',
-                    }}>
-                      Contact Us to Get Started
-                    </p>
-                    <p className="recovery-subtext" style={{
-                      fontSize: '13px',
-                      margin: 0,
-                    }}>
-                      Instagram recovery form is available via WhatsApp. Chat with us to begin your recovery process.
-                    </p>
+              <p style={{ fontSize: '36px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1 }}>
+                ₦{activePlatform.price_ngn.toLocaleString()}
+              </p>
+              <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 20px' }}>
+                ${activePlatform.price_usd} USD one-time payment
+              </p>
+              <div style={{ display: 'grid', gap: '10px' }}>
+                {[
+                  { icon: '⏱', text: '14–30 business days' },
+                  { icon: '🔒', text: 'Strictly non-refundable' },
+                  { icon: '🛡️', text: 'Confidential & secure' },
+                  { icon: '📧', text: 'Email + WhatsApp updates' },
+                ].map(item => (
+                  <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#6b5fa0' }} className="dark:text-gray-400">
+                    <span>{item.icon}</span>
+                    {item.text}
                   </div>
-                </div>
+                ))}
               </div>
-              <div className="recovery-card" style={{
-                border: '1px solid rgba(124,58,237,0.15)',
-                borderRadius: '16px',
-                padding: '28px',
-                textAlign: 'center',
-              }}>
-                <p style={{
-                  fontSize: '32px',
-                  fontWeight: 900,
-                  color: '#a855f7',
-                  margin: '0 0 4px',
-                }}>
-                  ₦{INSTAGRAM_PRICE_NGN.toLocaleString()}
-                </p>
-                <p className="recovery-subtext" style={{
-                  fontSize: '15px',
-                  margin: '0 0 20px',
-                }}>
-                  ${INSTAGRAM_PRICE_USD} USD · Non-refundable · 14–30 business days
-                </p>
-                <Link
-                  href="https://wa.me/message/BPNJE7CPON3OJ1"
-                  target="_blank"
+            </div>
+
+            {/* Platform comparison */}
+            <div style={{ background: '#ffffff', border: '1px solid rgba(124,58,237,0.12)', borderRadius: '20px', padding: '20px' }} className="dark:bg-gray-900 dark:border-purple-800/30">
+              <p style={{ fontSize: '12px', fontWeight: 700, color: '#9d8fd4', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 14px' }}>
+                All Platforms
+              </p>
+              {PLATFORMS.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => setActiveTab(p.id)}
                   style={{
-                    display: 'inline-flex',
+                    width: '100%',
+                    display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    background: '#25D366',
-                    color: '#fff',
-                    padding: '14px 32px',
-                    borderRadius: '12px',
-                    textDecoration: 'none',
-                    fontWeight: 700,
-                    fontSize: '15px',
+                    justifyContent: 'space-between',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    border: activeTab === p.id ? `1.5px solid ${p.color}` : '1.5px solid transparent',
+                    background: activeTab === p.id ? p.bg : 'transparent',
+                    cursor: 'pointer',
+                    marginBottom: '6px',
+                    transition: 'all 0.2s',
                   }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                  </svg>
-                  Start Instagram Recovery
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* ── TIKTOK TAB ── */}
-          {activeTab === 'tiktok' && (
-            <div>
-              <div style={{
-                background: 'rgba(0,0,0,0.3)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                padding: '28px',
-                marginBottom: '24px',
-              }}>
-                <h3 className="recovery-heading" style={{
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  margin: '0 0 12px',
-                }}>
-                  🎵 TikTok Account Recovery
-                </h3>
-                <p className="recovery-subtext" style={{
-                  fontSize: '14px',
-                  lineHeight: 1.7,
-                  margin: '0 0 20px',
-                }}>
-                  Lost access to your TikTok account? Our team specialises in recovering TikTok accounts that have been hacked, banned or permanently suspended.
-                </p>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '10px',
-                  marginBottom: '20px',
-                }}>
-                  {[
-                    '✅ Hacked account recovery',
-                    '✅ Banned account appeal',
-                    '✅ Permanently suspended accounts',
-                    '✅ Login access issues',
-                    '✅ Phone/email recovery',
-                    '✅ Creator account restoration',
-                  ].map(item => (
-                    <div key={item} className="recovery-subtext" style={{ fontSize: '13px' }}>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div style={{
-                  background: 'rgba(245,158,11,0.1)',
-                  border: '1px solid rgba(245,158,11,0.3)',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                }}>
-                  <span style={{ fontSize: '24px' }}>💬</span>
-                  <div>
-                    <p style={{
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      color: '#f59e0b',
-                      margin: '0 0 4px',
-                    }}>
-                      Contact Us to Get Started
-                    </p>
-                    <p className="recovery-subtext" style={{
-                      fontSize: '13px',
-                      margin: 0,
-                    }}>
-                      TikTok recovery is handled via WhatsApp consultation. Message us to begin.
-                    </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '18px' }}>{p.icon}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: activeTab === p.id ? p.color : '#6b5fa0' }} className="dark:text-gray-400">
+                      {p.name}
+                    </span>
                   </div>
-                </div>
-              </div>
-              <div className="recovery-card" style={{
-                border: '1px solid rgba(124,58,237,0.15)',
-                borderRadius: '16px',
-                padding: '28px',
-                textAlign: 'center',
-              }}>
-                <p style={{
-                  fontSize: '32px',
-                  fontWeight: 900,
-                  color: '#a855f7',
-                  margin: '0 0 4px',
-                }}>
-                  ₦{FACEBOOK_PRICE_NGN.toLocaleString()}
-                </p>
-                <p className="recovery-subtext" style={{
-                  fontSize: '15px',
-                  margin: '0 0 20px',
-                }}>
-                  ${FACEBOOK_PRICE_USD} USD · Non-refundable · 14–30 business days
-                </p>
-                <Link
-                  href="https://wa.me/message/BPNJE7CPON3OJ1"
-                  target="_blank"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    background: '#25D366',
-                    color: '#fff',
-                    padding: '14px 32px',
-                    borderRadius: '12px',
-                    textDecoration: 'none',
-                    fontWeight: 700,
-                    fontSize: '15px',
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                  </svg>
-                  Start TikTok Recovery
-                </Link>
-              </div>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: activeTab === p.id ? p.color : '#9d8fd4' }}>
+                    ${p.price_usd}
+                  </span>
+                </button>
+              ))}
             </div>
-          )}
+
+            {/* WhatsApp help */}
+            <Link
+              href="https://wa.me/message/BPNJE7CPON3OJ1"
+              target="_blank"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.2)', borderRadius: '16px', padding: '16px', textDecoration: 'none', transition: 'all 0.2s' }} className="dark:bg-green-900/10 dark:border-green-800/30 hover:bg-green-50 dark:hover:bg-green-900/20"
+            >
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                💬
+              </div>
+              <div>
+                <p style={{ fontSize: '13px', fontWeight: 700, color: '#25D366', margin: '0 0 2px' }}>
+                  Need help? Chat with us
+                </p>
+                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }} className="dark:text-gray-400">
+                  WhatsApp · Fast response
+                </p>
+              </div>
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* CSS Styles */}
+      {/* CSS */}
       <style>{`
+        :root {
+          --card-bg: #ffffff;
+          --heading-color: #1a1a1a;
+          --body-color: #6b5fa0;
+          --label-color: #374151;
+          --input-bg: #f9f9ff;
+          --input-text: #1a1a1a;
+          --tab-color: #6b5fa0;
+        }
+        .dark {
+          --card-bg: #0a0618;
+          --heading-color: #ffffff;
+          --body-color: #9d8fd4;
+          --label-color: #d1d5db;
+          --input-bg: rgba(124,58,237,0.06);
+          --input-text: #ffffff;
+          --tab-color: #9d8fd4;
+        }
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
-        @media (max-width: 768px) {
-          .account-recovery-sidebar {
-            width: 100% !important;
-            position: static !important;
-            display: flex !important;
-            gap: 8px !important;
-            overflow-x: auto !important;
-            padding-bottom: 8px !important;
-          }
-          .account-recovery-sidebar > p {
-            display: none !important;
-          }
-          .account-recovery-sidebar > div {
-            display: none !important;
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+        @media (max-width: 900px) {
+          .recovery-grid {
+            grid-template-columns: 1fr !important;
           }
         }
-        /* Fix form text visibility */
-        input:not([type="checkbox"])
-        :not([type="radio"])
-        :not([type="range"])
-        :not([type="submit"])
-        :not([type="button"]),
-        textarea,
-        select {
-          color: #1a1a1a !important;
+        input, textarea, select {
+          color: var(--input-text) !important;
         }
-
-        .dark input:not([type="checkbox"])
-        :not([type="radio"])
-        :not([type="range"]),
-        .dark textarea,
-        .dark select {
-          color: #ffffff !important;
-        }
-
         input::placeholder,
         textarea::placeholder {
           color: #9d8fd4 !important;
           opacity: 1 !important;
         }
-
-        .dark input::placeholder,
-        .dark textarea::placeholder {
-          color: #6b5fa0 !important;
-          opacity: 1 !important;
-        }
       `}</style>
     </>
   )
-}
-
-// Shared styles
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '13px',
-  fontWeight: 600,
-  marginBottom: '8px',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: 'rgba(124,58,237,0.06)',
-  border: '1px solid rgba(124,58,237,0.2)',
-  borderRadius: '10px',
-  padding: '12px 14px',
-  fontSize: '14px',
-  outline: 'none',
-  boxSizing: 'border-box',
-  fontFamily: 'inherit',
-  transition: 'border-color 0.2s',
 }
