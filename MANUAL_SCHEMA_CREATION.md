@@ -1,3 +1,4 @@
+
 # Manual Schema Creation - Step by Step
 
 Since the full schema isn't working, let's create the essential tables manually. Run these queries one by one in your Supabase SQL Editor.
