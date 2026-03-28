@@ -1,9 +1,28 @@
-"use client";
+'use client'
+
 import { useTheme } from "@/context/ThemeContext";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function ThemeTogglerTwo() {
   const { toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <button
+        style={{
+          width: 56,
+          height: 56,
+          background: 'transparent',
+          border: 'none',
+        }}
+      />
+    );
+  }
   return (
     <button
       onClick={toggleTheme}

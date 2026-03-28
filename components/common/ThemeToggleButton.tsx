@@ -1,8 +1,28 @@
-import React from "react";
+'use client'
+
+import React, { useEffect, useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 
 export const ThemeToggleButton: React.FC = () => {
   const { toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <button
+        style={{
+          width: 44,
+          height: 44,
+          background: 'transparent',
+          border: 'none',
+        }}
+      />
+    );
+  }
 
   return (
     <button

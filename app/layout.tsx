@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Providers } from "@/app/Providers";
+import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import "./globals.css";
@@ -115,13 +116,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="dark:bg-gray-900">
-        <Providers>
-          {children}
-          <ChatBot />
-          <WhatsAppButton />
-        </Providers>
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
+        <ThemeProvider>
+          <Providers>
+            {children}
+            <ChatBot />
+            <WhatsAppButton />
+          </Providers>
+        </ThemeProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
