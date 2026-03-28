@@ -3,25 +3,25 @@
 import AppSidebar from '@/layout/AppSidebar'
 import AppHeader from '@/layout/AppHeader'
 import Backdrop from '@/layout/Backdrop'
-import { ThemeProvider } from '@/context/ThemeContext'
 import { SidebarProvider, useSidebar } from '@/context/SidebarContext'
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar()
 
-  const mainContentMargin = isMobileOpen
-    ? 'ml-0'
-    : isExpanded || isHovered
-    ? 'lg:ml-[290px]'
-    : 'lg:ml-[90px]'
-
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
       <AppSidebar />
+
+      {/* Backdrop for mobile */}
       <Backdrop />
-      <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
+
+      {/* Main content area */}
+      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden min-w-0 w-full">
         <AppHeader />
-        <div className="p-4 mx-auto max-w-[1408px] md:p-6">{children}</div>
+        <main className="mx-auto max-w-[1408px] w-full p-4 md:p-6 2xl:p-10">
+          {children}
+        </main>
       </div>
     </div>
   )
@@ -33,10 +33,8 @@ export default function DashboardLayoutClient({
   children: React.ReactNode
 }) {
   return (
-    <ThemeProvider>
-      <SidebarProvider>
-        <DashboardLayoutContent>{children}</DashboardLayoutContent>
-      </SidebarProvider>
-    </ThemeProvider>
+    <SidebarProvider>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </SidebarProvider>
   )
 }

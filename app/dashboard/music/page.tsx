@@ -62,16 +62,17 @@ export default async function ClientMusicPage() {
   ]
 
   return (
-    <>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-black dark:text-white">🎵 Music Promotion</h2>
-        <p className="text-sm text-bodydark2 mt-1">Get your music heard worldwide</p>
-      </div>
+    <div className="w-full overflow-hidden">
+      <div className="mx-auto max-w-5xl px-4 py-6 w-full">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-black dark:text-white">🎵 Music Promotion</h2>
+          <p className="text-sm text-bodydark2 mt-1">Get your music heard worldwide</p>
+        </div>
 
-      {/* Packages */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {PACKAGES.map(pkg => (
-          <div key={pkg.name} className={`rounded-xl border bg-white shadow-sm dark:bg-boxdark p-6 relative ${pkg.color}`}>
+        {/* Packages */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-8">
+          {PACKAGES.map(pkg => (
+            <div key={pkg.name} className={`rounded-xl border bg-white shadow-sm dark:bg-boxdark p-6 relative min-w-0 w-full ${pkg.color}`}>
             {pkg.featured && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -133,8 +134,9 @@ export default async function ClientMusicPage() {
               </div>
             ))}
           </div>
-        </>
-      )}
-    </>
+          </>
+        )}
+      </div>
+    </div>
   )
 }
