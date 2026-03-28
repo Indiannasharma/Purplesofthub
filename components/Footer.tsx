@@ -45,7 +45,7 @@ export default function Footer() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.8, maxWidth: 260, marginBottom: 22 }}>
+            <p style={{ color: "#6b5fa0", fontSize: 14, lineHeight: 1.8, maxWidth: 260, marginBottom: 22 }}>
               Building smart digital products for businesses, startups, and creators worldwide.
             </p>
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -84,34 +84,34 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--text-primary)", fontSize: 14, marginBottom: 16 }}>Services</div>
+            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#1a1a1a", fontSize: 14, marginBottom: 16 }}>Services</div>
             {SERVICE_LINKS.map(([l, h]) => (
               <Link key={l} href={h}
-                style={{ display: "block", color: "var(--text-muted)", fontSize: 14, marginBottom: 10, textDecoration: "none", transition: "color .2s" }}
+                style={{ display: "block", color: "#6b5fa0", fontSize: 14, marginBottom: 10, textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#7c3aed")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#6b5fa0")}
               >{l}</Link>
             ))}
           </div>
 
           {/* Company */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--text-primary)", fontSize: 14, marginBottom: 16 }}>Company</div>
+            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#1a1a1a", fontSize: 14, marginBottom: 16 }}>Company</div>
             {COMPANY_LINKS.map(([l, h]) => (
               <Link key={l} href={h}
-                style={{ display: "block", color: "var(--text-muted)", fontSize: 14, marginBottom: 10, textDecoration: "none", transition: "color .2s" }}
+                style={{ display: "block", color: "#6b5fa0", fontSize: 14, marginBottom: 10, textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#7c3aed")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#6b5fa0")}
               >{l}</Link>
             ))}
           </div>
 
           {/* Contact */}
           <div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--text-primary)", fontSize: 14, marginBottom: 16 }}>Contact</div>
-            <div style={{ color: "var(--accent)", fontSize: 13, marginBottom: 11 }}>hello@purplesofthub.com</div>
+            <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#1a1a1a", fontSize: 14, marginBottom: 16 }}>Contact</div>
+            <div style={{ color: "#c084fc", fontSize: 13, marginBottom: 11 }}>hello@purplesofthub.com</div>
             <div style={{ fontSize: 13, marginBottom: 11 }}>
-              <a href="https://purplesofthub.com" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)", textDecoration: "none" }}>purplesofthub.com</a>
+              <a href="https://purplesofthub.com" target="_blank" rel="noopener noreferrer" style={{ color: "#c084fc", textDecoration: "none" }}>purplesofthub.com</a>
             </div>
             <Link href="/contact">
               <button className="btn-main" style={{ marginTop: 12, padding: "9px 18px", fontSize: 13 }}>
@@ -128,13 +128,13 @@ export default function Footer() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           flexWrap: "wrap", gap: 12,
         }}>
-          <div style={{ color: "var(--text-muted)", fontSize: 13 }}>© 2026 Purplesofthub. All rights reserved.</div>
+          <div style={{ color: "#6b5fa0", fontSize: 13 }}>© 2026 Purplesofthub. All rights reserved.</div>
           <div style={{ display: "flex", gap: 24 }}>
             {[["Privacy Policy", "/privacy"], ["Terms of Service", "/terms"]].map(([t, h]) => (
               <Link key={t} href={h}
-                style={{ color: "var(--text-muted)", fontSize: 13, textDecoration: "none", transition: "color .2s" }}
+                style={{ color: "#6b5fa0", fontSize: 13, textDecoration: "none", transition: "color .2s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#7c3aed")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#6b5fa0")}
               >{t}</Link>
             ))}
           </div>

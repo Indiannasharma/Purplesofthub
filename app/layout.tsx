@@ -5,48 +5,71 @@ import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import "./globals.css";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL('https://www.purplesofthub.com'),
   title: {
-    default: "PurpleSoftHub — Digital Innovation Studio",
-    template: "%s | PurpleSoftHub",
+    default: "PurpleSoftHub — Africa's Digital Innovation Studio",
+    template: '%s | PurpleSoftHub',
   },
-  description: "PurpleSoftHub is a digital innovation studio in Lagos, Nigeria offering web development, mobile apps, digital marketing, UI/UX design, SaaS development and music promotion.",
+  description: "PurpleSoftHub is Africa's leading digital innovation studio. We build world-class websites, mobile apps, SaaS platforms, run digital marketing campaigns, promote music globally and train the next generation of African tech talent. Serving clients across Africa, UK, USA, Canada and beyond.",
   keywords: [
-    "web development Nigeria",
-    "digital marketing Lagos",
-    "mobile app development Nigeria",
-    "music promotion Africa",
-    "UI UX design Lagos",
-    "SaaS development Nigeria",
+    // Brand
     "PurpleSoftHub",
+    "Purplesoft Nigeria",
+    "Africa digital innovation studio",
+    // Core services
+    "web development Africa",
+    "mobile app development Africa",
+    "digital marketing Africa",
+    "UI UX design Africa",
+    "SaaS development Africa",
+    "music promotion Africa",
+    // Global reach
+    "African digital agency",
+    "digital agency Nigeria",
+    "African tech studio",
+    "web development Nigeria",
+    "digital innovation Africa",
+    // Academy
+    "tech academy Africa",
+    "learn web development Africa",
+    "digital skills training Nigeria",
+    // Niche services
+    "music distribution Africa",
+    "social media account recovery",
+    "account recovery Nigeria",
+    "social media management Africa",
+    // Global
+    "African startup studio",
+    "digital agency for global brands",
   ],
+  authors: [{ name: 'PurpleSoftHub', url: 'https://www.purplesofthub.com' }],
+  creator: 'PurpleSoftHub',
+  publisher: 'PurpleSoftHub',
   openGraph: {
-    type: "website",
-    locale: "en_NG",
-    url: SITE_URL,
-    siteName: "PurpleSoftHub",
-    title: "PurpleSoftHub — Digital Innovation Studio",
-    description: "Professional web development, mobile apps, digital marketing and music promotion from Lagos, Nigeria. 💜",
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://www.purplesofthub.com',
+    siteName: 'PurpleSoftHub',
+    title: "PurpleSoftHub — Africa's Digital Innovation Studio",
+    description: "Building world-class digital products for businesses, startups and creators across Africa and beyond. Web · Mobile · Marketing · Music · Academy.",
     images: [
       {
-        url: "/opengraph-image",
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: "PurpleSoftHub — Digital Innovation Studio",
-        type: "image/png",
+        alt: "PurpleSoftHub — Africa's Digital Innovation Studio",
+        type: 'image/png',
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    site: "@purplesofthub",
-    creator: "@purplesofthub",
-    title: "PurpleSoftHub — Digital Innovation Studio",
-    description: "Professional web development, mobile apps, digital marketing and music promotion from Lagos, Nigeria.",
-    images: ["/opengraph-image"],
+    card: 'summary_large_image',
+    site: '@purplesofthub',
+    creator: '@purplesofthub',
+    title: "PurpleSoftHub — Africa's Digital Innovation Studio",
+    description: "Building world-class digital products across Africa and beyond. Web · Mobile · Marketing · Music · Academy.",
+    images: ['/opengraph-image'],
   },
   icons: {
     icon: [
@@ -78,6 +101,15 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://www.purplesofthub.com',
   },
 };
 
