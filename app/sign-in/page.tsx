@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
 export default function SignInPage() {
   const router = useRouter()
@@ -18,7 +19,6 @@ export default function SignInPage() {
     setError('')
 
     try {
-      const { createClient } = await import('@/lib/supabase/client')
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -48,7 +48,6 @@ export default function SignInPage() {
     setError('')
 
     try {
-      const { createClient } = await import('@/lib/supabase/client')
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -62,8 +61,6 @@ export default function SignInPage() {
       }
 
       // Check user role and redirect accordingly
-      const { createClient } = await import('@/lib/supabase/client')
-      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
 
       const role = user?.user_metadata?.role || user?.app_metadata?.role

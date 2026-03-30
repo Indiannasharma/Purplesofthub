@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import purpleLogo from '@/Assets/images/Purplesoft-logo-main.png'
 
 const serviceLinks = [
   { label: 'Web Development', href: '/services/web-development' },
@@ -80,7 +81,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-6">
-              <Image src="/Purplesoft-logo-main.png" alt="PurpleSoftHub" width={155} height={44} className="h-auto w-auto" />
+              <Image src={purpleLogo} alt="PurpleSoftHub" width={155} height={44} className="h-auto w-auto" />
             </Link>
 
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 max-w-xs">
