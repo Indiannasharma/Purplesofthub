@@ -87,7 +87,7 @@ export default function Footer() {
                 marginBottom: '20px',
               }}>
                 <Image
-                  src="/Purplesoft-logo-main.png"
+                  src="/images/logo/purplesoft-logo-main.png"
                   alt="PurpleSoftHub"
                   width={155}
                   height={44}
