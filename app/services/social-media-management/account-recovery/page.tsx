@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 const PLATFORMS = [
   {
@@ -232,7 +233,7 @@ export default function AccountRecoveryPage() {
             style={{
               fontSize: 'clamp(32px, 5vw, 56px)',
               fontWeight: 900,
-              color: '#fff',
+              color: 'var(--hero-heading, #fff)',
               margin: '0 0 20px',
               lineHeight: 1.1,
               letterSpacing: '-0.5px',
@@ -254,7 +255,7 @@ export default function AccountRecoveryPage() {
           <p
             style={{
               fontSize: 'clamp(15px, 2vw, 18px)',
-              color: '#9d8fd4',
+              color: 'var(--hero-body, #9d8fd4)',
               margin: '0 0 36px',
               lineHeight: 1.7,
               maxWidth: '520px',
@@ -985,6 +986,8 @@ export default function AccountRecoveryPage() {
           --input-bg: #f9f9ff;
           --input-text: #1a1a1a;
           --tab-color: #6b5fa0;
+          --hero-heading: #1a1a1a;
+          --hero-body: #555555;
         }
         .dark {
           --card-bg: #0a0618;
@@ -994,6 +997,8 @@ export default function AccountRecoveryPage() {
           --input-bg: rgba(124,58,237,0.06);
           --input-text: #ffffff;
           --tab-color: #9d8fd4;
+          --hero-heading: #ffffff;
+          --hero-body: #9d8fd4;
         }
         @keyframes spin {
           from { transform: rotate(0deg); }
@@ -1017,6 +1022,7 @@ export default function AccountRecoveryPage() {
           opacity: 1 !important;
         }
       `}</style>
+      <Footer />
     </>
   )
 }
