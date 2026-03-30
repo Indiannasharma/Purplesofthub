@@ -61,7 +61,18 @@ export default function SignInPage() {
         return
       }
 
-      router.push('/dashboard')
+      // Check user role and redirect accordingly
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const role = user?.user_metadata?.role || user?.app_metadata?.role
+
+      if (role === 'admin') {
+        router.push('/admin')
+      } else {
+        router.push('/dashboard')
+      }
       router.refresh()
     } catch (err: any) {
       setError(err.message || 'Failed to sign in')
