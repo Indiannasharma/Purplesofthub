@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 const PRESET_AMOUNTS_NGN = [
   1000, 5000, 10000, 25000, 50000, 100000
@@ -242,6 +243,7 @@ export default function DonatePage() {
   }
 
   return (
+    <>
     <div style={{
       minHeight: '100vh',
       background: 'var(--bg, #ffffff)',
@@ -1400,5 +1402,8 @@ export default function DonatePage() {
         }
       `}</style>
     </div>
+
+    <Footer />
+    </>
   )
 }

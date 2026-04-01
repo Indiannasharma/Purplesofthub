@@ -186,7 +186,7 @@ export default function Footer() {
         <div className="purplefoot-bottom">
           <div className="purplefoot-bottom-inner">
             <p className="purplefoot-copy">
-              © {year} PurpleSoftHub (Purplesoft Nigeria). All rights reserved.
+              © {year} PurpleSoftHub. All rights reserved.
             </p>
             <div className="purplefoot-bottom-links">
               <Link href="/privacy" className="purplefoot-link">
