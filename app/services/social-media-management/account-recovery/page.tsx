@@ -70,7 +70,9 @@ export default function AccountRecoveryPage() {
   const [agreed, setAgreed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState<'paystack' | 'flutterwave' | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const screenshotRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
     fullName: '',
@@ -83,6 +85,8 @@ export default function AccountRecoveryPage() {
     additionalInfo: '',
     idFile: null as File | null,
     idFileName: '',
+    screenshotFile: null as File | null,
+    screenshotFileName: '',
   })
 
   const update = (field: string, value: string | File | null) =>
@@ -96,66 +100,107 @@ export default function AccountRecoveryPage() {
     }
   }
 
+  const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      update('screenshotFile', file)
+      update('screenshotFileName', file.name)
+    }
+  }
+
   const isValid = () =>
     form.fullName && form.facebookHandle &&
     form.firstName && form.surname &&
     form.email && form.phone &&
     form.supportType &&
     form.additionalInfo &&
-    form.idFile && agreed
+    form.idFile && agreed &&
+    paymentMethod !== null
 
   const activePlatform = PLATFORMS.find(p => p.id === activeTab)!
 
   const handleSubmitAndPay = async () => {
     if (!isValid()) {
       setSubmitError(
-        'Please fill all fields, upload your ID and agree to the terms.'
+        'Please fill all fields, upload your ID, select a payment method and agree to terms.'
       )
       return
     }
     setSubmitting(true)
     setSubmitError('')
 
+    const priceNGN = activeTab === 'instagram' ? 75000 : 42000
+
     try {
       const formData = new FormData()
       Object.entries(form).forEach(([k, v]) => {
-        if (v && k !== 'idFile') formData.append(k, v as string)
+        if (v && k !== 'idFile' && k !== 'screenshotFile' && k !== 'idFileName' && k !== 'screenshotFileName') {
+          formData.append(k, v as string)
+        }
       })
       if (form.idFile) formData.append('idFile', form.idFile)
+      if (form.screenshotFile) formData.append('screenshotFile', form.screenshotFile)
       formData.append('platform', activeTab)
-      formData.append('amount', '42000')
+      formData.append('amount', String(priceNGN))
+      formData.append('paymentMethod', paymentMethod!)
 
-      await fetch('/api/account-recovery', {
-        method: 'POST',
-        body: formData,
-      })
+      await fetch('/api/account-recovery', { method: 'POST', body: formData })
 
-      const res = await fetch('/api/payments/paystack/initialize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: form.email,
-          amount: 42000,
-          currency: 'NGN',
-          metadata: {
-            service: 'account-recovery',
-            platform: activeTab,
-            fullName: form.fullName,
-          },
-          callback_url: `${window.location.origin}/services/social-media-management/account-recovery/success`,
-        }),
-      })
-      const data = await res.json()
-      if (data.authorization_url) {
-        window.location.href = data.authorization_url
-      } else {
-        setSubmitError(data.error || 'Payment failed. Please try again.')
+      if (paymentMethod === 'paystack') {
+        const res = await fetch('/api/payments/paystack/initialize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: form.email,
+            amount: priceNGN,
+            currency: 'NGN',
+            metadata: {
+              service: 'account-recovery',
+              platform: activeTab,
+              fullName: form.fullName,
+              phone: form.phone,
+              payment_method: 'paystack',
+            },
+            callback_url: `${window.location.origin}/services/social-media-management/account-recovery/success`,
+          }),
+        })
+        const data = await res.json()
+        if (data.authorization_url) {
+          window.location.href = data.authorization_url
+        } else {
+          setSubmitError(data.error || 'Paystack payment failed. Please try again.')
+        }
+      } else if (paymentMethod === 'flutterwave') {
+        const res = await fetch('/api/payments/flutterwave/initialize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: form.email,
+            amount: priceNGN,
+            currency: 'NGN',
+            name: form.fullName || `${form.firstName} ${form.surname}`,
+            phone: form.phone,
+            meta: {
+              service: 'account-recovery',
+              platform: activeTab,
+              payment_method: 'flutterwave',
+            },
+            redirect_url: `${window.location.origin}/services/social-media-management/account-recovery/success`,
+          }),
+        })
+        const data = await res.json()
+        if (data.payment_link) {
+          window.location.href = data.payment_link
+        } else {
+          setSubmitError(data.error || 'Flutterwave payment failed. Please try again.')
+        }
       }
     } catch {
       setSubmitError('Something went wrong. Please try again.')
     }
     setSubmitting(false)
   }
+
 
   return (
     <>
@@ -711,6 +756,46 @@ export default function AccountRecoveryPage() {
                     </button>
                   </div>
 
+                  {/* Screenshot Upload */}
+                  <div>
+                    <label style={{ color: 'var(--label-color, #374151)', display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '4px' }} className="dark:text-gray-300">
+                      Upload Account Screenshot (Optional but Recommended)
+                    </label>
+                    <p style={{ fontSize: '12px', color: '#9d8fd4', margin: '0 0 10px' }}>
+                      Upload a screenshot of the disabled/suspended/hacked account error page. This speeds up recovery.
+                    </p>
+                    <input ref={screenshotRef} type="file" onChange={handleScreenshot} accept="image/*" style={{ display: 'none' }} />
+                    <button
+                      type="button"
+                      onClick={() => screenshotRef.current?.click()}
+                      style={{
+                        width: '100%',
+                        border: `2px dashed ${form.screenshotFileName ? '#10b981' : 'rgba(124,58,237,0.2)'}`,
+                        borderRadius: '14px',
+                        padding: '24px 20px',
+                        background: form.screenshotFileName ? 'rgba(16,185,129,0.04)' : 'var(--input-bg, #f9f9ff)',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s',
+                      }}
+                      className="dark:bg-gray-800/50"
+                    >
+                      {form.screenshotFileName ? (
+                        <>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', fontSize: '18px' }}>🖼️</div>
+                          <p style={{ fontSize: '13px', fontWeight: 700, color: '#10b981', margin: '0 0 4px' }}>{form.screenshotFileName}</p>
+                          <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>Click to change screenshot</p>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', fontSize: '18px' }}>📸</div>
+                          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--heading-color, #1a1a1a)', margin: '0 0 4px' }} className="dark:text-white">Click to upload screenshot</p>
+                          <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>JPG or PNG — Max 5MB</p>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
                   {/* Additional info */}
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: '#374151' }} className="dark:text-gray-300">
@@ -811,6 +896,57 @@ export default function AccountRecoveryPage() {
                     </div>
                   )}
 
+                  {/* Payment Method Selection */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--label-color, #374151)', marginBottom: '12px', display: 'block' }} className="dark:text-gray-300">
+                      Select Payment Method *
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      {/* Paystack */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('paystack')}
+                        style={{
+                          padding: '14px 12px',
+                          borderRadius: '12px',
+                          border: paymentMethod === 'paystack' ? '2px solid #0BA4DB' : '1.5px solid rgba(124,58,237,0.2)',
+                          background: paymentMethod === 'paystack' ? 'rgba(11,164,219,0.08)' : 'var(--input-bg, #f9f9ff)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          textAlign: 'center',
+                        }}
+                        className="dark:bg-gray-800/50"
+                      >
+                        <p style={{ fontSize: '14px', fontWeight: 700, color: paymentMethod === 'paystack' ? '#0BA4DB' : 'var(--heading-color, #1a1a1a)', margin: '0 0 4px' }} className="dark:text-white">💳 Paystack</p>
+                        <p style={{ fontSize: '11px', color: '#9d8fd4', margin: 0 }}>Cards · Bank · USSD</p>
+                        {paymentMethod === 'paystack' && (
+                          <span style={{ display: 'inline-block', marginTop: '6px', fontSize: '10px', fontWeight: 700, color: '#0BA4DB', background: 'rgba(11,164,219,0.1)', padding: '2px 8px', borderRadius: '100px' }}>✓ Selected</span>
+                        )}
+                      </button>
+                      {/* Flutterwave */}
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('flutterwave')}
+                        style={{
+                          padding: '14px 12px',
+                          borderRadius: '12px',
+                          border: paymentMethod === 'flutterwave' ? '2px solid #F5A623' : '1.5px solid rgba(124,58,237,0.2)',
+                          background: paymentMethod === 'flutterwave' ? 'rgba(245,166,35,0.08)' : 'var(--input-bg, #f9f9ff)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          textAlign: 'center',
+                        }}
+                        className="dark:bg-gray-800/50"
+                      >
+                        <p style={{ fontSize: '14px', fontWeight: 700, color: paymentMethod === 'flutterwave' ? '#F5A623' : 'var(--heading-color, #1a1a1a)', margin: '0 0 4px' }} className="dark:text-white">🌊 Flutterwave</p>
+                        <p style={{ fontSize: '11px', color: '#9d8fd4', margin: 0 }}>International · Mobile</p>
+                        {paymentMethod === 'flutterwave' && (
+                          <span style={{ display: 'inline-block', marginTop: '6px', fontSize: '10px', fontWeight: 700, color: '#F5A623', background: 'rgba(245,166,35,0.1)', padding: '2px 8px', borderRadius: '100px' }}>✓ Selected</span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Submit button */}
                   <button
                     onClick={handleSubmitAndPay}
@@ -820,7 +956,11 @@ export default function AccountRecoveryPage() {
                       padding: '16px',
                       borderRadius: '14px',
                       border: 'none',
-                      background: isValid() ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'rgba(124,58,237,0.2)',
+                      background: isValid()
+                        ? paymentMethod === 'flutterwave'
+                          ? 'linear-gradient(135deg, #F5A623, #e8971a)'
+                          : 'linear-gradient(135deg, #7c3aed, #a855f7)'
+                        : 'rgba(124,58,237,0.2)',
                       color: '#fff',
                       fontSize: '16px',
                       fontWeight: 800,
@@ -829,7 +969,11 @@ export default function AccountRecoveryPage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '10px',
-                      boxShadow: isValid() ? '0 8px 30px rgba(124,58,237,0.35)' : 'none',
+                      boxShadow: isValid()
+                        ? paymentMethod === 'flutterwave'
+                          ? '0 8px 30px rgba(245,166,35,0.35)'
+                          : '0 8px 30px rgba(124,58,237,0.35)'
+                        : 'none',
                       transition: 'all 0.2s',
                       letterSpacing: '0.01em',
                     }}
@@ -840,12 +984,21 @@ export default function AccountRecoveryPage() {
                         Processing...
                       </>
                     ) : (
-                      <>🔐 Submit & Pay ₦42,000 / $30</>
+                      <>
+                        {paymentMethod === 'paystack' && '💳'}
+                        {paymentMethod === 'flutterwave' && '🌊'}
+                        {!paymentMethod && '🔐'}
+                        {' '}
+                        {paymentMethod
+                          ? `Pay ₦${activePlatform.price_ngn.toLocaleString()} via ${paymentMethod === 'paystack' ? 'Paystack' : 'Flutterwave'}`
+                          : 'Select Payment Method Above'
+                        }
+                      </>
                     )}
                   </button>
 
                   <p style={{ textAlign: 'center', fontSize: '12px', color: '#9d8fd4', margin: '-8px 0 0' }}>
-                    🔒 Secured by Paystack · Non-refundable · 14–30 business days
+                    🔒 Secured payment · Non-refundable · 14–30 business days
                   </p>
                 </div>
               </div>
