@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
+import ServiceCards from "@/components/ServiceCards";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import {
   FadeInUp,
@@ -89,7 +90,7 @@ export default function Home() {
           <div>
             <Reveal>
               <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 28, fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: 1 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#a855f7", display: "inline-block", flexShrink: 0, animation: "pulseDot 1.8s ease-in-out infinite" }} />
                 DIGITAL INNOVATION STUDIO
               </div>
             </Reveal>
@@ -198,25 +199,7 @@ export default function Home() {
               <p style={{ color: "var(--text-muted)", fontSize: 16, maxWidth: 500, margin: "0 auto" }}>Everything your business needs to grow — under one roof.</p>
             </div>
           </Reveal>
-          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(310px,1fr))", gap: 20 }}>
-            {SERVICES.map((s) => (
-              <StaggerItem key={s.title}>
-                <AnimatedCard className="glass-card" style={{ padding: "30px 26px", display: "flex", flexDirection: "column" }}>
-                  <div style={{ fontSize: 38, marginBottom: 16 }}>{s.icon}</div>
-                  <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--text-primary)", marginBottom: 10 }}>{s.title}</div>
-                  <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.75, marginBottom: 18, flex: 1 }}>{s.desc}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 18 }}>
-                    {s.tags.map(t => (
-                      <span key={t} style={{ background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.25)", borderRadius: 100, padding: "3px 11px", fontSize: 12, color: "var(--accent)", fontWeight: 500 }}>{t}</span>
-                    ))}
-                  </div>
-                  <Link href={s.href}>
-                    <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Learn More →</span>
-                  </Link>
-                </AnimatedCard>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+          <ServiceCards services={SERVICES} />
           <Reveal delay={0.3}>
             <div style={{ textAlign: "center", marginTop: 48 }}>
               <Link href="/services">

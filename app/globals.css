@@ -607,3 +607,31 @@ textarea::placeholder {
   color: #6b5fa0 !important;
   opacity: 1 !important;
 }
+
+/* ══════════════════════════════
+   SERVICE CARD PROGRESS BARS
+══════════════════════════════ */
+.service-progress-bar {
+  width: 0%;
+  transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+}
+
+/* ══════════════════════════════
+   PULSE DOT ANIMATION
+══════════════════════════════ */
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.5);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.65);
+    box-shadow: 0 0 0 5px rgba(168, 85, 247, 0);
+  }
+}
+
+.pulse-dot {
+  animation: pulseDot 1.8s ease-in-out infinite;
+}
