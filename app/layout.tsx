@@ -4,6 +4,7 @@ import { Providers } from "@/app/Providers";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ScrollToTop from "@/components/ScrollToTop";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -132,6 +133,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
             <ChatBot />
             <WhatsAppButton />
+            <ScrollToTop />
           </Providers>
         </ThemeProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
