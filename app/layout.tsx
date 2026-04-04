@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     description: "Building world-class digital products for businesses, startups and creators across Africa and beyond. Web · Mobile · Marketing · Music · Academy.",
     images: [
       {
-        url: '/opengraph-image',
+        url: 'https://www.purplesofthub.com/og-image.png',
         width: 1200,
         height: 630,
         alt: "PurpleSoftHub — Africa's Digital Innovation Studio",
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     creator: '@purplesofthub',
     title: "PurpleSoftHub — Africa's Digital Innovation Studio",
     description: "Building world-class digital products across Africa and beyond. Web · Mobile · Marketing · Music · Academy.",
-    images: ['/opengraph-image'],
+    images: ['https://www.purplesofthub.com/og-image.png'],
   },
   icons: {
     icon: [
@@ -111,6 +111,15 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: 'https://www.purplesofthub.com',
+  },
+  other: {
+    'twitter:card': 'summary_large_image',
+    'twitter:image': 'https://www.purplesofthub.com/og-image.png',
+    'twitter:image:alt': "PurpleSoftHub — Africa's Digital Innovation Studio",
+    'og:image': 'https://www.purplesofthub.com/og-image.png',
+    'og:image:width': '1200',
+    'og:image:height': '630',
+    'og:image:type': 'image/png',
   },
 };
 
