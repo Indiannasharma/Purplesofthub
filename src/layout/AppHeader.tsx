@@ -85,18 +85,16 @@ const AppHeader: React.FC = () => {
 
           <Link href="/" className="lg:hidden">
             <Image
-              width={154}
-              height={32}
-              className="dark:hidden"
-              src="./images/logo/logo.svg"
-              alt="Logo"
-            />
-            <Image
-              width={154}
-              height={32}
-              className="hidden dark:block"
-              src="./images/logo/logo-dark.svg"
-              alt="Logo"
+              src="/images/logo/purplesoft-logo-main.png"
+              alt="PurpleSoftHub"
+              width={140}
+              height={40}
+              priority
+              style={{
+                objectFit: 'contain',
+                height: '36px',
+                width: 'auto',
+              }}
             />
           </Link>
 
