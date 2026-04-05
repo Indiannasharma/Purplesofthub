@@ -114,13 +114,14 @@ export const metadata: Metadata = {
     canonical: 'https://www.purplesofthub.com',
   },
   other: {
-    'twitter:card': 'summary_large_image',
-    'twitter:image': 'https://www.purplesofthub.com/og-image.png',
-    'twitter:image:alt': "PurpleSoftHub — Africa's Digital Innovation Studio",
-    'og:image': 'https://www.purplesofthub.com/og-image.png',
+    'og:image': 'https://www.purplesofthub.com/opengraph-image',
     'og:image:width': '1200',
     'og:image:height': '630',
     'og:image:type': 'image/png',
+    'og:image:alt': "PurpleSoftHub — Africa's Digital Innovation Studio",
+    'twitter:card': 'summary_large_image',
+    'twitter:image': 'https://www.purplesofthub.com/opengraph-image',
+    'twitter:image:alt': "PurpleSoftHub — Africa's Digital Innovation Studio",
   },
 };
 
