@@ -1,14 +1,20 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import RichTextEditor from '@/src/components/Editor/RichTextEditor'
 import Link from 'next/link'
 
-const CATEGORIES = [
-  'Tech', 'Marketing', 'SaaS',
-  'Music', 'Web Dev', 'Mobile',
-  'Business', 'AI', 'Design'
+const DEFAULT_CATEGORIES = [
+  'Technology',
+  'Web Development',
+  'Mobile Apps',
+  'Digital Marketing',
+  'Music & Entertainment',
+  'Business & Startups',
+  'Design & UI/UX',
+  'Academy & Learning',
+  'Company News',
 ]
 
 export default function NewBlogPost() {
@@ -20,19 +26,98 @@ export default function NewBlogPost() {
   const [content, setContent] = useState('')
   const [category, setCategory] = useState('')
   const [coverImage, setCoverImage] = useState('')
+  const [imagePreview, setImagePreview] = useState('')
   const [seoTitle, setSeoTitle] = useState('')
   const [seoDescription, setSeoDescription] = useState('')
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES)
+
+  // Fetch categories from Supabase
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('blog_categories')
+          .select('name')
+          .order('name', { ascending: true })
+
+        if (error) {
+          console.error('Categories fetch error:', error)
+          setCategories(DEFAULT_CATEGORIES)
+          return
+        }
+
+        if (data && data.length > 0) {
+          setCategories(data.map((c: any) => c.name))
+        } else {
+          setCategories(DEFAULT_CATEGORIES)
+        }
+      } catch (err) {
+        console.error('Category error:', err)
+        setCategories(DEFAULT_CATEGORIES)
+      }
+    }
+
+    fetchCategories()
+  }, [supabase])
 
   const handleTitleChange = (val: string) => {
     setTitle(val)
     setSlug(
-      val.toLowerCase()
+      val
+        .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '')
     )
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setError('')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('folder', 'blog')
+
+      const response = await fetch('/api/upload/cloudinary', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        const errorMsg = data.error || 'Image upload failed'
+        setError(
+          errorMsg.includes('not configured')
+            ? '⚙️ Cloudinary not set up yet. Add CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET and NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME to Vercel env vars.'
+            : `Upload failed: ${errorMsg}`
+        )
+        setUploading(false)
+        return
+      }
+
+      if (data.url) {
+        setCoverImage(data.url)
+        setImagePreview(data.url)
+        setError('')
+        setUploading(false)
+        return
+      }
+
+      setError(data.error || 'Image upload failed')
+    } catch (err: any) {
+      setError(err.message || 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
   }
 
   const handleSave = async (publishStatus: 'draft' | 'published') => {
@@ -51,24 +136,23 @@ export default function NewBlogPost() {
 
     const readTime = `${Math.ceil(wordCount / 200)} min read`
 
-    const { error: err } = await supabase
-      .from('blog_posts')
-      .insert({
-        title,
-        slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        excerpt,
-        content,
-        category,
-        cover_image: coverImage,
-        seo_title: seoTitle || title,
-        seo_description: seoDescription || excerpt,
-        status: publishStatus,
-        read_time: readTime,
-        author: {
-          name: 'PurpleSoftHub Team'
-        },
-        published_at: publishStatus === 'published' ? new Date().toISOString() : null
-      })
+    const { error: err } = await supabase.from('blog_posts').insert({
+      title,
+      slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      excerpt,
+      content,
+      category,
+      cover_image: coverImage,
+      seo_title: seoTitle || title,
+      seo_description: seoDescription || excerpt,
+      status: publishStatus,
+      read_time: readTime,
+      author: {
+        name: 'PurpleSoftHub Team',
+      },
+      published_at:
+        publishStatus === 'published' ? new Date().toISOString() : null,
+    })
 
     if (err) {
       setError(err.message)
@@ -89,7 +173,9 @@ export default function NewBlogPost() {
           >
             ← Blog
           </Link>
-          <h2 className="text-2xl font-bold text-black dark:text-white">New Post</h2>
+          <h2 className="text-2xl font-bold text-black dark:text-white">
+            New Post
+          </h2>
         </div>
         <div className="flex gap-3">
           <button
@@ -121,7 +207,7 @@ export default function NewBlogPost() {
             type="text"
             placeholder="Post title..."
             value={title}
-            onChange={e => handleTitleChange(e.target.value)}
+            onChange={(e) => handleTitleChange(e.target.value)}
             className="w-full text-2xl font-bold bg-transparent border-0 border-b-2 border-stroke dark:border-strokedark text-black dark:text-white placeholder-bodydark2 pb-3 focus:outline-none focus:border-brand-500"
           />
 
@@ -134,7 +220,9 @@ export default function NewBlogPost() {
 
         <div className="space-y-4">
           <div className="rounded-xl border border-stroke bg-white p-5 shadow-sm dark:border-strokedark dark:bg-boxdark">
-            <h6 className="font-semibold text-black dark:text-white mb-4">Post Settings</h6>
+            <h6 className="font-semibold text-black dark:text-white mb-4">
+              Post Settings
+            </h6>
 
             <div className="space-y-3">
               <div>
@@ -144,7 +232,7 @@ export default function NewBlogPost() {
                 <input
                   type="text"
                   value={slug}
-                  onChange={e => setSlug(e.target.value)}
+                  onChange={(e) => setSlug(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
@@ -155,11 +243,11 @@ export default function NewBlogPost() {
                 </label>
                 <select
                   value={category}
-                  onChange={e => setCategory(e.target.value)}
+                  onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-stroke dark:border-strokedark bg-white dark:bg-boxdark text-sm text-black dark:text-white focus:outline-none focus:border-brand-500"
                 >
                   <option value="">Select category</option>
-                  {CATEGORIES.map(cat => (
+                  {categories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
@@ -169,34 +257,61 @@ export default function NewBlogPost() {
 
               <div>
                 <label className="block text-xs font-medium text-bodydark2 mb-1.5">
-                  Cover Image URL
+                  Cover Image
+                </label>
+                {imagePreview && (
+                  <div className="mb-3 rounded-lg overflow-hidden border border-stroke dark:border-strokedark">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-32 object-cover"
+                    />
+                  </div>
+                )}
+                <label className="flex items-center justify-center w-full px-3 py-2 rounded-lg border border-dashed border-stroke dark:border-strokedark bg-transparent text-sm text-bodydark2 cursor-pointer hover:border-brand-500 transition-colors">
+                  <span className={uploading ? 'opacity-50' : ''}>
+                    {uploading ? 'Uploading...' : '📤 Click to upload'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
                 </label>
                 <input
                   type="text"
                   value={coverImage}
-                  onChange={e => setCoverImage(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white focus:outline-none focus:border-brand-500"
+                  onChange={(e) => setCoverImage(e.target.value)}
+                  placeholder="or paste image URL..."
+                  className="w-full px-3 py-2 mt-2 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
             </div>
           </div>
 
           <div className="rounded-xl border border-stroke bg-white p-5 shadow-sm dark:border-strokedark dark:bg-boxdark">
-            <h6 className="font-semibold text-black dark:text-white mb-3">Excerpt</h6>
+            <h6 className="font-semibold text-black dark:text-white mb-3">
+              Excerpt
+            </h6>
             <textarea
               value={excerpt}
-              onChange={e => setExcerpt(e.target.value)}
+              onChange={(e) => setExcerpt(e.target.value)}
               placeholder="Brief description..."
               rows={3}
               maxLength={300}
               className="w-full px-3 py-2 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white placeholder-bodydark2 focus:outline-none focus:border-brand-500 resize-none"
             />
-            <p className="text-xs text-bodydark2 mt-1 text-right">{excerpt.length}/300</p>
+            <p className="text-xs text-bodydark2 mt-1 text-right">
+              {excerpt.length}/300
+            </p>
           </div>
 
           <div className="rounded-xl border border-stroke bg-white p-5 shadow-sm dark:border-strokedark dark:bg-boxdark">
-            <h6 className="font-semibold text-black dark:text-white mb-3">SEO Settings</h6>
+            <h6 className="font-semibold text-black dark:text-white mb-3">
+              SEO Settings
+            </h6>
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-bodydark2 mb-1.5">
@@ -205,7 +320,7 @@ export default function NewBlogPost() {
                 <input
                   type="text"
                   value={seoTitle}
-                  onChange={e => setSeoTitle(e.target.value)}
+                  onChange={(e) => setSeoTitle(e.target.value)}
                   placeholder={title || 'SEO title...'}
                   className="w-full px-3 py-2 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white focus:outline-none focus:border-brand-500"
                 />
@@ -218,13 +333,15 @@ export default function NewBlogPost() {
                 </label>
                 <textarea
                   value={seoDescription}
-                  onChange={e => setSeoDescription(e.target.value)}
+                  onChange={(e) => setSeoDescription(e.target.value)}
                   placeholder={excerpt || 'Meta description...'}
                   rows={3}
                   maxLength={160}
                   className="w-full px-3 py-2 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white placeholder-bodydark2 focus:outline-none focus:border-brand-500 resize-none"
                 />
-                <p className="text-xs text-bodydark2 mt-1 text-right">{seoDescription.length}/160</p>
+                <p className="text-xs text-bodydark2 mt-1 text-right">
+                  {seoDescription.length}/160
+                </p>
               </div>
             </div>
           </div>
