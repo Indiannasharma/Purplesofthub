@@ -644,7 +644,7 @@ textarea::placeholder {
 }
 
 /* ══════════════════════════════
-   PULSE DOT ANIMATION
+   ANIMATIONS
 ══════════════════════════════ */
 @keyframes pulseDot {
   0%, 100% {
@@ -661,6 +661,21 @@ textarea::placeholder {
 
 .pulse-dot {
   animation: pulseDot 1.8s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.3s ease;
 }
 
 /* ══════════════════════════════

@@ -24,6 +24,7 @@ export default function ScrollToTop() {
     <button
       onClick={scrollToTop}
       aria-label="Scroll to top"
+      className="fade-in-up"
       style={{
         position: 'fixed',
         bottom: '96px',
@@ -41,7 +42,6 @@ export default function ScrollToTop() {
         justifyContent: 'center',
         boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
         transition: 'all 0.3s',
-        animation: 'fadeInUp 0.3s ease',
       }}
       onMouseEnter={e => {
         const el = e.currentTarget
@@ -65,19 +65,6 @@ export default function ScrollToTop() {
         strokeLinejoin="round">
         <polyline points="18 15 12 9 6 15" />
       </svg>
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </button>
   )
 }
