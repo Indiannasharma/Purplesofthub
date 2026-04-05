@@ -456,11 +456,22 @@ export default function NewBlogPost() {
         gridTemplateColumns: '1fr 340px',
         gap: '20px',
         alignItems: 'start',
+        height: 'calc(100vh - 160px)',
+        overflow: 'hidden',
       }}
       className="blog-editor-grid">
 
-        {/* ── LEFT — EDITOR ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* ── LEFT — EDITOR (scrollable) ── */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          height: '100%',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          paddingRight: '4px',
+          paddingBottom: '40px',
+        }}>
 
           {/* Title */}
           <div style={{
@@ -598,13 +609,15 @@ Markdown is supported.
           </div>
         </div>
 
-        {/* ── RIGHT — SETTINGS PANEL ── */}
+        {/* ── RIGHT — SETTINGS PANEL (scrollable) ── */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          position: 'sticky',
-          top: '16px',
+          height: '100%',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          paddingBottom: '40px',
         }}>
 
           {/* Featured Image */}
@@ -1021,7 +1034,24 @@ Markdown is supported.
         @media (max-width: 1024px) {
           .blog-editor-grid {
             grid-template-columns: 1fr !important;
+            height: auto !important;
+            overflow: visible !important;
           }
+          .blog-editor-grid > div {
+            height: auto !important;
+            overflow: visible !important;
+          }
+        }
+        /* Blog editor scrollbars */
+        .blog-editor-grid > div::-webkit-scrollbar {
+          width: 3px;
+        }
+        .blog-editor-grid > div::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .blog-editor-grid > div::-webkit-scrollbar-thumb {
+          background: rgba(124,58,237,0.25);
+          border-radius: 100px;
         }
         textarea::placeholder {
           color: #4b5563 !important;
