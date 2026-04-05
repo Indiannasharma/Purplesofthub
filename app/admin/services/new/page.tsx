@@ -1,284 +1,228 @@
 'use client'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
-const CATEGORIES = [
-  'web-development',
-  'mobile-apps',
-  'digital-marketing',
-  'ui-ux-design',
-  'saas-development',
-  'music-promotion',
-  'content-creation',
-  'seo',
-  'social-media'
+const SERVICE_CATEGORIES = [
+  'Web Development',
+  'Mobile Apps',
+  'Digital Marketing',
+  'UI/UX Design',
+  'SaaS Development',
+  'Music Promotion',
+  'Social Media Management',
+  'Video Editing',
+  'Branding & Design',
+  'SEO & Growth',
+  'Cybersecurity',
+  'Account Recovery',
 ]
 
-export default function NewService() {
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '11px 14px',
+  borderRadius: '10px',
+  border: '1.5px solid rgba(124,58,237,0.2)',
+  background: 'rgba(124,58,237,0.06)',
+  color: '#fff',
+  fontSize: '14px',
+  outline: 'none',
+  fontFamily: 'inherit',
+  boxSizing: 'border-box',
+  transition: 'border-color 0.2s',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '12px',
+  fontWeight: 700,
+  color: '#9d8fd4',
+  textTransform: 'uppercase',
+  letterSpacing: '0.07em',
+  marginBottom: '7px',
+}
+
+export default function NewServicePage() {
   const router = useRouter()
-  const supabase = createClient()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [features, setFeatures] = useState<string[]>([''])
+  const [features, setFeatures] = useState(['', '', ''])
+
   const [form, setForm] = useState({
     name: '',
     slug: '',
     category: '',
-    description: '',
-    short_desc: '',
+    icon: '',
+    delivery_days: '',
     price_ngn: '',
     price_usd: '',
-    delivery_days: '',
-    icon: '',
-    is_active: true,
-    is_featured: false,
-    order: 0,
+    short_description: '',
+    full_description: '',
+    status: 'active',
   })
 
-  const handleNameChange = (val: string) => {
-    setForm(f => ({
-      ...f,
-      name: val,
-      slug: val
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-    }))
-  }
-
-  const updateFeature = (index: number, val: string) => {
-    setFeatures(prev => {
-      const updated = [...prev]
-      updated[index] = val
+  const update = (field: string, value: string) => {
+    setForm(p => {
+      const updated = { ...p, [field]: value }
+      if (field === 'name' && !p.slug) {
+        updated.slug = value.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').trim()
+      }
       return updated
     })
   }
 
-  const addFeature = () => {
-    setFeatures(prev => [...prev, ''])
+  const updateFeature = (i: number, val: string) => {
+    setFeatures(p => {
+      const updated = [...p]
+      updated[i] = val
+      return updated
+    })
   }
 
-  const removeFeature = (index: number) => {
-    setFeatures(prev => prev.filter((_, i) => i !== index))
-  }
+  const addFeature = () => setFeatures(p => [...p, ''])
+  const removeFeature = (i: number) => setFeatures(p => p.filter((_, idx) => idx !== i))
 
-  const handleSubmit = async () => {
-    if (!form.name || !form.category) {
-      setError('Name and category are required')
-      return
-    }
+  const handleSave = async () => {
+    if (!form.name.trim()) { setError('Service name is required'); return }
+    if (!form.category) { setError('Category is required'); return }
+
     setSaving(true)
     setError('')
 
-    const { error: err } = await supabase.from('services').insert({
-      ...form,
-      features: features.filter(Boolean),
-      price_ngn: form.price_ngn ? Number(form.price_ngn) : null,
-      price_usd: form.price_usd ? Number(form.price_usd) : null,
-      delivery_days: form.delivery_days ? Number(form.delivery_days) : null,
-    })
+    try {
+      const supabase = createClient()
+      const { error: dbError } = await supabase.from('services').insert({
+        name: form.name.trim(),
+        slug: form.slug.trim() || form.name.toLowerCase().replace(/\s+/g, '-'),
+        category: form.category,
+        icon: form.icon.trim() || null,
+        delivery_days: form.delivery_days ? parseInt(form.delivery_days) : null,
+        price_ngn: form.price_ngn ? parseFloat(form.price_ngn) : null,
+        price_usd: form.price_usd ? parseFloat(form.price_usd) : null,
+        short_description: form.short_description.trim() || null,
+        full_description: form.full_description.trim() || null,
+        features: features.filter(f => f.trim()).map(f => f.trim()),
+        status: form.status,
+      })
 
-    if (err) {
-      setError(err.message)
+      if (dbError) throw dbError
+      router.push('/admin/services')
+    } catch (err: any) {
+      setError(err.message || 'Failed to save service')
+    } finally {
       setSaving(false)
-      return
     }
-
-    router.push('/admin/services')
   }
 
-  const inputClass = `w-full px-4 py-2.5 rounded-lg border border-stroke dark:border-strokedark bg-transparent text-sm text-black dark:text-white focus:outline-none focus:border-brand-500`
-
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6 flex items-center gap-3">
-        <Link
-          href="/admin/services"
-          className="text-bodydark2 hover:text-brand-500 transition-colors text-sm"
-        >
-          ← Services
-        </Link>
-        <h2 className="text-2xl font-bold text-black dark:text-white">New Service</h2>
+    <div style={{ maxWidth: '900px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link href="/admin/services" style={{ fontSize: '13px', color: '#9d8fd4', textDecoration: 'none' }}>← Services</Link>
+          <span style={{ color: '#4b5563' }}>/</span>
+          <h1 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', margin: 0 }}>New Service</h1>
+        </div>
+        <button onClick={handleSave} disabled={saving} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: saving ? 'rgba(124,58,237,0.4)' : 'linear-gradient(135deg, #7c3aed, #a855f7)', color: '#fff', padding: '11px 28px', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '14px', cursor: saving ? 'not-allowed' : 'pointer', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}>
+          {saving ? '⏳ Saving...' : '✅ Save Service'}
+        </button>
       </div>
 
       {error && (
-        <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
-          {error}
-        </div>
+        <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '10px', padding: '12px 16px', marginBottom: '20px', fontSize: '13px', color: '#ef4444' }}>⚠️ {error}</div>
       )}
 
-      <div className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark p-6 space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Service Name *</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={e => handleNameChange(e.target.value)}
-              placeholder="e.g. Web Development"
-              className={inputClass}
-            />
-          </div>
-
+      <div style={{ display: 'grid', gap: '16px' }}>
+        {/* Basic Info */}
+        <div style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '16px', padding: '24px', display: 'grid', gap: '16px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: '#fff', margin: 0 }}>📋 Basic Information</p>
           <div>
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">URL Slug</label>
-            <input
-              type="text"
-              value={form.slug}
-              onChange={e => setForm(f => ({ ...f, slug: e.target.value }))}
-              className={inputClass}
-            />
+            <label style={labelStyle}>Service Name *</label>
+            <input type="text" value={form.name} onChange={e => update('name', e.target.value)} placeholder="e.g. Web Development" style={inputStyle} />
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>URL Slug</label>
+              <input type="text" value={form.slug} onChange={e => update('slug', e.target.value)} placeholder="web-development" style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Category *</label>
+              <select value={form.category} onChange={e => update('category', e.target.value)} style={{ ...inputStyle, cursor: 'pointer', appearance: 'none' }}>
+                <option value="">Select category...</option>
+                {SERVICE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Icon (emoji)</label>
+              <input type="text" value={form.icon} onChange={e => update('icon', e.target.value)} placeholder="e.g. 🌐" style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Delivery Days</label>
+              <input type="number" value={form.delivery_days} onChange={e => update('delivery_days', e.target.value)} placeholder="e.g. 14" style={inputStyle} />
+            </div>
+          </div>
+        </div>
 
+        {/* Pricing */}
+        <div style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '16px', padding: '24px', display: 'grid', gap: '16px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: '#fff', margin: 0 }}>💰 Pricing</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Price (NGN ₦)</label>
+              <input type="number" value={form.price_ngn} onChange={e => update('price_ngn', e.target.value)} placeholder="e.g. 450000" style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Price (USD $)</label>
+              <input type="number" value={form.price_usd} onChange={e => update('price_usd', e.target.value)} placeholder="e.g. 300" style={inputStyle} />
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '16px', padding: '24px', display: 'grid', gap: '16px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: '#fff', margin: 0 }}>📝 Description</p>
           <div>
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Category *</label>
-            <select
-              value={form.category}
-              onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-              className={inputClass + ' bg-white dark:bg-boxdark'}
-            >
-              <option value="">Select category...</option>
-              {CATEGORIES.map(cat => (
-                <option key={cat} value={cat}>
-                  {cat.replace(/-/g, ' ')}
-                </option>
-              ))}
-            </select>
+            <label style={labelStyle}>Short Description</label>
+            <input type="text" value={form.short_description} onChange={e => update('short_description', e.target.value)} placeholder="One line summary..." style={inputStyle} />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Icon (emoji)</label>
-            <input
-              type="text"
-              value={form.icon}
-              onChange={e => setForm(f => ({ ...f, icon: e.target.value }))}
-              placeholder="e.g. 🌐"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Delivery Days</label>
-            <input
-              type="number"
-              value={form.delivery_days}
-              onChange={e => setForm(f => ({ ...f, delivery_days: e.target.value }))}
-              placeholder="e.g. 14"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Price (NGN ₦)</label>
-            <input
-              type="number"
-              value={form.price_ngn}
-              onChange={e => setForm(f => ({ ...f, price_ngn: e.target.value }))}
-              placeholder="e.g. 150000"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Price (USD $)</label>
-            <input
-              type="number"
-              value={form.price_usd}
-              onChange={e => setForm(f => ({ ...f, price_usd: e.target.value }))}
-              placeholder="e.g. 100"
-              className={inputClass}
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Short Description</label>
-            <input
-              type="text"
-              value={form.short_desc}
-              onChange={e => setForm(f => ({ ...f, short_desc: e.target.value }))}
-              placeholder="One line summary..."
-              className={inputClass}
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-bodydark2 mb-1.5">Full Description</label>
-            <textarea
-              value={form.description}
-              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              placeholder="Detailed description..."
-              rows={4}
-              className={inputClass + ' resize-none'}
-            />
+            <label style={labelStyle}>Full Description</label>
+            <textarea value={form.full_description} onChange={e => update('full_description', e.target.value)} placeholder="Detailed description of the service..." rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }} />
           </div>
         </div>
 
         {/* Features */}
-        <div>
-          <label className="block text-sm font-medium text-bodydark2 mb-2">Features</label>
-          <div className="space-y-2">
-            {features.map((feature, i) => (
-              <div key={i} className="flex gap-2">
-                <input
-                  type="text"
-                  value={feature}
-                  onChange={e => updateFeature(i, e.target.value)}
-                  placeholder={`Feature ${i + 1}`}
-                  className={inputClass}
-                />
-                <button
-                  onClick={() => removeFeature(i)}
-                  disabled={features.length === 1}
-                  className="px-3 py-2 rounded-lg border border-stroke dark:border-strokedark text-bodydark2 hover:text-red-500 hover:border-red-500 transition-all disabled:opacity-30"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-            <button onClick={addFeature} className="text-sm text-brand-500 hover:text-brand-600 font-medium">
-              + Add Feature
-            </button>
+        <div style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '16px', padding: '24px', display: 'grid', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <p style={{ fontSize: '14px', fontWeight: 700, color: '#fff', margin: 0 }}>✅ Features / Inclusions</p>
+            <button onClick={addFeature} style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid rgba(124,58,237,0.25)', background: 'transparent', color: '#a855f7', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>+ Add Feature</button>
           </div>
+          {features.map((f, i) => (
+            <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <span style={{ color: '#10b981', flexShrink: 0, fontSize: '16px' }}>✓</span>
+              <input type="text" value={f} onChange={e => updateFeature(i, e.target.value)} placeholder={`Feature ${i + 1}...`} style={{ ...inputStyle, marginBottom: 0 }} />
+              {features.length > 1 && <button onClick={() => removeFeature(i)} style={{ padding: '8px', borderRadius: '8px', border: 'none', background: 'rgba(239,68,68,0.08)', color: '#ef4444', cursor: 'pointer', flexShrink: 0, fontSize: '14px' }}>×</button>}
+            </div>
+          ))}
         </div>
 
-        {/* Toggles */}
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.is_active}
-              onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))}
-              className="accent-brand-500 w-4 h-4"
-            />
-            <span className="text-sm text-black dark:text-white">Active</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.is_featured}
-              onChange={e => setForm(f => ({ ...f, is_featured: e.target.checked }))}
-              className="accent-brand-500 w-4 h-4"
-            />
-            <span className="text-sm text-black dark:text-white">Featured</span>
-          </label>
-        </div>
-
-        <div className="flex gap-3 justify-end pt-2">
-          <Link
-            href="/admin/services"
-            className="px-5 py-2.5 rounded-lg border border-stroke dark:border-strokedark text-sm font-medium text-bodydark2 hover:border-brand-500 hover:text-brand-500 transition-all"
-          >
-            Cancel
-          </Link>
-          <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className="px-5 py-2.5 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-all disabled:opacity-50"
-          >
-            {saving ? 'Creating...' : 'Create Service'}
-          </button>
+        {/* Status */}
+        <div style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.15)', borderRadius: '16px', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <p style={{ fontSize: '14px', fontWeight: 700, color: '#fff', margin: '0 0 2px' }}>Service Status</p>
+            <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>Active services show on the website</p>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {['active', 'inactive'].map(s => (
+              <button key={s} onClick={() => update('status', s)} style={{ padding: '8px 20px', borderRadius: '10px', border: form.status === s ? 'none' : '1px solid rgba(124,58,237,0.2)', background: form.status === s ? s === 'active' ? 'linear-gradient(135deg, #10b981, #34d399)' : 'rgba(107,114,128,0.2)' : 'transparent', color: form.status === s ? '#fff' : '#9d8fd4', fontWeight: 600, fontSize: '13px', cursor: 'pointer', textTransform: 'capitalize' }}>
+                {s === 'active' ? '🟢' : '⚫'} {s}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

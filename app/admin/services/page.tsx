@@ -1,94 +1,91 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
-export default async function AdminServicesPage() {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
+interface Service {
+  id: string
+  name: string
+  slug: string
+  category: string | null
+  icon: string | null
+  price_ngn: number | null
+  price_usd: number | null
+  status: string
+  short_description: string | null
+  created_at: string
+}
 
-  if (!user || error) redirect('/sign-in')
+export default function ServicesPage() {
+  const [services, setServices] = useState<Service[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const role = user.user_metadata?.role || user.app_metadata?.role
-  if (role !== 'admin') redirect('/dashboard')
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.from('services').select('*').order('created_at', { ascending: false }).then(({ data }) => {
+      setServices(data || [])
+      setLoading(false)
+    })
+  }, [])
 
-  const { data: services } = await supabase.from('services').select('*').order('order')
+  const deleteService = async (id: string) => {
+    if (!confirm('Delete this service?')) return
+    const supabase = createClient()
+    await supabase.from('services').delete().eq('id', id)
+    setServices(p => p.filter(s => s.id !== id))
+  }
 
   return (
-    <>
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+    <div style={{ maxWidth: '1100px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h2 className="text-2xl font-bold text-black dark:text-white">Services</h2>
-          <p className="text-sm text-bodydark2 mt-1">
-            {services?.filter(s => s.is_active).length || 0} active services
-          </p>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff', margin: '0 0 4px' }}>Services Catalog ⚙️</h1>
+          <p style={{ fontSize: '14px', color: '#9d8fd4', margin: 0 }}>{services.length} active services</p>
         </div>
-        <Link
-          href="/admin/services/new"
-          className="px-4 py-2.5 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-all"
-        >
-          + New Service
-        </Link>
+        <Link href="/admin/services/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #7c3aed, #a855f7)', color: '#fff', padding: '11px 24px', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}>+ New Service</Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {!services?.length ? (
-          <div className="col-span-3 rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark p-12 text-center">
-            <p className="text-4xl mb-4">⚙️</p>
-            <p className="font-medium text-black dark:text-white mb-2">No services yet</p>
-            <Link
-              href="/admin/services/new"
-              className="inline-flex items-center px-4 py-2 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-all"
-            >
-              + Add First Service
-            </Link>
-          </div>
-        ) : (
-          services.map((service: any) => (
-            <div
-              key={service.id}
-              className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark p-5"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{service.icon || '⚙️'}</span>
+      {/* Services grid */}
+      {loading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {[1,2,3].map(i => <div key={i} style={{ background: '#1a1f2e', borderRadius: '16px', height: '160px', animation: 'shimmer 1.5s infinite' }} />)}
+        </div>
+      ) : services.length === 0 ? (
+        <div style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.12)', borderRadius: '20px', padding: '60px 24px', textAlign: 'center' }}>
+          <p style={{ fontSize: '48px', margin: '0 0 16px' }}>⚙️</p>
+          <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', margin: '0 0 8px' }}>No services yet</h3>
+          <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 24px' }}>Add your services to the catalog</p>
+          <Link href="/admin/services/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #7c3aed, #a855f7)', color: '#fff', padding: '12px 28px', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, fontSize: '14px', boxShadow: '0 4px 16px rgba(124,58,237,0.3)' }}>+ Add First Service</Link>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {services.map(service => (
+            <div key={service.id} style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.12)', borderRadius: '16px', padding: '20px', transition: 'all 0.2s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(124,58,237,0.35)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(124,58,237,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(124,58,237,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', flexShrink: 0 }}>{service.icon || '⚙️'}</div>
                   <div>
-                    <h6 className="font-semibold text-black dark:text-white">{service.name}</h6>
-                    <span className="text-xs text-bodydark2 capitalize">
-                      {service.category?.replace('-', ' ')}
-                    </span>
+                    <p style={{ fontSize: '15px', fontWeight: 800, color: '#fff', margin: '0 0 2px' }}>{service.name}</p>
+                    {service.category && <span style={{ fontSize: '11px', color: '#a855f7', background: 'rgba(124,58,237,0.1)', padding: '2px 8px', borderRadius: '100px', fontWeight: 600 }}>{service.category}</span>}
                   </div>
                 </div>
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    service.is_active
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-900/30 dark:text-gray-400'
-                  }`}
-                >
-                  {service.is_active ? 'Active' : 'Inactive'}
-                </span>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: service.status === 'active' ? '#10b981' : '#6b7280', background: service.status === 'active' ? 'rgba(16,185,129,0.1)' : 'rgba(107,114,128,0.1)', padding: '3px 8px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{service.status || 'active'}</span>
               </div>
-              <p className="text-sm text-bodydark2 mb-3 line-clamp-2">
-                {service.short_desc || service.description || 'No description'}
-              </p>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-brand-500">
-                    ₦{Number(service.price_ngn || 0).toLocaleString()}
-                  </p>
-                  <p className="text-xs text-bodydark2">${Number(service.price_usd || 0).toLocaleString()} USD</p>
-                </div>
-                <Link
-                  href={`/admin/services/${service.id}/edit`}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-brand-500 text-brand-500 hover:bg-brand-500 hover:text-white transition-all"
-                >
-                  Edit
-                </Link>
+              {service.short_description && <p style={{ fontSize: '13px', color: '#9d8fd4', margin: '0 0 14px', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{service.short_description}</p>}
+              {(service.price_ngn || service.price_usd) && <p style={{ fontSize: '16px', fontWeight: 900, color: '#a855f7', margin: '0 0 14px' }}>{service.price_ngn ? `₦${service.price_ngn.toLocaleString()}` : ''}{service.price_usd ? ` / $${service.price_usd}` : ''}</p>}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Link href={`/admin/services/edit/${service.id}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '8px', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)', color: '#a855f7', textDecoration: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600 }}>✏️ Edit</Link>
+                <button onClick={() => deleteService(service.id)} style={{ padding: '8px 12px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>🗑️</button>
               </div>
             </div>
-          ))
-        )}
-      </div>
-    </>
+          ))}
+        </div>
+      )}
+      <style>{`@keyframes shimmer { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
+    </div>
   )
 }
