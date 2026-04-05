@@ -41,7 +41,7 @@ export default async function DashboardPage() {
   return (
     <>
       {/* Welcome */}
-      <div className="mb-6">
+      <div className="mb-4">
         <h2 className="text-2xl font-bold text-black dark:text-white">Hey {firstName}! 💜</h2>
         <p className="text-sm text-bodydark2 mt-1">Here is what is happening with your projects today.</p>
       </div>
@@ -50,8 +50,8 @@ export default async function DashboardPage() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-        gap: '12px',
-        marginBottom: '32px',
+        gap: '10px',
+        marginBottom: '24px',
       }}>
         {[
           {
