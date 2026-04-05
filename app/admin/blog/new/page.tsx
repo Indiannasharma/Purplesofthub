@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -69,25 +69,104 @@ export default function NewBlogPost() {
     featuredImagePublicId: '',
   })
 
+  const [categories, setCategories] = useState<string[]>([])
+  const [newCategory, setNewCategory] = useState('')
+  const [showCategoryInput, setShowCategoryInput] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [charCount, setCharCount] = useState(0)
   const [wordCount, setWordCount] = useState(0)
   const [excerptCount, setExcerptCount] = useState(0)
   const [seoTitleCount, setSeoTitleCount] = useState(0)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [postId, setPostId] = useState<string | null>(null)
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const update = (field: string, value: string) => {
+  // Fetch categories on mount
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  // Auto-save every 30 seconds when form has content
+  useEffect(() => {
+    if (!form.title && !form.content) return
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current)
+    }
+
+    autoSaveTimerRef.current = setTimeout(() => {
+      autoSaveDraft()
+    }, 30000)
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current)
+      }
+    }
+  }, [form])
+
+  // Auto-save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (form.title || form.content) {
+        autoSaveDraft()
+        e.preventDefault()
+        e.returnValue = 'You have unsaved changes.'
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [form])
+
+  const fetchCategories = async () => {
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('blog_categories')
+      .select('name')
+      .order('name')
+    setCategories(data?.map(c => c.name) || [])
+  }
+
+  const addCategory = async () => {
+    if (!newCategory.trim()) return
+    const supabase = createClient()
+    const name = newCategory.trim()
+    const slug = toSlug(name)
+
+    const { error } = await supabase
+      .from('blog_categories')
+      .insert({ name, slug })
+
+    if (!error) {
+      setCategories(p => [...p, name].sort())
+      setNewCategory('')
+      setShowCategoryInput(false)
+    }
+  }
+
+  const deleteCategory = async (name: string) => {
+    if (!confirm(`Delete category "${name}"?`)) return
+    const supabase = createClient()
+    await supabase.from('blog_categories').delete().eq('name', name)
+    setCategories(p => p.filter(c => c !== name))
+    if (form.category === name) {
+      update('category', '')
+    }
+  }
+
+  const update = useCallback((field: string, value: string) => {
     setForm(p => {
       const updated = { ...p, [field]: value }
-      // Auto-generate slug from title
       if (field === 'title' && !p.slug) {
         updated.slug = toSlug(value)
       }
-      // Auto-fill SEO title from title
       if (field === 'title' && !p.seoTitle) {
         updated.seoTitle = `${value} | PurpleSoftHub Blog`
       }
@@ -103,7 +182,68 @@ export default function NewBlogPost() {
     if (field === 'seoTitle') {
       setSeoTitleCount(value.length)
     }
-  }
+  }, [])
+
+  // Auto-save draft silently
+  const autoSaveDraft = useCallback(async () => {
+    const currentForm = form
+    if (!currentForm.title.trim() && !currentForm.content.trim()) return
+
+    setAutoSaveStatus('saving')
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const slug = currentForm.slug.trim() || toSlug(currentForm.title.trim() || `draft-${Date.now()}`)
+
+    const postData = {
+      title: currentForm.title.trim() || 'Untitled Draft',
+      slug,
+      content: currentForm.content,
+      excerpt: currentForm.excerpt,
+      featured_image: currentForm.featuredImage || null,
+      category: currentForm.category || null,
+      tags: currentForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+      seo_title: currentForm.seoTitle || currentForm.title,
+      seo_description: currentForm.seoDescription || currentForm.excerpt,
+      status: 'draft',
+      author_id: user?.id,
+      author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'PurpleSoftHub',
+      updated_at: new Date().toISOString(),
+    }
+
+    try {
+      if (postId) {
+        const { error } = await supabase.from('blog_posts').update(postData).eq('id', postId)
+        if (error) throw error
+      } else {
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .insert({ ...postData, published_at: null })
+          .select('id')
+          .single()
+
+        if (error) {
+          if (error.code === '23505') {
+            await supabase.from('blog_posts')
+              .insert({ ...postData, slug: `${slug}-${Date.now()}`, published_at: null })
+              .select('id').single()
+          } else {
+            throw error
+          }
+        } else if (data) {
+          setPostId(data.id)
+        }
+      }
+
+      setAutoSaveStatus('saved')
+      setLastSaved(new Date())
+      setTimeout(() => setAutoSaveStatus('idle'), 3000)
+    } catch (err) {
+      console.error('Auto-save error:', err)
+      setAutoSaveStatus('error')
+      setTimeout(() => setAutoSaveStatus('idle'), 3000)
+    }
+  }, [form, postId])
 
   // Upload featured image to Cloudinary
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,68 +305,81 @@ export default function NewBlogPost() {
     return true
   }
 
-  const savePost = async (status: 'draft' | 'published') => {
-    if (!validateForm()) return
+  const saveDraft = async () => {
+    setSaving(true)
+    setError('')
+    await autoSaveDraft()
+    setSaving(false)
+    setSuccess('✅ Draft saved!')
+    setTimeout(() => setSuccess(''), 3000)
+  }
 
-    status === 'draft' ? setSaving(true) : setPublishing(true)
+  const publishPost = async () => {
+    if (!form.title.trim()) {
+      setError('Post title is required')
+      return
+    }
+    if (!form.content.trim()) {
+      setError('Post content is required')
+      return
+    }
+    if (!form.excerpt.trim()) {
+      setError('Excerpt is required for SEO and social sharing')
+      return
+    }
+
+    setPublishing(true)
     setError('')
 
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const slug = form.slug.trim() || toSlug(form.title.trim())
+
+    const postData = {
+      title: form.title.trim(),
+      slug,
+      content: form.content.trim(),
+      excerpt: form.excerpt.trim(),
+      featured_image: form.featuredImage || null,
+      category: form.category || null,
+      tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
+      seo_title: form.seoTitle.trim() || form.title.trim(),
+      seo_description: form.seoDescription.trim() || form.excerpt.trim(),
+      status: 'published',
+      author_id: user?.id,
+      author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'PurpleSoftHub',
+      published_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+
     try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      if (postId) {
+        const { error } = await supabase.from('blog_posts').update(postData).eq('id', postId)
+        if (error) throw error
+      } else {
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .insert(postData)
+          .select('id')
+          .single()
 
-      const tags = form.tags
-        .split(',')
-        .map(t => t.trim())
-        .filter(Boolean)
-
-      const postData = {
-        title: form.title.trim(),
-        slug: form.slug.trim(),
-        content: form.content.trim(),
-        excerpt: form.excerpt.trim(),
-        featured_image: form.featuredImage || null,
-        category: form.category || null,
-        tags: tags.length ? tags : null,
-        seo_title: form.seoTitle.trim() || form.title.trim(),
-        seo_description: form.seoDescription.trim() || form.excerpt.trim(),
-        status,
-        author_id: user?.id,
-        author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'PurpleSoftHub',
-        published_at: status === 'published' ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString(),
-      }
-
-      const { data, error: dbError } = await supabase
-        .from('blog_posts')
-        .insert(postData)
-        .select()
-        .single()
-
-      if (dbError) {
-        // Try update if slug exists
-        if (dbError.code === '23505') {
-          setError('A post with this slug already exists. Change the URL slug.')
-        } else {
-          setError(dbError.message)
+        if (error) {
+          if (error.code === '23505') {
+            setError('A post with this slug already exists. Change the URL slug.')
+            setPublishing(false)
+            return
+          }
+          throw error
         }
-        return
+        if (data) setPostId(data.id)
       }
 
-      setSuccess(
-        status === 'published'
-          ? '🎉 Post published successfully!'
-          : '✅ Draft saved successfully!'
-      )
-
-      setTimeout(() => {
-        router.push('/admin/blog')
-      }, 1500)
-
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
+      setSuccess('🎉 Post published!')
+      setTimeout(() => router.push('/admin/blog'), 1500)
+    } catch (err: any) {
+      setError(err.message || 'Failed to publish. Try again.')
     } finally {
-      setSaving(false)
       setPublishing(false)
     }
   }
@@ -346,72 +499,71 @@ export default function NewBlogPost() {
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={() => savePost('draft')}
-            disabled={saving || publishing}
-            style={{
-              padding: '9px 20px',
-              borderRadius: '10px',
-              border: '1.5px solid rgba(124,58,237,0.3)',
-              background: 'transparent',
-              color: '#9d8fd4',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: saving ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            {saving ? (
-              <>
-                <div style={{
-                  width: '14px',
-                  height: '14px',
-                  border: '2px solid rgba(255,255,255,0.2)',
-                  borderTop: '2px solid #9d8fd4',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                }}/>
-                Saving...
-              </>
-            ) : '💾 Save Draft'}
-          </button>
+          {/* Auto-save status */}
+          <span style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            color: autoSaveStatus === 'saved'
+              ? '#10b981'
+              : autoSaveStatus === 'saving'
+              ? '#f59e0b'
+              : autoSaveStatus === 'error'
+              ? '#ef4444'
+              : '#4b5563',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}>
+            {autoSaveStatus === 'saving' && '⏳ Auto-saving...'}
+            {autoSaveStatus === 'saved' && '✅ Auto-saved'}
+            {autoSaveStatus === 'error' && '❌ Save failed'}
+            {autoSaveStatus === 'idle' && lastSaved && `💾 Saved ${lastSaved.toLocaleTimeString()}`}
+          </span>
 
-          <button
-            onClick={() => savePost('published')}
-            disabled={saving || publishing}
-            style={{
-              padding: '9px 20px',
-              borderRadius: '10px',
-              border: 'none',
-              background: publishing ? 'rgba(124,58,237,0.5)' : 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
-              fontSize: '13px',
-              fontWeight: 700,
-              cursor: publishing ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 16px rgba(124,58,237,0.35)',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            {publishing ? (
-              <>
-                <div style={{
-                  width: '14px',
-                  height: '14px',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderTop: '2px solid #fff',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                }}/>
-                Publishing...
-              </>
-            ) : '🚀 Publish Now'}
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={saveDraft}
+              disabled={saving || publishing}
+              style={{
+                padding: '9px 20px',
+                borderRadius: '10px',
+                border: '1.5px solid rgba(124,58,237,0.3)',
+                background: 'transparent',
+                color: '#9d8fd4',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: saving ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              {saving ? '⏳ Saving...' : '💾 Save Draft'}
+            </button>
+
+            <button
+              onClick={publishPost}
+              disabled={saving || publishing}
+              style={{
+                padding: '9px 20px',
+                borderRadius: '10px',
+                border: 'none',
+                background: publishing ? 'rgba(124,58,237,0.5)' : 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: publishing ? 'not-allowed' : 'pointer',
+                boxShadow: '0 4px 16px rgba(124,58,237,0.35)',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              {publishing ? '⏳ Publishing...' : '🚀 Publish Now'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -813,17 +965,77 @@ Markdown is supported.
 
             {/* Category */}
             <div>
-              <label style={labelStyle(dark)}>Category</label>
-              <select
-                value={form.category}
-                onChange={e => update('category', e.target.value)}
-                style={{ ...inputStyle(dark), cursor: 'pointer', appearance: 'none' }}
-              >
-                <option value="">Select category...</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <label style={{ ...labelStyle(dark), marginBottom: 0 }}>Category</label>
+                <button
+                  onClick={() => setShowCategoryInput(!showCategoryInput)}
+                  style={{ fontSize: '11px', fontWeight: 600, color: '#a855f7', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                  + Add New
+                </button>
+              </div>
+
+              {showCategoryInput && (
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                  <input
+                    type="text"
+                    value={newCategory}
+                    onChange={e => setNewCategory(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') addCategory() }}
+                    placeholder="Category name..."
+                    style={{ ...inputStyle(dark), fontSize: '12px', padding: '8px 12px' }}
+                    autoFocus
+                  />
+                  <button
+                    onClick={addCategory}
+                    style={{ padding: '8px 12px', borderRadius: '8px', border: 'none', background: '#7c3aed', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '180px', overflowY: 'auto' }}>
+                <div
+                  onClick={() => update('category', '')}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '8px 12px', borderRadius: '8px', cursor: 'pointer',
+                    background: !form.category ? 'rgba(124,58,237,0.15)' : 'rgba(124,58,237,0.04)',
+                    border: `1px solid ${!form.category ? 'rgba(124,58,237,0.3)' : 'transparent'}`,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ fontSize: '13px', color: !form.category ? '#a855f7' : '#9d8fd4', fontWeight: !form.category ? 700 : 400 }}>None</span>
+                </div>
+
+                {categories.map(cat => (
+                  <div
+                    key={cat}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '8px 12px', borderRadius: '8px', cursor: 'pointer',
+                      background: form.category === cat ? 'rgba(124,58,237,0.15)' : 'rgba(124,58,237,0.04)',
+                      border: `1px solid ${form.category === cat ? 'rgba(124,58,237,0.3)' : 'transparent'}`,
+                      transition: 'all 0.15s',
+                    }}
+                    onClick={() => update('category', cat)}
+                  >
+                    <span style={{ fontSize: '13px', color: form.category === cat ? '#a855f7' : '#9d8fd4', fontWeight: form.category === cat ? 700 : 400 }}>
+                      {form.category === cat ? '✓ ' : ''}{cat}
+                    </span>
+                    <button
+                      onClick={e => { e.stopPropagation(); deleteCategory(cat) }}
+                      title="Delete category"
+                      style={{ background: 'none', border: 'none', color: '#4b5563', cursor: 'pointer', fontSize: '14px', padding: '0 4px', lineHeight: 1, flexShrink: 0 }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#ef4444' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#4b5563' }}
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
-              </select>
+              </div>
             </div>
 
             {/* Tags */}
