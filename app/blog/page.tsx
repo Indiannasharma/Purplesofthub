@@ -2,12 +2,9 @@
 
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
-import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useEffect, useState } from 'react'
-
-export const revalidate = 60
 
 interface BlogPost {
   id: string
