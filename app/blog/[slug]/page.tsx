@@ -374,20 +374,26 @@ export default async function BlogPostPage(
                   width: '44px',
                   height: '44px',
                   borderRadius: '50%',
+                  overflow: 'hidden',
                   background: 
                     'linear-gradient(135deg, #7c3aed, #22d3ee)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '16px',
-                  fontWeight: 900,
-                  color: '#fff',
                   flexShrink: 0,
                   boxShadow: 
                     '0 0 16px rgba(124,58,237,0.4)',
+                  border: '2px solid rgba(124,58,237,0.3)',
                 }}>
-                  {(post.author_name || 'P')
-                    [0].toUpperCase()}
+                  <img
+                    src="/images/logo/purplesoft-logo-main.png"
+                    alt="PurpleSoftHub"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
                 </div>
                 <div>
                   <p style={{
@@ -396,8 +402,7 @@ export default async function BlogPostPage(
                     color: 'var(--blog-heading)',
                     margin: '0 0 2px',
                   }}>
-                    {post.author_name || 
-                      'PurpleSoftHub'}
+                    PurpleSoftHub
                   </p>
                   <p style={{
                     fontSize: '12px',

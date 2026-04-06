@@ -673,18 +673,24 @@ export default async function BlogPage() {
                               width: '26px',
                               height: '26px',
                               borderRadius: '50%',
+                              overflow: 'hidden',
                               background:
                                 'linear-gradient(135deg, #7c3aed, #22d3ee)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              fontSize: '10px',
-                              fontWeight: 800,
-                              color: '#fff',
                               flexShrink: 0,
+                              border: '1px solid rgba(124,58,237,0.3)',
                             }}>
-                              {(post.author_name ||
-                                'P')[0].toUpperCase()}
+                              <img
+                                src="/images/logo/purplesoft-logo-main.png"
+                                alt="PurpleSoftHub"
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                }}
+                              />
                             </div>
                             <span style={{
                               fontSize: '11px',
@@ -692,8 +698,7 @@ export default async function BlogPage() {
                                 'var(--blog-text-muted)',
                               fontWeight: 600,
                             }}>
-                              {post.author_name ||
-                                'PurpleSoftHub'}
+                              PurpleSoftHub
                             </span>
                           </div>
                           <span style={{

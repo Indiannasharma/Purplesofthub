@@ -394,16 +394,21 @@ export default function AdminLayoutClient({
               width: '34px',
               height: '34px',
               borderRadius: '50%',
+              overflow: 'hidden',
               background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '12px',
-              fontWeight: 800,
-              color: '#fff',
               flexShrink: 0,
+              border: '2px solid rgba(124,58,237,0.3)',
             }}>
-              {user?.initials || 'EE'}
+              <Image
+                src="/images/logo/purplesoft-logo-main.png"
+                alt="PurpleSoftHub"
+                width={34}
+                height={34}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
             <div style={{ minWidth: 0 }}>
               <p style={{
@@ -415,7 +420,7 @@ export default function AdminLayoutClient({
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}>
-                {user?.name || 'Admin'}
+                PurpleSoftHub
               </p>
               <p style={{
                 fontSize: '11px',
@@ -425,7 +430,7 @@ export default function AdminLayoutClient({
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}>
-                {user?.email || ''}
+                {user?.email || 'purplesofthub@gmail.com'}
               </p>
             </div>
           </div>
@@ -678,18 +683,23 @@ export default function AdminLayoutClient({
               width: '36px',
               height: '36px',
               borderRadius: '50%',
+              overflow: 'hidden',
               background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '13px',
-              fontWeight: 800,
-              color: '#fff',
               cursor: 'pointer',
               flexShrink: 0,
               boxShadow: '0 0 0 2px rgba(168,85,247,0.3)',
+              border: '2px solid rgba(124,58,237,0.3)',
             }}>
-              {user?.initials || 'EE'}
+              <Image
+                src="/images/logo/purplesoft-logo-main.png"
+                alt="PurpleSoftHub"
+                width={36}
+                height={36}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
           </div>
         </header>
