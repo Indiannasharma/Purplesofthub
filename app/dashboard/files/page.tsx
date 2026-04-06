@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
-import FileUploadClient from '@/src/components/Client/FileUpload'
+// TODO: Restore FileUploadClient component from git
+// import FileUploadClient from '@/components/Client/FileUpload'
 
 export default async function ClientFilesPage() {
   const supabase = await createClient()
@@ -55,7 +56,9 @@ export default async function ClientFilesPage() {
           <h2 className="text-2xl font-bold text-black dark:text-white">My Files</h2>
           <p className="text-sm text-bodydark2 mt-1">{files?.length || 0} files</p>
         </div>
-        <FileUploadClient userId={user.id} />
+        <div className="px-4 py-3 bg-blue-500/10 border border-blue-500/30 rounded text-blue-600 text-sm">
+          File upload feature is being restored. Check back soon!
+        </div>
       </div>
 
       {!files?.length ? (

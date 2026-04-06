@@ -1,4 +1,5 @@
-import BarChartOne from "@/src/components/charts/bar/BarChartOne";
+// TODO: Restore BarChartOne component from git
+// import BarChartOne from "@/components/charts/bar/BarChartOne";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Metadata } from "next";
@@ -16,7 +17,10 @@ export default function page() {
       <PageBreadcrumb pageTitle="Bar Chart" />
       <div className="space-y-6">
         <ComponentCard title="Bar Chart 1">
-          <BarChartOne />
+          {/* TODO: Restore BarChartOne component from git */}
+          <div className="p-4 bg-gray-100 rounded text-center text-gray-600">
+            Bar Chart component is being restored
+          </div>
         </ComponentCard>
       </div>
     </div>

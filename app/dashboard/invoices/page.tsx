@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
-import ClientInvoiceActions from '@/src/components/Client/InvoiceActions'
+// TODO: Restore ClientInvoiceActions component from git
+// import ClientInvoiceActions from '@/components/Client/InvoiceActions'
 
 export default async function ClientInvoicesPage() {
   const supabase = await createClient()
@@ -125,12 +126,7 @@ export default async function ClientInvoicesPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <ClientInvoiceActions
-                      invoiceId={invoice.id}
-                      status={invoice.status}
-                      amount={invoice.amount}
-                      currency={invoice.currency || 'NGN'}
-                    />
+                    <div className="text-xs text-bodydark2">Actions placeholder</div>
                   </td>
                 </tr>
               ))}

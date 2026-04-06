@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import ProjectDetailClient from '@/src/components/Admin/ProjectDetail'
+// TODO: Restore ProjectDetailClient component from git
+// import ProjectDetailClient from '@/components/Admin/ProjectDetail'
 
 export default async function ProjectDetail({ params }: { params: { id: string } }) {
   const supabase = await createClient()
@@ -34,5 +35,12 @@ export default async function ProjectDetail({ params }: { params: { id: string }
     .eq('project_id', params.id)
     .order('created_at', { ascending: false })
 
-  return <ProjectDetailClient project={project} tasks={tasks || []} updates={updates || []} />
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">{project.name}</h1>
+      <p className="text-gray-600 mb-6">Project detail page is being restored. Please check back soon.</p>
+      {/* TODO: Restore ProjectDetailClient component from git */}
+      {/* <ProjectDetailClient project={project} tasks={tasks || []} updates={updates || []} /> */}
+    </div>
+  )
 }

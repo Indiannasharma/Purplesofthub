@@ -1,5 +1,5 @@
-import ComponentCard from "@/src/components/common/ComponentCard";
-import PageBreadcrumb from "@/src/components/common/PageBreadCrumb";
+import ComponentCard from "@/components/common/ComponentCard";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 
 export default function TestDashboard() {
   return (

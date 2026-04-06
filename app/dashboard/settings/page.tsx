@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import ClientSettingsForm from '@/src/components/Client/SettingsForm'
+// TODO: Restore ClientSettingsForm component from git
+// import ClientSettingsForm from '@/components/Client/SettingsForm'
 
 export default async function ClientSettingsPage() {
   const supabase = await createClient()
@@ -22,11 +23,7 @@ export default async function ClientSettingsPage() {
       </div>
 
       <div className="max-w-2xl">
-        <ClientSettingsForm
-          userId={user.id}
-          userEmail={user.email || ''}
-          profile={profile}
-        />
+        <div className="text-sm text-bodydark2">Settings form placeholder</div>
       </div>
     </>
   )

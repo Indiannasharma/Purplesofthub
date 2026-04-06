@@ -2,7 +2,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import RichTextEditor from '@/src/components/Editor/RichTextEditor'
+// TODO: Restore RichTextEditor component from git
+// import RichTextEditor from '@/components/Editor/RichTextEditor'
 import Link from 'next/link'
 
 const CATEGORIES = [
@@ -116,10 +117,11 @@ export default function EditBlogPostForm({ post }: { post: any }) {
             className="w-full text-2xl font-bold bg-transparent border-0 border-b-2 border-stroke dark:border-strokedark text-black dark:text-white placeholder-bodydark2 pb-3 focus:outline-none focus:border-brand-500"
           />
 
-          <RichTextEditor
-            content={content}
-            onChange={setContent}
+          <textarea
+            value={content}
+            onChange={e => setContent(e.target.value)}
             placeholder="Write your post here..."
+            className="w-full h-96 p-4 border border-stroke dark:border-strokedark rounded-lg bg-white dark:bg-boxdark text-black dark:text-white placeholder-bodydark2 focus:outline-none focus:border-brand-500"
           />
         </div>
 

@@ -1,4 +1,5 @@
-import LineChartOne from "@/src/components/charts/line/LineChartOne";
+// TODO: Restore LineChartOne component from git
+// import LineChartOne from "@/components/charts/line/LineChartOne";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Metadata } from "next";
@@ -15,7 +16,10 @@ export default function LineChart() {
       <PageBreadcrumb pageTitle="Line Chart" />
       <div className="space-y-6">
         <ComponentCard title="Line Chart 1">
-          <LineChartOne />
+          {/* TODO: Restore LineChartOne component from git */}
+          <div className="p-4 bg-gray-100 rounded text-center text-gray-600">
+            Line Chart component is being restored
+          </div>
         </ComponentCard>
       </div>
     </div>

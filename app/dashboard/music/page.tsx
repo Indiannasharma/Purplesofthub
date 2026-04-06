@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
-import MusicSubmitForm from '@/src/components/Client/MusicSubmitForm'
+// TODO: Restore MusicSubmitForm component from git
+// import MusicSubmitForm from '@/components/Client/MusicSubmitForm'
 
 export default async function ClientMusicPage() {
   const supabase = await createClient()
@@ -97,7 +98,7 @@ export default async function ClientMusicPage() {
               ))}
             </ul>
 
-            <MusicSubmitForm packageName={pkg.name} priceNgn={pkg.price_ngn} userId={user.id} />
+            <div className="text-sm text-bodydark2">Music submit form placeholder</div>
           </div>
         ))}
       </div>

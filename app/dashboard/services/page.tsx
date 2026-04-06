@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import ClientServicesGrid from '@/src/components/Client/ServicesGrid'
+// TODO: Restore ClientServicesGrid component from git
+// import ClientServicesGrid from '@/components/Client/ServicesGrid'
 
 export default async function ClientServicesPage() {
   const supabase = await createClient()
@@ -26,11 +27,7 @@ export default async function ClientServicesPage() {
         <h2 className="text-2xl font-bold text-black dark:text-white">Our Services</h2>
         <p className="text-sm text-bodydark2 mt-1">Choose a service to get started</p>
       </div>
-      <ClientServicesGrid
-        services={services || []}
-        userId={user.id}
-        existingProjects={existingOrders || []}
-      />
+      <div className="text-sm text-bodydark2">Services grid placeholder</div>
     </>
   )
 }
