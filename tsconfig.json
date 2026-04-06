@@ -29,16 +29,13 @@
         "./components/*"
       ],
       "@/hooks/*": [
-        "./src/hooks/*"
+        "./hooks/*"
       ],
       "@/context/*": [
-        "./src/context/*"
+        "./context/*"
       ],
       "@/layout/*": [
-        "./src/layout/*"
-      ],
-      "@/src/*": [
-        "./src/*"
+        "./layout/*"
       ]
     },
     "target": "ES2017"
