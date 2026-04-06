@@ -135,9 +135,7 @@ export default async function BlogPage() {
                   inset 0 0 40px rgba(124,58,237,0.04)
                 `,
                 marginBottom: '60px',
-                minHeight: '400px',
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
                 background: `
                   linear-gradient(135deg,
                     rgba(13,5,32,0.95) 0%,
@@ -432,7 +430,6 @@ export default async function BlogPage() {
             margin: '0 auto',
             padding: '0 24px clamp(60px, 8vw, 100px)',
             display: 'grid',
-            gridTemplateColumns: '1fr 340px',
             gap: '32px',
             alignItems: 'start',
           }}
@@ -483,7 +480,6 @@ export default async function BlogPage() {
               {/* 2x2 grid */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
                 gap: '20px',
               }}
               className="blog-posts-grid">
@@ -724,12 +720,11 @@ export default async function BlogPage() {
 
             {/* ── RIGHT: SIDEBAR ── */}
             <div style={{
-              position: 'sticky',
-              top: '90px',
               display: 'flex',
               flexDirection: 'column',
               gap: '20px',
-            }}>
+            }}
+            className="blog-sidebar">
 
               {/* Trending Topics */}
               <div style={{
@@ -759,7 +754,8 @@ export default async function BlogPage() {
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: '8px',
-                }}>
+                }}
+                className="trending-tags">
                   {uniqueTags.length > 0
                     ? uniqueTags.map(tag => (
                       <span key={tag} style={{
@@ -1056,7 +1052,7 @@ export default async function BlogPage() {
       <Footer />
 
       <style>{`
-        /* Animations */
+        /* ── ANIMATIONS ── */
         @keyframes pulseDot {
           0%, 100% {
             opacity: 1;
@@ -1069,66 +1065,103 @@ export default async function BlogPage() {
         }
 
         @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          33% { transform: translateY(-12px) rotate(2deg); }
-          66% { transform: translateY(-6px) rotate(-1deg); }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
         }
 
-        /* Hero card hover */
+        /* ── HOVER EFFECTS ── */
         .hero-card:hover {
           box-shadow:
-            0 0 60px rgba(124,58,237,0.35),
-            inset 0 0 40px rgba(124,58,237,0.06) !important;
+            0 0 60px rgba(124,58,237,0.35) !important;
         }
 
-        /* Blog post cards */
         .blog-card:hover {
-          border-color: rgba(124,58,237,0.5) !important;
+          border-color:
+            rgba(124,58,237,0.5) !important;
           transform: translateY(-4px);
           box-shadow:
-            0 0 30px rgba(124,58,237,0.2),
-            0 8px 32px rgba(0,0,0,0.3);
+            0 0 30px rgba(124,58,237,0.2);
         }
 
-        /* Popular post items */
         .popular-post-item:hover {
           background: rgba(124,58,237,0.12) !important;
           border-color: rgba(124,58,237,0.3) !important;
-          box-shadow: 0 0 12px rgba(124,58,237,0.15);
+          transform: translateX(4px);
         }
 
-        /* Input focus */
-        input[type="email"]:focus {
-          border-color: rgba(124,58,237,0.7) !important;
-          box-shadow:
-            0 0 0 3px rgba(124,58,237,0.15),
-            inset 0 0 10px rgba(124,58,237,0.08) !important;
+        /* ── DESKTOP ── */
+        .blog-main-grid {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 32px;
+          align-items: start;
         }
 
-        input[type="email"]::placeholder {
-          color: rgba(200,180,255,0.35);
+        .blog-sidebar {
+          position: sticky;
+          top: 90px;
         }
 
-        /* Responsive */
+        .hero-card {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          min-height: 360px;
+        }
+
+        .blog-posts-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+
+        /* ── TABLET ── */
         @media (max-width: 1024px) {
           .blog-main-grid {
             grid-template-columns: 1fr !important;
           }
-          .blog-main-grid > div:last-child {
+          .blog-sidebar {
             position: static !important;
           }
         }
 
+        /* ── MOBILE ── */
         @media (max-width: 768px) {
           .hero-card {
             grid-template-columns: 1fr !important;
+            min-height: auto !important;
           }
           .hero-card > div:last-child {
             min-height: 200px !important;
+            max-height: 220px !important;
           }
           .blog-posts-grid {
             grid-template-columns: 1fr !important;
           }
+          .blog-main-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .blog-sidebar {
+            position: static !important;
+            width: 100% !important;
+          }
+        }
+
+        /* ── SMALL MOBILE ── */
+        @media (max-width: 480px) {
+          .trending-tags {
+            flex-wrap: wrap !important;
+            overflow: visible !important;
+          }
+        }
+
+        /* ── GLOBAL OVERFLOW FIX ── */
+        * {
+          box-sizing: border-box;
+        }
+
+        input::placeholder {
+          color: rgba(200,180,255,0.35);
         }
       `}</style>
     </>
