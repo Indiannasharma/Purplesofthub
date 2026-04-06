@@ -70,7 +70,8 @@ export default async function BlogPage() {
         minHeight: '100vh',
         background: '#06030f',
         position: 'relative',
-        overflow: 'hidden',
+        overflowX: 'hidden',
+        overflowY: 'visible',
       }}>
 
         {/* ── GRID BACKGROUND ── */}
@@ -428,10 +429,12 @@ export default async function BlogPage() {
           <section style={{
             maxWidth: '1280px',
             margin: '0 auto',
-            padding: '0 24px clamp(60px, 8vw, 100px)',
+            padding: '0 16px clamp(48px, 8vw, 100px)',
             display: 'grid',
             gap: '32px',
             alignItems: 'start',
+            width: '100%',
+            boxSizing: 'border-box',
           }}
           className="blog-main-grid">
 
@@ -723,6 +726,10 @@ export default async function BlogPage() {
               display: 'flex',
               flexDirection: 'column',
               gap: '20px',
+              width: '100%',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflow: 'hidden',
             }}
             className="blog-sidebar">
 
@@ -754,6 +761,9 @@ export default async function BlogPage() {
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: '8px',
+                  width: '100%',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
                 }}
                 className="trending-tags">
                   {uniqueTags.length > 0
@@ -761,7 +771,7 @@ export default async function BlogPage() {
                       <span key={tag} style={{
                         fontSize: '12px',
                         fontWeight: 600,
-                        padding: '6px 14px',
+                        padding: '6px 12px',
                         borderRadius: '100px',
                         background:
                           'rgba(34,211,238,0.1)',
@@ -769,9 +779,8 @@ export default async function BlogPage() {
                           '1px solid rgba(34,211,238,0.3)',
                         color: '#22d3ee',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow:
-                          '0 0 8px rgba(34,211,238,0.1)',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
                       }}>
                         {tag}
                       </span>
@@ -781,20 +790,22 @@ export default async function BlogPage() {
                        'SaaS', 'Design',
                        'AI', 'Nigeria']
                        .map(tag => (
-                        <span key={tag} style={{
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          padding: '6px 14px',
-                          borderRadius: '100px',
-                          background:
-                            'rgba(34,211,238,0.1)',
-                          border:
-                            '1px solid rgba(34,211,238,0.3)',
-                          color: '#22d3ee',
-                          cursor: 'pointer',
-                        }}>
-                          {tag}
-                        </span>
+                       <span key={tag} style={{
+                         fontSize: '12px',
+                         fontWeight: 600,
+                         padding: '6px 12px',
+                         borderRadius: '100px',
+                         background:
+                           'rgba(34,211,238,0.1)',
+                         border:
+                           '1px solid rgba(34,211,238,0.3)',
+                         color: '#22d3ee',
+                         cursor: 'pointer',
+                         whiteSpace: 'nowrap',
+                         flexShrink: 0,
+                       }}>
+                         {tag}
+                       </span>
                       ))
                   }
                 </div>
@@ -851,6 +862,8 @@ export default async function BlogPage() {
                               '1px solid rgba(124,58,237,0.15)',
                             transition: 'all 0.2s',
                             cursor: 'pointer',
+                            overflow: 'hidden',
+                            maxWidth: '100%',
                           }}
                           className="popular-post-item">
                             {/* Thumbnail */}
@@ -901,6 +914,8 @@ export default async function BlogPage() {
                                 overflow: 'hidden',
                                 whiteSpace: 'nowrap',
                                 textOverflow: 'ellipsis',
+                                maxWidth: '100%',
+                                minWidth: 0,
                               }}>
                                 {post.title}
                               </p>
@@ -998,27 +1013,31 @@ export default async function BlogPage() {
                   flexDirection: 'column',
                   gap: '10px',
                   position: 'relative',
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box',
+                  overflow: 'hidden',
                 }}>
-                  <input
-                    type="email"
-                    placeholder="Signup Slot"
-                    style={{
-                      width: '100%',
-                      padding: '11px 16px',
-                      borderRadius: '10px',
-                      border:
-                        '1px solid rgba(124,58,237,0.4)',
-                      background:
-                        'rgba(124,58,237,0.08)',
-                      color: '#fff',
-                      fontSize: '13px',
-                      outline: 'none',
-                      fontFamily: 'inherit',
-                      boxSizing: 'border-box',
-                      boxShadow:
-                        'inset 0 0 10px rgba(124,58,237,0.05)',
-                    }}
-                  />
+                    <input
+                      type="email"
+                      placeholder="Signup Slot"
+                      style={{
+                        width: '100%',
+                        maxWidth: '100%',
+                        padding: '11px 16px',
+                        borderRadius: '10px',
+                        border:
+                          '1px solid rgba(124,58,237,0.4)',
+                        background:
+                          'rgba(124,58,237,0.08)',
+                        color: '#fff',
+                        fontSize: '13px',
+                        outline: 'none',
+                        fontFamily: 'inherit',
+                        boxSizing: 'border-box' as const,
+                        display: 'block',
+                      }}
+                    />
                   <Link
                     href="/newsletter"
                     style={{

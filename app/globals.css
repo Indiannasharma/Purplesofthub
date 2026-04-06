@@ -703,3 +703,35 @@ textarea::placeholder {
 html {
   scroll-snap-type: none !important;
 }
+
+/* ── BLOG MOBILE FIX ── */
+@media (max-width: 1024px) {
+  .blog-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .blog-sidebar {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-card {
+    grid-template-columns: 1fr !important;
+  }
+  .blog-posts-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .blog-main-grid {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Prevent ALL horizontal overflow */
+.blog-sidebar * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
