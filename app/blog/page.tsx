@@ -68,7 +68,7 @@ export default async function BlogPage() {
 
       <div style={{
         minHeight: '100vh',
-        background: '#06030f',
+        background: 'var(--blog-space-bg)',
         position: 'relative',
         overflowX: 'hidden',
         overflowY: 'visible',
@@ -79,8 +79,8 @@ export default async function BlogPage() {
           position: 'fixed',
           inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px)
+            linear-gradient(var(--blog-grid-line) 1px, transparent 1px),
+            linear-gradient(90deg, var(--blog-grid-line) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
           pointerEvents: 'none',
@@ -95,7 +95,7 @@ export default async function BlogPage() {
           width: '600px',
           height: '600px',
           background:
-            'radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)',
+            'radial-gradient(circle, var(--blog-glow-primary) 0%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: 0,
         }}/>
@@ -106,7 +106,7 @@ export default async function BlogPage() {
           width: '600px',
           height: '600px',
           background:
-            'radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%)',
+            'radial-gradient(circle, var(--blog-glow-cyan) 0%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: 0,
         }}/>
@@ -132,16 +132,12 @@ export default async function BlogPage() {
                 overflow: 'hidden',
                 border: '1px solid rgba(124,58,237,0.4)',
                 boxShadow: `
-                  0 0 40px rgba(124,58,237,0.2),
+                  0 0 40px var(--blog-glow-primary),
                   inset 0 0 40px rgba(124,58,237,0.04)
                 `,
                 marginBottom: '60px',
                 display: 'grid',
-                background: `
-                  linear-gradient(135deg,
-                    rgba(13,5,32,0.95) 0%,
-                    rgba(26,5,53,0.9) 100%)
-                `,
+                background: 'var(--blog-hero-bg)',
               }}
               className="hero-card">
 
@@ -198,7 +194,7 @@ export default async function BlogPage() {
                     fontSize:
                       'clamp(24px, 3.5vw, 44px)',
                     fontWeight: 900,
-                    color: '#ffffff',
+                    color: 'var(--blog-heading)',
                     margin: 0,
                     lineHeight: 1.15,
                     letterSpacing: '-0.5px',
@@ -212,7 +208,7 @@ export default async function BlogPage() {
                   {featuredPost.excerpt && (
                     <p style={{
                       fontSize: '15px',
-                      color: 'rgba(200,180,255,0.7)',
+                      color: 'var(--blog-text-muted)',
                       lineHeight: 1.7,
                       margin: 0,
                     }}>
@@ -257,7 +253,7 @@ export default async function BlogPage() {
                     </Link>
                     <span style={{
                       fontSize: '13px',
-                      color: 'rgba(200,180,255,0.6)',
+                      color: 'var(--blog-text-muted)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
@@ -338,7 +334,7 @@ export default async function BlogPage() {
                     inset: 0,
                     background: `
                       linear-gradient(to left,
-                        rgba(34,211,238,0.08),
+                        var(--blog-glow-cyan),
                         transparent 60%)
                     `,
                     pointerEvents: 'none',
@@ -353,9 +349,9 @@ export default async function BlogPage() {
                   width: '40px',
                   height: '40px',
                   borderTop:
-                    '2px solid #7c3aed',
+                    '2px solid var(--blog-corner-primary)',
                   borderLeft:
-                    '2px solid #7c3aed',
+                    '2px solid var(--blog-corner-primary)',
                   borderRadius: '24px 0 0 0',
                 }}/>
                 <div style={{
@@ -365,9 +361,9 @@ export default async function BlogPage() {
                   width: '40px',
                   height: '40px',
                   borderTop:
-                    '2px solid #22d3ee',
+                    '2px solid var(--blog-corner-cyan)',
                   borderRight:
-                    '2px solid #22d3ee',
+                    '2px solid var(--blog-corner-cyan)',
                   borderRadius: '0 24px 0 0',
                 }}/>
                 <div style={{
@@ -377,9 +373,9 @@ export default async function BlogPage() {
                   width: '40px',
                   height: '40px',
                   borderBottom:
-                    '2px solid #22d3ee',
+                    '2px solid var(--blog-corner-cyan)',
                   borderLeft:
-                    '2px solid #22d3ee',
+                    '2px solid var(--blog-corner-cyan)',
                   borderRadius: '0 0 0 24px',
                 }}/>
                 <div style={{
@@ -389,9 +385,9 @@ export default async function BlogPage() {
                   width: '40px',
                   height: '40px',
                   borderBottom:
-                    '2px solid #7c3aed',
+                    '2px solid var(--blog-corner-primary)',
                   borderRight:
-                    '2px solid #7c3aed',
+                    '2px solid var(--blog-corner-primary)',
                   borderRadius: '0 0 24px 0',
                 }}/>
               </div>
@@ -411,7 +407,7 @@ export default async function BlogPage() {
                 <h2 style={{
                   fontSize: '24px',
                   fontWeight: 800,
-                  color: '#fff',
+                  color: 'var(--blog-heading)',
                   margin: '0 0 8px',
                 }}>
                   No posts yet
@@ -449,7 +445,7 @@ export default async function BlogPage() {
                 <h2 style={{
                   fontSize: 'clamp(20px, 2.5vw, 28px)',
                   fontWeight: 900,
-                  color: '#ffffff',
+                  color: 'var(--blog-heading)',
                   margin: 0,
                   textShadow:
                     '0 0 20px rgba(168,85,247,0.3)',
@@ -512,13 +508,9 @@ export default async function BlogPage() {
                   >
                     <article
                       style={{
-                        background: `
-                          linear-gradient(135deg,
-                            rgba(13,5,32,0.9),
-                            rgba(26,5,53,0.8))
-                        `,
+                        background: 'var(--blog-card-bg)',
                         border:
-                          '1px solid rgba(124,58,237,0.25)',
+                          '1px solid var(--blog-card-border)',
                         borderRadius: '16px',
                         overflow: 'hidden',
                         transition: 'all 0.3s',
@@ -576,11 +568,11 @@ export default async function BlogPage() {
                             <span style={{
                               fontSize: '10px',
                               fontWeight: 700,
-                              color: '#22d3ee',
+                              color: 'var(--blog-tag-color)',
                               background:
-                                'rgba(34,211,238,0.15)',
+                                'var(--blog-tag-bg)',
                               border:
-                                '1px solid rgba(34,211,238,0.3)',
+                                '1px solid var(--blog-tag-border)',
                               padding: '3px 10px',
                               borderRadius: '100px',
                               backdropFilter:
@@ -607,7 +599,7 @@ export default async function BlogPage() {
                         <h3 style={{
                           fontSize: '15px',
                           fontWeight: 800,
-                          color: '#ffffff',
+                          color: 'var(--blog-heading)',
                           margin: 0,
                           lineHeight: 1.3,
                           textShadow:
@@ -620,7 +612,7 @@ export default async function BlogPage() {
                           <p style={{
                             fontSize: '12px',
                             color:
-                              'rgba(200,180,255,0.6)',
+                              'var(--blog-text-muted)',
                             lineHeight: 1.6,
                             margin: 0,
                             overflow: 'hidden',
@@ -670,7 +662,7 @@ export default async function BlogPage() {
                           marginTop: 'auto',
                           paddingTop: '10px',
                           borderTop:
-                            '1px solid rgba(124,58,237,0.15)',
+                            '1px solid var(--blog-card-border)',
                         }}>
                           <div style={{
                             display: 'flex',
@@ -697,7 +689,7 @@ export default async function BlogPage() {
                             <span style={{
                               fontSize: '11px',
                               color:
-                                'rgba(200,180,255,0.7)',
+                                'var(--blog-text-muted)',
                               fontWeight: 600,
                             }}>
                               {post.author_name ||
@@ -707,7 +699,7 @@ export default async function BlogPage() {
                           <span style={{
                             fontSize: '11px',
                             color:
-                              'rgba(200,180,255,0.5)',
+                              'var(--blog-text-muted)',
                           }}>
                             🕐 {readTime(
                               post.content || ''
@@ -735,13 +727,9 @@ export default async function BlogPage() {
 
               {/* Trending Topics */}
               <div style={{
-                background: `
-                  linear-gradient(135deg,
-                    rgba(13,5,32,0.95),
-                    rgba(26,5,53,0.9))
-                `,
+                background: 'var(--blog-sidebar-bg)',
                 border:
-                  '1px solid rgba(124,58,237,0.25)',
+                  '1px solid var(--blog-card-border)',
                 borderRadius: '16px',
                 padding: '20px',
                 backdropFilter: 'blur(10px)',
@@ -749,7 +737,7 @@ export default async function BlogPage() {
                 <h3 style={{
                   fontSize: '16px',
                   fontWeight: 800,
-                  color: '#fff',
+                  color: 'var(--blog-heading)',
                   margin: '0 0 16px',
                   textShadow:
                     '0 0 10px rgba(168,85,247,0.3)',
@@ -774,10 +762,10 @@ export default async function BlogPage() {
                         padding: '6px 12px',
                         borderRadius: '100px',
                         background:
-                          'rgba(34,211,238,0.1)',
+                          'var(--blog-tag-bg)',
                         border:
-                          '1px solid rgba(34,211,238,0.3)',
-                        color: '#22d3ee',
+                          '1px solid var(--blog-tag-border)',
+                        color: 'var(--blog-tag-color)',
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                         flexShrink: 0,
@@ -796,10 +784,10 @@ export default async function BlogPage() {
                          padding: '6px 12px',
                          borderRadius: '100px',
                          background:
-                           'rgba(34,211,238,0.1)',
+                           'var(--blog-tag-bg)',
                          border:
-                           '1px solid rgba(34,211,238,0.3)',
-                         color: '#22d3ee',
+                           '1px solid var(--blog-tag-border)',
+                         color: 'var(--blog-tag-color)',
                          cursor: 'pointer',
                          whiteSpace: 'nowrap',
                          flexShrink: 0,
@@ -813,13 +801,9 @@ export default async function BlogPage() {
 
               {/* Popular Posts */}
               <div style={{
-                background: `
-                  linear-gradient(135deg,
-                    rgba(13,5,32,0.95),
-                    rgba(26,5,53,0.9))
-                `,
+                background: 'var(--blog-sidebar-bg)',
                 border:
-                  '1px solid rgba(124,58,237,0.25)',
+                  '1px solid var(--blog-card-border)',
                 borderRadius: '16px',
                 padding: '20px',
                 backdropFilter: 'blur(10px)',
@@ -827,7 +811,7 @@ export default async function BlogPage() {
                 <h3 style={{
                   fontSize: '16px',
                   fontWeight: 800,
-                  color: '#fff',
+                  color: 'var(--blog-heading)',
                   margin: '0 0 16px',
                   textShadow:
                     '0 0 10px rgba(168,85,247,0.3)',
@@ -857,9 +841,9 @@ export default async function BlogPage() {
                             padding: '10px 12px',
                             borderRadius: '10px',
                             background:
-                              'rgba(124,58,237,0.06)',
+                              'var(--blog-popular-bg)',
                             border:
-                              '1px solid rgba(124,58,237,0.15)',
+                              '1px solid var(--blog-popular-border)',
                             transition: 'all 0.2s',
                             cursor: 'pointer',
                             overflow: 'hidden',
@@ -909,7 +893,7 @@ export default async function BlogPage() {
                               <p style={{
                                 fontSize: '12px',
                                 fontWeight: 700,
-                                color: '#fff',
+                                color: 'var(--blog-heading)',
                                 margin: '0 0 3px',
                                 overflow: 'hidden',
                                 whiteSpace: 'nowrap',
@@ -922,7 +906,7 @@ export default async function BlogPage() {
                               <p style={{
                                 fontSize: '10px',
                                 color: i % 2 === 0
-                                  ? '#22d3ee' : '#a855f7',
+                                  ? 'var(--blog-tag-color)' : '#a855f7',
                                 margin: 0,
                                 fontWeight: 600,
                               }}>
@@ -957,11 +941,7 @@ export default async function BlogPage() {
 
               {/* Newsletter */}
               <div style={{
-                background: `
-                  linear-gradient(135deg,
-                    rgba(124,58,237,0.15),
-                    rgba(34,211,238,0.05))
-                `,
+                background: 'var(--blog-newsletter-bg)',
                 border:
                   '1px solid rgba(124,58,237,0.35)',
                 borderRadius: '16px',
@@ -987,7 +967,7 @@ export default async function BlogPage() {
                 <h3 style={{
                   fontSize: '18px',
                   fontWeight: 900,
-                  color: '#fff',
+                  color: 'var(--blog-heading)',
                   margin: '0 0 8px',
                   textShadow:
                     '0 0 10px rgba(168,85,247,0.4)',
@@ -997,7 +977,7 @@ export default async function BlogPage() {
                 </h3>
                 <p style={{
                   fontSize: '12px',
-                  color: 'rgba(200,180,255,0.6)',
+                  color: 'var(--blog-text-muted)',
                   lineHeight: 1.6,
                   margin: '0 0 16px',
                   position: 'relative',
@@ -1030,7 +1010,7 @@ export default async function BlogPage() {
                           '1px solid rgba(124,58,237,0.4)',
                         background:
                           'rgba(124,58,237,0.08)',
-                        color: '#fff',
+                        color: 'var(--blog-heading)',
                         fontSize: '13px',
                         outline: 'none',
                         fontFamily: 'inherit',
@@ -1071,6 +1051,55 @@ export default async function BlogPage() {
       <Footer />
 
       <style>{`
+        /* ── CSS VARIABLES ── */
+        :root {
+          --blog-space-bg: #f0ebff;
+          --blog-space-bg2: #e8e0ff;
+          --blog-card-bg: rgba(255,255,255,0.7);
+          --blog-card-border: rgba(124,58,237,0.2);
+          --blog-card-border-hover: rgba(124,58,237,0.5);
+          --blog-heading: #1a1a2e;
+          --blog-body: #4a3f6b;
+          --blog-grid-line: rgba(124,58,237,0.08);
+          --blog-glow-primary: rgba(124,58,237,0.15);
+          --blog-glow-cyan: rgba(34,211,238,0.08);
+          --blog-hero-bg: linear-gradient(135deg, rgba(240,235,255,0.95), rgba(232,224,255,0.9));
+          --blog-sidebar-bg: rgba(255,255,255,0.6);
+          --blog-tag-bg: rgba(34,211,238,0.1);
+          --blog-tag-color: #0891b2;
+          --blog-tag-border: rgba(34,211,238,0.3);
+          --blog-popular-bg: rgba(124,58,237,0.06);
+          --blog-popular-border: rgba(124,58,237,0.15);
+          --blog-newsletter-bg: rgba(124,58,237,0.08);
+          --blog-text-muted: rgba(74,63,107,0.7);
+          --blog-corner-primary: #7c3aed;
+          --blog-corner-cyan: #0891b2;
+        }
+
+        .dark {
+          --blog-space-bg: #06030f;
+          --blog-space-bg2: #0d0520;
+          --blog-card-bg: linear-gradient(135deg, rgba(13,5,32,0.9), rgba(26,5,53,0.8));
+          --blog-card-border: rgba(124,58,237,0.25);
+          --blog-card-border-hover: rgba(124,58,237,0.5);
+          --blog-heading: #ffffff;
+          --blog-body: #9d8fd4;
+          --blog-grid-line: rgba(124,58,237,0.06);
+          --blog-glow-primary: rgba(124,58,237,0.15);
+          --blog-glow-cyan: rgba(34,211,238,0.08);
+          --blog-hero-bg: linear-gradient(135deg, rgba(13,5,32,0.95), rgba(26,5,53,0.9));
+          --blog-sidebar-bg: linear-gradient(135deg, rgba(13,5,32,0.95), rgba(26,5,53,0.9));
+          --blog-tag-bg: rgba(34,211,238,0.1);
+          --blog-tag-color: #22d3ee;
+          --blog-tag-border: rgba(34,211,238,0.3);
+          --blog-popular-bg: rgba(124,58,237,0.06);
+          --blog-popular-border: rgba(124,58,237,0.15);
+          --blog-newsletter-bg: rgba(124,58,237,0.15);
+          --blog-text-muted: rgba(200,180,255,0.7);
+          --blog-corner-primary: #7c3aed;
+          --blog-corner-cyan: #22d3ee;
+        }
+
         /* ── ANIMATIONS ── */
         @keyframes pulseDot {
           0%, 100% {
@@ -1091,15 +1120,14 @@ export default async function BlogPage() {
         /* ── HOVER EFFECTS ── */
         .hero-card:hover {
           box-shadow:
-            0 0 60px rgba(124,58,237,0.35) !important;
+            0 0 60px var(--blog-glow-primary) !important;
         }
 
         .blog-card:hover {
-          border-color:
-            rgba(124,58,237,0.5) !important;
+          border-color: var(--blog-card-border-hover) !important;
           transform: translateY(-4px);
           box-shadow:
-            0 0 30px rgba(124,58,237,0.2);
+            0 0 30px var(--blog-glow-primary);
         }
 
         .popular-post-item:hover {
