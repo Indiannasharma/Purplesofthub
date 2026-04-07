@@ -3,6 +3,11 @@
 import Link from 'next/link'
 
 export default function FacebookAdsPricing() {
+  // Use CSS variables for proper light/dark mode support
+  const cardBg = 'var(--bg-card, var(--cyber-card, #ffffff))'
+  const textColor = 'var(--text-primary, var(--cyber-heading, #1a1a1a))'
+  const textSecondary = 'var(--text-secondary, var(--cyber-body, #6b5fa0))'
+  const textMuted = 'var(--text-muted, #9d8fd4)'
   const plans = [
     {
       name: 'Flex Weekly',
@@ -73,7 +78,7 @@ export default function FacebookAdsPricing() {
         <h2 style={{
           fontSize: 'clamp(28px, 4vw, 40px)',
           fontWeight: 900,
-          color: 'var(--text-primary)',
+          color: textColor,
           margin: '0 0 16px',
           letterSpacing: '-0.5px',
         }}>
@@ -81,7 +86,7 @@ export default function FacebookAdsPricing() {
         </h2>
         <p style={{
           fontSize: '16px',
-          color: 'var(--text-secondary)',
+          color: textSecondary,
           maxWidth: '460px',
           margin: '0 auto',
           lineHeight: 1.7,
@@ -100,7 +105,7 @@ export default function FacebookAdsPricing() {
       }}>
         {plans.map((tier, i) => (
           <div key={tier.name} style={{
-            background: 'var(--card, #ffffff)',
+            background: cardBg,
             border: `1px solid ${tier.color}30`,
             borderRadius: '20px',
             padding: '28px',
@@ -159,7 +164,7 @@ export default function FacebookAdsPricing() {
             <h3 style={{
               fontSize: '20px',
               fontWeight: 900,
-              color: 'var(--text-primary)',
+              color: textColor,
               margin: '0 0 8px',
             }}>
               {tier.name}
@@ -177,7 +182,7 @@ export default function FacebookAdsPricing() {
             </p>
             <p style={{
               fontSize: '13px',
-              color: 'var(--text-muted)',
+              color: textMuted,
               margin: '0 0 8px',
             }}>
               ~${tier.usd} USD{tier.name === 'Flex Weekly' ? ' / week' : ''}
@@ -218,7 +223,7 @@ export default function FacebookAdsPricing() {
                   alignItems: 'flex-start',
                   gap: '8px',
                   fontSize: '13px',
-                  color: 'var(--text-secondary)',
+                  color: textSecondary,
                   lineHeight: 1.4,
                 }}>
                   <span style={{
@@ -284,7 +289,7 @@ export default function FacebookAdsPricing() {
       <div style={{ textAlign: 'center' }}>
         <p style={{
           fontSize: '14px',
-          color: 'var(--text-secondary)',
+          color: textSecondary,
           marginBottom: '16px',
         }}>
           We have 5 more plans — Scale to Enterprise
