@@ -213,20 +213,18 @@ export default function FacebookAdsPage() {
                     fontSize: 14,
                     textDecoration: "none",
                     transition: "all 0.2s",
+                    background: "transparent",
                   }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLAnchorElement
-                    el.style.background = plan.color
-                    el.style.color = "#fff"
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLAnchorElement
-                    el.style.background = "transparent"
-                    el.style.color = plan.color
-                  }}
+                  className={`facebook-ads-btn-${i}`}
                 >
                   Get Started →
                 </Link>
+                <style>{`
+                  .facebook-ads-btn-${i}:hover {
+                    background: ${plan.color} !important;
+                    color: #fff !important;
+                  }
+                `}</style>
               </div>
             ))}
           </div>
@@ -331,6 +329,7 @@ export default function FacebookAdsPage() {
                 href="https://wa.me/2348167593393"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="whatsapp-cta-btn"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -344,19 +343,15 @@ export default function FacebookAdsPage() {
                   textDecoration: "none",
                   transition: "all 0.2s",
                 }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLAnchorElement
-                  el.style.background = "#25D366"
-                  el.style.color = "#fff"
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLAnchorElement
-                  el.style.background = "transparent"
-                  el.style.color = "#25D366"
-                }}
               >
                 💬 Chat with us on WhatsApp
               </a>
+              <style>{`
+                .whatsapp-cta-btn:hover {
+                  background: #25D366 !important;
+                  color: #fff !important;
+                }
+              `}</style>
             </div>
           </div>
         </div>
