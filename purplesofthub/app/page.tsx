@@ -481,7 +481,7 @@ export default async function Home() {
           }}/>
         </div>
         <p style={{ fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--cyber-body)', maxWidth: '560px', margin: '0 auto 40px', lineHeight: 1.7 }}>
-          From Lagos startups to global brands — we build digital experiences that convert and grow.
+          From ambitious startups to global brands — we build digital experiences that convert and grow.
         </p>
         <Link href="/contact">
           <button className="cyber-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 32px', fontSize: 15 }}>
