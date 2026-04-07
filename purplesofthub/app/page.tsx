@@ -228,12 +228,12 @@ export default async function Home() {
                   [98, "Client Satisfaction", "%"]
                 ].map(([n, l, suffix]) => (
                   <div key={l} style={{
-                    background: 'rgba(255,255,255,0.7)',
-                    border: '1px solid rgba(124,58,237,0.15)',
+                    background: 'var(--cyber-card, rgba(255,255,255,0.7))',
+                    border: '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
                     borderRadius: '16px',
                     padding: '20px 24px',
                     backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 20px rgba(124,58,237,0.08)',
+                    boxShadow: '0 4px 20px var(--cyber-glow, rgba(124,58,237,0.08))',
                     transition: 'all 0.3s',
                     position: 'relative',
                     overflow: 'hidden',
@@ -248,7 +248,7 @@ export default async function Home() {
                       fontFamily: "Outfit", 
                       fontSize: "clamp(28px,4vw,40px)", 
                       fontWeight: 900, 
-                      color: "#7c3aed", 
+                      color: "var(--cyber-accent, #a855f7)", 
                       letterSpacing: "-1px",
                       textShadow: "0 0 20px rgba(124,58,237,0.3)",
                       marginTop: 4,
