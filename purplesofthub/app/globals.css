@@ -993,3 +993,40 @@ html.dark {
 .cyber-logo:hover {
   filter: drop-shadow(0 0 16px rgba(124, 58, 237, 0.7));
 }
+
+/* ── Cyberpunk Outline Button ── */
+.cyber-btn-outline {
+  background: transparent;
+  border: 1.5px solid rgba(124, 58, 237, 0.4);
+  color: #a855f7;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 14px 32px;
+  font-size: 16px;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.cyber-btn-outline:hover {
+  border-color: #a855f7;
+  background: rgba(124, 58, 237, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ── Cyberpunk Small Button ── */
+.cyber-btn-small {
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 100px;
+  color: #a855f7;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+
+.cyber-btn-small:hover {
+  background: rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+}

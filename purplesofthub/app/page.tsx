@@ -133,30 +133,7 @@ export default function Home() {
                   <button className="cyber-btn-primary" style={{ padding: "14px 32px", fontSize: 16 }}>Start a Project</button>
                 </Link>
                 <Link href="/contact">
-                  <button
-                    style={{
-                      border: "1px solid rgba(124,58,237,0.4)",
-                      color: "#a855f7",
-                      background: "rgba(124,58,237,0.08)",
-                      borderRadius: 10,
-                      padding: "14px 32px",
-                      fontSize: 16,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      fontFamily: "Outfit, sans-serif",
-                      transition: "all 0.2s",
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = "#a855f7";
-                      e.currentTarget.style.background = "rgba(124,58,237,0.15)";
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)";
-                      e.currentTarget.style.background = "rgba(124,58,237,0.08)";
-                      e.currentTarget.style.transform = "translateY(0)";
-                    }}
-                  >
+                  <button className="cyber-btn-outline" style={{ padding: "14px 32px", fontSize: 16 }}>
                     Book a Discovery Call
                   </button>
                 </Link>
@@ -274,27 +251,7 @@ export default function Home() {
                 <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 18, color: "var(--cyber-heading)", marginBottom: 8 }}>{c.title}</div>
                 <div style={{ color: "var(--cyber-body)", fontSize: 14, marginBottom: 20 }}>{c.sub}</div>
                 <Link href={c.href}>
-                  <button style={{ 
-                    background: "rgba(124,58,237,.12)", 
-                    border: "1px solid rgba(168,85,247,.3)", 
-                    borderRadius: 100, 
-                    padding: "8px 18px", 
-                    color: "#a855f7", 
-                    fontSize: 13, 
-                    fontWeight: 600, 
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    fontFamily: "Outfit, sans-serif",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = "rgba(124,58,237,.2)";
-                    e.currentTarget.style.boxShadow = "0 0 12px rgba(124,58,237,0.3)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = "rgba(124,58,237,.12)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                  >
+                  <button className="cyber-btn-small" style={{ padding: "8px 18px", fontSize: 13 }}>
                     {c.cta} →
                   </button>
                 </Link>
@@ -320,30 +277,7 @@ export default function Home() {
           <Reveal delay={0.3}>
             <div style={{ textAlign: "center", marginTop: 48 }}>
               <Link href="/services">
-                <button
-                  style={{
-                    background: "transparent",
-                    border: "1.5px solid rgba(124,58,237,0.4)",
-                    color: "#a855f7",
-                    fontFamily: "Outfit, sans-serif",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    padding: "13px 32px",
-                    fontSize: 15,
-                    borderRadius: 10,
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = "#a855f7";
-                    e.currentTarget.style.background = "rgba(124,58,237,0.08)";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)";
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
+                <button className="cyber-btn-outline" style={{ padding: "13px 32px", fontSize: 15 }}>
                   View All 10 Services →
                 </button>
               </Link>
@@ -509,30 +443,7 @@ export default function Home() {
                 <button className="cyber-btn-primary animate-glow" style={{ padding: "16px 38px", fontSize: 16 }}>Start a Project</button>
               </Link>
               <Link href="/contact">
-                <button
-                  style={{
-                    background: "transparent",
-                    border: "1.5px solid rgba(124,58,237,0.4)",
-                    color: "#a855f7",
-                    fontFamily: "Outfit, sans-serif",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    padding: "16px 38px",
-                    fontSize: 16,
-                    borderRadius: 10,
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = "#a855f7";
-                    e.currentTarget.style.background = "rgba(124,58,237,0.08)";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = "rgba(124,58,237,0.4)";
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
+                <button className="cyber-btn-outline" style={{ padding: "16px 38px", fontSize: 16 }}>
                   Book a Call →
                 </button>
               </Link>
