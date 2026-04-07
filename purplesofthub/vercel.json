@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "purplesofthub",
-  "buildCommand": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+  "buildCommand": "next build",
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },
