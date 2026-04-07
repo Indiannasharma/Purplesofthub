@@ -1,9 +1,57 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+
+// CountUp animation component
+function CountUp({ end, duration = 2, suffix = '', start = 0 }: { end: number; duration?: number; suffix?: string; start?: number }) {
+  const [count, setCount] = useState(start)
+  const ref = useRef<HTMLParagraphElement>(null)
+  const [hasAnimated, setHasAnimated] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true)
+          let startTime: number
+          const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp
+            const progress = Math.min((timestamp - startTime) / (duration * 1000), 1)
+            const current = Math.floor(progress * (end - start) + start)
+            setCount(current)
+            if (progress < 1) {
+              requestAnimationFrame(animate)
+            }
+          }
+          requestAnimationFrame(animate)
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => observer.disconnect()
+  }, [end, start, duration, hasAnimated])
+
+  return (
+    <p ref={ref} style={{
+      fontSize: 'clamp(32px, 5vw, 48px)',
+      fontWeight: 900,
+      color: '#a855f7',
+      margin: '0 0 4px',
+      textShadow: '0 0 30px rgba(168,85,247,0.5)',
+      fontFamily: 'Outfit, sans-serif',
+    }}>
+      {count.toLocaleString()}{suffix}
+    </p>
+  )
+}
 
 const PRESET_AMOUNTS_NGN = [1000, 5000, 10000, 25000, 50000, 100000]
 const PRESET_AMOUNTS_USD = [5, 10, 25, 50, 100, 250]
@@ -50,7 +98,7 @@ const CAUSES = [
     icon: '💻',
     title: 'Purchase of Equipment',
     description: 'Many talented young Africans have the passion and intelligence to learn technology but lack the tools to do so. Donations help us purchase laptops, tablets, and other essential equipment.',
-    impact: 'Every ₦50,000 buys 1 refurbished laptop',
+    impact: 'Every ₦200,000 buys 1 refurbished laptop',
   },
   {
     icon: '⚡',
@@ -202,21 +250,117 @@ export default function DonatePage() {
         color: 'var(--cyber-body, #d4d4d8)',
       }}>
         <style>{`
-          @media (prefers-color-scheme: light) {
-            :root {
-              --text-primary: #1a1a1a;
-              --text-secondary: #4a4a4a;
-              --bg-light: #ffffff;
-              --border-light: rgba(0,0,0,0.1);
+          /* Mobile Responsive - Like Blog Page */
+          @media (max-width: 1024px) {
+            .donate-main-grid {
+              grid-template-columns: 1fr !important;
+              gap: 24px !important;
+            }
+            .donate-sidebar {
+              position: static !important;
+              width: 100% !important;
+              max-width: 100% !important;
             }
           }
-          @media (prefers-color-scheme: dark) {
-            :root {
-              --text-primary: #ffffff;
-              --text-secondary: #e0e0e0;
-              --bg-light: rgba(255,255,255,0.05);
-              --border-light: rgba(255,255,255,0.1);
+
+          @media (max-width: 768px) {
+            .donate-hero-card {
+              grid-template-columns: 1fr !important;
             }
+            .donate-posts-grid {
+              grid-template-columns: 1fr !important;
+            }
+            .donate-main-grid {
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+            }
+            .donate-payment-grid {
+              grid-template-columns: 1fr !important;
+            }
+          }
+
+          @media (max-width: 639px) {
+            section {
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+              padding-top: 48px !important;
+              padding-bottom: 48px !important;
+            }
+            .donate-amount-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .donate-currency-btns {
+              flex-direction: column !important;
+            }
+            .donate-currency-btns button {
+              width: 100% !important;
+            }
+          }
+
+          /* Light Mode Overrides */
+          html:not(.dark) .donate-card {
+            background: rgba(255,255,255,0.85) !important;
+            border-color: rgba(124,58,237,0.2) !important;
+          }
+          html:not(.dark) .donate-card h3,
+          html:not(.dark) .donate-heading {
+            color: #1a1a2e !important;
+          }
+          html:not(.dark) .donate-text {
+            color: #4a3f6b !important;
+          }
+          html:not(.dark) .donate-muted {
+            color: rgba(74,63,107,0.7) !important;
+          }
+          html:not(.dark) .donate-input {
+            background: rgba(124,58,237,0.05) !important;
+            color: #1a1a2e !important;
+            border-color: rgba(124,58,237,0.2) !important;
+          }
+          html:not(.dark) .donate-input::placeholder {
+            color: rgba(74,63,107,0.5) !important;
+          }
+          html:not(.dark) .donate-btn-text {
+            color: #4a3f6b !important;
+          }
+          html:not(.dark) .donate-hero {
+            background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(34,211,238,0.04)) !important;
+          }
+          html:not(.dark) .donate-hero h1 {
+            color: #1a1a2e !important;
+          }
+          html:not(.dark) .donate-hero p {
+            color: #4a3f6b !important;
+          }
+          html:not(.dark) .donate-stat-label {
+            color: rgba(74,63,107,0.7) !important;
+          }
+
+          /* Dark Mode (default) */
+          html.dark .donate-card {
+            background: rgba(255,255,255,0.05) !important;
+            border-color: rgba(124,58,237,0.2) !important;
+          }
+          html.dark .donate-card h3,
+          html.dark .donate-heading {
+            color: #ffffff !important;
+          }
+          html.dark .donate-text {
+            color: #9d8fd4 !important;
+          }
+          html.dark .donate-muted {
+            color: rgba(200,180,255,0.6) !important;
+          }
+          html.dark .donate-input {
+            background: rgba(124,58,237,0.08) !important;
+            color: #ffffff !important;
+            border-color: rgba(124,58,237,0.25) !important;
+          }
+          html.dark .donate-input::placeholder {
+            color: rgba(200,180,255,0.4) !important;
+          }
+          html.dark .donate-btn-text {
+            color: #9d8fd4 !important;
           }
         `}</style>
         {/* Grid Background */}
@@ -256,7 +400,7 @@ export default function DonatePage() {
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           {/* Hero Section */}
-          <section style={{
+          <section className="donate-hero-section" style={{
             maxWidth: '1280px',
             margin: '0 auto',
             padding: 'clamp(32px, 4vw, 60px) 24px 0',
@@ -266,11 +410,11 @@ export default function DonatePage() {
               borderRadius: '24px',
               overflow: 'hidden',
               border: '1px solid rgba(124,58,237,0.4)',
-              boxShadow: '0 0 40px var(--blog-glow-primary, rgba(124,58,237,0.3)), inset 0 0 40px rgba(124,58,237,0.04)',
+              boxShadow: '0 0 40px var(--cyber-glow, rgba(124,58,237,0.3)), inset 0 0 40px rgba(124,58,237,0.04)',
               marginBottom: '60px',
-              background: 'var(--blog-hero-bg, linear-gradient(135deg, rgba(124,58,237,0.1), rgba(34,211,238,0.05)))',
+              background: 'var(--cyber-glow, linear-gradient(135deg, rgba(124,58,237,0.1), rgba(34,211,238,0.05)))',
             }}
-            className="hero-card">
+            className="donate-hero donate-hero-card">
 
               {/* Left content */}
               <div style={{
@@ -303,23 +447,23 @@ export default function DonatePage() {
                     animation: 'pulseDot 1.8s ease-in-out infinite',
                     boxShadow: '0 0 8px #a855f7',
                   }}/>
-                  <span style={{
-                    fontSize: 'clamp(11px, 2vw, 13px)',
-                    fontWeight: 700,
-                    color: '#e879f9',
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    textShadow: '0 0 4px rgba(232,121,249,0.3)',
-                  }}>
-                    Support Our Mission
-                  </span>
+                <span className="donate-heading" style={{
+                  fontSize: 'clamp(11px, 2vw, 13px)',
+                  fontWeight: 700,
+                  color: 'var(--cyber-body, #e879f9)',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  textShadow: '0 0 4px rgba(232,121,249,0.3)',
+                }}>
+                  Support Our Mission
+                </span>
                 </div>
 
                 {/* Title */}
-                <h1 style={{
+                <h1 className="donate-heading" style={{
                   fontSize: 'clamp(28px, 5vw, 48px)',
                   fontWeight: 900,
-                  color: '#ffffff',
+                  color: 'var(--cyber-heading, #ffffff)',
                   margin: 0,
                   lineHeight: 1.2,
                   letterSpacing: '-0.8px',
@@ -337,9 +481,9 @@ export default function DonatePage() {
                 </h1>
 
                 {/* Excerpt */}
-                <p style={{
+                <p className="donate-text" style={{
                   fontSize: 'clamp(14px, 3vw, 16px)',
-                  color: '#e0e0e0',
+                  color: 'var(--cyber-body, #e0e0e0)',
                   lineHeight: 1.8,
                   margin: 0,
                   maxWidth: '500px',
@@ -351,35 +495,56 @@ export default function DonatePage() {
                 {/* Stats */}
                 <div style={{
                   display: 'flex',
-                  gap: '32px',
+                  gap: 'clamp(20px, 4vw, 40px)',
                   flexWrap: 'wrap',
-                  marginTop: '10px',
+                  marginTop: '16px',
                 }}>
-                  {[
-                    { value: '500+', label: 'Kids to Train' },
-                    { value: '6', label: 'African Countries' },
-                    { value: '∞', label: 'Impact' },
-                  ].map(stat => (
-                    <div key={stat.label}>
-                      <p style={{
-                        fontSize: '28px',
-                        fontWeight: 900,
-                        color: '#a855f7',
-                        margin: '0 0 4px',
-                        textShadow: '0 0 20px rgba(168,85,247,0.4)',
-                      }}>
-                        {stat.value}
-                      </p>
-                      <p style={{
-                        fontSize: '12px',
-                        color: 'var(--blog-text-muted, #6b5fa0)',
-                        margin: 0,
-                        fontWeight: 600,
-                      }}>
-                        {stat.label}
-                      </p>
-                    </div>
-                  ))}
+                  <div>
+                    <CountUp end={500} suffix="+" duration={2.5} />
+                    <p className="donate-stat-label" style={{
+                      fontSize: 'clamp(11px, 2vw, 13px)',
+                      color: 'var(--cyber-body, #6b5fa0)',
+                      margin: '4px 0 0',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Kids to Train
+                    </p>
+                  </div>
+                  <div>
+                    <CountUp end={6} duration={2} />
+                    <p className="donate-stat-label" style={{
+                      fontSize: 'clamp(11px, 2vw, 13px)',
+                      color: 'var(--cyber-body, #6b5fa0)',
+                      margin: '4px 0 0',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      African Countries
+                    </p>
+                  </div>
+                  <div>
+                    <p style={{
+                      fontSize: 'clamp(32px, 5vw, 48px)',
+                      fontWeight: 900,
+                      color: '#a855f7',
+                      margin: '0 0 4px',
+                      textShadow: '0 0 30px rgba(168,85,247,0.5)',
+                      fontFamily: 'Outfit, sans-serif',
+                    }}>∞</p>
+                    <p className="donate-stat-label" style={{
+                      fontSize: 'clamp(11px, 2vw, 13px)',
+                      color: 'var(--cyber-body, #6b5fa0)',
+                      margin: '4px 0 0',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Impact
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -432,10 +597,10 @@ export default function DonatePage() {
           }}>
             {/* Causes Grid */}
             <div>
-              <h2 style={{
+              <h2 className="donate-heading" style={{
                 fontSize: 'clamp(20px, 2.5vw, 28px)',
                 fontWeight: 900,
-                color: 'var(--blog-heading, #fff)',
+                color: 'var(--cyber-heading, #fff)',
                 margin: '0 0 28px',
                 textShadow: '0 0 20px rgba(168,85,247,0.3)',
               }}>
@@ -444,21 +609,21 @@ export default function DonatePage() {
 
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                 gap: '20px',
               }}
-              className="blog-posts-grid">
+              className="donate-posts-grid donate-main-grid">
                 {CAUSES.map((cause, i) => (
                   <div key={cause.title} style={{
-                    background: 'rgba(124,58,237,0.08)',
-                    border: '1px solid rgba(124,58,237,0.2)',
+                    background: 'var(--cyber-card, rgba(124,58,237,0.08))',
+                    border: '1px solid var(--cyber-border, rgba(124,58,237,0.2))',
                     borderRadius: '16px',
                     padding: 'clamp(16px, 4vw, 24px)',
                     backdropFilter: 'blur(10px)',
                     transition: 'all 0.3s ease',
                     cursor: 'pointer',
                   }}
-                  className="blog-card"
+                  className="donate-card blog-card"
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLElement
                     el.style.borderColor = 'rgba(124,58,237,0.5)'
@@ -487,10 +652,10 @@ export default function DonatePage() {
                       {cause.icon}
                     </div>
 
-                    <h3 style={{
+                    <h3 className="donate-heading" style={{
                       fontSize: 'clamp(13px, 3vw, 16px)',
                       fontWeight: 800,
-                      color: '#ffffff',
+                      color: 'var(--cyber-heading, #ffffff)',
                       margin: '0 0 12px',
                       lineHeight: 1.4,
                       textShadow: '0 0 10px rgba(168,85,247,0.2)',
@@ -498,9 +663,9 @@ export default function DonatePage() {
                       {cause.title}
                     </h3>
 
-                    <p style={{
+                    <p className="donate-text" style={{
                       fontSize: 'clamp(12px, 2.5vw, 14px)',
-                      color: '#d0d0d0',
+                      color: 'var(--cyber-body, #d0d0d0)',
                       lineHeight: 1.7,
                       margin: '0 0 16px',
                       fontWeight: 400,
@@ -532,38 +697,38 @@ export default function DonatePage() {
               </div>
             </div>
 
-            {/* Donation Form */}
-            <div style={{
+            {/* Donation Form + Sidebar */}
+            <div className="donate-main-grid" style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 340px',
+              gridTemplateColumns: '1fr 360px',
               gap: '28px',
               alignItems: 'start',
             }}>
-              {/* Left — Form */}
+              {/* Left — Donation Form */}
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',
               }}>
                 {/* Currency & Amount */}
-                <div style={{
-                  background: 'rgba(124,58,237,0.08)',
-                  border: '1px solid rgba(124,58,237,0.2)',
+                <div className="donate-card" style={{
+                  background: 'var(--cyber-card, rgba(124,58,237,0.08))',
+                  border: '1px solid var(--cyber-border, rgba(124,58,237,0.2))',
                   borderRadius: '16px',
                   padding: 'clamp(16px, 4vw, 24px)',
                   backdropFilter: 'blur(10px)',
                 }}>
-                  <p style={{
+                  <p className="donate-heading" style={{
                     fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: 700,
-                    color: '#e0e0e0',
+                    color: 'var(--cyber-heading, #e0e0e0)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                     margin: '0 0 14px',
                   }}>
                     Select Currency
                   </p>
-                  <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
+                  <div className="donate-currency-btns" style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
                     {(['NGN', 'USD'] as const).map(cur => (
                       <button
                         key={cur}
@@ -582,7 +747,7 @@ export default function DonatePage() {
                           background: currency === cur
                             ? 'rgba(124,58,237,0.15)'
                             : 'rgba(124,58,237,0.05)',
-                          color: currency === cur ? '#ffffff' : '#d0d0d0',
+                          color: currency === cur ? 'var(--cyber-heading, #ffffff)' : 'var(--cyber-body, #d0d0d0)',
                           fontWeight: 700,
                           fontSize: 'clamp(13px, 2.5vw, 15px)',
                           cursor: 'pointer',
@@ -600,17 +765,17 @@ export default function DonatePage() {
                 </div>
 
                 {/* Amount Selection */}
-                <div style={{
-                  background: 'rgba(124,58,237,0.08)',
-                  border: '1px solid rgba(124,58,237,0.2)',
+                <div className="donate-card" style={{
+                  background: 'var(--cyber-card, rgba(124,58,237,0.08))',
+                  border: '1px solid var(--cyber-border, rgba(124,58,237,0.2))',
                   borderRadius: '16px',
                   padding: 'clamp(16px, 4vw, 24px)',
                   backdropFilter: 'blur(10px)',
                 }}>
-                  <p style={{
+                  <p className="donate-heading" style={{
                     fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: 700,
-                    color: '#e0e0e0',
+                    color: 'var(--cyber-heading, #e0e0e0)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                     margin: '0 0 14px',
@@ -618,7 +783,7 @@ export default function DonatePage() {
                     Choose Amount
                   </p>
 
-                  <div style={{
+                  <div className="donate-amount-grid" style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
                     gap: 'clamp(8px, 2vw, 12px)',
@@ -640,7 +805,7 @@ export default function DonatePage() {
                           background: selectedAmount === amount
                             ? 'rgba(124,58,237,0.15)'
                             : 'rgba(124,58,237,0.05)',
-                          color: selectedAmount === amount ? '#ffffff' : '#d0d0d0',
+                          color: selectedAmount === amount ? 'var(--cyber-heading, #ffffff)' : 'var(--cyber-body, #d0d0d0)',
                           fontWeight: 700,
                           fontSize: 'clamp(12px, 2vw, 14px)',
                           cursor: 'pointer',
@@ -713,17 +878,17 @@ export default function DonatePage() {
                 </div>
 
                 {/* Donor Info */}
-                <div style={{
-                  background: 'var(--blog-card-bg, rgba(124,58,237,0.05))',
-                  border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                <div className="donate-card" style={{
+                  background: 'var(--cyber-card, rgba(124,58,237,0.05))',
+                  border: '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
                   borderRadius: '16px',
                   padding: '24px',
                   backdropFilter: 'blur(10px)',
                 }}>
-                  <p style={{
+                  <p className="donate-heading" style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                    color: 'var(--cyber-heading, #9d8fd4)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     margin: '0 0 16px',
@@ -748,7 +913,7 @@ export default function DonatePage() {
                         onChange={e => setAnonymous(e.target.checked)}
                         style={{ width: '18px', height: '18px', accentColor: '#7c3aed', cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cyber-heading, var(--blog-heading, #fff))' }}>
+                    <span className="donate-heading" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cyber-heading, #fff)' }}>
                         Donate anonymously 🥷
                       </span>
                     </label>
@@ -819,17 +984,17 @@ export default function DonatePage() {
                 </div>
 
                 {/* Payment Method */}
-                <div style={{
-                  background: 'rgba(124,58,237,0.08)',
-                  border: '1px solid rgba(124,58,237,0.2)',
+                <div className="donate-card" style={{
+                  background: 'var(--cyber-card, rgba(124,58,237,0.08))',
+                  border: '1px solid var(--cyber-border, rgba(124,58,237,0.2))',
                   borderRadius: '16px',
                   padding: 'clamp(16px, 4vw, 24px)',
                   backdropFilter: 'blur(10px)',
                 }}>
-                  <p style={{
+                  <p className="donate-heading" style={{
                     fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: 700,
-                    color: '#e0e0e0',
+                    color: 'var(--cyber-heading, #e0e0e0)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                     margin: '0 0 16px',
@@ -837,7 +1002,7 @@ export default function DonatePage() {
                     Payment Method
                   </p>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+                  <div className="donate-payment-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '12px' }}>
                     <button
                       onClick={() => setPaymentMethod('paystack')}
                       style={{
@@ -855,10 +1020,10 @@ export default function DonatePage() {
                         justifyContent: 'center',
                       }}
                     >
-                      <div style={{
-                        fontSize: 'clamp(13px, 3vw, 15px)',
-                        fontWeight: 700,
-                        color: paymentMethod === 'paystack' ? '#0BA4DB' : '#d0d0d0',
+                        <div style={{
+                          fontSize: 'clamp(13px, 3vw, 15px)',
+                          fontWeight: 700,
+                          color: paymentMethod === 'paystack' ? '#0BA4DB' : 'var(--cyber-body, #d0d0d0)',
                         marginBottom: '4px',
                       }}>
                         💳 Paystack
@@ -883,10 +1048,10 @@ export default function DonatePage() {
                         justifyContent: 'center',
                       }}
                     >
-                      <div style={{
-                        fontSize: 'clamp(13px, 3vw, 15px)',
-                        fontWeight: 700,
-                        color: paymentMethod === 'flutterwave' ? '#F5A623' : '#d0d0d0',
+                        <div style={{
+                          fontSize: 'clamp(13px, 3vw, 15px)',
+                          fontWeight: 700,
+                          color: paymentMethod === 'flutterwave' ? '#F5A623' : 'var(--cyber-body, #d0d0d0)',
                         marginBottom: '4px',
                       }}>
                         🌊 Flutterwave
@@ -1023,24 +1188,23 @@ export default function DonatePage() {
               </div>
 
               {/* Right Sidebar */}
-              <div style={{
+              <div className="donate-sidebar" style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px',
-              }}
-              className="blog-sidebar">
+              }}>
                 {/* Trust Badge */}
-                <div style={{
-                  background: 'var(--blog-sidebar-bg, rgba(124,58,237,0.05))',
-                  border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                <div className="donate-card" style={{
+                  background: 'var(--cyber-card, rgba(124,58,237,0.05))',
+                  border: '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
                   borderRadius: '16px',
                   padding: '20px',
                   backdropFilter: 'blur(10px)',
                 }}>
-                  <h3 style={{
+                  <h3 className="donate-heading" style={{
                     fontSize: '16px',
                     fontWeight: 800,
-                    color: 'var(--blog-heading, #fff)',
+                    color: 'var(--cyber-heading, #fff)',
                     margin: '0 0 16px',
                     textShadow: '0 0 10px rgba(168,85,247,0.3)',
                   }}>
@@ -1063,7 +1227,7 @@ export default function DonatePage() {
                         borderRadius: '8px',
                       }}>
                         <span style={{ fontSize: '16px' }}>{item.icon}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--blog-text-muted, #9d8fd4)', fontWeight: 600 }}>
+                        <span className="donate-text" style={{ fontSize: '12px', color: 'var(--cyber-body, #9d8fd4)', fontWeight: 600 }}>
                           {item.text}
                         </span>
                       </div>
@@ -1072,17 +1236,17 @@ export default function DonatePage() {
                 </div>
 
                 {/* Quick FAQ */}
-                <div style={{
-                  background: 'var(--blog-sidebar-bg, rgba(124,58,237,0.05))',
-                  border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                <div className="donate-card" style={{
+                  background: 'var(--cyber-card, rgba(124,58,237,0.05))',
+                  border: '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
                   borderRadius: '16px',
                   padding: '20px',
                   backdropFilter: 'blur(10px)',
                 }}>
-                  <h3 style={{
+                  <h3 className="donate-heading" style={{
                     fontSize: '16px',
                     fontWeight: 800,
-                    color: 'var(--blog-heading, #fff)',
+                    color: 'var(--cyber-heading, #fff)',
                     margin: '0 0 16px',
                     textShadow: '0 0 10px rgba(168,85,247,0.3)',
                   }}>
@@ -1103,9 +1267,9 @@ export default function DonatePage() {
                         }}>
                           Q: {faq.q}
                         </p>
-                        <p style={{
+                        <p className="donate-text" style={{
                           fontSize: '11px',
-                          color: 'var(--blog-text-muted, #9d8fd4)',
+                          color: 'var(--cyber-body, #9d8fd4)',
                           margin: 0,
                           lineHeight: 1.5,
                         }}>
@@ -1115,7 +1279,7 @@ export default function DonatePage() {
                     ))}
                   </div>
                 </div>
-              </div>
+            </div>
             </div>
           </section>
         </div>
@@ -1259,13 +1423,18 @@ export default function DonatePage() {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
-        .blog-card {
+        .donate-card {
           transition: all 0.3s ease;
         }
-        .blog-card:hover {
-          border-color: rgba(124,58,237,0.4) !important;
-          box-shadow: 0 0 30px rgba(124,58,237,0.15);
+        .donate-card:hover {
+          border-color: var(--cyber-border-hover, rgba(124,58,237,0.4)) !important;
+          box-shadow: 0 0 30px var(--cyber-glow, rgba(124,58,237,0.15));
           transform: translateY(-4px);
+        }
+        @media (min-width: 1025px) {
+          .donate-main-grid {
+            grid-template-columns: 1fr 340px !important;
+          }
         }
       `}</style>
     </>

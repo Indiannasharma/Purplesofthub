@@ -1,7 +1,67 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import type { Service } from "@/app/services/_data/services";
+
+// CountUp animation component for stats
+function CountUpStat({ value, label }: { value: string; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [count, setCount] = useState(0);
+
+  // Parse the value to get the number
+  const numValue = parseInt(value.replace(/[^0-9]/g, ''));
+  const suffix = value.replace(/[0-9]/g, '');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          let startTime: number;
+          const duration = 2000; // 2 seconds
+          const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            // Ease out cubic
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(easeProgress * numValue);
+            setCount(current);
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [numValue, hasAnimated]);
+
+  return (
+    <div ref={ref}>
+      <div style={{
+        fontFamily: "Outfit",
+        fontSize: "clamp(36px,4vw,52px)",
+        fontWeight: 900,
+        background: "linear-gradient(135deg,#7c3aed,#a855f7)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        marginBottom: 8,
+        textShadow: "0 0 30px rgba(168,85,247,0.3)",
+      }}>
+        {hasAnimated ? `${count.toLocaleString()}${suffix}` : `0${suffix}`}
+      </div>
+      <div style={{ color: "var(--text-muted)", fontSize: 14, fontWeight: 500 }}>{label}</div>
+    </div>
+  );
+}
 
 const CATEGORIES = ["All", "Development", "Marketing", "Design", "Creative", "Music"];
 
@@ -92,12 +152,7 @@ export default function ServicesContent({ services }: { services: Service[] }) {
       <section style={{ padding: "60px 5%", background: "rgba(124,58,237,.06)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
         <div className="svc-stats-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 24, textAlign: "center" }}>
           {STATS.map((stat) => (
-            <div key={stat.label}>
-              <div style={{ fontFamily: "Outfit", fontSize: "clamp(36px,4vw,52px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 8 }}>
-                {stat.value}
-              </div>
-              <div style={{ color: "var(--text-muted)", fontSize: 14, fontWeight: 500 }}>{stat.label}</div>
-            </div>
+            <CountUpStat key={stat.label} value={stat.value} label={stat.label} />
           ))}
         </div>
       </section>
