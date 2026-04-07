@@ -65,7 +65,7 @@ const SECTIONS = [
 
 export default function PrivacyPage() {
   return (
-    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
+    <main style={{ background: "var(--cyber-bg)", color: "var(--text-primary)", minHeight: "100vh" }}>
       <Navbar />
 
       {/* ── HERO ── */}
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
           {SECTIONS.map((section, i) => (
             <Reveal key={section.title} delay={i * 0.05}>
               <div style={{ marginBottom: 44 }}>
-                <h2 style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 20, color: "var(--accent)", marginBottom: 14 }}>
+                <h2 style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 18, color: "var(--cyber-heading)", marginBottom: 14, borderLeft: "3px solid #7c3aed", paddingLeft: 12 }}>
                   {section.title}
                 </h2>
                 <p style={{ color: "var(--text-muted)", fontSize: 15, lineHeight: 1.85, whiteSpace: "pre-line" }}>
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
 
           {/* Contact card */}
           <Reveal delay={0.1}>
-            <div className="glass-card" style={{ padding: "36px 32px", textAlign: "center", marginTop: 20 }}>
+            <div style={{ background: "var(--cyber-card)", border: "1px solid var(--cyber-border)", borderRadius: 20, padding: "clamp(28px, 4vw, 48px)", backdropFilter: "blur(10px)", textAlign: "center", marginTop: 20 }}>
               <div style={{ fontSize: 36, marginBottom: 16 }}>✉️</div>
               <h3 style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 20, color: "var(--text-primary)", marginBottom: 10 }}>
                 Questions about our privacy policy?

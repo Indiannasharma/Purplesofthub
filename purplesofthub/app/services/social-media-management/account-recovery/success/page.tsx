@@ -6,7 +6,7 @@ export default function RecoverySuccess() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#06030f',
+      background: 'var(--cyber-bg)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -16,6 +16,11 @@ export default function RecoverySuccess() {
       <div style={{
         maxWidth: '500px',
         width: '100%',
+        background: 'var(--cyber-card)',
+        border: '1px solid var(--cyber-border)',
+        borderRadius: 20,
+        padding: 'clamp(28px, 4vw, 48px)',
+        backdropFilter: 'blur(10px)',
       }}>
         <Image
           src="/Purplesoft-logo-main.png"
@@ -28,8 +33,8 @@ export default function RecoverySuccess() {
           width: '80px',
           height: '80px',
           borderRadius: '50%',
-          background: 'rgba(16,185,129,0.15)',
-          border: '2px solid rgba(16,185,129,0.4)',
+          background: 'rgba(34,211,238,0.15)',
+          border: '2px solid rgba(34,211,238,0.4)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

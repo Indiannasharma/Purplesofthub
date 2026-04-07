@@ -11,15 +11,22 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
-      <div className="relative flex lg:flex-row w-full h-screen justify-center flex-col  dark:bg-gray-900 sm:p-0">
+    <div style={{ position: 'relative', padding: '24px', background: 'var(--cyber-bg)', zIndex: 1 }} className="sm:p-0">
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'row', width: '100%', height: '100vh', justifyContent: 'center', background: 'var(--cyber-bg)' }} className="flex-col sm:p-0 lg:flex-row">
         {children}
-        <div className="lg:w-1/2 w-full h-full bg-brand-950 dark:bg-white/5 lg:grid items-center hidden">
-          <div className="relative items-center justify-center  flex z-1">
+        <div style={{
+          width: '50%',
+          height: '100%',
+          background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(168,85,247,0.05))',
+          border: '1px solid var(--cyber-border)',
+          display: 'grid',
+          alignItems: 'center',
+        }} className="hidden lg:grid">
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
             {/* <!-- ===== Common Grid Shape Start ===== --> */}
             <GridShape />
-            <div className="flex flex-col items-center max-w-xs">
-              <Link href="/" className="block mb-4">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '280px' }}>
+              <Link href="/" style={{ display: 'block', marginBottom: '16px' }}>
                 <Image
                   width={231}
                   height={48}
@@ -27,13 +34,13 @@ export default function AuthLayout({
                   alt="Logo"
                 />
               </Link>
-              <p className="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
+              <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>
+                Experience premium digital solutions with cyberpunk aesthetics
               </p>
             </div>
           </div>
         </div>
-        <div className="fixed bottom-6 right-6 z-50 hidden sm:block">
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 50 }} className="hidden sm:block">
           <ThemeTogglerTwo />
         </div>
       </div>

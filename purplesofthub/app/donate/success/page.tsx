@@ -14,7 +14,7 @@ export default function DonateSuccess() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#06030f',
+      background: 'var(--cyber-bg)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -25,10 +25,15 @@ export default function DonateSuccess() {
         width: '100%',
         textAlign: 'center',
         opacity: show ? 1 : 0,
-        transform: show 
-          ? 'translateY(0)' 
+        transform: show
+          ? 'translateY(0)'
           : 'translateY(20px)',
         transition: 'all 0.5s ease',
+        background: 'var(--cyber-card)',
+        border: '1px solid var(--cyber-border)',
+        borderRadius: 20,
+        padding: 'clamp(28px, 4vw, 48px)',
+        backdropFilter: 'blur(10px)',
       }}>
         <Image
           src="/Purplesoft-logo-main.png"

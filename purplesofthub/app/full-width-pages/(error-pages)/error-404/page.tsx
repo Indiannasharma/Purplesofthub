@@ -5,50 +5,121 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Error 404 | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Error 404 page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+  title: "404 Not Found — PurpleSoftHub",
+  description: "The page you are looking for could not be found. Return to PurpleSoftHub home page.",
 };
 
 export default function Error404() {
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
+    <div style={{
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh",
+      padding: "24px",
+      overflow: "hidden",
+      background: "var(--cyber-bg)",
+      zIndex: 1,
+    }}>
       <GridShape />
-      <div className="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
-        <h1 className="mb-8 font-bold text-gray-800 text-title-md dark:text-white/90 xl:text-title-2xl">
-          ERROR
+
+      {/* Decorative holographic planet */}
+      <div style={{
+        position: "absolute",
+        width: "300px",
+        height: "300px",
+        borderRadius: "50%",
+        background: "radial-gradient(circle at 30% 30%, rgba(34,211,238,0.2), rgba(124,58,237,0.1))",
+        border: "2px solid rgba(34,211,238,0.3)",
+        top: "10%",
+        right: "-5%",
+        opacity: 0.6,
+        animation: "float 6s ease-in-out infinite",
+        pointerEvents: "none",
+      }} />
+
+      <div style={{
+        margin: "0 auto",
+        width: "100%",
+        maxWidth: "472px",
+        textAlign: "center",
+        position: "relative",
+        zIndex: 10,
+      }}>
+        <h1 style={{
+          marginBottom: "32px",
+          fontWeight: 900,
+          fontSize: "clamp(32px, 6vw, 72px)",
+          background: "linear-gradient(90deg, #7c3aed, #a855f7, #22d3ee)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          letterSpacing: "-2px",
+        }}>
+          ERROR 404
         </h1>
 
         <Image
           src="/images/error/404.svg"
           alt="404"
-          className="dark:hidden"
-          width={472}
-          height={152}
-        />
-        <Image
-          src="/images/error/404-dark.svg"
-          alt="404"
-          className="hidden dark:block"
+          style={{ display: "block", margin: "0 auto", width: "100%", height: "auto" }}
           width={472}
           height={152}
         />
 
-        <p className="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-          We can’t seem to find the page you are looking for!
+        <p style={{
+          marginTop: "40px",
+          marginBottom: "24px",
+          fontSize: "16px",
+          color: "var(--text-muted)",
+          lineHeight: 1.6,
+        }}>
+          We can&apos;t seem to find the page you are looking for!
         </p>
 
         <Link
           href="/"
-          className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "12px",
+            border: "1px solid var(--cyber-border)",
+            background: "var(--cyber-card)",
+            padding: "13px 32px",
+            fontSize: "14px",
+            fontWeight: 700,
+            color: "var(--text-primary)",
+            textDecoration: "none",
+            backdropFilter: "blur(10px)",
+            transition: "all 0.3s ease",
+          }}
         >
-          Back to Home Page
+          ← Back to Home Page
         </Link>
       </div>
-      {/* <!-- Footer --> */}
-      <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
-        &copy; {new Date().getFullYear()} - TailAdmin
+
+      {/* Footer */}
+      <p style={{
+        position: "absolute",
+        fontSize: "14px",
+        textAlign: "center",
+        color: "var(--text-muted)",
+        bottom: "24px",
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}>
+        &copy; {new Date().getFullYear()} - PurpleSoftHub
       </p>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-20px) scale(1.05); }
+        }
+      `}</style>
     </div>
   );
 }
