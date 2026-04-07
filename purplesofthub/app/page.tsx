@@ -702,9 +702,9 @@ export default async function Home() {
       <NewsletterSignup />
       <Footer />
 
-      {/* Typewriter Script */}
+      {/* Typewriter Script - Client Side */}
       <script dangerouslySetInnerHTML={{ __html: `
-        (function() {
+        document.addEventListener('DOMContentLoaded', function() {
           const words = ${JSON.stringify(TYPEWRITER_WORDS)};
           let wordIndex = 0, charIndex = 0, isDeleting = false;
           
@@ -736,7 +736,7 @@ export default async function Home() {
           }
           
           setTimeout(type, 500);
-        })();
+        });
       `}} />
     </main>
   );

@@ -1,6 +1,3 @@
-'use client'
-
-import { useState } from 'react'
 import type { Metadata } from "next"
 import Link from "next/link"
 import Navbar from "@/components/Navbar"
@@ -82,7 +79,6 @@ const PLANS = [
 ]
 
 export default function FacebookAdsPage() {
-  const [currency, setCurrency] = useState<'NGN' | 'USD'>('NGN')
 
   return (
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
@@ -116,36 +112,6 @@ export default function FacebookAdsPage() {
       {/* ── PRICING TABLE ── */}
       <section style={{ padding: "0 5% 80px", position: "relative", zIndex: 2 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          {/* Currency Toggle */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 48 }}>
-            <div style={{
-              display: "inline-flex",
-              background: "rgba(124,58,237,.1)",
-              border: "1px solid rgba(124,58,237,.2)",
-              borderRadius: 12,
-              padding: 4,
-            }}>
-              {(['NGN', 'USD'] as const).map(cur => (
-                <button
-                  key={cur}
-                  onClick={() => setCurrency(cur)}
-                  style={{
-                    padding: "8px 24px",
-                    borderRadius: 10,
-                    border: "none",
-                    background: currency === cur ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "transparent",
-                    color: currency === cur ? "#fff" : "var(--text-secondary)",
-                    fontWeight: 700,
-                    fontSize: 14,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  {cur === 'NGN' ? '₦ NGN' : '$ USD'}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Plans Grid */}
           <div style={{
@@ -198,7 +164,7 @@ export default function FacebookAdsPage() {
                     fontWeight: 900,
                     color: plan.color,
                   }}>
-                    {plan.ngnDisplay || (currency === 'NGN' ? `₦${plan.ngn.toLocaleString()}` : `$${plan.usdDisplay || plan.usd}`)}
+                    {plan.ngnDisplay || `₦${plan.ngn.toLocaleString()}`}
                   </span>
                   {plan.customPricing && (
                     <span style={{ fontSize: 14, color: "var(--text-muted)", marginLeft: 4 }}>
