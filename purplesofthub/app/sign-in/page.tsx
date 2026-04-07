@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import purpleLogo from '@/Assets/images/Purplesoft-logo-main.png'
 
 export default function SignInPage() {
   const router = useRouter()
@@ -81,7 +82,7 @@ export default function SignInPage() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#06030f',
+        background: 'var(--cyber-bg)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -90,47 +91,30 @@ export default function SignInPage() {
         overflow: 'hidden',
       }}
     >
-      {/* Background glow effects */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-20%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '600px',
-          height: '600px',
-          background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '-10%',
-          right: '-10%',
-          width: '400px',
-          height: '400px',
-          background: 'radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Background Effects */}
+      <div className="cyber-glow-top-left" />
+      <div className="cyber-glow-bottom-right" />
+      <div className="cyber-grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
 
       {/* Card */}
       <div
         style={{
           width: '100%',
-          maxWidth: '420px',
-          background: 'rgba(10,6,24,0.8)',
+          maxWidth: '460px',
+          background: 'var(--cyber-card)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(124,58,237,0.2)',
+          border: '1px solid var(--cyber-border)',
           borderRadius: '24px',
-          padding: '40px 36px',
+          padding: 'clamp(32px, 5vw, 52px) 36px',
           position: 'relative',
           zIndex: 1,
-          boxShadow:
-            '0 0 60px rgba(124,58,237,0.1), 0 24px 48px rgba(0,0,0,0.4)',
+          boxShadow: '0 0 40px var(--cyber-glow)',
         }}
       >
+        {/* Corner Decorations */}
+        <div className="cyber-corner-tl" />
+        <div className="cyber-corner-br" />
+
         {/* Logo */}
         <div
           style={{
@@ -139,23 +123,25 @@ export default function SignInPage() {
           }}
         >
           <Image
-            src="/images/logo/purplesoft-logo-main.png"
+            src={purpleLogo}
             alt="PurpleSoftHub"
             width={160}
             height={48}
             style={{
               margin: '0 auto 12px',
               display: 'block',
+              filter: 'drop-shadow(0 0 8px rgba(124,58,237,0.4))',
             }}
             priority
           />
           <h1
             style={{
-              fontSize: '24px',
-              fontWeight: 800,
-              color: '#fff',
+              fontSize: 'clamp(22px, 3vw, 30px)',
+              fontWeight: 900,
+              color: 'var(--cyber-heading)',
               margin: '0 0 6px',
               letterSpacing: '-0.5px',
+              textShadow: '0 0 20px rgba(168,85,247,0.2)',
             }}
           >
             Welcome back 💜
@@ -163,7 +149,7 @@ export default function SignInPage() {
           <p
             style={{
               fontSize: '14px',
-              color: '#9d8fd4',
+              color: 'var(--cyber-body)',
               margin: 0,
             }}
           >
@@ -230,13 +216,13 @@ export default function SignInPage() {
             style={{
               flex: 1,
               height: '1px',
-              background: 'rgba(124,58,237,0.2)',
+              background: 'var(--cyber-border)',
             }}
           />
           <span
             style={{
               fontSize: '13px',
-              color: '#6b5fa0',
+              color: 'var(--cyber-muted)',
             }}
           >
             or continue with email
@@ -245,7 +231,7 @@ export default function SignInPage() {
             style={{
               flex: 1,
               height: '1px',
-              background: 'rgba(124,58,237,0.2)',
+              background: 'var(--cyber-border)',
             }}
           />
         </div>
@@ -273,8 +259,8 @@ export default function SignInPage() {
             style={{
               display: 'block',
               fontSize: '13px',
-              fontWeight: 500,
-              color: '#9d8fd4',
+              fontWeight: 600,
+              color: 'var(--cyber-body)',
               marginBottom: '6px',
             }}
           >
@@ -285,24 +271,11 @@ export default function SignInPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
+            className="cyber-input"
             style={{
               width: '100%',
-              background: 'rgba(124,58,237,0.06)',
-              border: '1px solid rgba(124,58,237,0.2)',
-              borderRadius: '10px',
-              padding: '12px 14px',
-              fontSize: '14px',
-              color: '#fff',
-              outline: 'none',
+              padding: '13px 16px',
               boxSizing: 'border-box',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => {
-              (e.target as HTMLInputElement).style.borderColor = '#7c3aed'
-            }}
-            onBlur={(e) => {
-              (e.target as HTMLInputElement).style.borderColor =
-                'rgba(124,58,237,0.2)'
             }}
           />
         </div>
@@ -320,8 +293,8 @@ export default function SignInPage() {
             <label
               style={{
                 fontSize: '13px',
-                fontWeight: 500,
-                color: '#9d8fd4',
+                fontWeight: 600,
+                color: 'var(--cyber-body)',
               }}
             >
               Password
@@ -330,8 +303,9 @@ export default function SignInPage() {
               href="/forgot-password"
               style={{
                 fontSize: '12px',
-                color: '#7c3aed',
+                color: '#a855f7',
                 textDecoration: 'none',
+                fontWeight: 600,
               }}
             >
               Forgot password?
@@ -343,24 +317,11 @@ export default function SignInPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••••"
             onKeyDown={(e) => e.key === 'Enter' && handleEmailSignIn()}
+            className="cyber-input"
             style={{
               width: '100%',
-              background: 'rgba(124,58,237,0.06)',
-              border: '1px solid rgba(124,58,237,0.2)',
-              borderRadius: '10px',
-              padding: '12px 14px',
-              fontSize: '14px',
-              color: '#fff',
-              outline: 'none',
+              padding: '13px 16px',
               boxSizing: 'border-box',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => {
-              (e.target as HTMLInputElement).style.borderColor = '#7c3aed'
-            }}
-            onBlur={(e) => {
-              (e.target as HTMLInputElement).style.borderColor =
-                'rgba(124,58,237,0.2)'
             }}
           />
         </div>
@@ -371,23 +332,13 @@ export default function SignInPage() {
           disabled={
             loading || googleLoading || !email || !password
           }
+          className="cyber-btn-primary"
           style={{
             width: '100%',
-            background:
-              loading || googleLoading
-                ? 'rgba(124,58,237,0.5)'
-                : 'linear-gradient(135deg, #7c3aed, #a855f7)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '13px 20px',
+            padding: '14px',
             fontSize: '15px',
             fontWeight: 700,
-            cursor: loading || googleLoading ? 'not-allowed' : 'pointer',
             marginBottom: '20px',
-            transition: 'all 0.2s',
-            opacity: !email || !password ? 0.5 : 1,
-            boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
           }}
         >
           {loading ? 'Signing in...' : 'Sign In →'}
@@ -398,11 +349,11 @@ export default function SignInPage() {
           style={{
             textAlign: 'center',
             fontSize: '13px',
-            color: '#6b5fa0',
+            color: 'var(--cyber-muted)',
             margin: 0,
           }}
         >
-          Don&apos;t have an account?{' '}
+          Don't have an account?{' '}
           <Link
             href="/sign-up"
             style={{

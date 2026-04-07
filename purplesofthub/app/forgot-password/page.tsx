@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import Image from 'next/image'
 import Navbar from '@/components/Navbar'
+import purpleLogo from '@/Assets/images/Purplesoft-logo-main.png'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -32,48 +33,161 @@ export default function ForgotPassword() {
   return (
     <>
       <Navbar />
-      <div className="flex min-h-screen items-center justify-center bg-gray-2 dark:bg-boxdark-2 p-4">
-        <div className="w-full max-w-md rounded-2xl border border-stroke bg-white p-8 shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div className="text-center mb-8">
-            <Link href="/" className="inline-block mb-4">
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'var(--cyber-bg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px 16px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Background Effects */}
+        <div className="cyber-glow-top-left" />
+        <div className="cyber-glow-bottom-right" />
+        <div className="cyber-grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
+
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '460px',
+            background: 'var(--cyber-card)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid var(--cyber-border)',
+            borderRadius: '24px',
+            padding: 'clamp(32px, 5vw, 52px) 36px',
+            position: 'relative',
+            zIndex: 1,
+            boxShadow: '0 0 40px var(--cyber-glow)',
+          }}
+        >
+          {/* Corner Decorations */}
+          <div className="cyber-corner-tl" />
+          <div className="cyber-corner-br" />
+
+          {/* Lock Icon */}
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
+              background: 'rgba(124,58,237,0.12)',
+              border: '1px solid rgba(124,58,237,0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              margin: '0 auto 20px',
+              boxShadow: '0 0 20px rgba(124,58,237,0.2)',
+            }}
+          >
+            🔐
+          </div>
+
+          <div className="text-center mb-8" style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <Link href="/" className="inline-block mb-4" style={{ display: 'inline-block', marginBottom: '16px' }}>
               <Image
-                src="/Purplesoft-logo-main.png"
+                src={purpleLogo}
                 alt="PurpleSoftHub"
-                width={140}
-                height={40}
-                className="mx-auto"
+                width={160}
+                height={48}
+                style={{
+                  margin: '0 auto',
+                  display: 'block',
+                  filter: 'drop-shadow(0 0 8px rgba(124,58,237,0.4))',
+                }}
               />
             </Link>
-            <h2 className="text-2xl font-bold text-black dark:text-white mb-1">
+            <h2
+              className="text-2xl font-bold"
+              style={{
+                fontSize: 'clamp(22px, 3vw, 28px)',
+                fontWeight: 900,
+                color: 'var(--cyber-heading)',
+                marginBottom: '8px',
+                textShadow: '0 0 20px rgba(168,85,247,0.2)',
+              }}
+            >
               Reset Password
             </h2>
-            <p className="text-sm text-bodydark2">
+            <p
+              className="text-sm"
+              style={{
+                fontSize: '14px',
+                color: 'var(--cyber-body)',
+              }}
+            >
               Enter your email to receive a reset link
             </p>
           </div>
 
           {sent ? (
-            <div className="text-center py-4">
-              <p className="text-4xl mb-4">📧</p>
-              <p className="font-semibold text-black dark:text-white mb-2">
+            <div className="text-center py-4" style={{ textAlign: 'center', padding: '20px 0' }}>
+              <p className="text-4xl mb-4" style={{ fontSize: '48px', marginBottom: '16px' }}>📧</p>
+              <p
+                className="font-semibold"
+                style={{
+                  fontWeight: 700,
+                  color: 'var(--cyber-heading)',
+                  marginBottom: '8px',
+                }}
+              >
                 Check your email!
               </p>
-              <p className="text-sm text-bodydark2 mb-6">
-                We sent a password reset link to {email}
+              <p
+                className="text-sm mb-6"
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--cyber-body)',
+                  marginBottom: '24px',
+                }}
+              >
+                We sent a password reset link to{' '}
+                <span style={{ color: '#a855f7', fontWeight: 600 }}>{email}</span>
               </p>
-              <Link href="/sign-in" className="text-primary hover:underline text-sm font-medium">
+              <Link
+                href="/sign-in"
+                style={{
+                  fontSize: '13px',
+                  color: '#a855f7',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                }}
+              >
                 ← Back to Sign In
               </Link>
             </div>
           ) : (
             <>
               {error && (
-                <div className="mb-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 px-4 py-3 text-sm text-red-600 dark:text-red-400">
+                <div
+                  style={{
+                    background: 'rgba(239,68,68,0.1)',
+                    border: '1px solid rgba(239,68,68,0.3)',
+                    borderRadius: '10px',
+                    padding: '12px 14px',
+                    marginBottom: '16px',
+                    fontSize: '13px',
+                    color: '#f87171',
+                  }}
+                >
                   {error}
                 </div>
               )}
-              <div className="mb-5">
-                <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+              <div className="mb-5" style={{ marginBottom: '20px' }}>
+                <label
+                  className="mb-2 block text-sm font-medium"
+                  style={{
+                    display: 'block',
+                    marginBottom: '6px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: 'var(--cyber-body)',
+                  }}
+                >
                   Email address
                 </label>
                 <input
@@ -82,19 +196,45 @@ export default function ForgotPassword() {
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleReset()}
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-stroke bg-transparent px-4 py-3 text-sm text-black outline-none focus:border-primary dark:border-strokedark dark:text-white"
+                  className="cyber-input"
+                  style={{
+                    width: '100%',
+                    padding: '13px 16px',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <button
                 onClick={handleReset}
                 disabled={loading || !email}
-                className="w-full rounded-lg bg-primary py-3 px-4 text-sm font-semibold text-white hover:bg-opacity-90 transition-all disabled:opacity-50"
+                className="cyber-btn-primary"
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  fontSize: '15px',
+                  fontWeight: 700,
+                }}
               >
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </button>
-              <p className="mt-5 text-center text-sm text-bodydark2">
+              <p
+                className="mt-5 text-center text-sm"
+                style={{
+                  marginTop: '20px',
+                  textAlign: 'center',
+                  fontSize: '13px',
+                  color: 'var(--cyber-muted)',
+                }}
+              >
                 Remember your password?{' '}
-                <Link href="/sign-in" className="text-primary font-medium hover:underline">
+                <Link
+                  href="/sign-in"
+                  style={{
+                    color: '#a855f7',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
                   Sign in →
                 </Link>
               </p>
