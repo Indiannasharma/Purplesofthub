@@ -1,363 +1,348 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
-import Reveal from "@/components/Reveal"
+import type { Metadata } from "next";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Reveal from "@/components/Reveal";
+import { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
+import FaqAccordion from "@/app/services/_components/FaqAccordion";
+import PricingPreview from "@/app/services/_components/PricingPreview";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
 export const metadata: Metadata = {
-  title: "Meta Ads (Facebook & Instagram) Pricing | PurpleSoftHub",
-  description: "Professional Facebook & Instagram Ads management for businesses in Nigeria and worldwide. Plans from ₦150,000/month.",
+  title: "Facebook & Instagram Ads Services | PurpleSoftHub",
+  description: "Professional Facebook and Instagram ad management. We create targeted campaigns that drive real results. Plans from ₦150,000.",
+  keywords: ["facebook ads", "instagram ads", "meta ads", "social media advertising", "facebook ads pricing"],
   alternates: { canonical: `${SITE_URL}/services/facebook-ads` },
-}
-
-const PLANS = [
-  {
-    name: 'Starter',
-    ngn: 150000,
-    usd: 107,
-    adSpend: '₦150,000 – ₦300,000 ($107 – $214 USD)',
-    features: [
-      'Campaign setup & strategy',
-      '3–5 ad creatives per month',
-      'Basic audience targeting',
-      'Weekly optimization & reports',
-      '1 platform (Facebook or Instagram)',
-    ],
-    color: '#6b7280',
+  openGraph: {
+    title: "Facebook & Instagram Ads Services | PurpleSoftHub",
+    description: "Professional Facebook and Instagram Ads management from ₦150,000",
+    url: `${SITE_URL}/services/facebook-ads`,
+    siteName: "PurpleSoftHub",
+    type: "website",
   },
-  {
-    name: 'Growth',
-    badge: 'Most Popular',
-    ngn: 250000,
-    usd: 179,
-    adSpend: '₦300,000 – ₦750,000 ($214 – $536 USD)',
-    features: [
-      'Everything in Starter',
-      '8–10 ad creatives per month',
-      'Advanced targeting, lookalikes & retargeting',
-      'A/B testing',
-      'Bi-weekly strategy calls',
-      'Both Facebook & Instagram',
-    ],
-    color: '#3b82f6',
+  twitter: {
+    card: "summary_large_image",
+    title: "Facebook & Instagram Ads Services",
+    description: "Professional Facebook and Instagram Ads management from ₦150,000",
   },
-  {
-    name: 'Scale',
-    ngn: 400000,
-    usd: 286,
-    adSpend: '₦750,000+ ($536+ USD)',
-    features: [
-      'Everything in Growth',
-      'Unlimited ad creatives & variations',
-      'Full-funnel strategy (Awareness → Conversion)',
-      'Advanced pixel & tracking setup',
-      'Weekly performance calls + detailed dashboard',
-      'Competitor analysis',
-    ],
-    color: '#8b5cf6',
-  },
-  {
-    name: 'Enterprise',
-    ngn: 600000,
-    usd: 429,
-    ngnDisplay: '₦600,000+',
-    usdDisplay: '$429+ USD',
-    adSpend: '₦1,500,000+ ($1,071+ USD)',
-    customPricing: true,
-    features: [
-      'Everything in Scale',
-      'Dedicated account manager',
-      'Custom automation & funnels',
-      'Creative production support',
-      'Multi-account management',
-      'Monthly in-depth audit',
-    ],
-    color: '#a855f7',
-  },
-]
+};
 
 export default function FacebookAdsPage() {
+  const service = getServiceBySlug("facebook-ads");
+  if (!service) return null;
+
+  const related = getRelatedServices(service.relatedServices);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.title,
+    description: service.metaDescription,
+    provider: {
+      "@type": "Organization",
+      name: "PurpleSoftHub",
+      url: "https://purplesofthub.com",
+    },
+    areaServed: "Worldwide",
+    url: `https://purplesofthub.com/services/facebook-ads`,
+  };
 
   return (
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
-      {/* ── HERO ── */}
-      <section style={{ padding: "120px 5% 80px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.2) 0%,transparent 60%)", pointerEvents: "none" }} />
-        <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
-        <Reveal>
-          <div style={{ position: "relative", zIndex: 2 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 24, fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: 1 }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
-              META ADS PRICING
-            </div>
-            <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,56px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", marginBottom: 16 }}>
-              Meta Ads <span className="grad-text">Pricing</span>
-            </h1>
-            <p style={{ color: "var(--text-muted)", fontSize: 18, maxWidth: 600, margin: "0 auto 8px" }}>
-              Choose Your Perfect Plan
-            </p>
-            <p style={{ color: "var(--text-secondary)", fontSize: 15, maxWidth: 500, margin: "0 auto 32px" }}>
-              Professional Facebook & Instagram Ads management for businesses in Nigeria and worldwide.
-              All packages include strategy, creative direction, optimization, and performance reporting.
-              Ad spend is paid directly to Meta (Facebook/Instagram).
-            </p>
+      {/* ── BREADCRUMB ── */}
+      <div className="svc-breadcrumb" style={{ padding: "100px 5% 0" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-muted)", flexWrap: "wrap" }}>
+            <Link href="/" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Home</Link>
+            <span style={{ color: "rgba(168,85,247,.4)" }}>›</span>
+            <Link href="/services" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Services</Link>
+            <span style={{ color: "rgba(168,85,247,.4)" }}>›</span>
+            <span style={{ color: "var(--accent)", fontWeight: 600 }}>{service.title}</span>
           </div>
-        </Reveal>
+        </div>
+      </div>
+
+      {/* ── HERO ── */}
+      <section style={{ padding: "40px 5% 80px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", width: 800, height: 800, borderRadius: "50%", background: `radial-gradient(circle,${service.color}22 0%,transparent 65%)`, top: "-20%", left: "-10%", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle,rgba(168,85,247,.12) 0%,transparent 65%)", bottom: "-10%", right: "0", pointerEvents: "none" }} />
+        <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+
+        <div className="svc-hero-grid" style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+          <div>
+            <Reveal>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 20, fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: 1 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
+                {service.category.toUpperCase()}
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,4vw,56px)", fontWeight: 900, lineHeight: 1.1, color: "var(--text-primary)", letterSpacing: "-2px", marginBottom: 16 }}>
+                <span className="grad-text">{service.title}</span>
+              </h1>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p style={{ fontFamily: "Outfit", fontSize: "clamp(17px,2vw,22px)", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 20, lineHeight: 1.4 }}>
+                {service.tagline}
+              </p>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p style={{ color: "var(--text-muted)", fontSize: 16, lineHeight: 1.85, marginBottom: 36 }}>
+                {service.heroDescription}
+              </p>
+            </Reveal>
+            <Reveal delay={0.25}>
+              <div className="svc-hero-btns" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <Link href="/contact">
+                  <button className="btn-main animate-glow" style={{ padding: "14px 30px", fontSize: 15 }}>Start a Campaign</button>
+                </Link>
+                <Link href="/contact">
+                  <button className="btn-outline" style={{ padding: "14px 30px", fontSize: 15 }}>Book a Free Call →</button>
+                </Link>
+              </div>
+            </Reveal>
+          </div>
+
+          {/* Right — icon card */}
+          <Reveal delay={0.2}>
+            <div className="glass-card animate-float svc-hero-card" style={{ padding: "48px 40px", textAlign: "center" }}>
+              <div className="svc-hero-emoji" style={{ width: 88, height: 88, borderRadius: 24, background: `linear-gradient(135deg,${service.color},#a855f7)`, margin: "0 auto 24px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44, boxShadow: `0 16px 48px ${service.color}44` }}>
+                {service.icon}
+              </div>
+              <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: 22, color: "var(--text-primary)", marginBottom: 8 }}>
+                {service.shortTitle}
+              </div>
+              <div style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 28, lineHeight: 1.6 }}>
+                {service.tagline}
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+                {service.technologies.slice(0, 4).map((t) => (
+                  <span key={t} style={{ background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.25)", borderRadius: 100, padding: "4px 12px", fontSize: 12, color: "var(--accent)", fontWeight: 500 }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
       </section>
 
-      {/* ── PRICING TABLE ── */}
-      <section style={{ padding: "0 5% 80px", position: "relative", zIndex: 2 }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-
-          {/* Plans Grid */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 24,
-            marginBottom: 40,
-          }}>
-            {PLANS.map((plan, i) => (
-              <div
-                key={plan.name}
-                className="glass-card"
-                style={{
-                  padding: "32px 28px",
-                  position: "relative",
-                  overflow: "hidden",
-                  borderTop: plan.badge ? `3px solid ${plan.color}` : undefined,
-                }}
-              >
-                {plan.badge && (
-                  <span style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    background: `linear-gradient(135deg, ${plan.color}, #a855f7)`,
-                    color: "#fff",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: 100,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                  }}>
-                    {plan.badge}
-                  </span>
-                )}
-
-                <p style={{ fontSize: 11, fontWeight: 700, color: plan.color, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>
-                  Plan 0{i + 1}
-                </p>
-
-                <h3 style={{ fontFamily: "Outfit", fontSize: 22, fontWeight: 900, color: "var(--text-primary)", margin: "0 0 16px" }}>
-                  {plan.name}
-                </h3>
-
-                <div style={{ marginBottom: 8 }}>
-                  <span style={{
-                    fontFamily: "Outfit",
-                    fontSize: 36,
-                    fontWeight: 900,
-                    color: plan.color,
-                  }}>
-                    {plan.ngnDisplay || `₦${plan.ngn.toLocaleString()}`}
-                  </span>
-                  {plan.customPricing && (
-                    <span style={{ fontSize: 14, color: "var(--text-muted)", marginLeft: 4 }}>
-                      – Custom pricing
-                    </span>
-                  )}
-                </div>
-
-                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>
-                  Monthly Management Fee
-                </p>
-
-                <div style={{
-                  height: 1,
-                  background: "var(--border)",
-                  margin: "20px 0",
-                }} />
-
-                <p style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 4, fontWeight: 600 }}>
-                  Recommended Ad Spend
-                </p>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
-                  {plan.adSpend}
-                </p>
-
-                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "grid", gap: 10 }}>
-                  {plan.features.map(f => (
-                    <li key={f} style={{ display: "flex", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-                      <span style={{ color: plan.color, fontWeight: 900, flexShrink: 0 }}>✓</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={`/contact?plan=${plan.name}&service=facebook-ads`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "14px",
-                    borderRadius: 12,
-                    border: `2px solid ${plan.color}40`,
-                    color: plan.color,
-                    fontWeight: 800,
-                    fontSize: 14,
-                    textDecoration: "none",
-                    transition: "all 0.2s",
-                    background: "transparent",
-                  }}
-                  className={`facebook-ads-btn-${i}`}
-                >
-                  Get Started →
-                </Link>
-                <style>{`
-                  .facebook-ads-btn-${i}:hover {
-                    background: ${plan.color} !important;
-                    color: #fff !important;
-                  }
-                `}</style>
-              </div>
-            ))}
-          </div>
-
-          {/* Additional Info */}
-          <div style={{
-            background: "rgba(124,58,237,.04)",
-            border: "1px solid rgba(124,58,237,.12)",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 40,
-          }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
-              <div>
-                <h4 style={{ fontFamily: "Outfit", fontSize: 16, fontWeight: 800, color: "var(--text-primary)", marginBottom: 8 }}>
-                  One-time Setup Fee
-                </h4>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 4 }}>
-                  ₦100,000 (~$71 USD)
-                </p>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
-                  Includes Meta Business Suite setup, pixel installation, conversion tracking & initial strategy session.
-                  <strong style={{ color: "var(--accent)" }}> Waived for 3-month or longer contracts.</strong>
-                </p>
-              </div>
-              <div>
-                <h4 style={{ fontFamily: "Outfit", fontSize: 16, fontWeight: 800, color: "var(--text-primary)", marginBottom: 8 }}>
-                  Performance-Based Option
-                </h4>
-                <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 4 }}>
-                  15% of ad spend
-                </p>
-                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  Minimum ₦200,000 / ~$143 USD per month
-                </p>
+      {/* ── OVERVIEW + PRICING CARD ── */}
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <div className="svc-overview-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }}>
+          <Reveal>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>OVERVIEW</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,40px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", lineHeight: 1.15, marginBottom: 20 }}>
+                What's Included in Our <span className="grad-text">{service.shortTitle}</span> Service
+              </h2>
+              <p style={{ color: "var(--text-muted)", fontSize: 15, lineHeight: 1.85, marginBottom: 28 }}>
+                {service.overview}
+              </p>
+              {/* Feature pills */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {service.features.map((f) => (
+                  <span key={f} style={{ background: "rgba(124,58,237,.1)", border: "1px solid rgba(168,85,247,.25)", borderRadius: 100, padding: "5px 14px", fontSize: 12, color: "var(--accent)", fontWeight: 500 }}>{f}</span>
+                ))}
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Add-ons */}
-          <div style={{
-            background: "rgba(124,58,237,.04)",
-            border: "1px solid rgba(124,58,237,.12)",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 40,
-          }}>
-            <h4 style={{ fontFamily: "Outfit", fontSize: 18, fontWeight: 900, color: "var(--text-primary)", marginBottom: 20 }}>
-              Add-ons
-            </h4>
-            <div style={{ display: "grid", gap: 12 }}>
-              {[
-                'Extra set of 5 ad creatives (static + video) — ₦80,000 (~$57 USD)',
-                'Custom landing page or lead form optimization — ₦150,000 (~$107 USD) one-time',
-                'Integration with PurpleSoftHub Academy or your SaaS platform — Special rate',
-              ].map(item => (
-                <div key={item} style={{ display: "flex", gap: 8, fontSize: 14, color: "var(--text-secondary)" }}>
-                  <span style={{ color: "#a855f7", fontWeight: 900, flexShrink: 0 }}>+</span>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div style={{
-            background: "rgba(124,58,237,.06)",
-            border: "1px solid rgba(124,58,237,0.15)",
-            borderRadius: 12,
-            padding: "24px",
-            marginBottom: 40,
-          }}>
-            <h4 style={{ fontFamily: "Outfit", fontSize: 14, fontWeight: 700, color: "var(--accent)", marginBottom: 12 }}>
-              Important Notes
-            </h4>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-              {[
-                'Minimum commitment: 1 month (3-month contracts receive 10% discount)',
-                'Results depend on your offer, creatives, and market conditions. We focus on delivering strong ROAS.',
-                'International clients are welcome — pay in USD or NGN.',
-              ].map(note => (
-                <li key={note} style={{ display: "flex", gap: 8, fontSize: 13, color: "var(--text-muted)" }}>
-                  <span style={{ color: "#a855f7", flexShrink: 0 }}>•</span>
-                  {note}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* CTA */}
-          <div style={{ textAlign: "center" }}>
-            <p style={{ fontSize: 15, color: "var(--text-secondary)", marginBottom: 24 }}>
-              Not sure which plan is right for you?
-            </p>
-            <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/contact">
-                <button className="btn-main animate-glow" style={{ padding: "14px 32px", fontSize: 15 }}>
-                  Book a Free Consultation Call
+          {/* Pricing card */}
+          <Reveal delay={0.15}>
+            <div className="glass-card" style={{ padding: "36px 32px", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
+              <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
+                From ₦150,000
+              </div>
+              <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
+                We offer 4 transparent pricing plans from Starter to Enterprise. All include strategy, creative direction, optimization, and performance reporting.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+                {["Starter to Enterprise plans available", "Flexible payment options", "Ad spend paid directly to Meta"].map((b) => (
+                  <div key={b} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ color: "#a855f7", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
+                    <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{b}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href="/services/facebook-ads/pricing">
+                <button className="btn-main" style={{ width: "100%", padding: "13px", fontSize: 15, textAlign: "center", borderRadius: 10, cursor: "pointer" }}>
+                  View All Pricing Plans →
                 </button>
               </Link>
-              <a
-                href="https://wa.me/2348167593393"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="whatsapp-cta-btn"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "14px 32px",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#25D366",
-                  border: "2px solid #25D366",
-                  borderRadius: 12,
-                  textDecoration: "none",
-                  transition: "all 0.2s",
-                }}
-              >
-                💬 Chat with us on WhatsApp
-              </a>
-              <style>{`
-                .whatsapp-cta-btn:hover {
-                  background: #25D366 !important;
-                  color: #fff !important;
-                }
-              `}</style>
             </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── FEATURES GRID ── */}
+      <section style={{ padding: "90px 5%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>WHAT'S INCLUDED</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,46px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>
+                Everything You <span className="grad-text">Get</span>
+              </h2>
+            </div>
+          </Reveal>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
+            {service.features.map((f, i) => (
+              <Reveal key={f} delay={i * 0.05}>
+                <div className="glass-card" style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg,#7c3aed,#a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>✓</div>
+                  <span style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.5 }}>{f}</span>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* ── PROCESS ── */}
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>HOW WE WORK</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,46px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>
+                Our <span className="grad-text">Process</span>
+              </h2>
+            </div>
+          </Reveal>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 20 }}>
+            {service.process.map((p, i) => (
+              <Reveal key={p.step} delay={i * 0.1}>
+                <div className="glass-card" style={{ padding: "32px 24px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
+                  <div style={{ fontFamily: "Outfit", fontSize: 44, fontWeight: 900, color: "rgba(124,58,237,.2)", marginBottom: 12 }}>{p.step}</div>
+                  <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 16, color: "var(--text-primary)", marginBottom: 10 }}>{p.title}</div>
+                  <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7 }}>{p.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TECHNOLOGIES ── */}
+      <section style={{ padding: "80px 5%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+          <Reveal>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>TOOLS & TECH</p>
+            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3vw,40px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", marginBottom: 40 }}>
+              What We <span className="grad-text">Use</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
+              {service.technologies.map((t) => (
+                <span key={t} className="glass-card" style={{ padding: "10px 20px", fontSize: 14, fontWeight: 600, color: "var(--accent)", borderRadius: 100 }}>{t}</span>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── PRICING PREVIEW ── */}
+      <PricingPreview />
+
+      {/* ── FAQs (ACCORDION) ── */}
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>FAQ</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,42px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>
+                Common <span className="grad-text">Questions</span>
+              </h2>
+            </div>
+          </Reveal>
+          <FaqAccordion faqs={service.faqs} />
+        </div>
+      </section>
+
+      {/* ── RELATED SERVICES ── */}
+      {related.length > 0 && (
+        <section style={{ padding: "80px 5%" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <Reveal>
+              <div style={{ textAlign: "center", marginBottom: 48 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>EXPLORE MORE</p>
+                <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3vw,38px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px" }}>
+                  Related <span className="grad-text">Services</span>
+                </h2>
+              </div>
+            </Reveal>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 20 }}>
+              {related.map((r, i) => (
+                <Reveal key={r.slug} delay={i * 0.08}>
+                  <Link href={`/services/${r.slug}`} style={{ textDecoration: "none" }}>
+                    <div className="glass-card" style={{ padding: "28px 24px", cursor: "pointer" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+                        <div style={{ width: 48, height: 48, borderRadius: 14, background: `linear-gradient(135deg,${r.color},#a855f7)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>{r.icon}</div>
+                        <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>{r.shortTitle}</div>
+                      </div>
+                      <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.7, marginBottom: 14 }}>{r.tagline}</p>
+                      <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 600 }}>Learn more →</span>
+                    </div>
+                  </Link>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── CTA ── */}
+      <section style={{ padding: "100px 5%", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.16) 0%,transparent 65%)", pointerEvents: "none" }} />
+        <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+        <Reveal>
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 660, margin: "0 auto" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 20 }}>
+              → Ready to Get Started? ←
+            </div>
+            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(30px,5vw,54px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
+              Ready to Grow with <span className="grad-text">{service.title}</span>?
+            </h2>
+            <p style={{ color: "var(--text-muted)", fontSize: 17, marginBottom: 40, lineHeight: 1.7 }}>
+              Book a free discovery call and let's talk about your {service.shortTitle.toLowerCase()} strategy.
+            </p>
+            <div className="svc-cta-btns" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href="/contact">
+                <button className="btn-main animate-glow" style={{ padding: "16px 38px", fontSize: 16 }}>Start a Campaign</button>
+              </Link>
+              <Link href="/services">
+                <button className="btn-outline" style={{ padding: "16px 38px", fontSize: 16 }}>All Services →</button>
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
       <Footer />
+
+      {/* ── RESPONSIVE STYLES ── */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .svc-overview-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+        }
+        @media (max-width: 768px) {
+          .svc-breadcrumb { padding: 90px 16px 0 !important; }
+          .svc-hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .svc-hero-card { padding: 24px 20px !important; max-width: 100% !important; }
+          .svc-hero-emoji { width: 64px !important; height: 64px !important; font-size: 32px !important; }
+          .svc-hero-btns { flex-direction: column !important; }
+          .svc-hero-btns a, .svc-hero-btns button { width: 100% !important; text-align: center !important; box-sizing: border-box !important; }
+          .svc-cta-btns { flex-direction: column !important; align-items: center !important; }
+          .svc-cta-btns a, .svc-cta-btns button { width: 100% !important; max-width: 340px !important; }
+        }
+      `}</style>
     </main>
   )
 }
