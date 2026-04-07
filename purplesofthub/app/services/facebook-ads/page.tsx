@@ -6,6 +6,7 @@ import Reveal from "@/components/Reveal";
 import { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
 import FaqAccordion from "@/app/services/_components/FaqAccordion";
 import PricingPreview from "@/app/services/_components/PricingPreview";
+import FacebookAdsPricing from "@/app/services/_components/FacebookAdsPricing";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -156,13 +157,13 @@ export default function FacebookAdsPage() {
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
-                From ₦150,000
+                From ₦85,000
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
-                We offer 4 transparent pricing plans from Starter to Enterprise. All include strategy, creative direction, optimization, and performance reporting.
+                We offer 5 transparent pricing plans: Flex Weekly, Starter, Growth, Scale & Enterprise. Perfect for testing campaigns or scaling your business.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-                {["Starter to Enterprise plans available", "Flexible payment options", "Ad spend paid directly to Meta"].map((b) => (
+                {["Flex Weekly plans available", "Flexible payment options", "Ad spend paid directly to Meta"].map((b) => (
                   <div key={b} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                     <span style={{ color: "#a855f7", fontSize: 14, flexShrink: 0, marginTop: 1 }}>✓</span>
                     <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{b}</span>
@@ -248,8 +249,8 @@ export default function FacebookAdsPage() {
         </div>
       </section>
 
-      {/* ── PRICING PREVIEW ── */}
-      <PricingPreview />
+      {/* ── PRICING PREVIEW (Facebook Ads Specific) ── */}
+      <FacebookAdsPricing />
 
       {/* ── FAQs (ACCORDION) ── */}
       <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
