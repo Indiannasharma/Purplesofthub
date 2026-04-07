@@ -331,50 +331,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── SCROLLING SERVICES TICKER ── */}
-      <div style={{
-        width: '100%',
-        overflow: 'hidden',
-        background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
-        padding: '14px 0',
-        position: 'relative',
-        zIndex: 10,
-      }}>
-        <div style={{
-          position: 'absolute',
-          left: 0, top: 0, bottom: 0,
-          width: '80px',
-          background: 'linear-gradient(90deg, #7c3aed, transparent)',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}/>
-        <div style={{
-          position: 'absolute',
-          right: 0, top: 0, bottom: 0,
-          width: '80px',
-          background: 'linear-gradient(-90deg, #6d28d9, transparent)',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}/>
-        <div style={{
-          display: 'flex',
-          animation: 'marqueeLeft 30s linear infinite',
-          width: 'max-content',
-        }}>
-          {[...Array(2)].map((_, dupIdx) => (
-            <div key={dupIdx} style={{ display: 'flex', alignItems: 'center', gap: '0', flexShrink: 0 }}>
-              {TICKER_SERVICES.map((service, i) => (
-                <div key={`${dupIdx}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '0 24px', flexShrink: 0 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
-                    {service}
-                  </span>
-                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', flexShrink: 0 }}/>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* ── FEATURE CARDS ── */}
       <section style={{ padding: "0 5% 80px", position: "relative", zIndex: 2 }}>
@@ -439,6 +395,54 @@ export default async function Home() {
           </Reveal>
         </div>
       </section>
+
+      {/* ── SCROLLING SERVICES TICKER (Tilted) ── */}
+      <div style={{
+        width: '100%',
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+        padding: '16px 0',
+        position: 'relative',
+        zIndex: 10,
+        transform: 'rotate(-2deg) scale(1.05)',
+        marginTop: '40px',
+        marginBottom: '40px',
+      }}>
+        <div style={{
+          position: 'absolute',
+          left: 0, top: 0, bottom: 0,
+          width: '80px',
+          background: 'linear-gradient(90deg, #7c3aed, transparent)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}/>
+        <div style={{
+          position: 'absolute',
+          right: 0, top: 0, bottom: 0,
+          width: '80px',
+          background: 'linear-gradient(-90deg, #6d28d9, transparent)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}/>
+        <div style={{
+          display: 'flex',
+          animation: 'marqueeLeft 30s linear infinite',
+          width: 'max-content',
+        }}>
+          {[...Array(2)].map((_, dupIdx) => (
+            <div key={dupIdx} style={{ display: 'flex', alignItems: 'center', gap: '0', flexShrink: 0 }}>
+              {TICKER_SERVICES.map((service, i) => (
+                <div key={`${dupIdx}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '0 24px', flexShrink: 0 }}>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
+                    {service}
+                  </span>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', flexShrink: 0 }}/>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ── BRANDS TYPEWRITER ── */}
       <section style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(60px, 8vw, 100px) 24px', textAlign: 'center' }}>
