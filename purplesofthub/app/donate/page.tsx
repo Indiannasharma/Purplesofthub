@@ -199,7 +199,26 @@ export default function DonatePage() {
         position: 'relative',
         overflowX: 'hidden',
         overflowY: 'visible',
+        color: 'var(--cyber-body, #d4d4d8)',
       }}>
+        <style>{`
+          @media (prefers-color-scheme: light) {
+            :root {
+              --text-primary: #1a1a1a;
+              --text-secondary: #4a4a4a;
+              --bg-light: #ffffff;
+              --border-light: rgba(0,0,0,0.1);
+            }
+          }
+          @media (prefers-color-scheme: dark) {
+            :root {
+              --text-primary: #ffffff;
+              --text-secondary: #e0e0e0;
+              --bg-light: rgba(255,255,255,0.05);
+              --border-light: rgba(255,255,255,0.1);
+            }
+          }
+        `}</style>
         {/* Grid Background */}
         <div style={{
           position: 'fixed',
@@ -268,10 +287,10 @@ export default function DonatePage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  background: 'rgba(124,58,237,0.2)',
-                  border: '1px solid rgba(124,58,237,0.5)',
+                  background: 'rgba(124,58,237,0.25)',
+                  border: '1px solid rgba(124,58,237,0.6)',
                   borderRadius: '6px',
-                  padding: '6px 14px',
+                  padding: '8px 16px',
                   width: 'fit-content',
                   backdropFilter: 'blur(8px)',
                 }}>
@@ -285,11 +304,12 @@ export default function DonatePage() {
                     boxShadow: '0 0 8px #a855f7',
                   }}/>
                   <span style={{
-                    fontSize: '12px',
+                    fontSize: 'clamp(11px, 2vw, 13px)',
                     fontWeight: 700,
-                    color: '#c084fc',
+                    color: '#e879f9',
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
+                    textShadow: '0 0 4px rgba(232,121,249,0.3)',
                   }}>
                     Support Our Mission
                   </span>
@@ -297,17 +317,17 @@ export default function DonatePage() {
 
                 {/* Title */}
                 <h1 style={{
-                  fontSize: 'clamp(24px, 3.5vw, 44px)',
+                  fontSize: 'clamp(28px, 5vw, 48px)',
                   fontWeight: 900,
-                  color: 'var(--blog-heading, #fff)',
+                  color: '#ffffff',
                   margin: 0,
-                  lineHeight: 1.15,
-                  letterSpacing: '-0.5px',
-                  textShadow: '0 0 40px rgba(168,85,247,0.3)',
+                  lineHeight: 1.2,
+                  letterSpacing: '-0.8px',
+                  textShadow: '0 0 40px rgba(168,85,247,0.4)',
                 }}>
                   Help Us Build{' '}
                   <span style={{
-                    background: 'linear-gradient(135deg, #7c3aed, #a855f7, #c084fc)',
+                    background: 'linear-gradient(135deg, #a855f7, #c084fc)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
@@ -318,11 +338,12 @@ export default function DonatePage() {
 
                 {/* Excerpt */}
                 <p style={{
-                  fontSize: '15px',
-                  color: 'var(--blog-text-muted, #9d8fd4)',
-                  lineHeight: 1.7,
+                  fontSize: 'clamp(14px, 3vw, 16px)',
+                  color: '#e0e0e0',
+                  lineHeight: 1.8,
                   margin: 0,
                   maxWidth: '500px',
+                  fontWeight: 400,
                 }}>
                   Your donation empowers the next generation of African tech talent. Every contribution — big or small — makes a real difference.
                 </p>
@@ -429,58 +450,60 @@ export default function DonatePage() {
               className="blog-posts-grid">
                 {CAUSES.map((cause, i) => (
                   <div key={cause.title} style={{
-                    background: 'var(--blog-card-bg, rgba(124,58,237,0.05))',
-                    border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                    background: 'rgba(124,58,237,0.08)',
+                    border: '1px solid rgba(124,58,237,0.2)',
                     borderRadius: '16px',
-                    padding: '24px',
+                    padding: 'clamp(16px, 4vw, 24px)',
                     backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
                   }}
                   className="blog-card"
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLElement
-                    el.style.borderColor = 'rgba(124,58,237,0.4)'
-                    el.style.boxShadow = '0 0 30px rgba(124,58,237,0.15)'
+                    el.style.borderColor = 'rgba(124,58,237,0.5)'
+                    el.style.boxShadow = '0 0 30px rgba(124,58,237,0.2)'
                     el.style.transform = 'translateY(-4px)'
                   }}
                   onMouseLeave={e => {
                     const el = e.currentTarget as HTMLElement
-                    el.style.borderColor = 'var(--blog-card-border, rgba(124,58,237,0.15))'
+                    el.style.borderColor = 'rgba(124,58,237,0.2)'
                     el.style.boxShadow = 'none'
                     el.style.transform = 'translateY(0)'
                   }}>
                     {/* Icon */}
                     <div style={{
-                      width: '48px',
-                      height: '48px',
+                      width: 'clamp(40px, 8vw, 52px)',
+                      height: 'clamp(40px, 8vw, 52px)',
                       borderRadius: '12px',
-                      background: 'rgba(124,58,237,0.15)',
-                      border: '1px solid rgba(124,58,237,0.3)',
+                      background: 'rgba(124,58,237,0.2)',
+                      border: '1px solid rgba(124,58,237,0.4)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '24px',
+                      fontSize: 'clamp(20px, 5vw, 28px)',
                       marginBottom: '16px',
                     }}>
                       {cause.icon}
                     </div>
 
                     <h3 style={{
-                      fontSize: '15px',
+                      fontSize: 'clamp(13px, 3vw, 16px)',
                       fontWeight: 800,
-                      color: 'var(--blog-heading, #fff)',
-                      margin: '0 0 10px',
-                      lineHeight: 1.3,
+                      color: '#ffffff',
+                      margin: '0 0 12px',
+                      lineHeight: 1.4,
                       textShadow: '0 0 10px rgba(168,85,247,0.2)',
                     }}>
                       {cause.title}
                     </h3>
 
                     <p style={{
-                      fontSize: '12px',
-                      color: 'var(--blog-text-muted, #9d8fd4)',
-                      lineHeight: 1.6,
+                      fontSize: 'clamp(12px, 2.5vw, 14px)',
+                      color: '#d0d0d0',
+                      lineHeight: 1.7,
                       margin: '0 0 16px',
+                      fontWeight: 400,
                     }}>
                       {cause.description}
                     </p>
@@ -524,23 +547,23 @@ export default function DonatePage() {
               }}>
                 {/* Currency & Amount */}
                 <div style={{
-                  background: 'var(--blog-card-bg, rgba(124,58,237,0.05))',
-                  border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                  background: 'rgba(124,58,237,0.08)',
+                  border: '1px solid rgba(124,58,237,0.2)',
                   borderRadius: '16px',
-                  padding: '24px',
+                  padding: 'clamp(16px, 4vw, 24px)',
                   backdropFilter: 'blur(10px)',
                 }}>
                   <p style={{
-                    fontSize: '13px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: 700,
-                    color: 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                    color: '#e0e0e0',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.06em',
                     margin: '0 0 14px',
                   }}>
                     Select Currency
                   </p>
-                  <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
                     {(['NGN', 'USD'] as const).map(cur => (
                       <button
                         key={cur}
@@ -551,19 +574,23 @@ export default function DonatePage() {
                         }}
                         style={{
                           flex: 1,
-                          padding: '12px',
+                          padding: 'clamp(10px, 2vw, 14px)',
                           borderRadius: '10px',
                           border: currency === cur
-                            ? '2px solid #7c3aed'
-                            : '2px solid rgba(124,58,237,0.15)',
+                            ? '2px solid #a855f7'
+                            : '1.5px solid rgba(124,58,237,0.25)',
                           background: currency === cur
                             ? 'rgba(124,58,237,0.15)'
-                            : 'transparent',
-                          color: currency === cur ? '#a855f7' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                            : 'rgba(124,58,237,0.05)',
+                          color: currency === cur ? '#ffffff' : '#d0d0d0',
                           fontWeight: 700,
-                          fontSize: '15px',
+                          fontSize: 'clamp(13px, 2.5vw, 15px)',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
+                          transition: 'all 0.2s ease',
+                          minHeight: '44px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         {cur === 'NGN' ? '🇳🇬 NGN (₦)' : '🇺🇸 USD ($)'}
@@ -574,18 +601,18 @@ export default function DonatePage() {
 
                 {/* Amount Selection */}
                 <div style={{
-                  background: 'var(--blog-card-bg, rgba(124,58,237,0.05))',
-                  border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                  background: 'rgba(124,58,237,0.08)',
+                  border: '1px solid rgba(124,58,237,0.2)',
                   borderRadius: '16px',
-                  padding: '24px',
+                  padding: 'clamp(16px, 4vw, 24px)',
                   backdropFilter: 'blur(10px)',
                 }}>
                   <p style={{
-                    fontSize: '13px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: 700,
-                    color: 'var(--blog-text-muted, #9d8fd4)',
+                    color: '#e0e0e0',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.06em',
                     margin: '0 0 14px',
                   }}>
                     Choose Amount
@@ -593,8 +620,8 @@ export default function DonatePage() {
 
                   <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '10px',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
+                    gap: 'clamp(8px, 2vw, 12px)',
                     marginBottom: '14px',
                   }}>
                     {presetAmounts.map(amount => (
@@ -605,19 +632,23 @@ export default function DonatePage() {
                           setCustomAmount('')
                         }}
                         style={{
-                          padding: '12px 8px',
+                          padding: 'clamp(10px, 2vw, 12px) 8px',
                           borderRadius: '10px',
                           border: selectedAmount === amount
-                            ? '2px solid #7c3aed'
-                            : '2px solid rgba(124,58,237,0.15)',
+                            ? '2px solid #a855f7'
+                            : '1.5px solid rgba(124,58,237,0.25)',
                           background: selectedAmount === amount
                             ? 'rgba(124,58,237,0.15)'
-                            : 'transparent',
-                          color: selectedAmount === amount ? '#a855f7' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                            : 'rgba(124,58,237,0.05)',
+                          color: selectedAmount === amount ? '#ffffff' : '#d0d0d0',
                           fontWeight: 700,
-                          fontSize: '14px',
+                          fontSize: 'clamp(12px, 2vw, 14px)',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
+                          transition: 'all 0.2s ease',
+                          minHeight: '44px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
                         {currency === 'NGN' ? '₦' : '$'}{amount.toLocaleString()}
@@ -730,16 +761,17 @@ export default function DonatePage() {
                         placeholder="Your full name (optional)"
                         style={{
                           width: '100%',
-                          padding: '12px 14px',
-                          background: 'rgba(124,58,237,0.05)',
-                          border: '1px solid rgba(124,58,237,0.2)',
+                          padding: 'clamp(12px, 3vw, 14px) 14px',
+                          background: 'rgba(124,58,237,0.08)',
+                          border: '1px solid rgba(124,58,237,0.25)',
                           borderRadius: '10px',
-                          fontSize: '14px',
+                          fontSize: 'clamp(14px, 3vw, 16px)',
                           outline: 'none',
                           boxSizing: 'border-box',
                           fontFamily: 'inherit',
-                          color: 'var(--cyber-heading, #fff)',
-                        }}
+                          color: '#ffffff',
+                          minHeight: '44px',
+                        } as any}
                       />
                     )}
 
@@ -750,16 +782,17 @@ export default function DonatePage() {
                       placeholder="Email address (required for receipt) *"
                       style={{
                         width: '100%',
-                        padding: '12px 14px',
-                        background: 'rgba(124,58,237,0.05)',
-                        border: '1px solid rgba(124,58,237,0.2)',
+                        padding: 'clamp(12px, 3vw, 14px) 14px',
+                        background: 'rgba(124,58,237,0.08)',
+                        border: '1px solid rgba(124,58,237,0.25)',
                         borderRadius: '10px',
-                        fontSize: '14px',
+                        fontSize: 'clamp(14px, 3vw, 16px)',
                         outline: 'none',
                         boxSizing: 'border-box',
                         fontFamily: 'inherit',
-                        color: 'var(--cyber-heading, #fff)',
-                      }}
+                        color: '#ffffff',
+                        minHeight: '44px',
+                      } as any}
                     />
 
                     <textarea
@@ -769,85 +802,96 @@ export default function DonatePage() {
                       rows={3}
                       style={{
                         width: '100%',
-                        padding: '12px 14px',
-                        background: 'rgba(124,58,237,0.05)',
-                        border: '1px solid rgba(124,58,237,0.2)',
+                        padding: 'clamp(12px, 3vw, 14px) 14px',
+                        background: 'rgba(124,58,237,0.08)',
+                        border: '1px solid rgba(124,58,237,0.25)',
                         borderRadius: '10px',
-                        fontSize: '14px',
+                        fontSize: 'clamp(14px, 3vw, 16px)',
                         outline: 'none',
                         boxSizing: 'border-box',
                         fontFamily: 'inherit',
                         resize: 'vertical',
-                        color: 'var(--cyber-heading, #fff)',
-                      }}
+                        color: '#ffffff',
+                        minHeight: '100px',
+                      } as any}
                     />
                   </div>
                 </div>
 
                 {/* Payment Method */}
                 <div style={{
-                  background: 'var(--blog-card-bg, rgba(124,58,237,0.05))',
-                  border: '1px solid var(--blog-card-border, rgba(124,58,237,0.15))',
+                  background: 'rgba(124,58,237,0.08)',
+                  border: '1px solid rgba(124,58,237,0.2)',
                   borderRadius: '16px',
-                  padding: '24px',
+                  padding: 'clamp(16px, 4vw, 24px)',
                   backdropFilter: 'blur(10px)',
                 }}>
                   <p style={{
-                    fontSize: '13px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: 700,
-                    color: 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                    color: '#e0e0e0',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.06em',
                     margin: '0 0 16px',
                   }}>
                     Payment Method
                   </p>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '12px' }}>
                     <button
                       onClick={() => setPaymentMethod('paystack')}
                       style={{
-                        padding: '16px',
+                        padding: 'clamp(12px, 3vw, 16px)',
                         borderRadius: '12px',
-                        border: paymentMethod === 'paystack' ? '2px solid #0BA4DB' : '2px solid rgba(124,58,237,0.15)',
-                        background: paymentMethod === 'paystack' ? 'rgba(11,164,219,0.1)' : 'transparent',
+                        border: paymentMethod === 'paystack' ? '2px solid #0BA4DB' : '1.5px solid rgba(124,58,237,0.25)',
+                        background: paymentMethod === 'paystack' ? 'rgba(11,164,219,0.12)' : 'rgba(124,58,237,0.05)',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
+                        transition: 'all 0.2s ease',
                         textAlign: 'center',
+                        minHeight: '60px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
                       <div style={{
-                        fontSize: '13px',
+                        fontSize: 'clamp(13px, 3vw, 15px)',
                         fontWeight: 700,
-                        color: paymentMethod === 'paystack' ? '#0BA4DB' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                        color: paymentMethod === 'paystack' ? '#0BA4DB' : '#d0d0d0',
                         marginBottom: '4px',
                       }}>
                         💳 Paystack
                       </div>
-                      <div style={{ fontSize: '11px', color: '#6b5fa0' }}>Cards · Bank · USSD</div>
+                      <div style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#a0a0a0' }}>Cards · Bank</div>
                     </button>
 
                     <button
                       onClick={() => setPaymentMethod('flutterwave')}
                       style={{
-                        padding: '16px',
+                        padding: 'clamp(12px, 3vw, 16px)',
                         borderRadius: '12px',
-                        border: paymentMethod === 'flutterwave' ? '2px solid #F5A623' : '2px solid rgba(124,58,237,0.15)',
-                        background: paymentMethod === 'flutterwave' ? 'rgba(245,166,35,0.1)' : 'transparent',
+                        border: paymentMethod === 'flutterwave' ? '2px solid #F5A623' : '1.5px solid rgba(124,58,237,0.25)',
+                        background: paymentMethod === 'flutterwave' ? 'rgba(245,166,35,0.12)' : 'rgba(124,58,237,0.05)',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
+                        transition: 'all 0.2s ease',
                         textAlign: 'center',
+                        minHeight: '60px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
                       <div style={{
-                        fontSize: '13px',
+                        fontSize: 'clamp(13px, 3vw, 15px)',
                         fontWeight: 700,
-                        color: paymentMethod === 'flutterwave' ? '#F5A623' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
+                        color: paymentMethod === 'flutterwave' ? '#F5A623' : '#d0d0d0',
                         marginBottom: '4px',
                       }}>
                         🌊 Flutterwave
                       </div>
-                      <div style={{ fontSize: '11px', color: '#6b5fa0' }}>International · Mobile</div>
+                      <div style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#a0a0a0' }}>International</div>
                     </button>
                   </div>
 
@@ -855,16 +899,17 @@ export default function DonatePage() {
                     onClick={() => { setPaymentMethod('crypto'); setShowCryptoModal(true) }}
                     style={{
                       width: '100%',
-                      padding: '16px',
+                      padding: 'clamp(12px, 3vw, 16px)',
                       borderRadius: '12px',
-                      border: paymentMethod === 'crypto' ? '2px solid #F7931A' : '2px solid rgba(124,58,237,0.15)',
-                      background: paymentMethod === 'crypto' ? 'rgba(247,147,26,0.08)' : 'transparent',
+                      border: paymentMethod === 'crypto' ? '2px solid #F7931A' : '1.5px solid rgba(124,58,237,0.25)',
+                      background: paymentMethod === 'crypto' ? 'rgba(247,147,26,0.12)' : 'rgba(124,58,237,0.05)',
                       cursor: 'pointer',
-                      transition: 'all 0.2s',
+                      transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '10px',
+                      minHeight: '60px',
                     }}
                   >
                     <span style={{ fontSize: '20px' }}>₿</span>
@@ -900,14 +945,14 @@ export default function DonatePage() {
                     disabled={processing || !finalAmount || !donorEmail}
                     style={{
                       width: '100%',
-                      padding: '18px',
+                      padding: 'clamp(14px, 3vw, 18px)',
                       borderRadius: '14px',
                       border: 'none',
                       background: (finalAmount && donorEmail)
                         ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
                         : 'rgba(124,58,237,0.3)',
-                      color: '#fff',
-                      fontSize: '16px',
+                      color: '#ffffff',
+                      fontSize: 'clamp(15px, 3vw, 17px)',
                       fontWeight: 800,
                       cursor: (finalAmount && donorEmail) ? 'pointer' : 'not-allowed',
                       display: 'flex',
@@ -915,6 +960,8 @@ export default function DonatePage() {
                       justifyContent: 'center',
                       gap: '10px',
                       boxShadow: (finalAmount && donorEmail) ? '0 0 30px rgba(124,58,237,0.4)' : 'none',
+                      minHeight: '50px',
+                      transition: 'all 0.2s ease',
                     }}
                   >
                     {processing ? (
