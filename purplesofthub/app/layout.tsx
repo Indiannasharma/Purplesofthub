@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Providers } from "@/app/Providers";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -140,6 +141,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
+        {/* Payment Gateway Scripts */}
+        <Script 
+          src="https://js.paystack.co/v1/inline.js" 
+          strategy="lazyOnload" 
+        />
+        <Script 
+          src="https://checkout.flutterwave.com/v3.js" 
+          strategy="lazyOnload" 
+        />
       </body>
     </html>
   );

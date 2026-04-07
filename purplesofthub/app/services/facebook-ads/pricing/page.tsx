@@ -1,8 +1,12 @@
+'use client'
+
 import type { Metadata } from "next"
 import Link from "next/link"
+import { useState } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Reveal from "@/components/Reveal"
+import CheckoutModal from "@/app/services/_components/CheckoutModal"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"
 
@@ -79,6 +83,8 @@ const PLANS = [
 ]
 
 export default function FacebookAdsPricingPage() {
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
+
   return (
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
       <Navbar />
@@ -198,8 +204,8 @@ export default function FacebookAdsPricingPage() {
                   ))}
                 </ul>
 
-                <Link
-                  href={`/contact?plan=${plan.name}&service=facebook-ads`}
+                <button
+                  onClick={() => setSelectedPlan(plan.name)}
                   className={`facebook-ads-pricing-btn-${i}`}
                   style={{
                     display: "flex",
@@ -214,10 +220,13 @@ export default function FacebookAdsPricingPage() {
                     textDecoration: "none",
                     transition: "all 0.2s",
                     background: "transparent",
+                    width: "100%",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
                   }}
                 >
                   Get Started →
-                </Link>
+                </button>
                 <style>{`
                   .facebook-ads-pricing-btn-${i}:hover {
                     background: ${plan.color} !important;
@@ -357,6 +366,13 @@ export default function FacebookAdsPricingPage() {
       </section>
 
       <Footer />
+
+      {selectedPlan && (
+        <CheckoutModal
+          plan={selectedPlan}
+          onClose={() => setSelectedPlan(null)}
+        />
+      )}
     </main>
   )
 }
