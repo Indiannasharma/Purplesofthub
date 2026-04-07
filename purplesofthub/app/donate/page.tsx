@@ -13,28 +13,28 @@ const CRYPTO_WALLETS = [
     name: 'Bitcoin (BTC)',
     icon: '₿',
     color: '#F7931A',
-    address: 'bc1q85g4qg3d3c3v9k5t2u6r7y4x8z5w6s7d8f9g0h',
+    address: 'bc1qfp255uq39qa56dnd3mxc609yluc8z8lq8hmr0n',
     network: 'Bitcoin Network',
   },
   {
     name: 'USDT (TRC20)',
     icon: '💵',
     color: '#26A17B',
-    address: 'TX1234567890abcdef1234567890abcdef1234567890',
+    address: 'TSH22DiHbTapQyr9LyvCWHQyhNmCLeeNbR',
     network: 'TRON Network (TRC20)',
   },
   {
     name: 'USDT (ERC20)',
     icon: '💎',
     color: '#627EEA',
-    address: '0x1234567890abcdef1234567890abcdef12345678',
+    address: '0x6c8b770c0ebc1753bfd442e3a9bd9450b249fc4c',
     network: 'Ethereum Network (ERC20)',
   },
   {
     name: 'Pi Network',
     icon: 'π',
     color: '#7c3aed',
-    address: 'purplepi123',
+    address: 'MDFNWH6ZFJVHJDLBMNOUT35X4EEKQVJAO3ZDL4NL7VQJLC4PJOQFWAAAAAAZBE6NFM5BM',
     network: 'Pi Network',
   },
 ]
@@ -195,7 +195,7 @@ export default function DonatePage() {
 
       <div style={{
         minHeight: '100vh',
-        background: 'var(--blog-space-bg, #06030f)',
+        background: 'var(--cyber-bg, var(--blog-space-bg, #06030f))',
         position: 'relative',
         overflowX: 'hidden',
         overflowY: 'visible',
@@ -533,7 +533,7 @@ export default function DonatePage() {
                   <p style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: 'var(--blog-text-muted, #9d8fd4)',
+                    color: 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     margin: '0 0 14px',
@@ -559,7 +559,7 @@ export default function DonatePage() {
                           background: currency === cur
                             ? 'rgba(124,58,237,0.15)'
                             : 'transparent',
-                          color: currency === cur ? '#c084fc' : 'var(--blog-text-muted, #9d8fd4)',
+                          color: currency === cur ? '#a855f7' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                           fontWeight: 700,
                           fontSize: '15px',
                           cursor: 'pointer',
@@ -613,7 +613,7 @@ export default function DonatePage() {
                           background: selectedAmount === amount
                             ? 'rgba(124,58,237,0.15)'
                             : 'transparent',
-                          color: selectedAmount === amount ? '#c084fc' : 'var(--blog-text-muted, #9d8fd4)',
+                          color: selectedAmount === amount ? '#a855f7' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                           fontWeight: 700,
                           fontSize: '14px',
                           cursor: 'pointer',
@@ -660,7 +660,7 @@ export default function DonatePage() {
                         outline: 'none',
                         boxSizing: 'border-box',
                         fontFamily: 'inherit',
-                        color: '#fff',
+                        color: 'var(--cyber-heading, #fff)',
                       }}
                     />
                   </div>
@@ -674,7 +674,7 @@ export default function DonatePage() {
                       textAlign: 'center',
                       fontSize: '14px',
                       fontWeight: 700,
-                      color: '#c084fc',
+                      color: '#a855f7',
                     }}>
                       Donating: {currency === 'NGN' ? '₦' : '$'}{finalAmount.toLocaleString()} {currency}
                     </div>
@@ -692,7 +692,7 @@ export default function DonatePage() {
                   <p style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: 'var(--blog-text-muted, #9d8fd4)',
+                    color: 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     margin: '0 0 16px',
@@ -717,7 +717,7 @@ export default function DonatePage() {
                         onChange={e => setAnonymous(e.target.checked)}
                         style={{ width: '18px', height: '18px', accentColor: '#7c3aed', cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--blog-heading, #fff)' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cyber-heading, var(--blog-heading, #fff))' }}>
                         Donate anonymously 🥷
                       </span>
                     </label>
@@ -738,7 +738,7 @@ export default function DonatePage() {
                           outline: 'none',
                           boxSizing: 'border-box',
                           fontFamily: 'inherit',
-                          color: '#fff',
+                          color: 'var(--cyber-heading, #fff)',
                         }}
                       />
                     )}
@@ -758,7 +758,7 @@ export default function DonatePage() {
                         outline: 'none',
                         boxSizing: 'border-box',
                         fontFamily: 'inherit',
-                        color: '#fff',
+                        color: 'var(--cyber-heading, #fff)',
                       }}
                     />
 
@@ -778,7 +778,7 @@ export default function DonatePage() {
                         boxSizing: 'border-box',
                         fontFamily: 'inherit',
                         resize: 'vertical',
-                        color: '#fff',
+                        color: 'var(--cyber-heading, #fff)',
                       }}
                     />
                   </div>
@@ -795,7 +795,7 @@ export default function DonatePage() {
                   <p style={{
                     fontSize: '13px',
                     fontWeight: 700,
-                    color: 'var(--blog-text-muted, #9d8fd4)',
+                    color: 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
                     margin: '0 0 16px',
@@ -819,7 +819,7 @@ export default function DonatePage() {
                       <div style={{
                         fontSize: '13px',
                         fontWeight: 700,
-                        color: paymentMethod === 'paystack' ? '#0BA4DB' : 'var(--blog-text-muted, #9d8fd4)',
+                        color: paymentMethod === 'paystack' ? '#0BA4DB' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                         marginBottom: '4px',
                       }}>
                         💳 Paystack
@@ -842,7 +842,7 @@ export default function DonatePage() {
                       <div style={{
                         fontSize: '13px',
                         fontWeight: 700,
-                        color: paymentMethod === 'flutterwave' ? '#F5A623' : 'var(--blog-text-muted, #9d8fd4)',
+                        color: paymentMethod === 'flutterwave' ? '#F5A623' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                         marginBottom: '4px',
                       }}>
                         🌊 Flutterwave
@@ -872,7 +872,7 @@ export default function DonatePage() {
                       <div style={{
                         fontSize: '13px',
                         fontWeight: 700,
-                        color: paymentMethod === 'crypto' ? '#F7931A' : 'var(--blog-text-muted, #9d8fd4)',
+                        color: paymentMethod === 'crypto' ? '#F7931A' : 'var(--cyber-body, var(--blog-text-muted, #9d8fd4))',
                       }}>
                         Crypto Donation
                       </div>
