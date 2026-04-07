@@ -2,22 +2,9 @@
   "version": 2,
   "name": "purplesofthub",
   "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/app"
-    }
-  ],
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 30
-    }
   }
 }
