@@ -1031,6 +1031,51 @@ html.dark {
   box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
 }
 
+/* ── Marquee Animations ── */
+@keyframes marqueeLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marqueeRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Cursor Blink ── */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Particle Float ── */
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translateY(-20px) translateX(8px);
+    opacity: 1;
+  }
+  66% {
+    transform: translateY(-10px) translateX(-8px);
+    opacity: 0.8;
+  }
+}
+
+/* ── Nebula Pulse ── */
+@keyframes nebulaPulse {
+  0%, 100% { 
+    opacity: 0.5; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
 /* ══════════════════════════════
    CYBERPUNK THEME SYSTEM — Premium UI
 ══════════════════════════════ */

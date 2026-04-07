@@ -59,7 +59,7 @@ const SERVICES = [
 const SUCCESS = [
   { icon: "📈", tag: "E-Commerce Growth", challenge: "Low sales, high CPA", solution: "Shopify + Facebook Ads", result: "3.5× Revenue Increase" },
   { icon: "📱", tag: "App Development", challenge: "Build a Fitness App", solution: "Flutter & React Native", result: "50K+ Downloads" },
-  { icon: "🎵", tag: "Music Promotion", challenge: "Increase Spotify Streams", solution: "Playlist Campaigns", result: "500K+ Streams" },
+  { icon: "5", tag: "Music Promotion", challenge: "Increase Spotify Streams", solution: "Playlist Campaigns", result: "500K+ Streams" },
 ];
 
 const PROCESS = [
@@ -75,8 +75,27 @@ const TESTIMONIALS = [
   { name: "Collins Kind", role: "Fashion Designer, Collins Kind", text: "Working with PurpleSoftHub was a game changer. They built my website, set up my Meta Ads and crafted a brand identity that speaks to my audience. My online presence is now as bold as my designs.", initials: "CK" },
 ];
 
+// Scrolling ticker services list
+const TICKER_SERVICES = [
+  "Social Media Management", "Website Design & Development", "Web App Development",
+  "Branding & Creative Design", "Logo Design", "Video Content Creation",
+  "Digital & Outdoor Marketing", "Search Engine Optimization", "Start-up Launch Services",
+  "Google Ads", "LinkedIn Ads", "Snapchat Ads", "TikTok Ads", "Instagram Ads",
+  "Facebook Ads", "Twitter Ads", "Pinterest Ads", "Microsoft Ads",
+  "E-commerce Marketing", "Music Distribution", "Account Recovery",
+  "Mobile App Development", "UI/UX Design", "Cybersecurity",
+];
+
+// Brands typewriter words
+const TYPEWRITER_WORDS = [
+  "E-commerce Brands", "Music Artists", "NGOs & Charities",
+  "Churches & Ministries", "Schools & Universities", "Oil & Gas Companies",
+  "Influencers & Creators", "Real Estate Firms", "Startups & Founders",
+  "Fashion Brands", "Tech Companies", "Healthcare Providers",
+  "Media Houses", "Event Planners", "Law Firms",
+];
+
 export default async function Home() {
-  // Fetch trending blog posts (top 3 by engagement)
   const supabase = createClient();
   const { data: trendingPostsData } = await supabase
     .from('blog_posts')
@@ -100,20 +119,60 @@ export default async function Home() {
 
       {/* ── HERO ── */}
       <section id="home" style={{ minHeight: "100vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", padding: "100px 5% 60px" }}>
-        {/* Cosmic background glow */}
+        {/* Layered background */}
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 70% 50%, rgba(124,58,237,0.15) 0%, transparent 60%), radial-gradient(ellipse at 30% 80%, rgba(34,211,238,0.08) 0%, transparent 50%)", pointerEvents: "none" }} />
+        
+        {/* Floating particles */}
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              width: i % 3 === 0 ? '4px' : i % 3 === 1 ? '6px' : '3px',
+              height: i % 3 === 0 ? '4px' : i % 3 === 1 ? '6px' : '3px',
+              borderRadius: '50%',
+              background: i % 2 === 0 ? 'rgba(124,58,237,0.6)' : 'rgba(34,211,238,0.5)',
+              left: `${8 + (i * 8)}%`,
+              top: `${10 + ((i * 37) % 80)}%`,
+              animation: `particleFloat ${3 + (i % 4)}s ease-in-out infinite`,
+              animationDelay: `${i * 0.4}s`,
+              boxShadow: i % 2 === 0 ? '0 0 6px rgba(124,58,237,0.8)' : '0 0 6px rgba(34,211,238,0.8)',
+              zIndex: 1,
+            }}
+          />
+        ))}
         
         <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center", position: "relative", zIndex: 2 }}>
           <div>
             <Reveal>
-              {/* Cyber Badge */}
-              <div className="cyber-badge" style={{ marginBottom: 28 }}>
-                <span className="cyber-badge-dot" />
+              {/* Premium Badge */}
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'rgba(124,58,237,0.1)',
+                border: '1px solid rgba(124,58,237,0.3)',
+                borderRadius: '100px',
+                padding: '7px 18px',
+                marginBottom: '28px',
+                boxShadow: '0 0 20px rgba(124,58,237,0.15)',
+                backdropFilter: 'blur(10px)',
+              }}>
+                <span style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: '#a855f7',
+                  display: 'inline-block',
+                  boxShadow: '0 0 10px #a855f7',
+                  animation: 'cyberPulse 1.8s ease-in-out infinite',
+                  flexShrink: 0,
+                }}/>
                 <span style={{
                   fontSize: '12px',
                   fontWeight: 700,
-                  color: '#a855f7',
-                  letterSpacing: '0.07em',
+                  color: '#7c3aed',
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                 }}>
                   DIGITAL INNOVATION STUDIO
@@ -131,7 +190,17 @@ export default async function Home() {
                 marginBottom: 22,
                 textShadow: "0 0 40px rgba(168,85,247,0.2)"
               }}>
-                Building Technology<br />for the <span className="grad-text">Next Generation</span><br />of Businesses
+                Building Technology<br />for the{' '}
+                <span style={{
+                  background: 'linear-gradient(135deg, #7c3aed, #a855f7, #22d3ee)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  filter: 'drop-shadow(0 0 20px rgba(124,58,237,0.3))',
+                }}>
+                  Next Generation
+                </span>
+                {' '}of Businesses
               </h1>
             </Reveal>
             <Reveal delay={0.2}>
@@ -152,32 +221,63 @@ export default async function Home() {
               </div>
             </Reveal>
             <Reveal delay={0.4}>
-              <div className="hero-stats" style={{ display: "flex", gap: 36 }}>
+              <div className="hero-stats" style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
                 {[
                   [50, "Projects Shipped", "+"],
                   [10, "Core Services", ""],
                   [98, "Client Satisfaction", "%"]
                 ].map(([n, l, suffix]) => (
-                  <div key={l} className="cyber-card" style={{ padding: 16, borderRadius: 12 }}>
+                  <div key={l} style={{
+                    background: 'rgba(255,255,255,0.7)',
+                    border: '1px solid rgba(124,58,237,0.15)',
+                    borderRadius: '16px',
+                    padding: '20px 24px',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 4px 20px rgba(124,58,237,0.08)',
+                    transition: 'all 0.3s',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      top: 0, left: 0, right: 0,
+                      height: '2px',
+                      background: 'linear-gradient(90deg, #7c3aed, #22d3ee)',
+                    }}/>
                     <div style={{ 
                       fontFamily: "Outfit", 
                       fontSize: "clamp(28px,4vw,40px)", 
                       fontWeight: 900, 
-                      color: "#a855f7", 
+                      color: "#7c3aed", 
                       letterSpacing: "-1px",
-                      textShadow: "0 0 20px rgba(168,85,247,0.4)"
+                      textShadow: "0 0 20px rgba(124,58,237,0.3)",
+                      marginTop: 4,
                     }}>
                       <CountUp end={n as number} duration={2} suffix={suffix as string} />
                     </div>
-                    <div style={{ fontSize: 12, color: "var(--cyber-body)", fontWeight: 500, marginTop: 2 }}>{l}</div>
+                    <div style={{ fontSize: 13, color: "var(--cyber-body)", fontWeight: 500, marginTop: 4 }}>{l}</div>
                   </div>
                 ))}
               </div>
             </Reveal>
           </div>
 
-          {/* Holographic Planet */}
+          {/* Holographic Planet with Nebula Glow */}
           <Reveal delay={0.2}>
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'clamp(300px, 40vw, 560px)',
+              height: 'clamp(300px, 40vw, 560px)',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+              pointerEvents: 'none',
+              animation: 'nebulaPulse 4s ease-in-out infinite',
+              zIndex: 0,
+            }}/>
             <div style={{
               position: 'relative',
               width: 'clamp(260px, 35vw, 480px)',
@@ -185,8 +285,8 @@ export default async function Home() {
               flexShrink: 0,
               animation: 'cyberFloat 6s ease-in-out infinite',
               margin: '0 auto',
+              zIndex: 1,
             }}>
-              {/* Planet body */}
               <div style={{
                 position: 'absolute',
                 inset: '10%',
@@ -194,7 +294,6 @@ export default async function Home() {
                 background: 'radial-gradient(circle at 35% 35%, #c084fc, #7c3aed 40%, #1a0535 80%)',
                 boxShadow: '0 0 60px rgba(124,58,237,0.5), inset -20px -20px 40px rgba(0,0,0,0.4)',
               }} />
-              {/* Planet ring */}
               <div style={{
                 position: 'absolute',
                 top: '50%',
@@ -206,7 +305,6 @@ export default async function Home() {
                 border: '8px solid rgba(34,211,238,0.3)',
                 boxShadow: '0 0 20px rgba(34,211,238,0.2)',
               }} />
-              {/* Outer ring */}
               <div style={{
                 position: 'absolute',
                 top: '50%',
@@ -217,7 +315,6 @@ export default async function Home() {
                 borderRadius: '50%',
                 border: '3px solid rgba(124,58,237,0.2)',
               }} />
-              {/* Orbiting dot */}
               <div style={{
                 position: 'absolute',
                 top: '8%',
@@ -234,13 +331,58 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── SCROLLING SERVICES TICKER ── */}
+      <div style={{
+        width: '100%',
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+        padding: '14px 0',
+        position: 'relative',
+        zIndex: 10,
+      }}>
+        <div style={{
+          position: 'absolute',
+          left: 0, top: 0, bottom: 0,
+          width: '80px',
+          background: 'linear-gradient(90deg, #7c3aed, transparent)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}/>
+        <div style={{
+          position: 'absolute',
+          right: 0, top: 0, bottom: 0,
+          width: '80px',
+          background: 'linear-gradient(-90deg, #6d28d9, transparent)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}/>
+        <div style={{
+          display: 'flex',
+          animation: 'marqueeLeft 30s linear infinite',
+          width: 'max-content',
+        }}>
+          {[...Array(2)].map((_, dupIdx) => (
+            <div key={dupIdx} style={{ display: 'flex', alignItems: 'center', gap: '0', flexShrink: 0 }}>
+              {TICKER_SERVICES.map((service, i) => (
+                <div key={`${dupIdx}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '0 24px', flexShrink: 0 }}>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
+                    {service}
+                  </span>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', flexShrink: 0 }}/>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── FEATURE CARDS ── */}
       <section style={{ padding: "0 5% 80px", position: "relative", zIndex: 2 }}>
         <StaggerContainer style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
           {[
             { icon: "💻", title: "Digital Solutions", sub: "Web, Mobile & Marketing", cta: "View Services", href: "/services", color: "#4f46e5" },
             { icon: "🎓", title: "Purplesofthub Academy", sub: "Learn In-Demand Tech Skills", cta: "View Courses", href: "/blog", color: "#7c3aed" },
-            { icon: "5", title: "Music Promotion", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "/services/music-promotion", color: "#86198f" },
+            { icon: "🎵", title: "Music Promotion", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "/services/music-promotion", color: "#86198f" },
           ].map((c) => (
             <StaggerItem key={c.title}>
               <div className="cyber-card" style={{ padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
@@ -296,6 +438,52 @@ export default async function Home() {
             </div>
           </Reveal>
         </div>
+      </section>
+
+      {/* ── BRANDS TYPEWRITER ── */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(60px, 8vw, 100px) 24px', textAlign: 'center' }}>
+        <p style={{ fontSize: '14px', fontWeight: 700, color: '#a855f7', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>
+          Trusted by businesses across Africa
+        </p>
+        <h2 style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 900, color: 'var(--cyber-heading)', margin: '0 0 8px', lineHeight: 1.15 }}>
+          We Work With
+        </h2>
+        <div style={{
+          fontSize: 'clamp(32px, 5vw, 60px)',
+          fontWeight: 900,
+          minHeight: 'clamp(44px, 7vw, 80px)',
+          marginBottom: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0',
+        }}>
+          <span id="typewriter-text" style={{
+            background: 'linear-gradient(135deg, #7c3aed, #a855f7, #22d3ee)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            minWidth: '10px',
+          }} />
+          <span style={{
+            display: 'inline-block',
+            width: '3px',
+            height: 'clamp(36px, 5vw, 60px)',
+            background: '#7c3aed',
+            marginLeft: '4px',
+            animation: 'cursorBlink 1s ease-in-out infinite',
+            borderRadius: '2px',
+            verticalAlign: 'middle',
+          }}/>
+        </div>
+        <p style={{ fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--cyber-body)', maxWidth: '560px', margin: '0 auto 40px', lineHeight: 1.7 }}>
+          From Lagos startups to global brands — we build digital experiences that convert and grow.
+        </p>
+        <Link href="/contact">
+          <button className="cyber-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 32px', fontSize: 15 }}>
+            Start Your Project →
+          </button>
+        </Link>
       </section>
 
       {/* ── MUSIC ── */}
@@ -509,6 +697,43 @@ export default async function Home() {
 
       <NewsletterSignup />
       <Footer />
+
+      {/* Typewriter Script */}
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function() {
+          const words = ${JSON.stringify(TYPEWRITER_WORDS)};
+          let wordIndex = 0, charIndex = 0, isDeleting = false;
+          
+          function type() {
+            const el = document.getElementById('typewriter-text');
+            if (!el) return;
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+              charIndex--;
+              el.textContent = currentWord.substring(0, charIndex);
+            } else {
+              charIndex++;
+              el.textContent = currentWord.substring(0, charIndex);
+            }
+            
+            let speed = isDeleting ? 40 : 80;
+            
+            if (!isDeleting && charIndex === currentWord.length) {
+              speed = 2000;
+              isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+              isDeleting = false;
+              wordIndex = (wordIndex + 1) % words.length;
+              speed = 300;
+            }
+            
+            setTimeout(type, speed);
+          }
+          
+          setTimeout(type, 500);
+        })();
+      `}} />
     </main>
   );
 }
