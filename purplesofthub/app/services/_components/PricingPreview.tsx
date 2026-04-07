@@ -27,7 +27,7 @@ export default function PricingPreview() {
         <h2 style={{
           fontSize: 'clamp(28px, 4vw, 40px)',
           fontWeight: 900,
-          color: 'var(--heading, #1a1a1a)',
+          color: 'var(--text-primary, var(--cyber-heading, #1a1a1a))',
           margin: '0 0 16px',
           letterSpacing: '-0.5px',
         }}>
@@ -35,7 +35,7 @@ export default function PricingPreview() {
         </h2>
         <p style={{
           fontSize: '16px',
-          color: 'var(--body, #6b5fa0)',
+          color: 'var(--text-secondary, var(--cyber-body, #6b5fa0))',
           maxWidth: '460px',
           margin: '0 auto',
           lineHeight: 1.7,
@@ -158,7 +158,7 @@ export default function PricingPreview() {
             <h3 style={{
               fontSize: '20px',
               fontWeight: 900,
-              color: 'var(--heading, #1a1a1a)',
+              color: 'var(--text-primary, var(--cyber-heading, #1a1a1a))',
               margin: '0 0 12px',
             }}>
               {tier.name}
@@ -176,7 +176,7 @@ export default function PricingPreview() {
             </p>
             <p style={{
               fontSize: '13px',
-              color: 'var(--body, #9d8fd4)',
+              color: 'var(--text-secondary, var(--cyber-body, #9d8fd4))',
               margin: '0 0 20px',
             }}>
               {tier.usd} USD · {tier.delivery} delivery
@@ -203,7 +203,7 @@ export default function PricingPreview() {
                   alignItems: 'flex-start',
                   gap: '8px',
                   fontSize: '13px',
-                  color: 'var(--body, #555555)',
+                  color: 'var(--text-secondary, var(--cyber-body, #555555))',
                   lineHeight: 1.4,
                 }}>
                   <span style={{
@@ -268,7 +268,7 @@ export default function PricingPreview() {
       <div style={{ textAlign: 'center' }}>
         <p style={{
           fontSize: '14px',
-          color: 'var(--body, #9d8fd4)',
+          color: 'var(--text-secondary, var(--cyber-body, #9d8fd4))',
           marginBottom: '16px',
         }}>
           We have 6 more plans — Advanced to Diamond
