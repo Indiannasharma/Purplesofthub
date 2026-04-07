@@ -43,7 +43,7 @@ export default async function BlogPage() {
   const { data: posts } = await supabase
     .from('blog_posts')
     .select(
-      'id, title, slug, excerpt, content, featured_image, category, author_name, published_at, created_at, tags'
+      'id, title, slug, excerpt, content, featured_image, category, author_name, published_at, created_at, tags, comment_count, likes_count'
     )
     .eq('status', 'published')
     .order('published_at',
@@ -261,6 +261,24 @@ export default async function BlogPage() {
                       🕐 {readTime(
                         featuredPost.content || ''
                       )}
+                    </span>
+                    <span style={{
+                      fontSize: '13px',
+                      color: 'var(--blog-text-muted)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}>
+                      💬 {featuredPost.comment_count || 0}
+                    </span>
+                    <span style={{
+                      fontSize: '13px',
+                      color: 'var(--blog-text-muted)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}>
+                      💜 {featuredPost.likes_count || 0}
                     </span>
                   </div>
                 </div>
@@ -709,6 +727,35 @@ export default async function BlogPage() {
                             🕐 {readTime(
                               post.content || ''
                             )}
+                          </span>
+                        </div>
+
+                        {/* Counts */}
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          marginTop: '12px',
+                          paddingTop: '12px',
+                          borderTop: '1px solid var(--blog-card-border)',
+                        }}>
+                          <span style={{
+                            fontSize: '11px',
+                            color: 'var(--blog-text-muted)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}>
+                            💬 {post.comment_count || 0}
+                          </span>
+                          <span style={{
+                            fontSize: '11px',
+                            color: 'var(--blog-text-muted)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}>
+                            💜 {post.likes_count || 0}
                           </span>
                         </div>
                       </div>

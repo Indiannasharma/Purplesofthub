@@ -13,6 +13,7 @@ import {
   FadeIn
 } from "@/components/motion";
 import { CountUp } from "@/components/motion/CountUp";
+import { createClient } from "@/lib/supabase/client";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -74,7 +75,18 @@ const TESTIMONIALS = [
   { name: "Collins Kind", role: "Fashion Designer, Collins Kind", text: "Working with PurpleSoftHub was a game changer. They built my website, set up my Meta Ads and crafted a brand identity that speaks to my audience. My online presence is now as bold as my designs.", initials: "CK" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  // Fetch trending blog posts (top 3 by engagement)
+  const supabase = createClient();
+  const { data: trendingPostsData } = await supabase
+    .from('blog_posts')
+    .select('id, title, slug, excerpt, read_time, comment_count, likes_count')
+    .eq('published', true)
+    .order('comment_count', { ascending: false })
+    .limit(3);
+
+  const trendingPosts = trendingPostsData || [];
+
   return (
     <main style={{ background: "var(--cyber-bg)", color: "var(--cyber-heading)", minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -426,6 +438,49 @@ export default function Home() {
             ))}
           </div>
         </FadeInUp>
+      </section>
+
+      {/* ── TRENDING BLOG POSTS ── */}
+      <section style={{ padding: "90px 5%", background: "var(--cyber-bg2)", borderTop: "1px solid var(--cyber-border)", borderBottom: "1px solid var(--cyber-border)", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "#a855f7", textTransform: "uppercase", marginBottom: 12 }}>Latest Insights</p>
+              <h2 className="cyber-section-heading" style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,48px)", fontWeight: 900, letterSpacing: "-1.5px" }}>
+                Trending <span className="grad-text">Blog Posts</span>
+              </h2>
+            </div>
+          </Reveal>
+          {trendingPosts.length > 0 ? (
+            <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
+              {trendingPosts.map((post: any) => (
+                <StaggerItem key={post.id}>
+                  <Link href={`/blog/${post.slug}`}>
+                    <div className="cyber-card" style={{ padding: "28px 24px", position: "relative", overflow: "hidden", cursor: "pointer", transition: "all 0.3s ease" }}>
+                      <div className="cyber-corner-tl" />
+                      <div className="cyber-corner-br" />
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#7c3aed,#22d3ee,#a855f7)" }} />
+                      <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--cyber-heading)", marginBottom: 12, lineHeight: 1.4 }}>{post.title}</div>
+                      <p style={{ color: "var(--cyber-body)", fontSize: 14, lineHeight: 1.6, marginBottom: 18 }}>{post.excerpt}</p>
+                      <div style={{ display: "flex", gap: 16, fontSize: 13, color: "var(--cyber-muted)", marginBottom: 16, flexWrap: "wrap" }}>
+                        <span>🕐 {post.read_time} min read</span>
+                        <span>💬 {post.comment_count || 0}</span>
+                        <span>💜 {post.likes_count || 0}</span>
+                      </div>
+                      <button className="cyber-btn-small" style={{ padding: "8px 18px", fontSize: 13 }}>
+                        Read More →
+                      </button>
+                    </div>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          ) : (
+            <div style={{ textAlign: "center", color: "var(--cyber-muted)", padding: "40px 20px" }}>
+              <p>Check back soon for trending blog posts</p>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ── FINAL CTA ── */}

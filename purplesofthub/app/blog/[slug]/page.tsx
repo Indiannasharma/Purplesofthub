@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import BlogReactions from '@/components/blog/BlogReactions'
+import BlogComments from '@/components/blog/BlogComments'
 
 export const dynamic = 'force-dynamic'
 
@@ -695,6 +697,12 @@ export default async function BlogPostPage(
                 ← Back to Blog
               </Link>
             </div>
+
+            {/* Reactions */}
+            <BlogReactions postId={post.id} />
+
+            {/* Comments */}
+            <BlogComments postId={post.id} />
 
             {/* Related posts */}
             {related.length > 0 && (
