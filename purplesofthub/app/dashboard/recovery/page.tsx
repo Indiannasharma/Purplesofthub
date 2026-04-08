@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
 
 interface RecoveryRequest {
   id: string
@@ -36,15 +35,7 @@ const statusColors: Record<string, { bg: string; color: string; border: string }
 export default function DashboardRecoveryPage() {
   const [requests, setRequests] = useState<RecoveryRequest[]>([])
   const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [form, setForm] = useState({
-    platform: 'facebook',
-    handle: '',
-    accountUrl: '',
-    supportType: 'suspended',
-    appealText: '',
-  })
 
   useEffect(() => {
     loadRequests()
@@ -68,34 +59,6 @@ export default function DashboardRecoveryPage() {
     setLoading(false)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { error } = await supabase
-      .from('account_recovery_requests')
-      .insert({
-        email: user.email,
-        first_name: user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0],
-        last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || null,
-        phone: user.user_metadata?.phone || null,
-        platform: form.platform,
-        handle: form.handle,
-        support_type: form.supportType,
-        admin_notes: null,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      })
-
-    if (!error) {
-      setShowForm(false)
-      loadRequests()
-      setForm({ platform: 'facebook', handle: '', accountUrl: '', supportType: 'suspended', appealText: '' })
-    }
-  }
-
   const statusLabels: Record<string, string> = {
     pending: '⏳ Pending Review',
     processing: '🔄 Processing',
@@ -109,276 +72,51 @@ export default function DashboardRecoveryPage() {
     <div style={{ maxWidth: '900px' }}>
 
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '28px',
-        flexWrap: 'wrap',
-        gap: '16px',
-      }}>
-        <div>
-          <h1 style={{
-            fontSize: '24px',
-            fontWeight: 900,
-            color: 'var(--cmd-heading)',
-            margin: '0 0 4px',
-          }}>
-            Account Recovery 🔐
-          </h1>
-          <p style={{
-            fontSize: '14px',
-            color: 'var(--cmd-body)',
-            margin: 0,
-          }}>
-            Track your recovery requests
-          </p>
-        </div>
-
-        <button
-          onClick={() => setShowForm(!showForm)}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '10px',
-            border: 'none',
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-            color: '#fff',
-            fontSize: '13px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          + New Request
-        </button>
+      <div style={{ marginBottom: '28px' }}>
+        <h1 style={{
+          fontSize: '24px',
+          fontWeight: 900,
+          color: 'var(--cmd-heading)',
+          margin: '0 0 4px',
+        }}>
+          Account Recovery 🔐
+        </h1>
+        <p style={{
+          fontSize: '14px',
+          color: 'var(--cmd-body)',
+          margin: 0,
+        }}>
+          Track your recovery requests
+        </p>
       </div>
 
-      {/* New Request Form */}
-      {showForm && (
-        <div style={{
-          background: 'var(--cmd-card)',
-          border: '1px solid rgba(124,58,237,0.2)',
-          borderRadius: '16px',
-          padding: '24px',
-          marginBottom: '24px',
-          backdropFilter: 'blur(10px)',
-        }}>
-          <h3 style={{
-            fontSize: '16px',
-            fontWeight: 800,
-            color: 'var(--cmd-heading)',
-            margin: '0 0 20px',
-          }}>
-            📝 Submit Recovery Request
-          </h3>
-
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-              <div>
-                <label style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-body)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  display: 'block',
-                  marginBottom: '6px',
-                }}>
-                  Platform
-                </label>
-                <select
-                  value={form.platform}
-                  onChange={e => setForm(p => ({ ...p, platform: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(124,58,237,0.2)',
-                    background: 'rgba(124,58,237,0.06)',
-                    color: 'var(--cmd-heading)',
-                    fontSize: '14px',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <option value="facebook">Facebook</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="tiktok">TikTok</option>
-                  <option value="twitter">Twitter/X</option>
-                  <option value="youtube">YouTube</option>
-                  <option value="others">Others</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-body)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  display: 'block',
-                  marginBottom: '6px',
-                }}>
-                  Username / Handle
-                </label>
-                <input
-                  type="text"
-                  value={form.handle}
-                  onChange={e => setForm(p => ({ ...p, handle: e.target.value }))}
-                  placeholder="@yourhandle"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(124,58,237,0.2)',
-                    background: 'rgba(124,58,237,0.06)',
-                    color: 'var(--cmd-heading)',
-                    fontSize: '14px',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-body)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  display: 'block',
-                  marginBottom: '6px',
-                }}>
-                  Reason
-                </label>
-                <select
-                  value={form.supportType}
-                  onChange={e => setForm(p => ({ ...p, supportType: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(124,58,237,0.2)',
-                    background: 'rgba(124,58,237,0.06)',
-                    color: 'var(--cmd-heading)',
-                    fontSize: '14px',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <option value="suspended">Account Suspended</option>
-                  <option value="disabled">Account Disabled</option>
-                  <option value="hacked">Account Hacked</option>
-                  <option value="appeal">Appeal Decision</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-body)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  display: 'block',
-                  marginBottom: '6px',
-                }}>
-                  Account URL (optional)
-                </label>
-                <input
-                  type="url"
-                  value={form.accountUrl}
-                  onChange={e => setForm(p => ({ ...p, accountUrl: e.target.value }))}
-                  placeholder="https://..."
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(124,58,237,0.2)',
-                    background: 'rgba(124,58,237,0.06)',
-                    color: 'var(--cmd-heading)',
-                    fontSize: '14px',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label style={{
-                fontSize: '12px',
-                fontWeight: 700,
-                color: 'var(--cmd-body)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                display: 'block',
-                marginBottom: '6px',
-              }}>
-                Appeal Message / Additional Details
-              </label>
-              <textarea
-                value={form.appealText}
-                onChange={e => setForm(p => ({ ...p, appealText: e.target.value }))}
-                placeholder="Describe your situation..."
-                rows={4}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1.5px solid rgba(124,58,237,0.2)',
-                  background: 'rgba(124,58,237,0.06)',
-                  color: 'var(--cmd-heading)',
-                  fontSize: '14px',
-                  outline: 'none',
-                  fontFamily: 'inherit',
-                  resize: 'vertical',
-                }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                type="submit"
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                  color: '#fff',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
-                ✅ Submit Request
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                style={{
-                  padding: '12px 20px',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(124,58,237,0.2)',
-                  background: 'transparent',
-                  color: 'var(--cmd-body)',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+      {/* Info Banner */}
+      <div style={{
+        background: 'rgba(124,58,237,0.06)',
+        border: '1px solid rgba(124,58,237,0.15)',
+        borderRadius: '12px',
+        padding: '14px 18px',
+        marginBottom: '24px',
+        display: 'flex',
+        gap: '10px',
+        alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: '18px' }}>ℹ️</span>
+        <div>
+          <p style={{ fontSize: '13px', color: 'var(--cmd-heading)', fontWeight: 600, margin: '0 0 4px' }}>
+            Need help recovering an account?
+          </p>
+          <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+            Our team handles recovery requests manually. If you need to submit a new request,{' '}
+            <a href="https://www.purplesofthub.com/services/social-media-management/account-recovery" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               style={{ color: '#a855f7', fontWeight: 600 }}>
+              visit our Account Recovery page
+            </a>.
+          </p>
         </div>
-      )}
+      </div>
 
       {/* Requests List */}
       {loading ? (
@@ -401,10 +139,10 @@ export default function DashboardRecoveryPage() {
         }}>
           <p style={{ fontSize: '40px', margin: '0 0 12px' }}>🔐</p>
           <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 6px' }}>
-            No recovery requests yet
+            No recovery requests
           </p>
           <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: 0 }}>
-            Click "New Request" to submit a recovery request
+            You haven't submitted any recovery requests yet
           </p>
         </div>
       ) : (
