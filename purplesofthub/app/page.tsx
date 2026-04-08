@@ -703,41 +703,43 @@ export default async function Home() {
       <Footer />
 
       {/* Typewriter Script - Client Side */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        document.addEventListener('DOMContentLoaded', function() {
-          const words = ${JSON.stringify(TYPEWRITER_WORDS)};
-          let wordIndex = 0, charIndex = 0, isDeleting = false;
+      <script dangerouslySetInnerHTML={{__html: `(function() {
+        var words = ${JSON.stringify(TYPEWRITER_WORDS)};
+        var wordIndex = 0, charIndex = 0, isDeleting = false;
+        
+        function type() {
+          var el = document.getElementById('typewriter-text');
+          if (!el) { setTimeout(type, 100); return; }
+          var currentWord = words[wordIndex];
           
-          function type() {
-            const el = document.getElementById('typewriter-text');
-            if (!el) return;
-            const currentWord = words[wordIndex];
-            
-            if (isDeleting) {
-              charIndex--;
-              el.textContent = currentWord.substring(0, charIndex);
-            } else {
-              charIndex++;
-              el.textContent = currentWord.substring(0, charIndex);
-            }
-            
-            let speed = isDeleting ? 40 : 80;
-            
-            if (!isDeleting && charIndex === currentWord.length) {
-              speed = 2000;
-              isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-              isDeleting = false;
-              wordIndex = (wordIndex + 1) % words.length;
-              speed = 300;
-            }
-            
-            setTimeout(type, speed);
+          if (isDeleting) {
+            charIndex--;
+            el.textContent = currentWord.substring(0, charIndex);
+          } else {
+            charIndex++;
+            el.textContent = currentWord.substring(0, charIndex);
           }
           
+          var speed = isDeleting ? 40 : 80;
+          
+          if (!isDeleting && charIndex === currentWord.length) {
+            speed = 2000;
+            isDeleting = true;
+          } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+            speed = 300;
+          }
+          
+          setTimeout(type, speed);
+        }
+        
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() { setTimeout(type, 500); });
+        } else {
           setTimeout(type, 500);
-        });
-      `}} />
+        }
+      })();`}} />
     </main>
   );
 }
