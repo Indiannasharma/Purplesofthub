@@ -53,6 +53,16 @@ export default function RecoveryRequestsPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [updatingNote, setUpdatingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [newRequest, setNewRequest] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    platform: 'facebook',
+    handle: '',
+    supportType: 'suspended',
+  })
 
   useEffect(() => {
     loadRequests()
@@ -113,6 +123,65 @@ export default function RecoveryRequestsPage() {
     r => r.status === 'pending' || !r.status
   ).length
 
+  const createRecoveryRequest = async () => {
+    if (!newRequest.email || !newRequest.firstName) {
+      alert('Please fill in required fields')
+      return
+    }
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('account_recovery_requests')
+      .insert({
+        email: newRequest.email,
+        first_name: newRequest.firstName,
+        last_name: newRequest.lastName || null,
+        phone: newRequest.phone || null,
+        platform: newRequest.platform,
+        handle: newRequest.handle || null,
+        support_type: newRequest.supportType,
+        status: 'pending',
+        admin_notes: null,
+        created_at: new Date().toISOString(),
+      })
+
+    if (!error) {
+      setShowForm(false)
+      loadRequests()
+      setNewRequest({
+        email: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        platform: 'facebook',
+        handle: '',
+        supportType: 'suspended',
+      })
+    }
+  }
+
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 14px',
+    borderRadius: '10px',
+    border: '1.5px solid rgba(124,58,237,0.2)',
+    background: 'rgba(124,58,237,0.06)',
+    color: 'var(--cmd-heading)',
+    fontSize: '14px',
+    outline: 'none',
+    fontFamily: 'inherit',
+    boxSizing: 'border-box' as const,
+  }
+
+  const labelStyle = {
+    fontSize: '12px',
+    fontWeight: 700,
+    color: 'var(--cmd-body)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.06em',
+    marginBottom: '6px',
+    display: 'block',
+  }
+
   return (
     <div style={{ maxWidth: '1100px' }}>
 
@@ -125,6 +194,24 @@ export default function RecoveryRequestsPage() {
         flexWrap: 'wrap',
         gap: '16px',
       }}>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          style={{
+            padding: '10px 20px',
+            borderRadius: '10px',
+            border: 'none',
+            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+            color: '#fff',
+            fontSize: '13px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
+          }}
+        >
+          + New Request
+        </button>
+
         <div>
           <h1 style={{
             fontSize: '24px',
@@ -208,6 +295,148 @@ export default function RecoveryRequestsPage() {
           </div>
         ))}
       </div>
+
+      {/* Create New Request Form */}
+      {showForm && (
+        <div style={{
+          background: 'var(--cmd-card)',
+          border: '1px solid rgba(124,58,237,0.2)',
+          borderRadius: '16px',
+          padding: '24px',
+          marginBottom: '24px',
+        }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: 800,
+            color: 'var(--cmd-heading)',
+            margin: '0 0 20px',
+          }}>
+            ✍️ Create Manual Recovery Request
+          </h3>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Client Email *</label>
+              <input
+                type="email"
+                value={newRequest.email}
+                onChange={e => setNewRequest(p => ({ ...p, email: e.target.value }))}
+                placeholder="client@example.com"
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>First Name *</label>
+              <input
+                type="text"
+                value={newRequest.firstName}
+                onChange={e => setNewRequest(p => ({ ...p, firstName: e.target.value }))}
+                placeholder="John"
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Last Name</label>
+              <input
+                type="text"
+                value={newRequest.lastName}
+                onChange={e => setNewRequest(p => ({ ...p, lastName: e.target.value }))}
+                placeholder="Doe"
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Phone</label>
+              <input
+                type="tel"
+                value={newRequest.phone}
+                onChange={e => setNewRequest(p => ({ ...p, phone: e.target.value }))}
+                placeholder="+234 906 446 1786"
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Platform</label>
+              <select
+                value={newRequest.platform}
+                onChange={e => setNewRequest(p => ({ ...p, platform: e.target.value }))}
+                style={inputStyle}
+              >
+                <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+                <option value="twitter">Twitter/X</option>
+                <option value="youtube">YouTube</option>
+                <option value="others">Others</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Username / Handle</label>
+              <input
+                type="text"
+                value={newRequest.handle}
+                onChange={e => setNewRequest(p => ({ ...p, handle: e.target.value }))}
+                placeholder="@username"
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Issue Type</label>
+              <select
+                value={newRequest.supportType}
+                onChange={e => setNewRequest(p => ({ ...p, supportType: e.target.value }))}
+                style={inputStyle}
+              >
+                <option value="suspended">Account Suspended</option>
+                <option value="disabled">Account Disabled</option>
+                <option value="hacked">Account Hacked</option>
+                <option value="appeal">Appeal Decision</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button
+              onClick={createRecoveryRequest}
+              style={{
+                padding: '12px 24px',
+                borderRadius: '10px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              ✅ Create Request
+            </button>
+            <button
+              onClick={() => setShowForm(false)}
+              style={{
+                padding: '12px 20px',
+                borderRadius: '10px',
+                border: '1px solid rgba(124,58,237,0.2)',
+                background: 'transparent',
+                color: 'var(--cmd-body)',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Search + Filters */}
       <div style={{
