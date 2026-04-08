@@ -528,7 +528,7 @@ export default function AdminLayoutClient({
           padding: '0 24px',
           position: 'sticky',
           top: 0,
-          zIndex: 30,
+          zIndex: 40,
         }}>
 
           {/* Left */}
