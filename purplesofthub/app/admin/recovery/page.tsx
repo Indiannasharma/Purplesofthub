@@ -20,6 +20,7 @@ interface RecoveryRequest {
   id_document_url: string | null
   screenshot_url: string | null
   admin_notes: string | null
+  appeal_message: string | null
   created_at: string
 }
 
@@ -658,6 +659,40 @@ export default function RecoveryRequestsPage() {
                         </p>
                         <p style={{ fontSize: '14px', color: 'var(--cmd-heading)', margin: 0, textTransform: 'capitalize' }}>
                           {request.support_type.replace('_', ' ')}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Appeal Message (Read-only) */}
+                    {request.appeal_message && (
+                      <div style={{
+                        background: 'rgba(34,211,238,0.06)',
+                        border: '1px solid rgba(34,211,238,0.2)',
+                        borderRadius: '12px',
+                        padding: '16px',
+                      }}>
+                        <p style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          color: '#22d3ee',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.07em',
+                          margin: '0 0 8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}>
+                          📝 User Appeal Message
+                        </p>
+                        <p style={{
+                          fontSize: '14px',
+                          color: 'var(--cmd-heading)',
+                          lineHeight: 1.6,
+                          margin: 0,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                        }}>
+                          {request.appeal_message}
                         </p>
                       </div>
                     )}
