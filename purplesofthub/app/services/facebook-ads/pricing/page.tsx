@@ -1,20 +1,11 @@
 'use client'
 
-import type { Metadata } from "next"
 import Link from "next/link"
 import { useState } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Reveal from "@/components/Reveal"
 import CheckoutModal from "@/app/services/_components/CheckoutModal"
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"
-
-export const metadata: Metadata = {
-  title: "Meta Ads (Facebook & Instagram) Pricing | PurpleSoftHub",
-  description: "Professional Facebook & Instagram Ads management for businesses in Nigeria and worldwide. Plans from ₦150,000/month.",
-  alternates: { canonical: `${SITE_URL}/services/facebook-ads/pricing` },
-}
 
 const PLANS = [
   {
