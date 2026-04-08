@@ -1319,3 +1319,153 @@ html.dark {
 .cyber-logo:hover {
   filter: drop-shadow(0 0 16px rgba(124,58,237,0.7));
 }
+
+/* ══════════════════════════════
+   COMMAND CENTER — Dashboard Design System
+   (Darker, more premium than marketing pages)
+══════════════════════════════ */
+
+/* CSS Variables */
+:root {
+  --cmd-bg: #f5f3ff;
+  --cmd-bg2: #ede9ff;
+  --cmd-sidebar: rgba(255,255,255,0.8);
+  --cmd-card: rgba(255,255,255,0.7);
+  --cmd-border: rgba(124,58,237,0.12);
+  --cmd-border-hover: rgba(124,58,237,0.35);
+  --cmd-heading: #1a1a2e;
+  --cmd-body: #4a3f6b;
+  --cmd-muted: rgba(74,63,107,0.6);
+  --cmd-accent: #7c3aed;
+  --cmd-cyan: #0891b2;
+  --cmd-success: #059669;
+  --cmd-warning: #d97706;
+  --cmd-danger: #dc2626;
+  --cmd-grid: rgba(124,58,237,0.04);
+}
+
+.dark {
+  --cmd-bg: #03010a;
+  --cmd-bg2: #06030f;
+  --cmd-sidebar: rgba(6,3,15,0.95);
+  --cmd-card: rgba(13,5,32,0.8);
+  --cmd-border: rgba(124,58,237,0.15);
+  --cmd-border-hover: rgba(124,58,237,0.4);
+  --cmd-heading: #ffffff;
+  --cmd-body: #9d8fd4;
+  --cmd-muted: rgba(157,143,212,0.5);
+  --cmd-accent: #a855f7;
+  --cmd-cyan: #22d3ee;
+  --cmd-success: #10b981;
+  --cmd-warning: #f59e0b;
+  --cmd-danger: #ef4444;
+  --cmd-grid: rgba(124,58,237,0.04);
+}
+
+/* Command center grid background */
+.cmd-grid-bg {
+  background-image:
+    linear-gradient(var(--cmd-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cmd-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Dashboard stat card */
+.cmd-stat-card {
+  background: var(--cmd-card);
+  border: 1px solid var(--cmd-border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.cmd-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #7c3aed, #22d3ee);
+}
+
+.cmd-stat-card:hover {
+  border-color: var(--cmd-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124,58,237,0.12);
+}
+
+/* Dashboard table row */
+.cmd-table-row {
+  transition: background 0.15s;
+}
+
+.cmd-table-row:hover {
+  background: rgba(124,58,237,0.04);
+}
+
+/* Status badges */
+.cmd-badge-active {
+  color: var(--cmd-success);
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cmd-badge-pending {
+  color: var(--cmd-warning);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.25);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cmd-badge-danger {
+  color: var(--cmd-danger);
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Sidebar upgrade */
+.cmd-sidebar {
+  background: var(--cmd-sidebar);
+  border-right: 1px solid var(--cmd-border);
+  backdrop-filter: blur(20px);
+}
+
+.cmd-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: var(--cmd-body);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+}
+
+.cmd-nav-item:hover {
+  background: rgba(124,58,237,0.08);
+  color: var(--cmd-accent);
+}
+
+.cmd-nav-item.active {
+  background: rgba(124,58,237,0.12);
+  color: var(--cmd-accent);
+  font-weight: 700;
+  border-left: 3px solid var(--cmd-accent);
+  box-shadow: 0 0 12px rgba(124,58,237,0.1);
+}
