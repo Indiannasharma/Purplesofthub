@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import CheckoutModal from '@/services/_components/CheckoutModal'
+import { useState } from 'react'
+import CheckoutModal from '@/app/services/_components/CheckoutModal'
 
 interface Service {
   id: string
@@ -328,18 +327,10 @@ export default function DashboardServicesPage() {
       {/* Checkout Modal */}
       {showCheckout && checkoutService && (
         <CheckoutModal
-          service="meta-ads"
-          plan="basic"
-          amount={checkoutService.starting_price}
-          currency="NGN"
+          plan={checkoutService.name}
           onClose={() => {
             setShowCheckout(false)
             setCheckoutService(null)
-          }}
-          metadata={{
-            service_id: checkoutService.id,
-            service_name: checkoutService.name,
-            service_category: checkoutService.category,
           }}
         />
       )}
