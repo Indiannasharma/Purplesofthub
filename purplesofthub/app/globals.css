@@ -185,6 +185,13 @@ main,
   height: auto !important;
 }
 
+/* EXCEPTION FOR DASHBOARD LAYOUTS - allow independent scrolling */
+.dashboard-main main,
+.admin-main main {
+  overflow: auto !important;
+  height: auto !important;
+}
+
 /* Fix mobile scroll bounce */
 * {
   -webkit-overflow-scrolling: touch;
