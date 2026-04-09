@@ -9,20 +9,25 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
 
+    // Unified field names matching the database schema
     const data = {
-      fullName: formData.get('fullName') as string,
-      facebookHandle: formData.get('facebookHandle') as string,
       firstName: formData.get('firstName') as string,
-      surname: formData.get('surname') as string,
+      lastName: formData.get('lastName') as string,
+      handle: formData.get('handle') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
-      supportType: formData.get('supportType') as string,
-      additionalInfo: formData.get('additionalInfo') as string,
+      issueType: formData.get('issueType') as string,
+      appealMessage: formData.get('appealMessage') as string,
       platform: formData.get('platform') as string,
       amount: formData.get('amount') as string,
+      idFile: formData.get('idFile') as File | null,
+      screenshotFile: formData.get('screenshotFile') as File | null,
     }
 
-    // Save to Supabase
+    // Upload files to Supabase Storage if present
+    let idDocumentUrl = null
+    let screenshotUrl = null
+
     try {
       const cookieStore = await cookies()
       const supabase = createServerClient(
@@ -42,17 +47,55 @@ export async function POST(request: NextRequest) {
         }
       )
 
+      // Upload ID document
+      if (data.idFile && data.idFile.size > 0) {
+        const idFileName = `id_${Date.now()}_${data.idFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('account-recovery-documents')
+          .upload(idFileName, data.idFile, {
+            cacheControl: '3600',
+            upsert: false,
+          })
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('account-recovery-documents')
+            .getPublicUrl(idFileName)
+          idDocumentUrl = urlData.publicUrl
+        }
+      }
+
+      // Upload screenshot
+      if (data.screenshotFile && data.screenshotFile.size > 0) {
+        const screenshotFileName = `screenshot_${Date.now()}_${data.screenshotFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('account-recovery-documents')
+          .upload(screenshotFileName, data.screenshotFile, {
+            cacheControl: '3600',
+            upsert: false,
+          })
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('account-recovery-documents')
+            .getPublicUrl(screenshotFileName)
+          screenshotUrl = urlData.publicUrl
+        }
+      }
+
+      // Save to Supabase
       await supabase.from('account_recovery_requests').insert({
-        full_name: data.fullName,
-        facebook_handle: data.facebookHandle,
         first_name: data.firstName,
-        surname: data.surname,
+        last_name: data.lastName || null,
+        handle: data.handle || null,
         email: data.email,
-        phone: data.phone,
-        support_type: data.supportType,
-        additional_info: data.additionalInfo,
+        phone: data.phone || null,
+        support_type: data.issueType,
+        appeal_message: data.appealMessage || null,
         platform: data.platform,
-        amount: data.amount,
+        amount: data.amount ? parseFloat(data.amount) : null,
+        id_document_url: idDocumentUrl,
+        screenshot_url: screenshotUrl,
         status: 'pending_payment',
       })
     } catch (dbErr) {
@@ -72,7 +115,7 @@ export async function POST(request: NextRequest) {
       from: `"PurpleSoftHub" <${process.env.EMAIL_USER}>`,
       to: 'hello@purplesofthub.com',
       replyTo: data.email,
-      subject: `🔐 New Account Recovery: ${data.fullName} — ${data.platform?.toUpperCase()}`,
+      subject: `🔐 New Account Recovery: ${data.firstName} — ${data.platform?.toUpperCase()}`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.1)">
           <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);padding:28px 24px;text-align:center">
@@ -85,21 +128,22 @@ export async function POST(request: NextRequest) {
           </div>
           <div style="padding:28px 24px">
             ${Object.entries({
-              'Full Name': data.fullName,
-              'Facebook Handle': data.facebookHandle,
-              'First Name': data.firstName,
-              'Surname': data.surname,
+              'Full Name': `${data.firstName} ${data.lastName}`.trim(),
+              'Handle': data.handle,
               'Email': data.email,
               'Phone': data.phone,
-              'Support Type': data.supportType,
-              'Additional Info': data.additionalInfo,
+              'Issue Type': data.issueType,
+              'Appeal Message': data.appealMessage,
               'Platform': data.platform,
+              'Amount': data.amount ? `₦${parseFloat(data.amount).toLocaleString()}` : '—',
+              'ID Document': idDocumentUrl ? '✓ Uploaded' : 'Not provided',
+              'Screenshot': screenshotUrl ? '✓ Uploaded' : 'Not provided',
             }).map(([key, value]) => `
               <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #f0f0f0">
                 <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">
                   ${key}
                 </div>
-                <div style="font-size:14px;color:#1a1a1a">
+                <div style="font-size:14px;color:#1a1a1a;white-space:pre-wrap">
                   ${value || '—'}
                 </div>
               </div>

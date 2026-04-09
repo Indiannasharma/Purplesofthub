@@ -62,7 +62,10 @@ export default function RecoveryRequestsPage() {
     phone: '',
     platform: 'facebook',
     handle: '',
-    supportType: 'suspended',
+    issueType: 'hacked',
+    appealMessage: '',
+    idFile: null as File | null,
+    screenshotFile: null as File | null,
   })
 
   useEffect(() => {
@@ -129,7 +132,48 @@ export default function RecoveryRequestsPage() {
       alert('Please fill in required fields')
       return
     }
+    
     const supabase = createClient()
+    
+    // Upload files first if they exist
+    let idDocumentUrl = null
+    let screenshotUrl = null
+
+    if (newRequest.idFile) {
+      const idFileName = `id_${Date.now()}_${newRequest.idFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
+      const { data, error } = await supabase.storage
+        .from('account-recovery-documents')
+        .upload(idFileName, newRequest.idFile, {
+          cacheControl: '3600',
+          upsert: false,
+        })
+
+      if (!error) {
+        const { data: urlData } = supabase.storage
+          .from('account-recovery-documents')
+          .getPublicUrl(idFileName)
+        idDocumentUrl = urlData.publicUrl
+      }
+    }
+
+    if (newRequest.screenshotFile) {
+      const screenshotFileName = `screenshot_${Date.now()}_${newRequest.screenshotFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
+      const { data, error } = await supabase.storage
+        .from('account-recovery-documents')
+        .upload(screenshotFileName, newRequest.screenshotFile, {
+          cacheControl: '3600',
+          upsert: false,
+        })
+
+      if (!error) {
+        const { data: urlData } = supabase.storage
+          .from('account-recovery-documents')
+          .getPublicUrl(screenshotFileName)
+        screenshotUrl = urlData.publicUrl
+      }
+    }
+
+    // Insert request into database
     const { error } = await supabase
       .from('account_recovery_requests')
       .insert({
@@ -139,7 +183,10 @@ export default function RecoveryRequestsPage() {
         phone: newRequest.phone || null,
         platform: newRequest.platform,
         handle: newRequest.handle || null,
-        support_type: newRequest.supportType,
+        support_type: newRequest.issueType,
+        appeal_message: newRequest.appealMessage || null,
+        id_document_url: idDocumentUrl,
+        screenshot_url: screenshotUrl,
         status: 'pending',
         admin_notes: null,
         created_at: new Date().toISOString(),
@@ -155,7 +202,10 @@ export default function RecoveryRequestsPage() {
         phone: '',
         platform: 'facebook',
         handle: '',
-        supportType: 'suspended',
+        issueType: 'hacked',
+        appealMessage: '',
+        idFile: null,
+        screenshotFile: null,
       })
     }
   }
@@ -390,16 +440,68 @@ export default function RecoveryRequestsPage() {
             <div>
               <label style={labelStyle}>Issue Type</label>
               <select
-                value={newRequest.supportType}
-                onChange={e => setNewRequest(p => ({ ...p, supportType: e.target.value }))}
+                value={newRequest.issueType}
+                onChange={e => setNewRequest(p => ({ ...p, issueType: e.target.value }))}
                 style={inputStyle}
               >
-                <option value="suspended">Account Suspended</option>
-                <option value="disabled">Account Disabled</option>
-                <option value="hacked">Account Hacked</option>
-                <option value="appeal">Appeal Decision</option>
+                <option value="hacked">🔓 Account Hacked</option>
+                <option value="disabled">🚫 Account Disabled</option>
+                <option value="suspended">⏸️ Account Suspended</option>
+                <option value="banned">⛔ Account Banned</option>
+                <option value="compromised">⚠️ Account Compromised</option>
+                <option value="appeal">📝 Appeal Decision</option>
                 <option value="other">Other</option>
               </select>
+            </div>
+
+            {/* Appeal Message */}
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={labelStyle}>Appeal Message *</label>
+              <textarea
+                value={newRequest.appealMessage}
+                onChange={e => setNewRequest(p => ({ ...p, appealMessage: e.target.value }))}
+                placeholder="Describe when you lost access, what happened, any details that could help recover the account faster..."
+                rows={4}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }}
+              />
+            </div>
+
+            {/* ID Upload */}
+            <div>
+              <label style={labelStyle}>Upload ID Document</label>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) setNewRequest(p => ({ ...p, idFile: file }))
+                }}
+                style={{ ...inputStyle, padding: '8px' }}
+              />
+              {newRequest.idFile && (
+                <p style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>
+                  ✓ {newRequest.idFile.name}
+                </p>
+              )}
+            </div>
+
+            {/* Screenshot Upload */}
+            <div>
+              <label style={labelStyle}>Upload Screenshot (Optional)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) setNewRequest(p => ({ ...p, screenshotFile: file }))
+                }}
+                style={{ ...inputStyle, padding: '8px' }}
+              />
+              {newRequest.screenshotFile && (
+                <p style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>
+                  ✓ {newRequest.screenshotFile.name}
+                </p>
+              )}
             </div>
           </div>
 

@@ -42,13 +42,15 @@ const PLATFORMS = [
 ]
 
 type FormState = {
-  facebookHandle: string
+  platform: string
+  handle: string
+  profileUrl: string
   firstName: string
-  surname: string
+  lastName: string
   email: string
   phone: string
-  supportType: string
-  additionalInfo: string
+  issueType: string
+  appealMessage: string
   idFile: File | null
   idFileName: string
   screenshotFile: File | null
@@ -56,13 +58,15 @@ type FormState = {
 }
 
 const EMPTY_FORM: FormState = {
-  facebookHandle: '',
+  platform: '',
+  handle: '',
+  profileUrl: '',
   firstName: '',
-  surname: '',
+  lastName: '',
   email: '',
   phone: '',
-  supportType: '',
-  additionalInfo: '',
+  issueType: '',
+  appealMessage: '',
   idFile: null,
   idFileName: '',
   screenshotFile: null,
@@ -203,8 +207,8 @@ function RecoveryForm({
               </span>
               <input
                 type="text"
-                value={form.facebookHandle}
-                onChange={e => update('facebookHandle', e.target.value)}
+                value={form.handle}
+                onChange={e => update('handle', e.target.value)}
                 placeholder={config.handlePlaceholder}
                 style={{ ...inputStyle, paddingLeft: '106px' }}
                 onFocus={focusInput}
@@ -215,8 +219,8 @@ function RecoveryForm({
           ) : (
             <input
               type="text"
-              value={form.facebookHandle}
-              onChange={e => update('facebookHandle', e.target.value)}
+              value={form.handle}
+              onChange={e => update('handle', e.target.value)}
               placeholder={config.handlePlaceholder}
               style={inputStyle}
               onFocus={focusInput}
@@ -226,11 +230,11 @@ function RecoveryForm({
           )}
         </div>
 
-        {/* First Name + Surname */}
+        {/* First Name + Last Name */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           {[
             { label: 'First Name *', field: 'firstName', placeholder: 'First name' },
-            { label: 'Surname *', field: 'surname', placeholder: 'Surname' },
+            { label: 'Last Name *', field: 'lastName', placeholder: 'Last name' },
           ].map(f => (
             <div key={f.field}>
               <label style={labelStyle} className="dark:text-gray-300">{f.label}</label>
@@ -278,12 +282,12 @@ function RecoveryForm({
           />
         </div>
 
-        {/* Support type */}
+        {/* Issue Type */}
         <div>
-          <label style={labelStyle} className="dark:text-gray-300">What do you need support with? *</label>
+          <label style={labelStyle} className="dark:text-gray-300">Issue Type *</label>
           <select
-            value={form.supportType}
-            onChange={e => update('supportType', e.target.value)}
+            value={form.issueType}
+            onChange={e => update('issueType', e.target.value)}
             style={{
               ...inputStyle,
               cursor: 'pointer',
@@ -292,7 +296,7 @@ function RecoveryForm({
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'right 14px center',
               paddingRight: '40px',
-              color: form.supportType ? 'var(--input-text, #1a1a1a)' : '#9d8fd4',
+              color: form.issueType ? 'var(--input-text, #1a1a1a)' : '#9d8fd4',
             }}
             onFocus={focusInput}
             onBlur={blurInput}
@@ -384,15 +388,15 @@ function RecoveryForm({
           </button>
         </div>
 
-        {/* Additional Info */}
+        {/* Appeal Message */}
         <div>
-          <label style={labelStyle} className="dark:text-gray-300">Additional Information *</label>
+          <label style={labelStyle} className="dark:text-gray-300">Appeal Message *</label>
           <textarea
-            value={form.additionalInfo}
-            onChange={e => update('additionalInfo', e.target.value)}
-            placeholder="Describe when you lost access, what happened, any details that could help us recover your account faster..."
-            rows={5}
-            style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }}
+            value={form.appealMessage}
+            onChange={e => update('appealMessage', e.target.value)}
+            placeholder="Describe when you lost access, what happened, any details that could help us recover your account faster. This will be used as your appeal message..."
+            rows={6}
+            style={{ ...inputStyle, resize: 'vertical', minHeight: '140px' }}
             onFocus={focusInput}
             onBlur={blurInput}
             className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
@@ -558,10 +562,10 @@ export default function AccountRecoveryPage() {
   }
 
   const isValid = () =>
-    !!(form.firstName && form.surname &&
-      form.facebookHandle &&
+    !!(form.firstName && form.lastName &&
+      form.handle &&
       form.email && form.phone &&
-      form.supportType && form.additionalInfo &&
+      form.issueType && form.appealMessage &&
       form.idFile && agreed && paymentMethod !== null)
 
   const activePlatform = PLATFORMS.find(p => p.id === activeTab)!
@@ -582,7 +586,7 @@ export default function AccountRecoveryPage() {
     setSubmitting(true)
     setSubmitError('')
 
-    const fullName = `${form.firstName} ${form.surname}`.trim()
+    const fullName = `${form.firstName} ${form.lastName}`.trim()
     const priceNGN = activePlatform.price_ngn
 
     try {
