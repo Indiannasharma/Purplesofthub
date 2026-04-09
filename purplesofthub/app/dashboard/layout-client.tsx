@@ -496,7 +496,7 @@ export default function DashboardLayoutClient({
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="dashboard-mobile-menu"
               style={{
-                display: 'none',
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '36px',
@@ -525,7 +525,7 @@ export default function DashboardLayoutClient({
             <Link 
               href="/dashboard"
               className="dashboard-mobile-logo"
-              style={{ display: 'none' }}>
+              style={{ display: 'flex' }}>
               <Image
                 src="/images/logo/purplesoft-logo-main.png"
                 alt="PurpleSoftHub"
@@ -689,10 +689,28 @@ export default function DashboardLayoutClient({
 
       {/* RESPONSIVE CSS */}
       <style>{`
+        /* Desktop — always show sidebar, hide mobile elements */
+        @media (min-width: 1025px) {
+          .dashboard-sidebar {
+            transform: translateX(0) !important;
+          }
+          .dashboard-mobile-menu {
+            display: none !important;
+          }
+          .dashboard-mobile-logo {
+            display: none !important;
+          }
+          .dashboard-search {
+            display: flex !important;
+          }
+        }
+
         /* Mobile — hide sidebar, show mobile header elements */
         @media (max-width: 1024px) {
           .dashboard-sidebar {
             transform: translateX(-100%) !important;
+            z-index: 9999 !important;
+            -webkit-overflow-scrolling: touch;
           }
           .dashboard-sidebar.open {
             transform: translateX(0) !important;
@@ -708,13 +726,6 @@ export default function DashboardLayoutClient({
           }
           .dashboard-search {
             display: none !important;
-          }
-        }
-
-        /* Desktop — always show sidebar */
-        @media (min-width: 1025px) {
-          .dashboard-sidebar {
-            transform: translateX(0) !important;
           }
         }
 
