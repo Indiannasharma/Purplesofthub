@@ -9,6 +9,21 @@ import CheckoutModal from "@/app/services/_components/CheckoutModal"
 
 const PLANS = [
   {
+    name: 'Flex Weekly (Testing)',
+    ngn: 60000,
+    usd: 43,
+    adSpend: '₦60,000 minimum / week',
+    features: [
+      'Weekly ad management',
+      'Flexible budget',
+      'Creative updates',
+      'Basic analytics',
+      '1 ad campaign',
+      'No long term commitment'
+    ],
+    color: '#14b8a6',
+  },
+  {
     name: 'Starter',
     ngn: 150000,
     usd: 107,
