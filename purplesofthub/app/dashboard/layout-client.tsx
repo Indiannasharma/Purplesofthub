@@ -179,148 +179,93 @@ export default function DashboardLayoutClient({
     <div style={{
       display: 'flex',
       height: '100vh',
+      width: '100vw',
       overflow: 'hidden',
       background: theme === 'dark' ? '#0f0f1a' : '#f4f6f9',
       fontFamily: 'inherit',
     }}>
 
-      {/* ══════════════════════
-          SIDEBAR
-      ══════════════════════ */}
-      <>
-        {/* Mobile overlay */}
-        {sidebarOpen && (
-          <div
-            onClick={() => setSidebarOpen(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.5)',
-              zIndex: 40,
-            }}
-          />
-        )}
-
-        <aside 
-          className={`dashboard-sidebar${sidebarOpen ? ' open' : ''}`}
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
           style={{
-            width: `${SIDEBAR_WIDTH}px`,
-            flexShrink: 0,
-            height: '100vh',
-            background: theme === 'dark' ? '#13131f' : '#ffffff',
-            borderRight: `1px solid ${
-              theme === 'dark'
-                ? 'rgba(124,58,237,0.15)'
-                : 'rgba(124,58,237,0.1)'
-            }`,
-            display: 'flex',
-            flexDirection: 'column',
             position: 'fixed',
-            left: 0,
-            top: 0,
-            zIndex: 50,
-            transition: 'transform 0.3s ease',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 100,
           }}
-        >
+        />
+      )}
 
-          {/* Logo */}
-          <div style={{
-            padding: '20px 24px',
-            borderBottom: `1px solid ${
-              theme === 'dark'
-                ? 'rgba(124,58,237,0.1)'
-                : 'rgba(124,58,237,0.08)'
-            }`,
+      {/* SIDEBAR */}
+      <aside 
+        className={`dashboard-sidebar${sidebarOpen ? ' open' : ''}`}
+        style={{
+          width: `${SIDEBAR_WIDTH}px`,
+          flexShrink: 0,
+          height: '100vh',
+          background: theme === 'dark' ? '#13131f' : '#ffffff',
+          borderRight: `1px solid ${
+            theme === 'dark'
+              ? 'rgba(124,58,237,0.15)'
+              : 'rgba(124,58,237,0.1)'
+          }`,
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          zIndex: 200,
+          transition: 'transform 0.3s ease',
+          overflowY: 'auto',
+        }}
+      >
+
+        {/* Logo */}
+        <div style={{
+          padding: '20px 24px',
+          borderBottom: `1px solid ${
+            theme === 'dark'
+              ? 'rgba(124,58,237,0.1)'
+              : 'rgba(124,58,237,0.08)'
+          }`,
+          flexShrink: 0,
+        }}>
+          <Link href="/dashboard">
+            <Image
+              src="/images/logo/purplesoft-logo-main.png"
+              alt="PurpleSoftHub"
+              width={140}
+              height={40}
+              priority
+              style={{ objectFit: 'contain' }}
+            />
+          </Link>
+        </div>
+
+        {/* Navigation */}
+        <nav style={{
+          flex: 1,
+          padding: '16px 12px',
+          overflowY: 'auto',
+        }}>
+          <p style={{
+            fontSize: '10px',
+            fontWeight: 700,
+            color: theme === 'dark' ? '#4b5563' : '#9ca3af',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            padding: '0 12px',
+            marginBottom: '8px',
           }}>
-            <Link href="/dashboard">
-              <Image
-                src="/images/logo/purplesoft-logo-main.png"
-                alt="PurpleSoftHub"
-                width={140}
-                height={40}
-                priority
-                style={{ objectFit: 'contain' }}
-              />
-            </Link>
-          </div>
+            Menu
+          </p>
 
-          {/* Navigation */}
-          <nav style={{
-            flex: 1,
-            padding: '16px 12px',
-            overflowY: 'auto',
-          }}>
-            <p style={{
-              fontSize: '10px',
-              fontWeight: 700,
-              color: theme === 'dark' ? '#4b5563' : '#9ca3af',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              padding: '0 12px',
-              marginBottom: '8px',
-            }}>
-              Menu
-            </p>
-
-            {navItems.map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  marginBottom: '4px',
-                  textDecoration: 'none',
-                  fontWeight: isActive(item.href) ? 700 : 500,
-                  fontSize: '14px',
-                  background: isActive(item.href)
-                    ? 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.1))'
-                    : 'transparent',
-                  color: isActive(item.href)
-                    ? '#a855f7'
-                    : theme === 'dark' ? '#9ca3af' : '#6b7280',
-                  borderLeft: isActive(item.href)
-                    ? '3px solid #a855f7'
-                    : '3px solid transparent',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <span style={{
-                  color: isActive(item.href) ? '#a855f7' : 'inherit',
-                  flexShrink: 0,
-                }}>
-                  {item.icon}
-                </span>
-                {item.label}
-              </Link>
-            ))}
-
-            <div style={{
-              height: '1px',
-              background: theme === 'dark'
-                ? 'rgba(124,58,237,0.1)'
-                : 'rgba(124,58,237,0.08)',
-              margin: '12px 0',
-            }}/>
-
-            <p style={{
-              fontSize: '10px',
-              fontWeight: 700,
-              color: theme === 'dark' ? '#4b5563' : '#9ca3af',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              padding: '0 12px',
-              marginBottom: '8px',
-            }}>
-              Others
-            </p>
-
+          {navItems.map(item => (
             <Link
-              href="/dashboard/settings"
+              key={item.href}
+              href={item.href}
               onClick={() => setSidebarOpen(false)}
               style={{
                 display: 'flex',
@@ -328,134 +273,186 @@ export default function DashboardLayoutClient({
                 gap: '12px',
                 padding: '10px 12px',
                 borderRadius: '10px',
+                marginBottom: '4px',
                 textDecoration: 'none',
+                fontWeight: isActive(item.href) ? 700 : 500,
                 fontSize: '14px',
-                fontWeight: isActive('/dashboard/settings') ? 700 : 500,
-                background: isActive('/dashboard/settings')
-                  ? 'rgba(124,58,237,0.12)'
+                background: isActive(item.href)
+                  ? 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.1))'
                   : 'transparent',
-                color: isActive('/dashboard/settings')
+                color: isActive(item.href)
                   ? '#a855f7'
                   : theme === 'dark' ? '#9ca3af' : '#6b7280',
-                borderLeft: isActive('/dashboard/settings')
+                borderLeft: isActive(item.href)
                   ? '3px solid #a855f7'
                   : '3px solid transparent',
                 transition: 'all 0.15s',
               }}
             >
-              <svg width="18" height="18"
-                viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-              </svg>
-              Settings
-            </Link>
-          </nav>
-
-          {/* User section at bottom */}
-          <div style={{
-            padding: '16px',
-            borderTop: `1px solid ${
-              theme === 'dark'
-                ? 'rgba(124,58,237,0.1)'
-                : 'rgba(124,58,237,0.08)'
-            }`,
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '10px 12px',
-              borderRadius: '10px',
-              background: theme === 'dark'
-                ? 'rgba(124,58,237,0.08)'
-                : 'rgba(124,58,237,0.05)',
-              marginBottom: '8px',
-            }}>
-              <div style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: 800,
-                color: '#fff',
+              <span style={{
+                color: isActive(item.href) ? '#a855f7' : 'inherit',
                 flexShrink: 0,
               }}>
-                {user?.initials || 'U'}
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: theme === 'dark' ? '#fff' : '#1a1a1a',
-                  margin: 0,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}>
-                  {user?.name || 'Loading...'}
-                </p>
-                <p style={{
-                  fontSize: '11px',
-                  color: '#9d8fd4',
-                  margin: 0,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}>
-                  {user?.email || ''}
-                </p>
-              </div>
+                {item.icon}
+              </span>
+              {item.label}
+            </Link>
+          ))}
+
+          <div style={{
+            height: '1px',
+            background: theme === 'dark'
+              ? 'rgba(124,58,237,0.1)'
+              : 'rgba(124,58,237,0.08)',
+            margin: '12px 0',
+          }}/>
+
+          <p style={{
+            fontSize: '10px',
+            fontWeight: 700,
+            color: theme === 'dark' ? '#4b5563' : '#9ca3af',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            padding: '0 12px',
+            marginBottom: '8px',
+          }}>
+            Others
+          </p>
+
+          <Link
+            href="/dashboard/settings"
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              textDecoration: 'none',
+              fontSize: '14px',
+              fontWeight: isActive('/dashboard/settings') ? 700 : 500,
+              background: isActive('/dashboard/settings')
+                ? 'rgba(124,58,237,0.12)'
+                : 'transparent',
+              color: isActive('/dashboard/settings')
+                ? '#a855f7'
+                : theme === 'dark' ? '#9ca3af' : '#6b7280',
+              borderLeft: isActive('/dashboard/settings')
+                ? '3px solid #a855f7'
+                : '3px solid transparent',
+              transition: 'all 0.15s',
+            }}
+          >
+            <svg width="18" height="18"
+              viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+            Settings
+          </Link>
+        </nav>
+
+        {/* User section at bottom */}
+        <div style={{
+          padding: '16px',
+          borderTop: `1px solid ${
+            theme === 'dark'
+              ? 'rgba(124,58,237,0.1)'
+              : 'rgba(124,58,237,0.08)'
+          }`,
+          flexShrink: 0,
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 12px',
+            borderRadius: '10px',
+            background: theme === 'dark'
+              ? 'rgba(124,58,237,0.08)'
+              : 'rgba(124,58,237,0.05)',
+            marginBottom: '8px',
+          }}>
+            <div style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 800,
+              color: '#fff',
+              flexShrink: 0,
+            }}>
+              {user?.initials || 'U'}
             </div>
-
-            {/* Sign out */}
-            <button
-              onClick={handleSignOut}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '9px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'transparent',
-                color: '#ef4444',
+            <div style={{ minWidth: 0 }}>
+              <p style={{
                 fontSize: '13px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'background 0.15s',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)'
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
-              }}
-            >
-              <svg width="16" height="16"
-                viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
-              </svg>
-              Sign Out
-            </button>
+                fontWeight: 700,
+                color: theme === 'dark' ? '#fff' : '#1a1a1a',
+                margin: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {user?.name || 'Loading...'}
+              </p>
+              <p style={{
+                fontSize: '11px',
+                color: '#9d8fd4',
+                margin: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {user?.email || ''}
+              </p>
+            </div>
           </div>
-        </aside>
-      </>
 
-      {/* ══════════════════════
-          MAIN CONTENT AREA
-      ══════════════════════ */}
+          {/* Sign out */}
+          <button
+            onClick={handleSignOut}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '9px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: 'transparent',
+              color: '#ef4444',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)'
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
+            }}
+          >
+            <svg width="16" height="16"
+              viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sign Out
+          </button>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
       <div 
-        className="dashboard-main"
         style={{
           marginLeft: `${SIDEBAR_WIDTH}px`,
           flex: 1,
@@ -465,9 +462,10 @@ export default function DashboardLayoutClient({
           overflow: 'hidden',
           minWidth: 0,
         }}
+        className="dashboard-main"
       >
 
-        {/* ── TOP HEADER ── */}
+        {/* STICKY HEADER */}
         <header style={{
           height: '60px',
           flexShrink: 0,
@@ -483,7 +481,8 @@ export default function DashboardLayoutClient({
           padding: '0 24px',
           position: 'sticky',
           top: 0,
-          zIndex: 30,
+          zIndex: 50,
+          backdropFilter: 'blur(12px)',
         }}>
 
           {/* Left — Mobile menu + Search */}
@@ -673,20 +672,22 @@ export default function DashboardLayoutClient({
           </div>
         </header>
 
-        {/* ── PAGE CONTENT ── */}
+        {/* SCROLLABLE MAIN CONTENT */}
         <main style={{
-          flex: 1,
+          flex: '1 1 auto',
           overflowY: 'auto',
           overflowX: 'hidden',
           padding: 'clamp(16px, 2vw, 28px)',
           scrollBehavior: 'smooth',
           WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+          minHeight: 0,
         }}>
           {children}
         </main>
       </div>
 
-      {/* ── RESPONSIVE CSS ── */}
+      {/* RESPONSIVE CSS */}
       <style>{`
         /* Mobile — hide sidebar, show mobile header elements */
         @media (max-width: 1024px) {

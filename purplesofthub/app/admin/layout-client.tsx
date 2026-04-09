@@ -253,14 +253,11 @@ export default function AdminLayoutClient({
     <div style={{
       display: 'flex',
       height: '100vh',
+      width: '100vw',
       overflow: 'hidden',
       background: theme === 'dark' ? '#0f0f1a' : '#f4f6f9',
       fontFamily: 'inherit',
     }}>
-
-      {/* ══════════════════════
-          ADMIN SIDEBAR
-      ══════════════════════ */}
 
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -270,11 +267,12 @@ export default function AdminLayoutClient({
             position: 'fixed',
             inset: 0,
             background: 'rgba(0,0,0,0.6)',
-            zIndex: 40,
+            zIndex: 100,
           }}
         />
       )}
 
+      {/* ADMIN SIDEBAR */}
       <aside
         className={`admin-sidebar${sidebarOpen ? ' open' : ''}`}
         style={{
@@ -292,8 +290,9 @@ export default function AdminLayoutClient({
           position: 'fixed',
           left: 0,
           top: 0,
-          zIndex: 50,
+          zIndex: 200,
           transition: 'transform 0.3s ease',
+          overflowY: 'auto',
         }}
       >
 
@@ -308,6 +307,7 @@ export default function AdminLayoutClient({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          flexShrink: 0,
         }}>
           <Link href="/admin">
             <Image
@@ -401,6 +401,7 @@ export default function AdminLayoutClient({
               ? 'rgba(124,58,237,0.1)'
               : 'rgba(124,58,237,0.08)'
           }`,
+          flexShrink: 0,
         }}>
           {/* User info */}
           <div style={{
@@ -496,9 +497,7 @@ export default function AdminLayoutClient({
         </div>
       </aside>
 
-      {/* ══════════════════════
-          ADMIN MAIN CONTENT
-      ══════════════════════ */}
+      {/* ADMIN MAIN CONTENT */}
       <div
         style={{
           marginLeft: `${SIDEBAR_WIDTH}px`,
@@ -512,7 +511,7 @@ export default function AdminLayoutClient({
         className="admin-main"
       >
 
-        {/* ── TOP HEADER ── */}
+        {/* STICKY HEADER */}
         <header style={{
           height: '60px',
           flexShrink: 0,
@@ -528,7 +527,8 @@ export default function AdminLayoutClient({
           padding: '0 24px',
           position: 'sticky',
           top: 0,
-          zIndex: 40,
+          zIndex: 50,
+          backdropFilter: 'blur(12px)',
         }}>
 
           {/* Left */}
@@ -728,25 +728,29 @@ export default function AdminLayoutClient({
           </div>
         </header>
 
-        {/* ── PAGE CONTENT ── */}
+        {/* SCROLLABLE MAIN CONTENT */}
         <main style={{
-          flex: 1,
+          flex: '1 1 auto',
           overflowY: 'auto',
           overflowX: 'hidden',
           padding: 'clamp(16px, 2vw, 28px)',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+          minHeight: 0,
         }}>
           {children}
         </main>
       </div>
 
-      {/* ── RESPONSIVE CSS ── */}
+      {/* RESPONSIVE CSS */}
       <style>{`
         @media (max-width: 1024px) {
           .admin-sidebar {
-            transform: translateX(-100%);
+            transform: translateX(-100%) !important;
           }
           .admin-sidebar.open {
-            transform: translateX(0);
+            transform: translateX(0) !important;
           }
           .admin-main {
             margin-left: 0 !important;
@@ -769,8 +773,10 @@ export default function AdminLayoutClient({
             transform: translateX(0) !important;
           }
         }
+
+        /* Scrollbar styling */
         .admin-main main::-webkit-scrollbar {
-          width: 4px;
+          width: 6px;
         }
         .admin-main main::-webkit-scrollbar-track {
           background: transparent;
@@ -778,6 +784,21 @@ export default function AdminLayoutClient({
         .admin-main main::-webkit-scrollbar-thumb {
           background: rgba(124,58,237,0.3);
           border-radius: 100px;
+        }
+        .admin-main main::-webkit-scrollbar-thumb:hover {
+          background: rgba(124,58,237,0.5);
+        }
+
+        /* Fix touch scrolling on mobile */
+        .admin-main {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
+
+        /* Ensure main content scrolls correctly */
+        .admin-main main {
+          min-height: 0;
+          overscroll-behavior: contain;
         }
       `}</style>
     </div>
