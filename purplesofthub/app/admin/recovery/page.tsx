@@ -58,13 +58,14 @@ export default function RecoveryRequestsPage() {
   const [creatingRequest, setCreatingRequest] = useState(false)
   const [newRequest, setNewRequest] = useState({
     email: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     phone: '',
     platform: 'facebook',
     handle: '',
     issueType: 'hacked',
-    appealMessage: '',
+    appeal_message: '',
+    admin_notes: '',
     idFile: null as File | null,
     screenshotFile: null as File | null,
   })
@@ -129,7 +130,7 @@ export default function RecoveryRequestsPage() {
   ).length
 
   const createRecoveryRequest = async () => {
-    if (!newRequest.email || !newRequest.firstName || !newRequest.appealMessage) {
+    if (!newRequest.email || !newRequest.first_name || !newRequest.appeal_message) {
       alert('Please fill in required fields: Email, First Name, and Appeal Message')
       return
     }
@@ -182,17 +183,17 @@ export default function RecoveryRequestsPage() {
       .from('account_recovery_requests')
       .insert({
         email: newRequest.email,
-        first_name: newRequest.firstName,
-        last_name: newRequest.lastName || null,
+        first_name: newRequest.first_name,
+        last_name: newRequest.last_name || null,
         phone: newRequest.phone || null,
         platform: newRequest.platform,
         handle: newRequest.handle || null,
         support_type: newRequest.issueType,
-        appeal_message: newRequest.appealMessage || null,
+        appeal_message: newRequest.appeal_message || null,
+        admin_notes: newRequest.admin_notes || null,
         id_document_url: idDocumentUrl,
         screenshot_url: screenshotUrl,
         status: 'pending',
-        admin_notes: null,
         created_at: new Date().toISOString(),
       })
 
@@ -204,13 +205,14 @@ export default function RecoveryRequestsPage() {
       loadRequests()
       setNewRequest({
         email: '',
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         phone: '',
         platform: 'facebook',
         handle: '',
         issueType: 'hacked',
-        appealMessage: '',
+        appeal_message: '',
+        admin_notes: '',
         idFile: null,
         screenshotFile: null,
       })
@@ -396,8 +398,8 @@ export default function RecoveryRequestsPage() {
               <label style={labelStyle}>First Name *</label>
               <input
                 type="text"
-                value={newRequest.firstName}
-                onChange={e => setNewRequest(p => ({ ...p, firstName: e.target.value }))}
+                value={newRequest.first_name}
+                onChange={e => setNewRequest(p => ({ ...p, first_name: e.target.value }))}
                 placeholder="John"
                 style={inputStyle}
               />
@@ -407,8 +409,8 @@ export default function RecoveryRequestsPage() {
               <label style={labelStyle}>Last Name</label>
               <input
                 type="text"
-                value={newRequest.lastName}
-                onChange={e => setNewRequest(p => ({ ...p, lastName: e.target.value }))}
+                value={newRequest.last_name}
+                onChange={e => setNewRequest(p => ({ ...p, last_name: e.target.value }))}
                 placeholder="Doe"
                 style={inputStyle}
               />
@@ -473,11 +475,23 @@ export default function RecoveryRequestsPage() {
             <div style={{ gridColumn: 'span 2' }}>
               <label style={labelStyle}>Appeal Message *</label>
               <textarea
-                value={newRequest.appealMessage}
-                onChange={e => setNewRequest(p => ({ ...p, appealMessage: e.target.value }))}
+                value={newRequest.appeal_message}
+                onChange={e => setNewRequest(p => ({ ...p, appeal_message: e.target.value }))}
                 placeholder="Describe when you lost access, what happened, any details that could help recover the account faster..."
                 rows={4}
                 style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }}
+              />
+            </div>
+
+            {/* Admin Notes */}
+            <div style={{ gridColumn: 'span 2' }}>
+              <label style={labelStyle}>Admin Notes (Internal - Optional)</label>
+              <textarea
+                value={newRequest.admin_notes}
+                onChange={e => setNewRequest(p => ({ ...p, admin_notes: e.target.value }))}
+                placeholder="Internal admin notes (not visible to client when created)..."
+                rows={3}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '80px', background: 'rgba(245,158,11,0.06)', borderColor: 'rgba(245,158,11,0.2)' }}
               />
             </div>
 

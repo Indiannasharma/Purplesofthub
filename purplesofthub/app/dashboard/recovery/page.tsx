@@ -258,9 +258,36 @@ export default function DashboardRecoveryPage() {
                         </span>
                       </div>
                       {request.admin_notes && (
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-muted)', minWidth: '100px' }}>Admin Notes:</span>
-                          <span style={{ fontSize: '14px', color: 'var(--cmd-body)', fontStyle: 'italic' }}>{request.admin_notes}</span>
+                        <div style={{
+                          marginTop: '8px',
+                          background: 'rgba(245,158,11,0.08)',
+                          border: '1px solid rgba(245,158,11,0.25)',
+                          borderRadius: '10px',
+                          padding: '14px 16px',
+                        }}>
+                          <p style={{ 
+                            fontSize: '11px', 
+                            fontWeight: 700, 
+                            color: '#d97706', 
+                            textTransform: 'uppercase', 
+                            letterSpacing: '0.07em', 
+                            margin: '0 0 8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}>
+                            📌 Admin Notes (Internal)
+                          </p>
+                          <p style={{ 
+                            fontSize: '14px', 
+                            color: 'var(--cmd-heading)', 
+                            margin: 0,
+                            lineHeight: '1.6',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word'
+                          }}>
+                            {request.admin_notes}
+                          </p>
                         </div>
                       )}
                     </div>

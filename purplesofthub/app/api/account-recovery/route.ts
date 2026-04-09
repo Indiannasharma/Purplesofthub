@@ -11,13 +11,14 @@ export async function POST(request: NextRequest) {
 
     // Unified field names matching the database schema
     const data = {
-      firstName: formData.get('firstName') as string,
-      lastName: formData.get('lastName') as string,
+      first_name: formData.get('first_name') as string,
+      last_name: formData.get('last_name') as string,
       handle: formData.get('handle') as string,
+      appeal_message: formData.get('appeal_message') as string,
+      admin_notes: formData.get('admin_notes') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
       issueType: formData.get('issueType') as string,
-      appealMessage: formData.get('appealMessage') as string,
       platform: formData.get('platform') as string,
       amount: formData.get('amount') as string,
       idFile: formData.get('idFile') as File | null,
@@ -30,27 +31,40 @@ export async function POST(request: NextRequest) {
 
     try {
       const cookieStore = await cookies()
-      const supabase = createServerClient(
+      
+      // Create admin client with service role for privileged operations (bypasses RLS)
+      const supabaseAdmin = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
         {
-          cookies: {
-            getAll() {
-              return cookieStore.getAll()
-            },
-            setAll(cookiesToSet) {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            },
-          },
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
         }
       )
+
+      // Get current authenticated admin user
+      const { data: { user: adminUser }, error: adminError } = await supabaseAdmin.auth.getUser()
+      
+      // Lookup user profile by email if provided
+      let user_id = null
+      if (data.email) {
+        const { data: userProfile } = await supabaseAdmin
+          .from('profiles')
+          .select('id')
+          .eq('email', data.email)
+          .single()
+        
+        if (userProfile) {
+          user_id = userProfile.id
+        }
+      }
 
       // Upload ID document
       if (data.idFile && data.idFile.size > 0) {
         const idFileName = `id_${Date.now()}_${data.idFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
           .from('account-recovery-documents')
           .upload(idFileName, data.idFile, {
             cacheControl: '3600',
@@ -58,7 +72,7 @@ export async function POST(request: NextRequest) {
           })
 
         if (!uploadError) {
-          const { data: urlData } = supabase.storage
+          const { data: urlData } = supabaseAdmin.storage
             .from('account-recovery-documents')
             .getPublicUrl(idFileName)
           idDocumentUrl = urlData.publicUrl
@@ -68,7 +82,7 @@ export async function POST(request: NextRequest) {
       // Upload screenshot
       if (data.screenshotFile && data.screenshotFile.size > 0) {
         const screenshotFileName = `screenshot_${Date.now()}_${data.screenshotFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
           .from('account-recovery-documents')
           .upload(screenshotFileName, data.screenshotFile, {
             cacheControl: '3600',
@@ -76,22 +90,25 @@ export async function POST(request: NextRequest) {
           })
 
         if (!uploadError) {
-          const { data: urlData } = supabase.storage
+          const { data: urlData } = supabaseAdmin.storage
             .from('account-recovery-documents')
             .getPublicUrl(screenshotFileName)
           screenshotUrl = urlData.publicUrl
         }
       }
 
-      // Save to Supabase
-      await supabase.from('account_recovery_requests').insert({
-        first_name: data.firstName,
-        last_name: data.lastName || null,
+      // Save to Supabase using admin client
+      await supabaseAdmin.from('account_recovery_requests').insert({
+        first_name: data.first_name,
+        last_name: data.last_name || null,
         handle: data.handle || null,
+        appeal_message: data.appeal_message || null,
+        admin_notes: data.admin_notes || null,
         email: data.email,
+        user_id: user_id,
+        created_by_admin_id: adminUser?.id || null,
         phone: data.phone || null,
         support_type: data.issueType,
-        appeal_message: data.appealMessage || null,
         platform: data.platform,
         amount: data.amount ? parseFloat(data.amount) : null,
         id_document_url: idDocumentUrl,
@@ -115,7 +132,7 @@ export async function POST(request: NextRequest) {
       from: `"PurpleSoftHub" <${process.env.EMAIL_USER}>`,
       to: 'hello@purplesofthub.com',
       replyTo: data.email,
-      subject: `🔐 New Account Recovery: ${data.firstName} — ${data.platform?.toUpperCase()}`,
+      subject: `🔐 New Account Recovery: ${data.first_name} — ${data.platform?.toUpperCase()}`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.1)">
           <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);padding:28px 24px;text-align:center">
@@ -128,12 +145,12 @@ export async function POST(request: NextRequest) {
           </div>
           <div style="padding:28px 24px">
             ${Object.entries({
-              'Full Name': `${data.firstName} ${data.lastName}`.trim(),
+               'Full Name': `${data.first_name} ${data.last_name}`.trim(),
               'Handle': data.handle,
               'Email': data.email,
               'Phone': data.phone,
               'Issue Type': data.issueType,
-              'Appeal Message': data.appealMessage,
+              'Appeal Message': data.appeal_message,
               'Platform': data.platform,
               'Amount': data.amount ? `₦${parseFloat(data.amount).toLocaleString()}` : '—',
               'ID Document': idDocumentUrl ? '✓ Uploaded' : 'Not provided',
