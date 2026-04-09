@@ -55,6 +55,7 @@ export default function RecoveryRequestsPage() {
   const [updatingNote, setUpdatingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [creatingRequest, setCreatingRequest] = useState(false)
   const [newRequest, setNewRequest] = useState({
     email: '',
     firstName: '',
@@ -128,12 +129,15 @@ export default function RecoveryRequestsPage() {
   ).length
 
   const createRecoveryRequest = async () => {
-    if (!newRequest.email || !newRequest.firstName) {
-      alert('Please fill in required fields')
+    if (!newRequest.email || !newRequest.firstName || !newRequest.appealMessage) {
+      alert('Please fill in required fields: Email, First Name, and Appeal Message')
       return
     }
     
-    const supabase = createClient()
+    setCreatingRequest(true)
+    
+    try {
+      const supabase = createClient()
     
     // Upload files first if they exist
     let idDocumentUrl = null
@@ -192,7 +196,10 @@ export default function RecoveryRequestsPage() {
         created_at: new Date().toISOString(),
       })
 
-    if (!error) {
+    if (error) {
+      console.error('Error creating recovery request:', error)
+      alert(`Failed to create request: ${error.message}`)
+    } else {
       setShowForm(false)
       loadRequests()
       setNewRequest({
@@ -207,8 +214,16 @@ export default function RecoveryRequestsPage() {
         idFile: null,
         screenshotFile: null,
       })
+      alert('✅ Recovery request created successfully!')
     }
+    
+  } catch (err: any) {
+    console.error('Exception creating recovery request:', err)
+    alert(`Failed to create request: ${err.message || 'Unknown error'}`)
+  } finally {
+    setCreatingRequest(false)
   }
+}
 
   const inputStyle = {
     width: '100%',
@@ -508,19 +523,22 @@ export default function RecoveryRequestsPage() {
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <button
               onClick={createRecoveryRequest}
+              disabled={creatingRequest}
               style={{
                 padding: '12px 24px',
                 borderRadius: '10px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                background: creatingRequest 
+                  ? 'rgba(124,58,237,0.5)'
+                  : 'linear-gradient(135deg, #7c3aed, #a855f7)',
                 color: '#fff',
                 fontSize: '14px',
                 fontWeight: 700,
-                cursor: 'pointer',
+                cursor: creatingRequest ? 'not-allowed' : 'pointer',
                 fontFamily: 'inherit',
               }}
             >
-              ✅ Create Request
+              {creatingRequest ? '⏳ Creating Request...' : '✅ Create Request'}
             </button>
             <button
               onClick={() => setShowForm(false)}
