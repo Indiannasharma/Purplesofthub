@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 
 const PLAN_PRICES: Record<string, number> = {
   Starter: 150000,
@@ -27,6 +28,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
   const [step, setStep] = useState<'details' | 'payment' | 'processing' | 'success'>(isLoggedIn ? 'payment' : 'details')
   const [payMethod, setPayMethod] = useState<'paystack' | 'flutterwave' | null>(null)
   const [error, setError] = useState('')
+  const [scriptsLoaded, setScriptsLoaded] = useState({ paystack: false, flutterwave: false })
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -38,6 +40,35 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
 
   const amount = propAmount ?? PLAN_PRICES[plan] ?? 150000
   const amountUSD = Math.round(amount / 1400)
+
+  // Load payment scripts reliably when modal opens
+  useEffect(() => {
+    console.log('[CheckoutModal] Modal opened, initializing payment scripts')
+    
+    // Check if Paystack is already loaded
+    if ((window as any).PaystackPop) {
+      console.log('[CheckoutModal] Paystack already loaded')
+      setScriptsLoaded(prev => ({ ...prev, paystack: true }))
+    }
+
+    // Check if Flutterwave is already loaded
+    if ((window as any).FlutterwaveCheckout) {
+      console.log('[CheckoutModal] Flutterwave already loaded')
+      setScriptsLoaded(prev => ({ ...prev, flutterwave: true }))
+    }
+
+    // Poll for script loading
+    const interval = setInterval(() => {
+      if ((window as any).PaystackPop) {
+        setScriptsLoaded(prev => ({ ...prev, paystack: true }))
+      }
+      if ((window as any).FlutterwaveCheckout) {
+        setScriptsLoaded(prev => ({ ...prev, flutterwave: true }))
+      }
+    }, 200)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const update = (field: string, value: string) => {
     setForm(p => ({ ...p, [field]: value }))
@@ -190,20 +221,45 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
   }
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.7)',
-      backdropFilter: 'blur(8px)',
-      zIndex: 1000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-    }}
-    onClick={e => {
-      if (e.target === e.currentTarget) onClose()
-    }}>
+    <>
+      {/* Load payment scripts ONCE when modal opens */}
+      <Script
+        src="https://js.paystack.co/v2/inline.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('[CheckoutModal] Paystack script loaded successfully')
+          setScriptsLoaded(prev => ({ ...prev, paystack: true }))
+        }}
+        onError={(e) => {
+          console.error('[CheckoutModal] Failed to load Paystack script', e)
+        }}
+      />
+      <Script
+        src="https://checkout.flutterwave.com/v3.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('[CheckoutModal] Flutterwave script loaded successfully')
+          setScriptsLoaded(prev => ({ ...prev, flutterwave: true }))
+        }}
+        onError={(e) => {
+          console.error('[CheckoutModal] Failed to load Flutterwave script', e)
+        }}
+      />
+
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.7)',
+        backdropFilter: 'blur(8px)',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+      }}
+      onClick={e => {
+        if (e.target === e.currentTarget) onClose()
+      }}>
       <div style={{
         background: 'var(--cyber-bg)',
         border: '1px solid rgba(124,58,237,0.3)',
@@ -788,5 +844,6 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
         `}</style>
       </div>
     </div>
+    </>
   )
 }
