@@ -62,29 +62,23 @@ const SERVICE_PLANS: Record<string, Plan[]> = {
   ],
   'web-dev': [
     {
-      name: 'Basic Website',
-      price: 150000,
-      deliveryTime: '2-3 weeks',
-      features: ['Up to 5 pages', 'Responsive design', 'Contact form', 'Basic SEO'],
+      name: 'Starter - Basic Website',
+      price: 450000,
+      deliveryTime: '2 weeks',
+      features: ['Up to 5 pages', 'Mobile responsive design', 'Contact form integration', 'Basic SEO setup', 'Google Analytics', '1 month support'],
     },
     {
-      name: 'Business Site',
-      price: 250000,
-      deliveryTime: '3-4 weeks',
-      features: ['Up to 10 pages', 'CMS integration', 'Advanced animations', 'SEO optimization', 'Analytics setup'],
+      name: 'Essential - Business Site',
+      price: 750000,
+      deliveryTime: '3 weeks',
+      features: ['Up to 12 pages', 'CMS Admin Dashboard', 'Advanced animations', 'Full SEO optimization', 'Speed optimization', 'WhatsApp integration', '3 months support'],
       popular: true,
     },
     {
-      name: 'E-commerce',
-      price: 400000,
-      deliveryTime: '4-6 weeks',
-      features: ['Full online store', 'Payment integration', 'Inventory management', 'Admin dashboard', 'Mobile app ready'],
-    },
-    {
-      name: 'SaaS Platform',
-      price: 600000,
-      deliveryTime: '6-8 weeks',
-      features: ['Custom web application', 'User authentication', 'Database design', 'API development', '3 months support'],
+      name: 'Professional - E-commerce',
+      price: 975000,
+      deliveryTime: '4 weeks',
+      features: ['Full online store', 'Payment gateway integration', 'Inventory management', 'Order tracking system', 'Customer accounts', 'Coupon system', 'Admin dashboard', '6 months support'],
     },
   ],
   'mobile-app': [
@@ -266,13 +260,14 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
   const plans = SERVICE_PLANS[service.id] || DEFAULT_PLANS
 
   const formatPrice = (price: number) => {
+    const usd = Math.round(price / 1400)
     if (price >= 1000000) {
-      return `₦${(price / 1000000).toFixed(1)}M`
+      return `₦${(price / 1000000).toFixed(1)}M (~$${usd})`
     }
     if (price >= 1000) {
-      return `₦${(price / 1000).toFixed(0)}K`
+      return `₦${(price / 1000).toFixed(0)}K (~$${usd})`
     }
-    return `₦${price.toLocaleString()}`
+    return `₦${price.toLocaleString()} (~$${usd})`
   }
 
   const handleProceedToPayment = (plan: Plan) => {
