@@ -40,7 +40,11 @@ export async function POST(request: NextRequest) {
           auth: {
             autoRefreshToken: false,
             persistSession: false
-          }
+          },
+          cookies: {
+            getAll: () => [],
+            setAll: () => {}
+          },
         }
       )
 
