@@ -441,6 +441,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
         serviceId={service.id}
         serviceName={service.name}
         amount={selectedPlan.price}
+        isLoggedIn={true}
         onSuccess={handlePaymentSuccess}
         onClose={() => {
           setShowCheckout(false)

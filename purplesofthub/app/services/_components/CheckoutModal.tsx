@@ -17,13 +17,14 @@ interface CheckoutModalProps {
   serviceId?: string
   serviceName?: string
   amount?: number
+  isLoggedIn?: boolean
   onSuccess?: (reference: string, method: 'paystack' | 'flutterwave') => void
   onClose: () => void
 }
 
-export default function CheckoutModal({ plan, serviceId, serviceName, amount: propAmount, onSuccess, onClose }: CheckoutModalProps) {
+export default function CheckoutModal({ plan, serviceId, serviceName, amount: propAmount, isLoggedIn = false, onSuccess, onClose }: CheckoutModalProps) {
   const router = useRouter()
-  const [step, setStep] = useState<'details' | 'payment' | 'processing' | 'success'>('details')
+  const [step, setStep] = useState<'details' | 'payment' | 'processing' | 'success'>(isLoggedIn ? 'payment' : 'details')
   const [payMethod, setPayMethod] = useState<'paystack' | 'flutterwave' | null>(null)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
@@ -64,7 +65,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
   }
 
   const handlePaystackPayment = () => {
-    if (!validateDetails()) return
+    if (!isLoggedIn && !validateDetails()) return
     setStep('processing')
     setPayMethod('paystack')
 
@@ -97,7 +98,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
   }
 
   const handleFlutterwavePayment = () => {
-    if (!validateDetails()) return
+    if (!isLoggedIn && !validateDetails()) return
     setStep('processing')
     setPayMethod('flutterwave')
 
@@ -588,24 +589,26 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
         {/* PAYMENT STEP */}
         {step === 'payment' && (
           <>
-            <button
-              onClick={() => setStep('details')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--cyber-body)',
-                fontSize: '13px',
-                cursor: 'pointer',
-                marginBottom: '20px',
-                fontFamily: 'inherit',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: 0,
-              }}
-            >
-              ← Back
-            </button>
+            {!isLoggedIn && (
+              <button
+                onClick={() => setStep('details')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--cyber-body)',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  marginBottom: '20px',
+                  fontFamily: 'inherit',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: 0,
+                }}
+              >
+                ← Back
+              </button>
+            )}
 
             <h2 style={{
               fontSize: 'clamp(20px, 3vw, 26px)',

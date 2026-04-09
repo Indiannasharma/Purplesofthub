@@ -679,6 +679,8 @@ export default function DashboardLayoutClient({
           overflowY: 'auto',
           overflowX: 'hidden',
           padding: 'clamp(16px, 2vw, 28px)',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
         }}>
           {children}
         </main>
@@ -717,7 +719,7 @@ export default function DashboardLayoutClient({
 
         /* Scrollbar styling */
         .dashboard-main main::-webkit-scrollbar {
-          width: 4px;
+          width: 6px;
         }
         .dashboard-main main::-webkit-scrollbar-track {
           background: transparent;
@@ -725,6 +727,21 @@ export default function DashboardLayoutClient({
         .dashboard-main main::-webkit-scrollbar-thumb {
           background: rgba(124,58,237,0.3);
           border-radius: 100px;
+        }
+        .dashboard-main main::-webkit-scrollbar-thumb:hover {
+          background: rgba(124,58,237,0.5);
+        }
+
+        /* Fix touch scrolling on mobile */
+        .dashboard-main {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
+
+        /* Ensure main content scrolls correctly */
+        .dashboard-main main {
+          min-height: 0;
+          overscroll-behavior: contain;
         }
       `}</style>
     </div>
