@@ -243,6 +243,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
   const [showCheckout, setShowCheckout] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
 
   const plans = SERVICE_PLANS[service.id] || DEFAULT_PLANS
 
@@ -255,6 +256,29 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
       return `₦${(price / 1000).toFixed(0)}K (~$${usd})`
     }
     return `₦${price.toLocaleString()} (~$${usd})`
+  }
+
+  // Account Recovery Platform Pricing
+  const PLATFORM_PRICES: Record<string, number> = {
+    facebook: 42000,
+    instagram: 70000,
+    tiktok: 70000
+  }
+
+  const togglePlatform = (platform: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platform) 
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    )
+  }
+
+  const calculateRecoveryTotal = () => {
+    return selectedPlatforms.reduce((total, platform) => total + PLATFORM_PRICES[platform], 0)
+  }
+
+  const getPlatformNames = () => {
+    return selectedPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' + ')
   }
 
   const handleProceedToPayment = (plan: Plan) => {
@@ -579,162 +603,287 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
           </p>
         </div>
 
-        {/* Plans Grid */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-            marginBottom: '32px',
-          }}
-        >
-          <h3
-            style={{
-              fontSize: '16px',
-              fontWeight: 800,
-              color: 'var(--cmd-heading)',
-              margin: '0 0 4px',
-            }}
-          >
-            Choose Your Plan
-          </h3>
+        {/* Account Recovery Platform Selector OR Standard Plans */}
+        {service.id === 'account-recovery' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--cmd-heading)', margin: '0 0 8px' }}>
+              🛡️ ALL PLATFORMS
+            </h3>
+            
+            <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 12px' }}>
+              Select the platforms you need recovered:
+            </p>
 
-          {plans.map((plan, index) => (
-            <div
-              key={plan.name}
-              onClick={() => handleProceedToPayment(plan)}
-              style={{
-                padding: '20px',
-                borderRadius: '16px',
-                border: plan.popular
-                  ? '2px solid #7c3aed'
-                  : '1px solid rgba(124,58,237,0.15)',
-                background: plan.popular
-                  ? 'rgba(124,58,237,0.04)'
-                  : 'var(--cmd-card)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                position: 'relative',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(124,58,237,0.15)'
-                if (!plan.popular) {
-                  e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'
-                }
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = 'none'
-                if (!plan.popular) {
-                  e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)'
-                }
-              }}
-            >
-              {plan.popular && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '-1px',
-                    right: '20px',
-                    background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                    color: '#fff',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    padding: '3px 12px',
-                    borderRadius: '0 0 8px 8px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  Most Popular
-                </div>
-              )}
-
+            {/* Platform Cards */}
+            {[
+              { id: 'facebook', name: 'Facebook', icon: '📘', price: 42000 },
+              { id: 'instagram', name: 'Instagram', icon: '📷', price: 70000 },
+              { id: 'tiktok', name: 'TikTok', icon: '🎵', price: 70000 }
+            ].map(platform => (
               <div
+                key={platform.id}
+                onClick={() => togglePlatform(platform.id)}
                 style={{
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: selectedPlatforms.includes(platform.id)
+                    ? '2px solid #7c3aed'
+                    : '1px solid rgba(124,58,237,0.15)',
+                  background: selectedPlatforms.includes(platform.id)
+                    ? 'rgba(124,58,237,0.06)'
+                    : 'var(--cmd-card)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
                   display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: '12px',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
                 }}
               >
-                <div>
-                  <h4
-                    style={{
-                      fontSize: '16px',
-                      fontWeight: 800,
-                      color: 'var(--cmd-heading)',
-                      margin: '0 0 4px',
-                    }}
-                  >
-                    {plan.name}
-                  </h4>
-                  <p
-                    style={{
-                      fontSize: '12px',
-                      color: 'var(--cmd-muted)',
-                      margin: 0,
-                    }}
-                  >
-                    Delivery: {plan.deliveryTime}
-                  </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '24px' }}>{platform.icon}</span>
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--cmd-heading)', margin: 0 }}>
+                      {platform.name}
+                    </h4>
+                    <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                      Delivery: 14-30 business days
+                    </p>
+                  </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p
-                    style={{
-                      fontSize: '22px',
-                      fontWeight: 900,
-                      color: '#a855f7',
-                      margin: '0 0 2px',
-                    }}
-                  >
-                    {formatPrice(plan.price)}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '11px',
-                      color: 'var(--cmd-muted)',
-                      margin: 0,
-                    }}
-                  >
-                    one-time
+                  <p style={{ fontSize: '17px', fontWeight: 800, color: '#a855f7', margin: 0 }}>
+                    {formatPrice(platform.price)}
                   </p>
                 </div>
               </div>
+            ))}
 
-              <ul
+            {/* Service Fee Summary */}
+            {selectedPlatforms.length > 0 && (
+              <div style={{
+                marginTop: '20px',
+                padding: '18px',
+                background: 'rgba(124,58,237,0.06)',
+                border: '1px solid rgba(124,58,237,0.25)',
+                borderRadius: '14px',
+                textAlign: 'center'
+              }}>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--cmd-muted)', margin: '0 0 4px' }}>
+                  SERVICE FEE
+                </p>
+                <p style={{ fontSize: '26px', fontWeight: 900, color: '#a855f7', margin: '0 0 8px' }}>
+                  {formatPrice(calculateRecoveryTotal())}
+                </p>
+                <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                  one-time payment ✷ {getPlatformNames()}
+                </p>
+              </div>
+            )}
+
+            {/* Proceed Button */}
+            <button
+              disabled={selectedPlatforms.length === 0}
+              onClick={() => {
+                const total = calculateRecoveryTotal()
+                const platformNames = getPlatformNames()
+                setSelectedPlan({
+                  name: `Account Recovery - ${platformNames}`,
+                  price: total,
+                  deliveryTime: '1-4 weeks',
+                  features: [
+                    `Selected platforms: ${platformNames}`,
+                    'Professional account recovery',
+                    'Complete appeal preparation',
+                    'Document submission',
+                    'Case management',
+                    'Strictly non-refundable'
+                  ]
+                })
+                setShowCheckout(true)
+              }}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: selectedPlatforms.length > 0 
+                  ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
+                  : 'rgba(124,58,237,0.2)',
+                color: '#fff',
+                fontSize: '15px',
+                fontWeight: 800,
+                cursor: selectedPlatforms.length > 0 ? 'pointer' : 'not-allowed',
+                fontFamily: 'inherit',
+                boxShadow: selectedPlatforms.length > 0
+                  ? '0 4px 20px rgba(124,58,237,0.35)'
+                  : 'none',
+                marginTop: '8px',
+                opacity: selectedPlatforms.length > 0 ? 1 : 0.5
+              }}
+            >
+              {selectedPlatforms.length > 0 
+                ? `Proceed to Payment →`
+                : 'Select at least one platform'
+              }
+            </button>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              marginBottom: '32px',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '16px',
+                fontWeight: 800,
+                color: 'var(--cmd-heading)',
+                margin: '0 0 4px',
+              }}
+            >
+              Choose Your Plan
+            </h3>
+
+            {plans.map((plan, index) => (
+              <div
+                key={plan.name}
+                onClick={() => handleProceedToPayment(plan)}
                 style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '8px',
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: '12px 0 0',
+                  padding: '20px',
+                  borderRadius: '16px',
+                  border: plan.popular
+                    ? '2px solid #7c3aed'
+                    : '1px solid rgba(124,58,237,0.15)',
+                  background: plan.popular
+                    ? 'rgba(124,58,237,0.04)'
+                    : 'var(--cmd-card)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(124,58,237,0.15)'
+                  if (!plan.popular) {
+                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = 'none'
+                  if (!plan.popular) {
+                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)'
+                  }
                 }}
               >
-                {plan.features.map((feature, i) => (
-                  <li
-                    key={i}
+                {plan.popular && (
+                  <div
                     style={{
-                      fontSize: '12px',
-                      color: 'var(--cmd-body)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '4px 8px',
-                      background: 'rgba(124,58,237,0.06)',
-                      borderRadius: '6px',
+                      position: 'absolute',
+                      top: '-1px',
+                      right: '20px',
+                      background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                      color: '#fff',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '3px 12px',
+                      borderRadius: '0 0 8px 8px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
                     }}
                   >
-                    <span style={{ color: '#10b981' }}>✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+                    Most Popular
+                  </div>
+                )}
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <div>
+                    <h4
+                      style={{
+                        fontSize: '16px',
+                        fontWeight: 800,
+                        color: 'var(--cmd-heading)',
+                        margin: '0 0 4px',
+                      }}
+                    >
+                      {plan.name}
+                    </h4>
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: 'var(--cmd-muted)',
+                        margin: 0,
+                      }}
+                    >
+                      Delivery: {plan.deliveryTime}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p
+                      style={{
+                        fontSize: '22px',
+                        fontWeight: 900,
+                        color: '#a855f7',
+                        margin: '0 0 2px',
+                      }}
+                    >
+                      {formatPrice(plan.price)}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '11px',
+                        color: 'var(--cmd-muted)',
+                        margin: 0,
+                      }}
+                    >
+                      one-time
+                    </p>
+                  </div>
+                </div>
+
+                <ul
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    listStyle: 'none',
+                    padding: 0,
+                    margin: '12px 0 0',
+                  }}
+                >
+                  {plan.features.map((feature, i) => (
+                    <li
+                      key={i}
+                      style={{
+                        fontSize: '12px',
+                        color: 'var(--cmd-body)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '4px 8px',
+                        background: 'rgba(124,58,237,0.06)',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      <span style={{ color: '#10b981' }}>✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Info Note */}
         <div
