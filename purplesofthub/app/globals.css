@@ -1384,6 +1384,7 @@ html.dark {
   border-radius: 16px;
   padding: 20px 24px;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
   transition: all 0.3s;
