@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import CheckoutModal from '@/app/services/_components/CheckoutModal'
+import ServicePlanModal from '@/components/dashboard/ServicePlanModal'
 
 interface Service {
   id: string
@@ -110,8 +111,8 @@ const categories = ['All', 'Development', 'Marketing', 'Music', 'Design', 'Suppo
 
 export default function DashboardServicesPage() {
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [checkoutService, setCheckoutService] = useState<Service | null>(null)
-  const [showCheckout, setShowCheckout] = useState(false)
+  const [selectedService, setSelectedService] = useState<Service | null>(null)
+  const [showPlanModal, setShowPlanModal] = useState(false)
 
   const filteredServices = selectedCategory === 'All'
     ? SERVICES
@@ -124,9 +125,9 @@ export default function DashboardServicesPage() {
     return `₦${price.toLocaleString()}`
   }
 
-  const handlePayNow = (service: Service) => {
-    setCheckoutService(service)
-    setShowCheckout(true)
+  const handleGetStarted = (service: Service) => {
+    setSelectedService(service)
+    setShowPlanModal(true)
   }
 
   return (
@@ -292,45 +293,45 @@ export default function DashboardServicesPage() {
               </span>
             </div>
 
-            {/* CTA Button */}
-            <button
-              onClick={() => handlePayNow(service)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '10px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(124,58,237,0.5)'
-                e.currentTarget.style.transform = 'translateY(-1px)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.3)'
-                e.currentTarget.style.transform = 'translateY(0)'
-              }}
-            >
-              Get Started →
-            </button>
+      {/* CTA Button */}
+      <button
+        onClick={() => handleGetStarted(service)}
+        style={{
+          width: '100%',
+          padding: '12px',
+          borderRadius: '10px',
+          border: 'none',
+          background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+          color: '#fff',
+          fontSize: '14px',
+          fontWeight: 700,
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.boxShadow = '0 6px 20px rgba(124,58,237,0.5)'
+          e.currentTarget.style.transform = 'translateY(-1px)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.3)'
+          e.currentTarget.style.transform = 'translateY(0)'
+        }}
+      >
+        Get Started →
+      </button>
           </div>
         ))}
       </div>
 
-      {/* Checkout Modal */}
-      {showCheckout && checkoutService && (
-        <CheckoutModal
-          plan={checkoutService.name}
+      {/* Service Plan Modal */}
+      {showPlanModal && selectedService && (
+        <ServicePlanModal
+          service={selectedService}
           onClose={() => {
-            setShowCheckout(false)
-            setCheckoutService(null)
+            setShowPlanModal(false)
+            setSelectedService(null)
           }}
         />
       )}

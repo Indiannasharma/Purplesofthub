@@ -14,10 +14,14 @@ const PLAN_PRICES: Record<string, number> = {
 
 interface CheckoutModalProps {
   plan: string
+  serviceId?: string
+  serviceName?: string
+  amount?: number
+  onSuccess?: (reference: string, method: 'paystack' | 'flutterwave') => void
   onClose: () => void
 }
 
-export default function CheckoutModal({ plan, onClose }: CheckoutModalProps) {
+export default function CheckoutModal({ plan, serviceId, serviceName, amount: propAmount, onSuccess, onClose }: CheckoutModalProps) {
   const router = useRouter()
   const [step, setStep] = useState<'details' | 'payment' | 'processing' | 'success'>('details')
   const [payMethod, setPayMethod] = useState<'paystack' | 'flutterwave' | null>(null)
@@ -31,7 +35,7 @@ export default function CheckoutModal({ plan, onClose }: CheckoutModalProps) {
     password: '',
   })
 
-  const amount = PLAN_PRICES[plan] || 150000
+  const amount = propAmount ?? PLAN_PRICES[plan] ?? 150000
   const amountUSD = Math.round(amount / 1400)
 
   const update = (field: string, value: string) => {
@@ -157,6 +161,9 @@ export default function CheckoutModal({ plan, onClose }: CheckoutModalProps) {
 
       if (data.success) {
         setStep('success')
+        if (onSuccess) {
+          onSuccess(reference, method)
+        }
       } else {
         setError(data.error || 'Something went wrong')
         setStep('payment')
