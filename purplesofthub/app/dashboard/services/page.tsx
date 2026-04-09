@@ -83,8 +83,8 @@ const SERVICES: Service[] = [
     name: 'Account Recovery',
     description: 'Professional help recovering suspended Facebook, Instagram, or TikTok accounts.',
     category: 'Support',
-    delivery_time: '1-4 weeks',
-    starting_price: 50000,
+    delivery_time: '14-30 business days',
+    starting_price: 42000,
     icon: '🔐',
   },
   {
