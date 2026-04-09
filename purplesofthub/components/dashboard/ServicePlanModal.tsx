@@ -168,22 +168,9 @@ const SERVICE_PLANS: Record<string, Plan[]> = {
   'account-recovery': [
     {
       name: 'Basic Recovery',
-      price: 50000,
-      deliveryTime: '1-2 weeks',
-      features: ['Account assessment', 'Appeal letter', 'Document preparation', 'Email support'],
-    },
-    {
-      name: 'Standard Recovery',
-      price: 100000,
-      deliveryTime: '2-3 weeks',
-      features: ['Full case management', 'Legal documentation', 'Direct platform contact', 'Progress updates'],
-      popular: true,
-    },
-    {
-      name: 'Premium Recovery',
-      price: 200000,
-      deliveryTime: '3-4 weeks',
-      features: ['Priority handling', 'Legal team support', 'Guaranteed results*', '24/7 support', 'Prevention consulting'],
+      price: 42000,
+      deliveryTime: '1-4 weeks',
+      features: ['Professional account recovery', 'Facebook / Instagram / TikTok', 'Complete appeal preparation', 'Document submission', 'Case management', 'Strictly non-refundable'],
     },
   ],
   'ui-ux-design': [
