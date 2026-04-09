@@ -30,7 +30,7 @@ const SERVICE_PLANS: Record<string, Plan[]> = {
   'meta-ads': [
     {
       name: 'Flex Weekly (Testing)',
-      price: 85000,
+      price: 60000,
       deliveryTime: 'Per Week',
       features: ['Weekly ad management', 'Flexible budget', 'Creative updates', 'Basic analytics', '1 ad campaign'],
     },
