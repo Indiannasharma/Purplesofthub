@@ -132,6 +132,15 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     setForm(p => ({ ...p, [field]: value }))
   }
 
+  const waitForGlobal = async (name: 'PaystackPop' | 'FlutterwaveCheckout', timeoutMs = 3500) => {
+    const started = Date.now()
+    while (Date.now() - started < timeoutMs) {
+      if ((window as any)[name]) return true
+      await new Promise(resolve => setTimeout(resolve, 120))
+    }
+    return false
+  }
+
   const ensureLoggedInIdentity = async () => {
     if (!isLoggedIn) {
       return {
@@ -237,6 +246,11 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
       setGatewayOpening('paystack')
       setPayMethod('paystack')
 
+      const isReady = (window as any).PaystackPop || await waitForGlobal('PaystackPop')
+      if (!isReady) {
+        throw new Error('Paystack script not ready')
+      }
+
       const handler = (window as any).PaystackPop?.setup({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
         email: identity.email,
@@ -283,6 +297,11 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
       setError('')
       setGatewayOpening('flutterwave')
       setPayMethod('flutterwave')
+
+      const isReady = (window as any).FlutterwaveCheckout || await waitForGlobal('FlutterwaveCheckout')
+      if (!isReady) {
+        throw new Error('Flutterwave script not ready')
+      }
 
       const config = {
         public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
@@ -383,6 +402,13 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
   return (
     <>
       {/* Load payment scripts ONCE when modal opens */}
+      <Script
+        src="https://js.paystack.co/v1/inline.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          setScriptsLoaded(prev => ({ ...prev, paystack: true }))
+        }}
+      />
       <Script
         src="https://checkout.flutterwave.com/v3.js"
         strategy="afterInteractive"
