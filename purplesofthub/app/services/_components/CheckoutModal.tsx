@@ -141,7 +141,12 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     return false
   }
 
-  const ensureLoggedInIdentity = async () => {
+  const ensureLoggedInIdentity = async (): Promise<{
+    email: string
+    firstName: string
+    lastName: string
+    phone: string
+  }> => {
     if (!isLoggedIn) {
       return {
         email: form.email.trim(),
@@ -163,7 +168,14 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
       const supabase = createClient()
       const { data: authData } = await supabase.auth.getUser()
       const user = authData?.user
-      if (!user) return
+      if (!user) {
+        return {
+          email: form.email.trim(),
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          phone: form.phone.trim(),
+        }
+      }
 
       let profile: { full_name?: string | null; phone?: string | null } | null = null
       try {
