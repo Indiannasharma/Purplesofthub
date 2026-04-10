@@ -262,70 +262,162 @@ export default async function Home() {
             </Reveal>
           </div>
 
-          {/* Holographic Planet with Nebula Glow */}
+          {/* ✨ PREMIUM COSMIC PLANET ✨ */}
           <Reveal delay={0.2}>
+            {/* Outer Nebula Glow */}
             <div style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: 'clamp(300px, 40vw, 560px)',
-              height: 'clamp(300px, 40vw, 560px)',
+              width: 'clamp(380px, 50vw, 700px)',
+              height: 'clamp(380px, 50vw, 700px)',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)',
-              filter: 'blur(40px)',
+              background: 'radial-gradient(circle, rgba(124,58,237,0.3) 0%, rgba(34,211,238,0.1) 40%, transparent 70%)',
+              filter: 'blur(60px)',
               pointerEvents: 'none',
-              animation: 'nebulaPulse 4s ease-in-out infinite',
+              animation: 'nebulaPulse 5s ease-in-out infinite alternate',
               zIndex: 0,
             }}/>
+            
+            {/* Atmosphere Halo */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'clamp(310px, 42vw, 580px)',
+              height: 'clamp(310px, 42vw, 580px)',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, transparent 55%, rgba(124,58,237,0.2) 70%, rgba(34,211,238,0.15) 85%, transparent 100%)',
+              animation: 'atmospherePulse 8s ease-in-out infinite',
+              zIndex: 1,
+            }}/>
+
+            {/* Planet Container with Tilt */}
             <div style={{
               position: 'relative',
-              width: 'clamp(260px, 35vw, 480px)',
-              height: 'clamp(260px, 35vw, 480px)',
+              width: 'clamp(280px, 38vw, 520px)',
+              height: 'clamp(280px, 38vw, 520px)',
               flexShrink: 0,
-              animation: 'cyberFloat 6s ease-in-out infinite',
+              animation: 'planetFloat 7s ease-in-out infinite',
               margin: '0 auto',
-              zIndex: 1,
+              transform: 'rotateZ(-12deg)',
+              zIndex: 2,
             }}>
+              {/* Main Planet Body */}
               <div style={{
                 position: 'absolute',
-                inset: '10%',
+                inset: '8%',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 35%, #c084fc, #7c3aed 40%, #1a0535 80%)',
-                boxShadow: '0 0 60px rgba(124,58,237,0.5), inset -20px -20px 40px rgba(0,0,0,0.4)',
-              }} />
+                background: `
+                  radial-gradient(circle at 30% 25%, 
+                    #e879f9 0%, 
+                    #a855f7 15%, 
+                    #7c3aed 35%, 
+                    #5b21b6 60%, 
+                    #1e1b4b 85%, 
+                    #0f0a1f 100%
+                  )
+                `,
+                boxShadow: `
+                  0 0 80px rgba(124,58,237,0.6),
+                  0 0 120px rgba(124,58,237,0.3),
+                  inset -30px -30px 60px rgba(0,0,0,0.5),
+                  inset 20px 20px 40px rgba(232,121,249,0.2)
+                `,
+              }}>
+                {/* Surface Highlight */}
+                <div style={{
+                  position: 'absolute',
+                  top: '18%',
+                  left: '22%',
+                  width: '30%',
+                  height: '20%',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
+                  filter: 'blur(8px)',
+                }}/>
+              </div>
+
+              {/* ✨ TILTED SATURN RINGS ✨ */}
               <div style={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -50%) rotateX(75deg)',
-                width: '140%',
-                height: '140%',
+                transform: 'translate(-50%, -50%) rotateX(68deg) rotateZ(12deg)',
+                width: '185%',
+                height: '185%',
                 borderRadius: '50%',
-                border: '8px solid rgba(34,211,238,0.3)',
-                boxShadow: '0 0 20px rgba(34,211,238,0.2)',
-              }} />
+                border: '6px solid transparent',
+                background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.4), rgba(124,58,237,0.5), rgba(34,211,238,0.3), transparent) border-box',
+                boxShadow: '0 0 30px rgba(34,211,238,0.3)',
+                zIndex: 3,
+              }}/>
+
+              {/* Inner Ring */}
               <div style={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -50%) rotateX(75deg)',
-                width: '170%',
-                height: '170%',
+                transform: 'translate(-50%, -50%) rotateX(68deg) rotateZ(12deg)',
+                width: '155%',
+                height: '155%',
                 borderRadius: '50%',
-                border: '3px solid rgba(124,58,237,0.2)',
-              }} />
+                border: '4px solid rgba(168,85,247,0.4)',
+                boxShadow: '0 0 20px rgba(168,85,247,0.3)',
+                zIndex: 3,
+              }}/>
+
+              {/* Outer Faint Ring */}
               <div style={{
                 position: 'absolute',
-                top: '8%',
+                top: '50%',
                 left: '50%',
-                width: '14px',
-                height: '14px',
+                transform: 'translate(-50%, -50%) rotateX(68deg) rotateZ(12deg)',
+                width: '210%',
+                height: '210%',
+                borderRadius: '50%',
+                border: '2px solid rgba(124,58,237,0.2)',
+                zIndex: 3,
+              }}/>
+
+              {/* Orbiting Sparkles */}
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: i % 3 === 0 ? '10px' : '6px',
+                    height: i % 3 === 0 ? '10px' : '6px',
+                    borderRadius: '50%',
+                    background: i % 2 === 0 ? '#22d3ee' : '#a855f7',
+                    boxShadow: i % 2 === 0 
+                      ? '0 0 16px #22d3ee, 0 0 24px rgba(34,211,238,0.5)' 
+                      : '0 0 14px #a855f7, 0 0 20px rgba(168,85,247,0.5)',
+                    transform: `rotate(${i * 45}deg) translateX(${145 + (i * 8)}px)`,
+                    animation: `orbitSparkle ${12 + (i * 2)}s linear infinite`,
+                    animationDelay: `${i * 0.7}s`,
+                    zIndex: 4,
+                  }}
+                />
+              ))}
+
+              {/* Single large glow particle */}
+              <div style={{
+                position: 'absolute',
+                top: '12%',
+                left: '62%',
+                width: '16px',
+                height: '16px',
                 borderRadius: '50%',
                 background: '#22d3ee',
-                boxShadow: '0 0 12px #22d3ee',
-                animation: 'cyberFloat 3s ease-in-out infinite reverse',
-              }} />
+                boxShadow: '0 0 24px #22d3ee, 0 0 40px rgba(34,211,238,0.4)',
+                animation: 'sparklePulse 3s ease-in-out infinite alternate',
+                zIndex: 4,
+              }}/>
             </div>
           </Reveal>
         </div>
