@@ -160,7 +160,9 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const handleResize = () => { if (window.innerWidth >= 768) setMobileOpen(false); };
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setMobileOpen(false);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -190,12 +192,61 @@ export default function Navbar() {
   const linkHoverColor = dark ? "#e2d9f3" : "#1a0533";
   const linkHoverBg = dark ? "rgba(124, 58, 237, 0.12)" : "rgba(124, 58, 237, 0.06)";
 
+  const outlineBtnBase = {
+    background: "transparent" as const,
+    border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
+    borderRadius: 10,
+    color: dark ? "#c084fc" : "#6d28d9",
+    fontFamily: "Outfit, sans-serif",
+    fontWeight: 600,
+    cursor: "pointer" as const,
+    padding: "0 18px",
+    fontSize: 13.5,
+    height: 40,
+    display: "inline-flex" as const,
+    alignItems: "center" as const,
+    gap: 6,
+    transition: "all 0.25s ease",
+    whiteSpace: "nowrap" as const,
+    textDecoration: "none" as const,
+    boxSizing: "border-box" as const,
+  };
+
+  const ctaBtnBase = {
+    background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+    border: "none",
+    borderRadius: 10,
+    color: "#fff",
+    fontFamily: "Outfit, sans-serif",
+    fontWeight: 700,
+    cursor: "pointer" as const,
+    padding: "0 24px",
+    fontSize: 14,
+    height: 40,
+    display: "inline-flex" as const,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    whiteSpace: "nowrap" as const,
+    textDecoration: "none" as const,
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    boxShadow: dark
+      ? "0 4px 20px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(168, 85, 247, 0.2)"
+      : "0 4px 16px rgba(124, 58, 237, 0.3)",
+    position: "relative" as const,
+    overflow: "hidden" as const,
+    boxSizing: "border-box" as const,
+  };
+
   return (
     <nav
-      className="premium-navbar"
+      className="premium-navbar border-b border-[var(--color-stroke)]/30"
       style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, height: 72,
-        padding: "0 5%", display: "flex", alignItems: "center", justifyContent: "space-between",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        minHeight: 72,
         background: navBg,
         backdropFilter: blurAmount,
         WebkitBackdropFilter: blurAmount,
@@ -205,131 +256,303 @@ export default function Navbar() {
       }}
     >
       {/* Top Glow Line */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "1px",
-        background: dark
-          ? "linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), rgba(34, 211, 238, 0.3), transparent)"
-          : "linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.3), rgba(34, 211, 238, 0.2), transparent)",
-        opacity: scrolled ? 1 : 0, transition: "opacity 0.3s ease",
-      }} />
-
-      {/* Logo */}
-      <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", position: "relative", zIndex: 2 }}>
-        <Image
-          src={purpleLogo} alt="PurpleSoftHub" width={170} height={52} className="cyber-logo" priority
-          style={{
-            filter: dark ? "drop-shadow(0 0 10px rgba(124, 58, 237, 0.5))" : "drop-shadow(0 0 6px rgba(124, 58, 237, 0.3))",
-            transition: "filter 0.3s ease",
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.filter = dark ? "drop-shadow(0 0 18px rgba(168, 85, 247, 0.8))" : "drop-shadow(0 0 12px rgba(124, 58, 237, 0.6))"}
-          onMouseLeave={(e) => e.currentTarget.style.filter = dark ? "drop-shadow(0 0 10px rgba(124, 58, 237, 0.5))" : "drop-shadow(0 0 6px rgba(124, 58, 237, 0.3))"}
-        />
-      </Link>
-
-      {/* Desktop Nav Links */}
-      <div className="nav-desktop" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        {NAV_LINKS.map((l) => (
-          <Link key={l.label} href={l.href} className="nav-link-desktop" style={{
-            fontSize: 14, fontWeight: 500, color: linkColor, textDecoration: "none",
-            padding: "8px 14px", borderRadius: 8, whiteSpace: "nowrap", position: "relative",
-            transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = linkHoverColor; e.currentTarget.style.background = linkHoverBg; e.currentTarget.style.transform = "translateY(-1px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = linkColor; e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
-          >
-            {l.label}
-            <span style={{
-              position: "absolute", bottom: 4, left: "50%", transform: "translateX(-50%) scaleX(0)",
-              width: "80%", height: "2px", borderRadius: 1,
-              background: dark ? "linear-gradient(90deg, #a855f7, #22d3ee)" : "linear-gradient(90deg, #7c3aed, #a855f7)",
-              transition: "transform 0.25s ease",
-              boxShadow: dark ? "0 0 8px rgba(168, 85, 247, 0.5)" : "0 0 6px rgba(124, 58, 237, 0.3)",
-            }} onMouseEnter={(e) => e.currentTarget.style.transform = "translateX(-50%) scaleX(1)"} onMouseLeave={(e) => e.currentTarget.style.transform = "translateX(-50%) scaleX(0)"} />
-          </Link>
-        ))}
-      </div>
-
-      {/* Desktop Actions */}
-      <div className="nav-desktop" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        {/* Theme Toggle */}
-        <button onClick={toggleTheme} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"} className="theme-toggle-btn" style={{
-          background: dark ? "rgba(124, 58, 237, 0.12)" : "rgba(124, 58, 237, 0.06)",
-          border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.15)"}`,
-          borderRadius: 10, color: dark ? "#c084fc" : "#7c3aed", fontSize: 16,
-          width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center",
-          cursor: "pointer", transition: "all 0.25s ease", flexShrink: 0,
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "1px",
+          background: dark
+            ? "linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), rgba(34, 211, 238, 0.3), transparent)"
+            : "linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.3), rgba(34, 211, 238, 0.2), transparent)",
+          opacity: scrolled ? 1 : 0,
+          transition: "opacity 0.3s ease",
         }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.25)" : "rgba(124, 58, 237, 0.12)"; e.currentTarget.style.boxShadow = dark ? "0 0 16px rgba(168, 85, 247, 0.3)" : "0 0 12px rgba(124, 58, 237, 0.2)"; e.currentTarget.style.transform = "scale(1.05)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.12)" : "rgba(124, 58, 237, 0.06)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "scale(1)"; }}
-        >{dark ? <SunIcon /> : <MoonIcon />}</button>
+      />
 
-        {/* Login / Dashboard */}
-        {!isSignedIn && (
-          <Link href="/sign-in">
-            <button className="nav-btn-outline" style={{
-              background: "transparent", border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
-              borderRadius: 10, color: dark ? "#c084fc" : "#6d28d9", fontFamily: "Outfit, sans-serif",
-              fontWeight: 600, cursor: "pointer", padding: "10px 18px", fontSize: 13.5,
-              display: "flex", alignItems: "center", gap: 6, transition: "all 0.25s ease", whiteSpace: "nowrap",
+      <div className="mx-auto flex h-[72px] w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:gap-4">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="relative z-[2] flex shrink-0 items-center no-underline"
+        >
+          <Image
+            src={purpleLogo}
+            alt="PurpleSoftHub"
+            width={170}
+            height={52}
+            className="cyber-logo h-9 w-auto max-w-[140px] sm:h-10 sm:max-w-[170px] lg:h-[52px]"
+            priority
+            style={{
+              filter: dark
+                ? "drop-shadow(0 0 10px rgba(124, 58, 237, 0.5))"
+                : "drop-shadow(0 0 6px rgba(124, 58, 237, 0.3))",
+              transition: "filter 0.3s ease",
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.1)" : "rgba(124, 58, 237, 0.06)"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = dark ? "0 4px 16px rgba(168, 85, 247, 0.2)" : "0 4px 12px rgba(124, 58, 237, 0.15)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-            ><UserIcon /> Client Login</button>
-          </Link>
-        )}
-        {isSignedIn && (
-          <Link href={portalHref}>
-            <button className="nav-btn-outline" style={{
-              background: "transparent", border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
-              borderRadius: 10, color: dark ? "#c084fc" : "#6d28d9", fontFamily: "Outfit, sans-serif",
-              fontWeight: 600, cursor: "pointer", padding: "10px 18px", fontSize: 13.5,
-              display: "flex", alignItems: "center", gap: 6, transition: "all 0.25s ease", whiteSpace: "nowrap",
-            }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.1)" : "rgba(124, 58, 237, 0.06)"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = dark ? "0 4px 16px rgba(168, 85, 247, 0.2)" : "0 4px 12px rgba(124, 58, 237, 0.15)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-            ><DashboardIcon /> {portalLabel}</button>
-          </Link>
-        )}
-
-        {/* Start a Project CTA */}
-        <Link href="/contact">
-          <button className="nav-cta-btn" style={{
-            background: "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 10,
-            color: "#fff", fontFamily: "Outfit, sans-serif", fontWeight: 700, cursor: "pointer",
-            padding: "11px 24px", fontSize: 14, whiteSpace: "nowrap",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-            boxShadow: dark ? "0 4px 20px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(168, 85, 247, 0.2)" : "0 4px 16px rgba(124, 58, 237, 0.3)",
-            position: "relative", overflow: "hidden",
-          }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = dark ? "0 8px 32px rgba(124, 58, 237, 0.6), 0 0 0 1px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.1)" : "0 8px 28px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = dark ? "0 4px 20px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(168, 85, 247, 0.2)" : "0 4px 16px rgba(124, 58, 237, 0.3)"; }}
-          >
-            <span style={{ position: "absolute", top: 0, left: "-100%", width: "100%", height: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)", transition: "left 0.5s ease" }} onMouseEnter={(e) => e.currentTarget.style.left = "100%"} onMouseLeave={(e) => e.currentTarget.style.left = "-100%"} />
-            Start a Project
-          </button>
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.filter = dark
+                ? "drop-shadow(0 0 18px rgba(168, 85, 247, 0.8))"
+                : "drop-shadow(0 0 12px rgba(124, 58, 237, 0.6))")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.filter = dark
+                ? "drop-shadow(0 0 10px rgba(124, 58, 237, 0.5))"
+                : "drop-shadow(0 0 6px rgba(124, 58, 237, 0.3))")
+            }
+          />
         </Link>
-      </div>
 
-      {/* Mobile Controls */}
-      <div className="nav-mobile" style={{ display: "flex", gap: 8, alignItems: "center", position: "relative", zIndex: 2 }}>
-        <button onClick={toggleTheme} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"} style={{
-          background: dark ? "rgba(124, 58, 237, 0.12)" : "rgba(124, 58, 237, 0.06)",
-          border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.15)"}`,
-          borderRadius: 10, color: dark ? "#c084fc" : "#7c3aed", fontSize: 16,
-          width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center",
-          cursor: "pointer", transition: "all 0.25s ease", flexShrink: 0,
-        }}>{dark ? <SunIcon /> : <MoonIcon />}</button>
+        {/* Desktop Nav Links — display controlled by globals.css (.nav-desktop); never set display inline here */}
+        <div className="nav-desktop nav-desktop-links">
+          {NAV_LINKS.map((l) => (
+            <Link
+              key={l.label}
+              href={l.href}
+              className="nav-link-desktop"
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: linkColor,
+                textDecoration: "none",
+                padding: "8px 10px",
+                borderRadius: 8,
+                whiteSpace: "nowrap",
+                position: "relative",
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = linkHoverColor;
+                e.currentTarget.style.background = linkHoverBg;
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = linkColor;
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              {l.label}
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: 4,
+                  left: "50%",
+                  transform: "translateX(-50%) scaleX(0)",
+                  width: "80%",
+                  height: "2px",
+                  borderRadius: 1,
+                  background: dark
+                    ? "linear-gradient(90deg, #a855f7, #22d3ee)"
+                    : "linear-gradient(90deg, #7c3aed, #a855f7)",
+                  transition: "transform 0.25s ease",
+                  boxShadow: dark
+                    ? "0 0 8px rgba(168, 85, 247, 0.5)"
+                    : "0 0 6px rgba(124, 58, 237, 0.3)",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.transform = "translateX(-50%) scaleX(1)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.transform = "translateX(-50%) scaleX(0)")
+                }
+              />
+            </Link>
+          ))}
+        </div>
 
-        <button onClick={toggleMobile} aria-label={mobileOpen ? "Close menu" : "Open menu"} aria-expanded={mobileOpen ? "true" : "false"} style={{
-          background: dark ? "rgba(124, 58, 237, 0.15)" : "rgba(124, 58, 237, 0.08)",
-          border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.2)"}`,
-          borderRadius: 10, color: dark ? "#e2d9f3" : "#1a0533", fontSize: 18,
-          padding: "9px 12px", cursor: "pointer", transition: "all 0.25s ease",
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.25)" : "rgba(124, 58, 237, 0.15)"; e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.15)" : "rgba(124, 58, 237, 0.08)"; e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.2)"; }}
-        >{mobileOpen ? <CloseIcon /> : <MenuIcon />}</button>
+        {/* Desktop Actions */}
+        <div className="nav-desktop shrink-0 gap-2">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="theme-toggle-btn"
+            style={{
+              background: dark ? "rgba(124, 58, 237, 0.12)" : "rgba(124, 58, 237, 0.06)",
+              border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.15)"}`,
+              borderRadius: 10,
+              color: dark ? "#c084fc" : "#7c3aed",
+              fontSize: 16,
+              width: 40,
+              height: 40,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = dark
+                ? "rgba(124, 58, 237, 0.25)"
+                : "rgba(124, 58, 237, 0.12)";
+              e.currentTarget.style.boxShadow = dark
+                ? "0 0 16px rgba(168, 85, 247, 0.3)"
+                : "0 0 12px rgba(124, 58, 237, 0.2)";
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = dark
+                ? "rgba(124, 58, 237, 0.12)"
+                : "rgba(124, 58, 237, 0.06)";
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            {dark ? <SunIcon /> : <MoonIcon />}
+          </button>
+
+          {!isSignedIn && (
+            <Link
+              href="/sign-in"
+              className="nav-btn-outline"
+              style={outlineBtnBase}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed";
+                e.currentTarget.style.background = dark
+                  ? "rgba(124, 58, 237, 0.1)"
+                  : "rgba(124, 58, 237, 0.06)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = dark
+                  ? "0 4px 16px rgba(168, 85, 247, 0.2)"
+                  : "0 4px 12px rgba(124, 58, 237, 0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = dark
+                  ? "rgba(168, 85, 247, 0.4)"
+                  : "rgba(124, 58, 237, 0.35)";
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <UserIcon /> Client Login
+            </Link>
+          )}
+          {isSignedIn && (
+            <Link
+              href={portalHref}
+              className="nav-btn-outline"
+              style={outlineBtnBase}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed";
+                e.currentTarget.style.background = dark
+                  ? "rgba(124, 58, 237, 0.1)"
+                  : "rgba(124, 58, 237, 0.06)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = dark
+                  ? "0 4px 16px rgba(168, 85, 247, 0.2)"
+                  : "0 4px 12px rgba(124, 58, 237, 0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = dark
+                  ? "rgba(168, 85, 247, 0.4)"
+                  : "rgba(124, 58, 237, 0.35)";
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <DashboardIcon /> {portalLabel}
+            </Link>
+          )}
+
+          <Link
+            href="/contact"
+            className="nav-cta-btn"
+            style={ctaBtnBase}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = dark
+                ? "0 8px 32px rgba(124, 58, 237, 0.6), 0 0 0 1px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255,255,255,0.1)"
+                : "0 8px 28px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = dark
+                ? "0 4px 20px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(168, 85, 247, 0.2)"
+                : "0 4px 16px rgba(124, 58, 237, 0.3)";
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: 0,
+                left: "-100%",
+                width: "100%",
+                height: "100%",
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+                transition: "left 0.5s ease",
+                pointerEvents: "none",
+              }}
+            />
+            Start a Project
+          </Link>
+        </div>
+
+        {/* Mobile Controls — single theme toggle + menu; visibility from globals only */}
+        <div className="nav-mobile relative z-[2] shrink-0">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            style={{
+              background: dark ? "rgba(124, 58, 237, 0.12)" : "rgba(124, 58, 237, 0.06)",
+              border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.15)"}`,
+              borderRadius: 10,
+              color: dark ? "#c084fc" : "#7c3aed",
+              fontSize: 16,
+              width: 40,
+              height: 40,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              flexShrink: 0,
+            }}
+          >
+            {dark ? <SunIcon /> : <MoonIcon />}
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleMobile}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen ? "true" : "false"}
+            style={{
+              background: dark ? "rgba(124, 58, 237, 0.15)" : "rgba(124, 58, 237, 0.08)",
+              border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.2)"}`,
+              borderRadius: 10,
+              color: dark ? "#e2d9f3" : "#1a0533",
+              fontSize: 18,
+              padding: "9px 12px",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = dark
+                ? "rgba(124, 58, 237, 0.25)"
+                : "rgba(124, 58, 237, 0.15)";
+              e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = dark
+                ? "rgba(124, 58, 237, 0.15)"
+                : "rgba(124, 58, 237, 0.08)";
+              e.currentTarget.style.borderColor = dark
+                ? "rgba(168, 85, 247, 0.3)"
+                : "rgba(124, 58, 237, 0.2)";
+            }}
+          >
+            {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}

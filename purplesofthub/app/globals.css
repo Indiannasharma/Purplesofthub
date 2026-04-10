@@ -407,12 +407,37 @@ html:not(.dark) [style*="color:#5b4d8a"] { color: var(--text-muted) !important; 
 
 /* ══════════════════════════════
    NAVBAR RESPONSIVE
+   NOTE: Never set display:flex inline on .nav-desktop / .nav-mobile —
+   it overrides these rules and breaks mobile/desktop visibility.
 ══════════════════════════════ */
-.nav-desktop { display: none; }
-.nav-mobile  { display: flex; }
-@media (min-width: 768px) {
-  .nav-desktop { display: flex; }
-  .nav-mobile  { display: none; }
+.nav-desktop {
+  display: none;
+  align-items: center;
+}
+/* Center link cluster on large screens; min-width:0 allows shrink */
+.nav-desktop-links {
+  flex: 1 1 0%;
+  justify-content: center;
+  min-width: 0;
+  gap: 0.125rem;
+}
+@media (min-width: 1280px) {
+  .nav-desktop-links {
+    gap: 0.5rem;
+  }
+}
+.nav-mobile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+@media (min-width: 1024px) {
+  .nav-desktop {
+    display: flex;
+  }
+  .nav-mobile {
+    display: none;
+  }
 }
 
 /* ══════════════════════════════
