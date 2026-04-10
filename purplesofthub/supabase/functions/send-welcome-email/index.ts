@@ -1,4 +1,4 @@
-import { Resend } from "npm:resend@4.0.0";
+ï»¿import { Resend } from "resend";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -74,9 +74,9 @@ function buildWelcomeHtml(firstName?: string): string {
                   <p style="margin:0;color:#a99dd1;font-size:13px;line-height:1.8;">
                     Quick links:
                     <a href="https://www.purplesofthub.com/services" style="color:${BRAND_CYAN};text-decoration:none;">Services</a>
-                    ·
+                    Â·
                     <a href="https://www.purplesofthub.com/services/web-development/pricing" style="color:${BRAND_CYAN};text-decoration:none;">Pricing</a>
-                    ·
+                    Â·
                     <a href="https://www.purplesofthub.com/academy" style="color:${BRAND_CYAN};text-decoration:none;">Academy</a>
                   </p>
                   <p style="margin:14px 0 0 0;color:#8e82b8;font-size:12px;line-height:1.6;">
@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     const { data, error } = await resend.emails.send({
       from: resendFrom,
       to: [email],
-      subject: "Welcome to PurpleSoftHub – Let's Build Something Great ??",
+      subject: "Welcome to PurpleSoftHub â€“ Let's Build Something Great ??",
       html: buildWelcomeHtml(payload.first_name),
     });
 
@@ -158,3 +158,4 @@ Deno.serve(async (req) => {
     });
   }
 });
+
