@@ -13,7 +13,7 @@ import {
   FadeIn
 } from "@/components/motion";
 import { CountUp } from "@/components/motion/CountUp";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
