@@ -96,7 +96,7 @@ const TYPEWRITER_WORDS = [
 ];
 
 export default async function Home() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: trendingPostsData } = await supabase
     .from('blog_posts')
     .select('id, title, slug, excerpt, read_time, comment_count, likes_count')
