@@ -30,6 +30,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
   const [payMethod, setPayMethod] = useState<'paystack' | 'flutterwave' | null>(null)
   const [error, setError] = useState('')
   const [gatewayOpening, setGatewayOpening] = useState<'paystack' | 'flutterwave' | null>(null)
+  const [profileLoading, setProfileLoading] = useState(isLoggedIn)
   const [scriptsLoaded, setScriptsLoaded] = useState({ paystack: false, flutterwave: false })
   const [form, setForm] = useState({
     firstName: '',
@@ -74,12 +75,16 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
 
   // Prefill customer details for logged-in users
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isLoggedIn) {
+      setProfileLoading(false)
+      return
+    }
 
     let isMounted = true
     const supabase = createClient()
 
     const loadLoggedInUser = async () => {
+      setProfileLoading(true)
       try {
         const { data: authData } = await supabase.auth.getUser()
         const user = authData?.user
@@ -118,6 +123,8 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
         }))
       } catch {
         // Keep checkout usable and let user continue manually.
+      } finally {
+        if (isMounted) setProfileLoading(false)
       }
     }
 
@@ -132,7 +139,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     setForm(p => ({ ...p, [field]: value }))
   }
 
-  const waitForGlobal = async (name: 'PaystackPop' | 'FlutterwaveCheckout', timeoutMs = 3500) => {
+  const waitForGlobal = async (name: 'PaystackPop' | 'FlutterwaveCheckout', timeoutMs = 5000) => {
     const started = Date.now()
     while (Date.now() - started < timeoutMs) {
       if ((window as any)[name]) return true
@@ -247,6 +254,10 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
 
   const handlePaystackPayment = async () => {
     if (!isLoggedIn && !validateDetails()) return
+    if (profileLoading) {
+      setError('Loading your information... please wait a moment.')
+      return
+    }
     const identity = await ensureLoggedInIdentity()
     if (!identity.email || !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
       setError('Unable to start Paystack. Please confirm your email and try again.')
@@ -299,6 +310,10 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
 
   const handleFlutterwavePayment = async () => {
     if (!isLoggedIn && !validateDetails()) return
+    if (profileLoading) {
+      setError('Loading your information... please wait a moment.')
+      return
+    }
     const identity = await ensureLoggedInIdentity()
     if (!identity.email || !process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY) {
       setError('Unable to start Flutterwave. Please confirm your email and try again.')
@@ -410,6 +425,9 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     boxSizing: 'border-box',
     transition: 'border-color 0.2s',
   }
+
+  const paystackDisabled = gatewayOpening !== null || profileLoading || !scriptsLoaded.paystack
+  const flutterwaveDisabled = gatewayOpening !== null || profileLoading || !scriptsLoaded.flutterwave
 
   return (
     <>
@@ -888,9 +906,20 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
               flexDirection: 'column',
               gap: '12px',
             }}>
+              {isLoggedIn && profileLoading && (
+                <p style={{
+                  fontSize: '12px',
+                  color: '#a855f7',
+                  textAlign: 'center',
+                  margin: '0 0 4px',
+                  fontWeight: 600,
+                }}>
+                  Loading your information...
+                </p>
+              )}
               <button
                 onClick={handlePaystackPayment}
-                disabled={gatewayOpening !== null}
+                disabled={paystackDisabled}
                 style={{
                   width: '100%',
                   padding: '18px 20px',
@@ -903,7 +932,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   transition: 'all 0.2s',
-                  opacity: gatewayOpening ? 0.7 : 1,
+                  opacity: paystackDisabled ? 0.7 : 1,
                 }}
               >
                 <div style={{
@@ -946,7 +975,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
 
               <button
                 onClick={handleFlutterwavePayment}
-                disabled={gatewayOpening !== null}
+                disabled={flutterwaveDisabled}
                 style={{
                   width: '100%',
                   padding: '18px 20px',
@@ -959,7 +988,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   transition: 'all 0.2s',
-                  opacity: gatewayOpening ? 0.7 : 1,
+                  opacity: flutterwaveDisabled ? 0.7 : 1,
                 }}
               >
                 <div style={{
@@ -1008,7 +1037,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
                   margin: '2px 0 0',
                   fontWeight: 600,
                 }}>
-                  Opening secure payment gateway...
+                  {gatewayOpening === 'paystack' ? 'Opening Paystack...' : 'Opening Flutterwave...'}
                 </p>
               )}
 

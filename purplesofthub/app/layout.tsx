@@ -144,11 +144,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Payment Gateway Scripts */}
         <Script 
           src="https://js.paystack.co/v1/inline.js" 
-          strategy="lazyOnload" 
+          strategy="afterInteractive" 
         />
         <Script 
           src="https://checkout.flutterwave.com/v3.js" 
-          strategy="lazyOnload" 
+          strategy="afterInteractive" 
         />
       </body>
     </html>
