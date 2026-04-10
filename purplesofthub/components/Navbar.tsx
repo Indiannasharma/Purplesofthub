@@ -584,39 +584,41 @@ export default function Navbar() {
 
             <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
               {!isSignedIn && (
-                <Link href="/sign-in" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                  <button style={{
-                    width: "100%", background: "transparent",
-                    border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
-                    borderRadius: 12, color: dark ? "#c084fc" : "#6d28d9",
-                    fontFamily: "Outfit, sans-serif", fontWeight: 600, cursor: "pointer",
-                    padding: 14, fontSize: 15, display: "flex", alignItems: "center",
-                    justifyContent: "center", gap: 8, transition: "all 0.25s ease",
-                  }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.1)" : "rgba(124, 58, 237, 0.06)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"; e.currentTarget.style.background = "transparent"; }}
-                  ><UserIcon /> Client Login</button>
+                <Link href="/sign-in" onClick={() => setMobileOpen(false)} style={{
+                  flex: 1, width: "100%", background: "transparent",
+                  border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
+                  borderRadius: 12, color: dark ? "#c084fc" : "#6d28d9",
+                  fontFamily: "Outfit, sans-serif", fontWeight: 600, cursor: "pointer",
+                  padding: 14, fontSize: 15, display: "flex", alignItems: "center",
+                  justifyContent: "center", gap: 8, transition: "all 0.25s ease",
+                  textDecoration: "none",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.1)" : "rgba(124, 58, 237, 0.06)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"; e.currentTarget.style.background = "transparent"; }}
+                ><UserIcon /> Client Login
                 </Link>
               )}
               {isSignedIn && (
-                <Link href={portalHref} onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                  <button style={{
-                    width: "100%", background: "transparent",
-                    border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
-                    borderRadius: 12, color: dark ? "#c084fc" : "#6d28d9",
-                    fontFamily: "Outfit, sans-serif", fontWeight: 600, cursor: "pointer",
-                    padding: 14, fontSize: 15, display: "flex", alignItems: "center",
-                    justifyContent: "center", gap: 8, transition: "all 0.25s ease",
-                  }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.1)" : "rgba(124, 58, 237, 0.06)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"; e.currentTarget.style.background = "transparent"; }}
-                  ><DashboardIcon /> {portalLabel}</button>
+                <Link href={portalHref} onClick={() => setMobileOpen(false)} style={{
+                  flex: 1, width: "100%", background: "transparent",
+                  border: `1.5px solid ${dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"}`,
+                  borderRadius: 12, color: dark ? "#c084fc" : "#6d28d9",
+                  fontFamily: "Outfit, sans-serif", fontWeight: 600, cursor: "pointer",
+                  padding: 14, fontSize: 15, display: "flex", alignItems: "center",
+                  justifyContent: "center", gap: 8, transition: "all 0.25s ease",
+                  textDecoration: "none",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = dark ? "#a855f7" : "#7c3aed"; e.currentTarget.style.background = dark ? "rgba(124, 58, 237, 0.1)" : "rgba(124, 58, 237, 0.06)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = dark ? "rgba(168, 85, 247, 0.4)" : "rgba(124, 58, 237, 0.35)"; e.currentTarget.style.background = "transparent"; }}
+                ><DashboardIcon /> {portalLabel}
                 </Link>
               )}
-              <Link href="/contact" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                <button className="cyber-btn-primary" style={{ width: "100%", padding: 14, fontSize: 15, borderRadius: 12, boxShadow: dark ? "0 4px 20px rgba(124, 58, 237, 0.4)" : "0 4px 16px rgba(124, 58, 237, 0.3)" }}>
-                  Start a Project
-                </button>
+              <Link href="/contact" onClick={() => setMobileOpen(false)} className="cyber-btn-primary" style={{
+                flex: 1, width: "100%", padding: 14, fontSize: 15, borderRadius: 12,
+                boxShadow: dark ? "0 4px 20px rgba(124, 58, 237, 0.4)" : "0 4px 16px rgba(124, 58, 237, 0.3)",
+                textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                Start a Project
               </Link>
             </div>
           </motion.div>
