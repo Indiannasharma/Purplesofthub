@@ -178,11 +178,12 @@ export default function DashboardLayoutClient({
   return (
     <div style={{
       display: 'flex',
-      height: '100vh',
-      width: '100vw',
+      height: '100dvh',
+      width: '100%',
       overflow: 'hidden',
       background: theme === 'dark' ? '#0f0f1a' : '#f4f6f9',
       fontFamily: 'inherit',
+      position: 'relative',
     }}>
 
       {/* Mobile overlay */}
@@ -458,18 +459,21 @@ export default function DashboardLayoutClient({
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          height: '100vh',
+          height: '100dvh',
           overflow: 'hidden',
           minWidth: 0,
+          width: '100%',
         }}
         className="dashboard-main"
       >
 
         {/* STICKY HEADER */}
         <header style={{
-          height: '60px',
+          minHeight: '64px',
           flexShrink: 0,
-          background: theme === 'dark' ? '#13131f' : '#ffffff',
+          background: theme === 'dark'
+            ? 'rgba(19,19,31,0.92)'
+            : 'rgba(255,255,255,0.92)',
           borderBottom: `1px solid ${
             theme === 'dark'
               ? 'rgba(124,58,237,0.12)'
@@ -478,11 +482,15 @@ export default function DashboardLayoutClient({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 24px',
+          gap: '12px',
+          padding: '0 16px',
           position: 'sticky',
           top: 0,
-          zIndex: 50,
-          backdropFilter: 'blur(12px)',
+          zIndex: 60,
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          boxSizing: 'border-box',
+          overflow: 'hidden',
         }}>
 
           {/* Left — Mobile menu + Search */}
@@ -490,6 +498,8 @@ export default function DashboardLayoutClient({
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
+            minWidth: 0,
+            flex: '1 1 auto',
           }}>
             {/* Mobile menu button */}
             <button
@@ -525,14 +535,14 @@ export default function DashboardLayoutClient({
             <Link 
               href="/dashboard"
               className="dashboard-mobile-logo"
-              style={{ display: 'flex' }}>
+              style={{ display: 'flex', flexShrink: 0 }}>
               <Image
                 src="/images/logo/purplesoft-logo-main.png"
                 alt="PurpleSoftHub"
-                width={120}
-                height={34}
+                width={116}
+                height={32}
                 priority
-                style={{ objectFit: 'contain' }}
+                style={{ objectFit: 'contain', maxWidth: '100%' }}
               />
             </Link>
 
@@ -579,11 +589,15 @@ export default function DashboardLayoutClient({
           </div>
 
           {/* Right — Actions */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}>
+          <div
+            className="dashboard-header-actions"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              flexShrink: 0,
+            }}
+          >
 
             {/* Theme toggle */}
             <button
@@ -726,6 +740,28 @@ export default function DashboardLayoutClient({
           }
           .dashboard-search {
             display: none !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .dashboard-main {
+            min-width: 0;
+          }
+          .dashboard-header-actions {
+            gap: 4px !important;
+          }
+          .dashboard-header-actions button {
+            width: 32px !important;
+            height: 32px !important;
+          }
+          .dashboard-mobile-logo img {
+            width: 98px !important;
+            height: auto !important;
+          }
+          .dashboard-main header {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            min-height: 60px !important;
           }
         }
 

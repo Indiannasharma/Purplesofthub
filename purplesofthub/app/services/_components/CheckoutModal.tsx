@@ -55,7 +55,6 @@ export default function CheckoutModal({
   const [gatewayOpening, setGatewayOpening] = useState<Gateway | null>(null)
   const [error, setError] = useState('')
   const [profileLoading, setProfileLoading] = useState(isLoggedIn)
-  const [flutterwaveReady, setFlutterwaveReady] = useState(false)
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -69,25 +68,18 @@ export default function CheckoutModal({
   const amountUSD = Math.round(amount / 1400)
   const successUrlBase = '/services/checkout/success'
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
+  const waitForFlutterwave = async (timeoutMs = 7000) => {
+    const started = Date.now()
 
-    if (typeof (window as any).FlutterwaveCheckout === 'function') {
-      setFlutterwaveReady(true)
-      return
-    }
-
-    const interval = window.setInterval(() => {
-      if (typeof (window as any).FlutterwaveCheckout === 'function') {
-        setFlutterwaveReady(true)
-        window.clearInterval(interval)
+    while (Date.now() - started < timeoutMs) {
+      if (typeof window !== 'undefined' && typeof (window as any).FlutterwaveCheckout === 'function') {
+        return true
       }
-    }, 250)
+      await new Promise(resolve => setTimeout(resolve, 120))
+    }
 
-    return () => window.clearInterval(interval)
-  }, [])
+    return false
+  }
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -165,13 +157,80 @@ export default function CheckoutModal({
     return true
   }
 
-  const getCheckoutPayload = () => {
-    const fullName = `${form.firstName} ${form.lastName}`.trim()
-    return {
+  const resolveCustomerIdentity = async () => {
+    const baseIdentity = {
+      email: form.email.trim(),
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
-      email: form.email.trim(),
       phone: form.phone.trim(),
+      fullName: `${form.firstName} ${form.lastName}`.trim(),
+    }
+
+    if (!isLoggedIn) {
+      return baseIdentity
+    }
+
+    try {
+      const supabase = createClient()
+      const { data: authData } = await supabase.auth.getUser()
+      const user = authData?.user
+
+      if (!user) {
+        return baseIdentity
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, phone, email')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      const fullName =
+        profile?.full_name ||
+        (user.user_metadata?.full_name as string | undefined) ||
+        (user.user_metadata?.name as string | undefined) ||
+        user.email?.split('@')[0] ||
+        baseIdentity.fullName
+
+      const [firstName = '', ...lastParts] = String(fullName).trim().split(' ').filter(Boolean)
+      const lastName = lastParts.join(' ')
+      const email = profile?.email || user.email || baseIdentity.email
+      const phone = profile?.phone || (user.user_metadata?.phone as string | undefined) || baseIdentity.phone
+
+      const resolved = {
+        email,
+        firstName: firstName || baseIdentity.firstName,
+        lastName: lastName || baseIdentity.lastName,
+        phone,
+        fullName: `${firstName || baseIdentity.firstName} ${lastName || baseIdentity.lastName}`.trim() || email,
+      }
+
+      setForm(prev => ({
+        ...prev,
+        email: prev.email || resolved.email,
+        firstName: prev.firstName || resolved.firstName,
+        lastName: prev.lastName || resolved.lastName,
+        phone: prev.phone || resolved.phone,
+      }))
+
+      return resolved
+    } catch {
+      return baseIdentity
+    }
+  }
+
+  const buildCheckoutPayload = (identity: {
+    email: string
+    firstName: string
+    lastName: string
+    phone: string
+    fullName: string
+  }) => {
+    return {
+      firstName: identity.firstName,
+      lastName: identity.lastName,
+      email: identity.email,
+      phone: identity.phone,
       businessName: form.businessName.trim(),
       password: form.password,
       plan,
@@ -179,12 +238,11 @@ export default function CheckoutModal({
       serviceId,
       serviceName: serviceName || plan,
       requiresProjectCreation: Boolean(isLoggedIn),
-      fullName,
+      fullName: identity.fullName,
     }
   }
 
-  const saveDraft = () => {
-    const payload = getCheckoutPayload()
+  const saveDraft = (payload: ReturnType<typeof buildCheckoutPayload>) => {
     const draft: CheckoutDraft = {
       firstName: payload.firstName,
       lastName: payload.lastName,
@@ -220,9 +278,14 @@ export default function CheckoutModal({
     try {
       setError('')
       setGatewayOpening(gateway)
-      saveDraft()
+      const identity = await resolveCustomerIdentity()
+      if (!identity.email) {
+        throw new Error('Unable to determine your email address. Please refresh and try again.')
+      }
 
-      const payload = getCheckoutPayload()
+      const payload = buildCheckoutPayload(identity)
+      saveDraft(payload)
+
       const successUrl = `${window.location.origin}${successUrlBase}?provider=${gateway}`
 
       const response = await fetch(
@@ -267,36 +330,51 @@ export default function CheckoutModal({
         return
       }
 
-      const flutterwaveConfig = data.config || {
-        public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
-        tx_ref: data.tx_ref,
-        amount: payload.amount,
-        currency: 'NGN',
-        payment_options: 'card,banktransfer,ussd',
+      const flutterwaveConfig = {
+        ...(data.config || {}),
+        public_key: data.config?.public_key || process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
+        tx_ref: data.config?.tx_ref || data.tx_ref,
+        amount: data.config?.amount || payload.amount,
+        currency: data.config?.currency || 'NGN',
+        payment_options: data.config?.payment_options || 'card,banktransfer,ussd',
         customer: {
           email: payload.email,
-          name: `${payload.firstName} ${payload.lastName}`.trim() || payload.email,
+          name: payload.fullName || payload.email,
           ...(payload.phone ? { phone_number: payload.phone } : {}),
         },
         meta: {
+          ...(data.config?.meta || {}),
           service: payload.serviceId || 'service-checkout',
+          service_id: payload.serviceId,
           service_name: payload.serviceName,
           plan_name: payload.plan,
           requires_project_creation: payload.requiresProjectCreation,
         },
         customizations: {
+          ...(data.config?.customizations || {}),
           title: payload.serviceName || 'PurpleSoftHub Checkout',
           description: `${payload.plan} plan`,
           logo: 'https://www.purplesofthub.com/Purplesoft-logo-main.png',
         },
-        redirect_url: successUrl,
+        redirect_url: data.config?.redirect_url || successUrl,
       }
 
-      if (!(window as any).FlutterwaveCheckout) {
+      const flutterwaveGlobal = await (async () => {
+        if (typeof window === 'undefined') return null
+        if (typeof (window as any).FlutterwaveCheckout === 'function') return (window as any).FlutterwaveCheckout
+        const ready = await waitForFlutterwave()
+        return ready ? (window as any).FlutterwaveCheckout : null
+      })()
+
+      if (typeof flutterwaveGlobal !== 'function') {
+        if (data.payment_link) {
+          window.location.href = data.payment_link
+          return
+        }
         throw new Error('Flutterwave is still loading. Please try again.')
       }
 
-      ;(window as any).FlutterwaveCheckout({
+      flutterwaveGlobal({
         ...flutterwaveConfig,
         callback: (response: any) => {
           const ref = String(response?.transaction_id || response?.tx_ref || flutterwaveConfig.tx_ref || '')
@@ -597,7 +675,7 @@ export default function CheckoutModal({
 
               <button
                 onClick={() => void initSecureRedirect('flutterwave')}
-                disabled={gatewayOpening !== null || profileLoading || !flutterwaveReady}
+                disabled={gatewayOpening !== null || profileLoading}
                 style={{
                   ...buttonBase,
                   border: '2px solid rgba(245,166,35,0.28)',
