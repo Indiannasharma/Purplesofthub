@@ -132,6 +132,77 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     setForm(p => ({ ...p, [field]: value }))
   }
 
+  const ensureLoggedInIdentity = async () => {
+    if (!isLoggedIn) {
+      return {
+        email: form.email.trim(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        phone: form.phone.trim(),
+      }
+    }
+    if (form.email.trim()) {
+      return {
+        email: form.email.trim(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        phone: form.phone.trim(),
+      }
+    }
+
+    try {
+      const supabase = createClient()
+      const { data: authData } = await supabase.auth.getUser()
+      const user = authData?.user
+      if (!user) return
+
+      let profile: { full_name?: string | null; phone?: string | null } | null = null
+      try {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, phone')
+          .eq('id', user.id)
+          .single()
+        profile = profileData
+      } catch {
+        // Optional profile data.
+      }
+
+      const fullName =
+        profile?.full_name ||
+        (user.user_metadata?.full_name as string | undefined) ||
+        (user.user_metadata?.name as string | undefined) ||
+        ''
+      const [firstName = '', ...lastParts] = fullName.trim().split(' ').filter(Boolean)
+      const lastName = lastParts.join(' ')
+      const phone = profile?.phone || (user.user_metadata?.phone as string | undefined) || ''
+
+      const resolved = {
+        email: user.email || '',
+        firstName,
+        lastName,
+        phone,
+      }
+
+      setForm(prev => ({
+        ...prev,
+        email: prev.email || resolved.email,
+        firstName: prev.firstName || resolved.firstName,
+        lastName: prev.lastName || resolved.lastName,
+        phone: prev.phone || resolved.phone,
+      }))
+      return resolved
+    } catch {
+      // Keep graceful fallback.
+      return {
+        email: form.email.trim(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        phone: form.phone.trim(),
+      }
+    }
+  }
+
   const validateDetails = () => {
     if (!form.firstName.trim()) {
       setError('First name required')
@@ -153,9 +224,10 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     return true
   }
 
-  const handlePaystackPayment = () => {
+  const handlePaystackPayment = async () => {
     if (!isLoggedIn && !validateDetails()) return
-    if (!form.email.trim() || !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
+    const identity = await ensureLoggedInIdentity()
+    if (!identity.email || !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
       setError('Unable to start Paystack. Please confirm your email and try again.')
       return
     }
@@ -167,14 +239,14 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
 
       const handler = (window as any).PaystackPop?.setup({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-        email: form.email.trim(),
+        email: identity.email,
         amount: amount * 100,
         currency: 'NGN',
         ref: `PSW-META-${plan.toUpperCase()}-${Date.now()}`,
         metadata: {
           custom_fields: [
             { display_name: 'Plan', variable_name: 'plan', value: plan },
-            { display_name: 'Client Name', variable_name: 'name', value: `${form.firstName} ${form.lastName}`.trim() || form.email.trim() },
+            { display_name: 'Client Name', variable_name: 'name', value: `${identity.firstName} ${identity.lastName}`.trim() || identity.email },
           ],
         },
         callback: async (response: any) => {
@@ -199,9 +271,10 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
     }
   }
 
-  const handleFlutterwavePayment = () => {
+  const handleFlutterwavePayment = async () => {
     if (!isLoggedIn && !validateDetails()) return
-    if (!form.email.trim() || !process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY) {
+    const identity = await ensureLoggedInIdentity()
+    if (!identity.email || !process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY) {
       setError('Unable to start Flutterwave. Please confirm your email and try again.')
       return
     }
@@ -218,9 +291,9 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
         currency: 'NGN',
         payment_options: 'card,banktransfer,ussd',
         customer: {
-          email: form.email.trim(),
-          phone_number: form.phone.trim() || undefined,
-          name: `${form.firstName} ${form.lastName}`.trim() || form.email.trim(),
+          email: identity.email,
+          phone_number: identity.phone || undefined,
+          name: `${identity.firstName} ${identity.lastName}`.trim() || identity.email,
         },
         customizations: {
           title: `PurpleSoftHub ${plan} Plan`,
@@ -897,7 +970,7 @@ export default function CheckoutModal({ plan, serviceId, serviceName, amount: pr
                   margin: '2px 0 0',
                   fontWeight: 600,
                 }}>
-                  Opening payment gateway...
+                  Opening secure payment gateway...
                 </p>
               )}
 
