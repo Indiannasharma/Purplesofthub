@@ -61,12 +61,11 @@ export default function SignInPage() {
         return
       }
 
-      // Check user role and redirect accordingly
-      const { data: { user } } = await supabase.auth.getUser()
+      // Redirect based on the server-owned profile role, not auth metadata.
+      const roleResponse = await fetch('/api/auth/role')
+      const roleData = await roleResponse.json().catch(() => null)
 
-      const role = user?.user_metadata?.role || user?.app_metadata?.role
-
-      if (role === 'admin') {
+      if (roleResponse.ok && roleData?.role === 'admin') {
         router.push('/admin')
       } else {
         router.push('/dashboard')

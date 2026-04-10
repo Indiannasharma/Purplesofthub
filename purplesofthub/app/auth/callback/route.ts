@@ -1,11 +1,16 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { getAuthenticatedProfile } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const next = requestUrl.searchParams.get('next') ?? '/dashboard'
+  const requestedNext = requestUrl.searchParams.get('next') ?? '/dashboard'
+  const next =
+    requestedNext.startsWith('/') && !requestedNext.startsWith('//')
+      ? requestedNext
+      : '/dashboard'
 
   if (code) {
     const cookieStore = await cookies()
@@ -29,11 +34,10 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      // Check user role and redirect accordingly
-      const { data: { user } } = await supabase.auth.getUser()
-      const role = user?.user_metadata?.role || user?.app_metadata?.role
+      // Security note: role comes from the server-owned profiles table.
+      const auth = await getAuthenticatedProfile()
 
-      if (role === 'admin') {
+      if (auth.ok && auth.role === 'admin') {
         return NextResponse.redirect(new URL('/admin', request.url))
       }
 

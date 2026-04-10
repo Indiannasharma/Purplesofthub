@@ -1,15 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
+import { getAuthenticatedProfile } from '@/lib/auth'
 
 export default async function AdminSubscribersPage() {
+  const auth = await getAuthenticatedProfile()
+  if (!auth.ok) {
+    redirect(auth.response.status === 401 ? '/sign-in' : '/dashboard')
+  }
+
+  if (auth.role !== 'admin') redirect('/dashboard')
+
   const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (!user || error) redirect('/sign-in')
-
-  const role = user.user_metadata?.role || user.app_metadata?.role
-  if (role !== 'admin') redirect('/dashboard')
 
   const { data: subscribers } = await supabase
     .from('newsletter_subscribers')

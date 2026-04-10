@@ -10,7 +10,12 @@ export async function GET(request: Request) {
   }
 
   const userId = user.id
-  const userRole = user.user_metadata?.role || user.app_metadata?.role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .maybeSingle()
+  const userRole = profile?.role === 'admin' ? 'admin' : 'client'
 
   // Fetch dashboard data based on user role
   if (userRole === 'admin') {

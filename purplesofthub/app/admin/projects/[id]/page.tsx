@@ -1,16 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { getAuthenticatedProfile } from '@/lib/auth'
 // TODO: Restore ProjectDetailClient component from git
 // import ProjectDetailClient from '@/components/Admin/ProjectDetail'
 
 export default async function ProjectDetail({ params }: { params: { id: string } }) {
+  const auth = await getAuthenticatedProfile()
+  if (!auth.ok) {
+    redirect(auth.response.status === 401 ? '/sign-in' : '/dashboard')
+  }
+
+  if (auth.role !== 'admin') redirect('/dashboard')
+
   const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (!user || error) redirect('/sign-in')
-
-  const role = user.user_metadata?.role || user.app_metadata?.role
-  if (role !== 'admin') redirect('/dashboard')
 
   const { data: project } = await supabase
     .from('projects')

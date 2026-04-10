@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/auth'
 import AdminLayoutClient from './layout-client'
 
 export default async function AdminLayout({
@@ -7,16 +7,12 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const auth = await getAuthenticatedProfile()
+  if (!auth.ok) {
+    redirect(auth.response.status === 401 ? '/sign-in' : '/dashboard')
+  }
 
-  if (!user || error) redirect('/sign-in')
-
-  const role =
-    user.user_metadata?.role ||
-    user.app_metadata?.role
-
-  if (role !== 'admin') redirect('/dashboard')
+  if (auth.role !== 'admin') redirect('/dashboard')
 
   return <AdminLayoutClient>{children}</AdminLayoutClient>
 }
