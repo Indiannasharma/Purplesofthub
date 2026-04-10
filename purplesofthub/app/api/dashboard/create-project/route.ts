@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { resolveCheckoutPlan } from '@/lib/payments/checkout-plans'
 
 export async function POST(request: Request) {
   try {
@@ -23,18 +24,35 @@ export async function POST(request: Request) {
       paymentMethod,
     } = body
 
+    const planInfo = resolveCheckoutPlan({
+      serviceId,
+      planName,
+      amount: Number(amount),
+    })
+
+    if (serviceId && !planInfo) {
+      return new Response(JSON.stringify({ error: 'Invalid service plan or amount mismatch' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const resolvedAmount = planInfo?.amount ?? Number(amount)
+    const resolvedServiceName = planInfo?.serviceName || serviceName
+    const resolvedDeliveryTime = planInfo?.deliveryTime || deliveryTime
+
     // Create project
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .insert({
         client_id: user.id,
-        title: `${serviceName} - ${planName}`,
-        description: `Service: ${serviceName}\nPlan: ${planName}\nDelivery: ${deliveryTime}`,
-        service_type: serviceName,
+        title: `${resolvedServiceName} - ${planName}`,
+        description: `Service: ${resolvedServiceName}\nPlan: ${planName}\nDelivery: ${resolvedDeliveryTime}`,
+        service_type: resolvedServiceName,
         status: 'in_progress',
         progress: 0,
         start_date: new Date().toISOString(),
-        budget: amount,
+        budget: resolvedAmount,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })

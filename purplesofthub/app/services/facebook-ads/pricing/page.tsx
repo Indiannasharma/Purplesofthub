@@ -376,6 +376,8 @@ export default function FacebookAdsPricingPage() {
       {selectedPlan && (
         <CheckoutModal
           plan={selectedPlan}
+          serviceId="meta-ads"
+          serviceName="Facebook Ads Management"
           onClose={() => setSelectedPlan(null)}
         />
       )}

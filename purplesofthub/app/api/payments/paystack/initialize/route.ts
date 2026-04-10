@@ -1,13 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
+import { resolveCheckoutPlan } from '@/lib/payments/checkout-plans'
 import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
 type PaystackInitBody = {
   invoiceId?: string | number
+  serviceId?: string
+  serviceName?: string
+  plan?: string
+  planName?: string
+  deliveryTime?: string
   amount?: number | string
   currency?: string
   email?: string
+  name?: string
+  phone?: string
   metadata?: Record<string, unknown>
   callback_url?: string
 }
@@ -15,6 +23,13 @@ type PaystackInitBody = {
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = user
+    ? await supabase
+        .from('profiles')
+        .select('full_name, phone, email')
+        .eq('id', user.id)
+        .maybeSingle()
+    : { data: null }
 
   let body: PaystackInitBody
   try {
@@ -25,6 +40,8 @@ export async function POST(request: Request) {
 
   const invoiceId = body.invoiceId != null ? String(body.invoiceId).trim() : ''
   const isInvoicePayment = invoiceId.length > 0
+  const serviceId = body.serviceId?.trim()
+  const planName = body.planName?.trim() || body.plan?.trim()
   const requestedAmount =
     typeof body.amount === 'number' ? body.amount : Number(body.amount)
   const paystackSecret = process.env.PAYSTACK_SECRET_KEY
@@ -43,7 +60,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const paystackEmail = body.email || user?.email
+  const paystackEmail = user?.email || profile?.email || body.email
   if (!paystackEmail) {
     return NextResponse.json(
       { error: 'Email is required' },
@@ -56,6 +73,15 @@ export async function POST(request: Request) {
   let paymentReference = `txn_${Date.now()}`
   let paymentCallbackUrl = new URL('/api/payments/paystack/verify', request.url).toString()
   let paymentMetadata: Record<string, unknown> | undefined
+  let resolvedPlan:
+    | {
+        serviceId: string
+        serviceName: string
+        planName: string
+        amount: number
+        deliveryTime: string
+      }
+    | null = null
 
   try {
     if (isInvoicePayment) {
@@ -133,7 +159,38 @@ export async function POST(request: Request) {
         )
       }
 
-      paymentAmount = requestedAmount
+      if (serviceId || planName) {
+        resolvedPlan = resolveCheckoutPlan({
+          serviceId,
+          planName,
+          amount: requestedAmount,
+        })
+
+        if (!resolvedPlan) {
+          return NextResponse.json(
+            { error: 'Invalid service plan or amount mismatch' },
+            { status: 400 }
+          )
+        }
+
+        paymentAmount = resolvedPlan.amount
+        paymentCurrency = 'NGN'
+        paymentReference = `svc_${resolvedPlan.serviceId}_${Date.now()}`
+        paymentMetadata = {
+          ...(body.metadata || {}),
+          service_id: resolvedPlan.serviceId,
+          service_name: resolvedPlan.serviceName,
+          plan_name: resolvedPlan.planName,
+          delivery_time: resolvedPlan.deliveryTime,
+          user_id: user?.id,
+        }
+      } else {
+        paymentAmount = requestedAmount
+        paymentMetadata = {
+          ...body.metadata,
+          ...(user && { user_id: user.id }),
+        }
+      }
 
       if (body.callback_url) {
         try {
@@ -144,15 +201,36 @@ export async function POST(request: Request) {
         } catch {
           // Ignore unsafe callback URLs and keep the local fallback.
         }
+      } else if (resolvedPlan || serviceId || planName) {
+        paymentCallbackUrl = new URL('/services/checkout/success?provider=paystack', request.url).toString()
+      }
+
+      if (!paymentMetadata && user) {
+        paymentMetadata = { user_id: user.id }
       }
 
       if (body.metadata) {
         paymentMetadata = {
+          ...(paymentMetadata || {}),
           ...body.metadata,
-          ...(user && { user_id: user.id }),
         }
-      } else if (user) {
-        paymentMetadata = { user_id: user.id }
+      }
+    }
+
+    if (user) {
+      const fullName = profile?.full_name || body.name || user.user_metadata?.full_name || user.user_metadata?.name || ''
+      const phone = profile?.phone || body.phone
+      paymentMetadata = {
+        ...(paymentMetadata || {}),
+        user_id: user.id,
+        customer_name: fullName,
+        ...(phone ? { phone } : {}),
+      }
+    } else if (body.name || body.phone) {
+      paymentMetadata = {
+        ...(paymentMetadata || {}),
+        ...(body.name ? { customer_name: body.name } : {}),
+        ...(body.phone ? { phone: body.phone } : {}),
       }
     }
 

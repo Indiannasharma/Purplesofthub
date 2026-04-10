@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { resolveCheckoutPlan } from '@/lib/payments/checkout-plans'
 import { NextRequest, NextResponse } from 'next/server'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -23,8 +24,11 @@ export async function POST(req: NextRequest) {
       phone,
       businessName,
       password,
+      serviceId,
+      serviceName,
       plan,
       amount,
+      deliveryTime,
       paymentReference,
       paymentMethod,
     } = await req.json()
@@ -36,6 +40,23 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
+
+    const planInfo = resolveCheckoutPlan({
+      serviceId,
+      planName: plan,
+      amount: Number(amount),
+    })
+
+    if (serviceId && !planInfo) {
+      return NextResponse.json(
+        { error: 'Invalid service plan or amount mismatch' },
+        { status: 400 }
+      )
+    }
+
+    const resolvedAmount = planInfo?.amount ?? Number(amount)
+    const resolvedServiceName = planInfo?.serviceName || serviceName || 'Service'
+    const resolvedDeliveryTime = planInfo?.deliveryTime || deliveryTime || 'Standard'
 
     // Check if user already exists
     const { data: existingUser, error: listError } = await supabaseAdmin.auth.admin.listUsers()
@@ -119,7 +140,7 @@ export async function POST(req: NextRequest) {
       .insert({
         client_id: userId,
         plan_name: plan,
-        plan_amount: amount,
+        plan_amount: resolvedAmount,
         currency: 'NGN',
         status: 'active',
         payment_method: paymentMethod,
