@@ -35,7 +35,8 @@
       "Bash(wc -l /c/Users/HP/Documents/Code/Softwork/purplesofthub/.claude/worktrees/epic-bhaskara/purplesofthub/app/**/*.tsx)",
       "Bash(gh pr create --title 'feat: Music promotion dashboard with checkout & submission flow' --body ':*)",
       "Read(//tmp/**)",
-      "Bash(ls -la .env*)"
+      "Bash(ls -la .env*)",
+      "Bash(ls -la /c/Users/HP/Documents/Code/Softwork/purplesofthub/.claude/worktrees/epic-bhaskara/purplesofthub/app/services/*/page.tsx)"
     ]
   }
 }

@@ -1,11 +1,11 @@
 'use client'
 
 import Link from "next/link"
-import { useState } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Reveal from "@/components/Reveal"
-import CheckoutModal from "@/app/services/_components/CheckoutModal"
+import { getServiceBySlug } from "@/lib/payments/service-plans"
+import ServicePricingCards from "@/components/services/ServicePricingCards"
 
 const PLANS = [
   {
@@ -89,7 +89,7 @@ const PLANS = [
 ]
 
 export default function FacebookAdsPricingPage() {
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
+  const service = getServiceBySlug('facebook-ads')
 
   return (
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
@@ -125,123 +125,12 @@ export default function FacebookAdsPricingPage() {
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
           {/* Plans Grid */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 24,
-            marginBottom: 40,
-          }}>
-            {PLANS.map((plan, i) => (
-              <div
-                key={plan.name}
-                className="glass-card"
-                style={{
-                  padding: "32px 28px",
-                  position: "relative",
-                  overflow: "hidden",
-                  borderTop: plan.badge ? `3px solid ${plan.color}` : undefined,
-                }}
-              >
-                {plan.badge && (
-                  <span style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    background: `linear-gradient(135deg, ${plan.color}, #a855f7)`,
-                    color: "#fff",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: 100,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                  }}>
-                    {plan.badge}
-                  </span>
-                )}
-
-                <p style={{ fontSize: 11, fontWeight: 700, color: plan.color, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>
-                  Plan 0{i + 1}
-                </p>
-
-                <h3 style={{ fontFamily: "Outfit", fontSize: 22, fontWeight: 900, color: "var(--text-primary)", margin: "0 0 16px" }}>
-                  {plan.name}
-                </h3>
-
-                <div style={{ marginBottom: 8 }}>
-                  <span style={{
-                    fontFamily: "Outfit",
-                    fontSize: 36,
-                    fontWeight: 900,
-                    color: plan.color,
-                  }}>
-                    {plan.ngnDisplay || `₦${plan.ngn.toLocaleString()}`}
-                  </span>
-                  {plan.customPricing && (
-                    <span style={{ fontSize: 14, color: "var(--text-muted)", marginLeft: 4 }}>
-                      – Custom pricing
-                    </span>
-                  )}
-                </div>
-
-                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>
-                  Monthly Management Fee
-                </p>
-
-                <div style={{
-                  height: 1,
-                  background: "var(--border)",
-                  margin: "20px 0",
-                }} />
-
-                <p style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 4, fontWeight: 600 }}>
-                  Recommended Ad Spend
-                </p>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
-                  {plan.adSpend}
-                </p>
-
-                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "grid", gap: 10 }}>
-                  {plan.features.map(f => (
-                    <li key={f} style={{ display: "flex", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-                      <span style={{ color: plan.color, fontWeight: 900, flexShrink: 0 }}>✓</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => setSelectedPlan(plan.name)}
-                  className={`facebook-ads-pricing-btn-${i}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "14px",
-                    borderRadius: 12,
-                    border: `2px solid ${plan.color}40`,
-                    color: plan.color,
-                    fontWeight: 800,
-                    fontSize: 14,
-                    textDecoration: "none",
-                    transition: "all 0.2s",
-                    background: "transparent",
-                    width: "100%",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                  }}
-                >
-                  Get Started →
-                </button>
-                <style>{`
-                  .facebook-ads-pricing-btn-${i}:hover {
-                    background: ${plan.color} !important;
-                    color: #fff !important;
-                  }
-                `}</style>
-              </div>
-            ))}
-          </div>
+          {service && (
+            <ServicePricingCards
+              service={service}
+              showAll={true}
+            />
+          )}
 
           {/* Additional Info */}
           <div style={{
@@ -372,15 +261,6 @@ export default function FacebookAdsPricingPage() {
       </section>
 
       <Footer />
-
-      {selectedPlan && (
-        <CheckoutModal
-          plan={selectedPlan}
-          serviceId="meta-ads"
-          serviceName="Facebook Ads Management"
-          onClose={() => setSelectedPlan(null)}
-        />
-      )}
     </main>
   )
 }
