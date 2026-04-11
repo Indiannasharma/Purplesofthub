@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { createClient } from '@/lib/supabase/client'
-import CheckoutModal from '@/app/services/_components/CheckoutModal'
+import { getServiceBySlug } from '@/lib/payments/service-plans'
+import ServicePricingCards from '@/components/services/ServicePricingCards'
 import MusicSubmitForm from '@/components/dashboard/MusicSubmitForm'
 
 interface MusicCampaign {
@@ -15,61 +16,13 @@ interface MusicCampaign {
   created_at: string
 }
 
-interface Package {
-  name: string
-  price_ngn: number
-  price_usd: number
-  features: string[]
-  color: string
-  featured?: boolean
-}
-
 export default function ClientMusicPage() {
   const [campaigns, setCampaigns] = useState<MusicCampaign[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
-  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false)
   const [submitFormOpen, setSubmitFormOpen] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<Package | null>(null)
 
-  const PACKAGES: Package[] = [
-    {
-      name: 'Starter',
-      price_ngn: 15000,
-      price_usd: 10,
-      features: ['5 platforms', '2 week campaign', 'Basic analytics', 'Email support'],
-      color: 'border-gray-200 dark:border-strokedark'
-    },
-    {
-      name: 'Growth',
-      price_ngn: 45000,
-      price_usd: 30,
-      features: [
-        '20 platforms',
-        '4 week campaign',
-        'Full analytics',
-        'Priority support',
-        'Playlist pitching'
-      ],
-      color: 'border-brand-500 ring-1 ring-brand-500/30',
-      featured: true
-    },
-    {
-      name: 'Pro',
-      price_ngn: 100000,
-      price_usd: 65,
-      features: [
-        '150+ platforms',
-        '8 week campaign',
-        'Advanced analytics',
-        'Dedicated manager',
-        'Playlist pitching',
-        'Press release',
-        'Social promotion'
-      ],
-      color: 'border-purple-500 ring-1 ring-purple-500/30'
-    }
-  ]
+  const service = getServiceBySlug('music-promotion')
 
   const STATUS_STYLES: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
@@ -104,16 +57,6 @@ export default function ClientMusicPage() {
     loadData()
   }, [])
 
-  const handleGetStarted = (pkg: Package) => {
-    setSelectedPlan(pkg)
-    setCheckoutModalOpen(true)
-  }
-
-  const handleCheckoutSuccess = () => {
-    setCheckoutModalOpen(false)
-    setSubmitFormOpen(true)
-  }
-
   const handleFormSuccess = () => {
     setSubmitFormOpen(false)
     // Reload campaigns
@@ -140,6 +83,10 @@ export default function ClientMusicPage() {
     )
   }
 
+  if (!service) {
+    return <div className="text-center py-12">Service not found</div>
+  }
+
   return (
     <div className="w-full overflow-hidden">
       <div className="mx-auto max-w-5xl px-4 py-6 w-full">
@@ -148,48 +95,13 @@ export default function ClientMusicPage() {
           <p className="text-sm text-bodydark2 mt-1">Get your music heard worldwide</p>
         </div>
 
-        {/* Packages */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-8">
-          {PACKAGES.map(pkg => (
-            <div key={pkg.name} className={`rounded-xl border bg-white shadow-sm dark:bg-boxdark p-6 relative min-w-0 w-full ${pkg.color}`}>
-              {pkg.featured && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    Most Popular
-                  </span>
-                </div>
-              )}
-
-              <h5 className="font-bold text-black dark:text-white text-lg mb-1">{pkg.name}</h5>
-
-              <div className="mb-4">
-                <span className="text-3xl font-bold text-brand-500">₦{pkg.price_ngn.toLocaleString()}</span>
-                <span className="text-sm text-bodydark2 ml-2">/ ${pkg.price_usd}</span>
-              </div>
-
-              <ul className="space-y-2 mb-6">
-                {pkg.features.map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-bodydark2">
-                    <span className="text-brand-500">✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handleGetStarted(pkg)}
-                className="w-full rounded-lg bg-brand-500 text-white font-medium py-2.5 hover:bg-brand-600 transition"
-              >
-                Get Started
-              </button>
-            </div>
-          ))}
-        </div>
+        {/* Pricing Cards - Using unified system */}
+        <ServicePricingCards service={service} showAll={true} />
 
         {/* Existing campaigns */}
         {campaigns && campaigns.length > 0 && (
           <>
-            <h3 className="text-lg font-bold text-black dark:text-white mb-4">My Campaigns</h3>
+            <h3 className="text-lg font-bold text-black dark:text-white mb-4 mt-12">My Campaigns</h3>
             <div className="space-y-4">
               {campaigns.map((campaign: any) => (
                 <div key={campaign.id} className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark p-5">
@@ -222,30 +134,17 @@ export default function ClientMusicPage() {
         )}
 
         {!campaigns || campaigns.length === 0 && (
-          <div className="rounded-xl border border-dashed border-stroke bg-gray-50 dark:border-strokedark dark:bg-boxdark-2 p-8 text-center">
+          <div className="rounded-xl border border-dashed border-stroke bg-gray-50 dark:border-strokedark dark:bg-boxdark-2 p-8 text-center mt-8">
             <p className="text-bodydark2">No music campaigns yet. Get started by choosing a plan above! 🎵</p>
           </div>
         )}
       </div>
 
-      {/* Checkout Modal */}
-      {checkoutModalOpen && selectedPlan && (
-        <CheckoutModal
-          plan={selectedPlan.name}
-          serviceId="music-promotion"
-          serviceName="Music Promotion"
-          amount={selectedPlan.price_ngn}
-          isLoggedIn={!!user}
-          onSuccess={handleCheckoutSuccess}
-          onClose={() => setCheckoutModalOpen(false)}
-        />
-      )}
-
       {/* Music Submit Form */}
-      {submitFormOpen && selectedPlan && (
+      {submitFormOpen && (
         <MusicSubmitForm
-          planName={selectedPlan.name}
-          planPrice={selectedPlan.price_ngn}
+          planName="Music Promotion"
+          planPrice={30000}
           planType="promotion"
           onSuccess={handleFormSuccess}
           onClose={() => setSubmitFormOpen(false)}

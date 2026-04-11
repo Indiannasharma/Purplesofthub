@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(app/globals.css:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git check-ignore:*)",
+      "Bash(grep -r \"PORT\\\\|port\" --include=*.env* --include=*.config.* --include=*.json .)",
+      "Bash(xargs grep:*)",
+      "Bash(find app/blog -name *.tsx)",
+      "Bash(grep -n \"Back to Blog\\\\|Related\\\\|return\" app/blog/[slug]/page.tsx)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(taskkill /F /IM node.exe)",
+      "WebFetch(domain:github.com)",
+      "Bash(rm -rf .next)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build)",
+      "Bash(powershell -Command \"Remove-Item -Path ''''.\\\\.next'''' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host ''''Cache cleared''''\")",
+      "Bash(npx tsc:*)",
+      "Bash(mkdir -p docs)",
+      "Bash(mv *.md docs/)",
+      "Bash(mv SUPABASE_SETUP.sql docs/)",
+      "Bash(mkdir -p lib/context lib/hooks components/icons)",
+      "Bash(mv context/* lib/context/)",
+      "Bash(mv hooks/* lib/hooks/)",
+      "Bash(mv icons/* components/icons/)",
+      "Bash(rmdir context:*)",
+      "Bash(mkdir -p components/layout)",
+      "Bash(mv layout/* components/layout/)",
+      "Bash(rmdir layout:*)",
+      "WebFetch(domain:vercel.com)",
+      "Bash(wc -l /c/Users/HP/Documents/Code/Softwork/purplesofthub/.claude/worktrees/epic-bhaskara/purplesofthub/app/**/*.tsx)",
+      "Bash(gh pr create --title 'feat: Music promotion dashboard with checkout & submission flow' --body ':*)",
+      "Read(//tmp/**)",
+      "Bash(ls -la .env*)"
+    ]
+  }
+}
