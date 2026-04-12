@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -16,7 +16,10 @@ const calculateReadTime = (text: string) => {
 
 export default function CreateBlogPost() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const postId = searchParams.get('id')
   const fileRef = useRef<HTMLInputElement>(null)
+  const [isLoading, setIsLoading] = useState(!!postId)
 
   // Form state
   const [form, setForm] = useState({
@@ -48,7 +51,38 @@ export default function CreateBlogPost() {
 
   useEffect(() => {
     fetchCategories()
-  }, [])
+    if (postId) {
+      loadPost(postId)
+    }
+  }, [postId])
+
+  const loadPost = async (id: string) => {
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (data) {
+      setForm({
+        title: data.title,
+        slug: data.slug,
+        content: data.content,
+        excerpt: data.excerpt,
+        category: data.category || '',
+        tags: (data.tags || []).join(', '),
+        seoTitle: data.seo_title,
+        seoDescription: data.seo_description,
+        focusKeyword: data.focus_keyword || '',
+        featuredImage: data.featured_image || '',
+      })
+      if (data.featured_image) {
+        setImagePreview(data.featured_image)
+      }
+    }
+    setIsLoading(false)
+  }
 
   const fetchCategories = async () => {
     const supabase = createClient()
@@ -122,7 +156,7 @@ export default function CreateBlogPost() {
     const { data: { user } } = await supabase.auth.getUser()
 
     try {
-      await supabase.from('blog_posts').insert({
+      const postData = {
         title: form.title,
         slug: form.slug || toSlug(form.title),
         content: form.content,
@@ -136,10 +170,16 @@ export default function CreateBlogPost() {
         status: 'draft',
         author_id: user?.id,
         author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0],
-        published_at: null,
-      })
+        updated_at: new Date().toISOString(),
+      }
 
-      setSuccess('✅ Draft saved!')
+      if (postId) {
+        await supabase.from('blog_posts').update(postData).eq('id', postId)
+      } else {
+        await supabase.from('blog_posts').insert({ ...postData, published_at: null })
+      }
+
+      setSuccess(postId ? '✅ Draft updated!' : '✅ Draft saved!')
       setTimeout(() => router.push('/admin/blog'), 1500)
     } catch (err: any) {
       setError(err.message || 'Failed to save')
@@ -159,7 +199,7 @@ export default function CreateBlogPost() {
     const { data: { user } } = await supabase.auth.getUser()
 
     try {
-      await supabase.from('blog_posts').insert({
+      const postData = {
         title: form.title,
         slug: form.slug || toSlug(form.title),
         content: form.content,
@@ -173,10 +213,22 @@ export default function CreateBlogPost() {
         status: 'published',
         author_id: user?.id,
         author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0],
-        published_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString(),
+      }
 
-      setSuccess('🎉 Post published!')
+      if (postId) {
+        await supabase.from('blog_posts').update({
+          ...postData,
+          published_at: new Date().toISOString(),
+        }).eq('id', postId)
+      } else {
+        await supabase.from('blog_posts').insert({
+          ...postData,
+          published_at: new Date().toISOString(),
+        })
+      }
+
+      setSuccess(postId ? '✅ Post updated & published!' : '🎉 Post published!')
       setTimeout(() => router.push('/admin/blog'), 1500)
     } catch (err: any) {
       setError(err.message || 'Failed to publish')
@@ -240,7 +292,9 @@ export default function CreateBlogPost() {
         <Link href="/admin/blog" style={{ color: '#a855f7', textDecoration: 'none', fontWeight: 600, fontSize: '14px' }}>
           ← Back to Blog
         </Link>
-        <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: 'var(--cmd-heading)' }}>✍️ New Blog Post</h1>
+        <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: 'var(--cmd-heading)' }}>
+          {isLoading ? '⏳ Loading...' : postId ? '✏️ Edit Post' : '✍️ New Blog Post'}
+        </h1>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             onClick={saveDraft}
@@ -300,6 +354,18 @@ export default function CreateBlogPost() {
       )}
 
       {/* Two-column layout */}
+      {isLoading ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1,
+          color: 'var(--cmd-muted)',
+          fontSize: '14px',
+        }}>
+          Loading post data...
+        </div>
+      ) : (
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 380px',
@@ -656,6 +722,7 @@ export default function CreateBlogPost() {
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }
