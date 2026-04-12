@@ -21,7 +21,7 @@ const SERVICES: Service[] = [
     description: 'Business sites, SaaS platforms, e-commerce stores built with Next.js & React.',
     category: 'Development',
     delivery_time: '2-6 weeks',
-    starting_price: 150000,
+    starting_price: 450000,
     icon: '🌐',
   },
   {
@@ -50,15 +50,6 @@ const SERVICES: Service[] = [
     delivery_time: 'Weekly',
     starting_price: 60000,
     icon: '⚡',
-  },
-  {
-    id: 'web-dev',
-    name: 'Web Development',
-    description: 'Business sites, SaaS platforms, e-commerce stores built with Next.js & React.',
-    category: 'Development',
-    delivery_time: '2-6 weeks',
-    starting_price: 450000,
-    icon: '🌐',
   },
   {
     id: 'music-promotion',
