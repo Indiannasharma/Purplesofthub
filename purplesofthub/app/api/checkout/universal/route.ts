@@ -46,15 +46,17 @@ export async function POST(req: NextRequest) {
     let userId: string
 
     if (isLoggedIn) {
-      // Get existing user from auth
-      const { data: { user } } = await supabaseAdmin.auth.getUser()
-      if (!user) {
+      // Get user by email since we have it from the form
+      const { data: users } = await supabaseAdmin.auth.admin.listUsers()
+      const existingUser = users?.users?.find(u => u.email === email)
+
+      if (!existingUser) {
         return NextResponse.json(
-          { error: 'Not authenticated', success: false },
-          { status: 401 }
+          { error: 'User not found', success: false },
+          { status: 404 }
         )
       }
-      userId = user.id
+      userId = existingUser.id
     } else {
       // Check if user exists
       const { data: users } = await supabaseAdmin.auth.admin.listUsers()

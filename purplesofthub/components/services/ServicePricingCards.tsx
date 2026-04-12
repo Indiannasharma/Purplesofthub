@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Service, ServicePlan } from '@/lib/payments/service-plans'
 import { formatPrice } from '@/lib/payments/service-plans'
 import UniversalCheckoutModal from '@/components/checkout/UniversalCheckoutModal'
@@ -18,6 +18,47 @@ export default function ServicePricingCards({
 }: Props) {
   const [selectedPlan, setSelectedPlan] = useState<ServicePlan | null>(null)
   const [showAllPlans, setShowAllPlans] = useState(showAll)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [userName, setUserName] = useState('')
+  const [userPhone, setUserPhone] = useState('')
+
+  // Check if user is logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (user) {
+          setIsLoggedIn(true)
+          setUserEmail(user.email || '')
+          setUserName(user.user_metadata?.full_name || '')
+
+          // Get phone from profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('phone, full_name')
+            .eq('id', user.id)
+            .single()
+
+          if (profile?.phone) {
+            setUserPhone(profile.phone)
+          }
+          if (profile?.full_name) {
+            setUserName(profile.full_name)
+          }
+        }
+      } catch (err) {
+        console.error('Session check error:', err)
+      }
+    }
+    checkSession()
+  }, [])
 
   const plans = showAllPlans ? service.plans : service.plans.slice(0, previewCount)
   const hasMore = service.plans.length > previewCount
@@ -248,8 +289,26 @@ export default function ServicePricingCards({
                   transition: 'all 0.2s',
                 }}
               >
-                Get Started →
+                {isLoggedIn ? '💳 Pay Now →' : 'Get Started →'}
               </button>
+            )}
+
+            {/* Logged in indicator */}
+            {isLoggedIn && !plan.isCustom && (
+              <p
+                style={{
+                  fontSize: '11px',
+                  color: '#10b981',
+                  textAlign: 'center',
+                  margin: '8px 0 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                }}
+              >
+                ✅ Signed in — no account needed
+              </p>
             )}
           </div>
         ))}
@@ -280,7 +339,15 @@ export default function ServicePricingCards({
 
       {/* Checkout Modal */}
       {selectedPlan && (
-        <UniversalCheckoutModal service={service} plan={selectedPlan} onClose={() => setSelectedPlan(null)} />
+        <UniversalCheckoutModal
+          service={service}
+          plan={selectedPlan}
+          onClose={() => setSelectedPlan(null)}
+          isLoggedIn={isLoggedIn}
+          userEmail={userEmail}
+          userName={userName}
+          userPhone={userPhone}
+        />
       )}
     </>
   )

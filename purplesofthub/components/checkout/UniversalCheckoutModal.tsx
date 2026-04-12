@@ -37,6 +37,20 @@ export default function UniversalCheckoutModal({
     password: '',
   })
 
+  // Pre-fill form for logged-in users
+  useEffect(() => {
+    if (isLoggedIn && userEmail) {
+      setForm(p => ({
+        ...p,
+        email: userEmail,
+        firstName: userName.split(' ')[0] || '',
+        lastName: userName.split(' ').slice(1).join(' ') || '',
+        phone: userPhone || '',
+      }))
+      setStep('payment')
+    }
+  }, [isLoggedIn, userEmail, userName, userPhone])
+
   const update = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
@@ -380,7 +394,7 @@ export default function UniversalCheckoutModal({
                 margin: '0 0 8px',
               }}
             >
-              Setting up your account...
+              {isLoggedIn ? 'Processing payment...' : 'Setting up your account...'}
             </p>
             <p style={{ fontSize: '13px', color: 'var(--cyber-body, #4a3f6b)', margin: 0 }}>
               Please don't close this window
