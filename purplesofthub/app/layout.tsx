@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
+import Preloader from "@/components/Preloader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -130,6 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
+        <Preloader />
         <ThemeProvider>
           <Providers>
             {children}
