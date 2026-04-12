@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState, use } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
@@ -29,10 +29,13 @@ interface Project {
   created_at: string
 }
 
-export default function ClientDetailPage() {
-  const params = useParams()
+interface Props {
+  params: Promise<{ id: string }>
+}
+
+export default function ClientDetailPage({ params }: Props) {
+  const { id: clientId } = use(params)
   const router = useRouter()
-  const clientId = params?.id as string
 
   const [client, setClient] = useState<Client | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
