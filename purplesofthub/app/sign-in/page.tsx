@@ -62,19 +62,21 @@ export default function SignInPage() {
       }
 
       // Small delay so the session cookie set by signInWithPassword
-      // is flushed to the browser before the server-side role fetch.
-      await new Promise(r => setTimeout(r, 200))
+      // is flushed to the browser cookie jar before hitting the server.
+      await new Promise(r => setTimeout(r, 300))
 
       // Redirect based on the server-owned profile role, not auth metadata.
       const roleResponse = await fetch('/api/auth/role')
       const roleData = await roleResponse.json().catch(() => null)
 
+      // Use window.location.href for a FULL page navigation.
+      // router.push does a client-side RSC fetch which may not carry
+      // the brand-new session cookies reliably.
       if (roleResponse.ok && roleData?.role === 'admin') {
-        router.push('/admin')
+        window.location.href = '/admin'
       } else {
-        router.push('/dashboard')
+        window.location.href = '/dashboard'
       }
-      router.refresh()
     } catch (err: any) {
       setError(err.message || 'Failed to sign in')
       setLoading(false)

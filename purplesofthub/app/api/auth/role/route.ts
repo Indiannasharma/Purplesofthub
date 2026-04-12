@@ -11,7 +11,7 @@ function isAdminByEmail(email: string): boolean {
   return adminEmails.length > 0 && adminEmails.includes(email.toLowerCase())
 }
 
-// Helper: get service-role admin client
+// Helper: get service-role admin client (bypasses RLS)
 function getAdminClient() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null
   return createAdminClient(
@@ -25,44 +25,65 @@ export async function GET() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
 
+  console.log('[/api/auth/role] Session:', {
+    hasUser: !!user,
+    email: user?.email,
+    error: error?.message,
+  })
+
   if (!user || error) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const userEmail = (user.email || '').toLowerCase()
   const shouldBeAdmin = isAdminByEmail(userEmail)
+  const adminClient = getAdminClient()
 
-  // Read profile from DB
-  const { data: profile } = await supabase
+  if (!adminClient) {
+    console.error('[/api/auth/role] ❌ No service role key — cannot read/write profiles')
+    return NextResponse.json({ role: shouldBeAdmin ? 'admin' : 'client' })
+  }
+
+  // ALWAYS use service role to read profiles (bypasses RLS)
+  const { data: profile, error: profileError } = await adminClient
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .maybeSingle()
 
-  const adminClient = getAdminClient()
+  console.log('[/api/auth/role] Profile read (service role):', {
+    userId: user.id,
+    profile: profile?.role,
+    profileError: profileError?.message,
+  })
 
-  // No profile row — create it now (DB trigger may not have fired)
+  // No profile row — create it now
   if (!profile) {
-    if (adminClient) {
-      await adminClient.from('profiles').insert({
-        id: user.id,
-        email: user.email,
-        full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
-        role: shouldBeAdmin ? 'admin' : 'client',
-      }).select().single()
-    }
+    const { error: insertError } = await adminClient.from('profiles').insert({
+      id: user.id,
+      email: user.email,
+      full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+      role: shouldBeAdmin ? 'admin' : 'client',
+    })
+    console.log('[/api/auth/role] Created profile:', {
+      role: shouldBeAdmin ? 'admin' : 'client',
+      insertError: insertError?.message,
+    })
     return NextResponse.json({ role: shouldBeAdmin ? 'admin' : 'client' })
   }
 
-  // Profile exists but role needs to be promoted to admin
+  // Profile exists but role needs promotion
   if (shouldBeAdmin && profile.role !== 'admin') {
-    if (adminClient) {
-      await adminClient.from('profiles').update({ role: 'admin' }).eq('id', user.id)
-    }
+    const { error: updateError } = await adminClient
+      .from('profiles')
+      .update({ role: 'admin' })
+      .eq('id', user.id)
+    console.log('[/api/auth/role] Promoted to admin:', {
+      updateError: updateError?.message,
+    })
     return NextResponse.json({ role: 'admin' })
   }
 
-  // Profile exists and role is correct
   return NextResponse.json({
     role: profile.role === 'admin' ? 'admin' : 'client',
   })

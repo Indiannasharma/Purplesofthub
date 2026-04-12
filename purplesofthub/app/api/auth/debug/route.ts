@@ -1,27 +1,45 @@
 /**
  * Admin login diagnostic endpoint.
- * Visit this URL while logged in to see exactly what the server sees.
- *
- * Usage: GET /api/auth/debug
- *
- * DELETE THIS FILE after diagnosing. It exposes internal info.
+ * Visit /api/auth/debug while signed in to see exactly what the server sees.
+ * DELETE THIS FILE after diagnosing.
  */
 
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
   const result: Record<string, any> = {}
 
-  // 1. Check env vars (redacted)
+  // 0. Show ALL cookie names present in the request (to check if auth cookies exist)
+  try {
+    const cookieStore = await cookies()
+    const allCookies = cookieStore.getAll()
+    const authCookies = allCookies.filter(c =>
+      c.name.includes('auth') || c.name.startsWith('sb-')
+    )
+    result.cookies = {
+      totalCookieCount: allCookies.length,
+      allCookieNames: allCookies.map(c => c.name),
+      authCookies: authCookies.map(c => ({
+        name: c.name,
+        valueLength: c.value.length,
+        valuePreview: c.value.substring(0, 30) + '...',
+      })),
+    }
+  } catch (err: any) {
+    result.cookies = { error: err.message }
+  }
+
+  // 1. Check env vars
   result.env = {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ set' : '❌ missing',
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ set' : '❌ missing',
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ set' : '❌ missing',
     ADMIN_EMAIL: process.env.ADMIN_EMAIL
       ? `✅ set → "${process.env.ADMIN_EMAIL}"`
-      : '❌ missing — admin auto-promotion will NOT work',
+      : '❌ missing',
   }
 
   // 2. Check session
@@ -30,7 +48,24 @@ export async function GET() {
     const { data: { user }, error } = await supabase.auth.getUser()
 
     if (error || !user) {
-      result.session = { status: '❌ No session — not logged in', error: error?.message }
+      result.session = {
+        status: '❌ No session',
+        error: error?.message,
+        hint: 'If auth cookies are present above but session fails, there may be a token parsing issue',
+      }
+      // Even without session, check if we can read profiles with service role
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        const adminClient = createAdminClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_ROLE_KEY,
+          { auth: { autoRefreshToken: false } }
+        )
+        const { data: allProfiles } = await adminClient
+          .from('profiles')
+          .select('id, email, role')
+          .limit(10)
+        result.allProfilesInDB = allProfiles || []
+      }
       return NextResponse.json(result)
     }
 
@@ -40,7 +75,7 @@ export async function GET() {
       email: user.email,
     }
 
-    // 3. Check profile row
+    // 3. Check profile row with USER client (subject to RLS)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, role, email, full_name')
@@ -48,17 +83,23 @@ export async function GET() {
       .maybeSingle()
 
     if (profileError) {
-      result.profile = { status: '❌ Query error', error: profileError.message, hint: 'RLS may be blocking reads' }
+      result.profileViaUserClient = {
+        status: '❌ RLS BLOCKED — this is likely the bug',
+        error: profileError.message,
+        code: profileError.code,
+      }
     } else if (!profile) {
-      result.profile = { status: '❌ No profile row found', hint: 'Profile was never created — DB trigger may not have fired' }
+      result.profileViaUserClient = {
+        status: '❌ No row found (RLS may be hiding it, or row doesn\'t exist)',
+      }
     } else {
-      result.profile = {
-        status: profile.role === 'admin' ? '✅ admin' : '⚠️ NOT admin (role is ' + profile.role + ')',
-        ...profile,
+      result.profileViaUserClient = {
+        status: '✅ readable',
+        role: profile.role,
       }
     }
 
-    // 4. Check with service role (bypasses RLS)
+    // 4. Check profile with SERVICE ROLE client (bypasses RLS)
     if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       const adminClient = createAdminClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -74,11 +115,11 @@ export async function GET() {
       result.profileViaServiceRole = adminProfileError
         ? { status: '❌ Error', error: adminProfileError.message }
         : adminProfile
-          ? { status: adminProfile.role === 'admin' ? '✅ admin' : '⚠️ role=' + adminProfile.role, ...adminProfile }
-          : { status: '❌ No row found even with service role' }
+          ? { status: '✅', ...adminProfile }
+          : { status: '❌ No row exists at all' }
     }
 
-    // 5. Check ADMIN_EMAIL match
+    // 5. Admin email match
     const adminEmails = (process.env.ADMIN_EMAIL || '')
       .split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
     result.adminEmailMatch = {
