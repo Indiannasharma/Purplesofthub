@@ -16,7 +16,15 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
 
+  console.log('[getAuthenticatedProfile] Session check:', {
+    hasUser: !!user,
+    userId: user?.id,
+    userEmail: user?.email,
+    sessionError: error?.message,
+  })
+
   if (!user || error) {
+    console.error('[getAuthenticatedProfile] ❌ No session found:', error?.message)
     return {
       ok: false,
       response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
@@ -31,10 +39,18 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
     .eq('id', user.id)
     .maybeSingle()
 
+  console.log('[getAuthenticatedProfile] Profile lookup:', {
+    userId: user.id,
+    foundProfile: !!profile,
+    role: profile?.role,
+    profileError: profileError?.message,
+  })
+
   if (profileError || !profile) {
-    console.warn('Profile lookup failed during auth check:', {
+    console.error('[getAuthenticatedProfile] ❌ Profile lookup failed:', {
       userId: user.id,
-      error: profileError?.message,
+      profileError: profileError?.message,
+      hasProfile: !!profile,
     })
 
     return {
