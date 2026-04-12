@@ -88,6 +88,7 @@ export default function SignInPage() {
         padding: '24px 16px',
         position: 'relative',
         overflow: 'hidden',
+        marginTop: '-68px',
       }}
     >
       {/* Background Effects */}
