@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
@@ -22,41 +22,41 @@ interface Transaction {
   service_name: string
 }
 
-interface Project {
-  id: string
-  title: string
-  status: string
-  created_at: string
-}
-
-interface Props {
-  params: Promise<{ id: string }>
-}
-
-export default function ClientDetailPage({ params }: Props) {
-  const { id: clientId } = use(params)
+export default function ClientDetailPage() {
+  const pathname = usePathname()
   const router = useRouter()
+
+  // Extract client ID from pathname: /admin/clients/[id]
+  const clientId = pathname.split('/').pop()
 
   const [client, setClient] = useState<Client | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!clientId) return
+    if (!clientId || clientId === 'clients') return
     fetchClientDetails()
   }, [clientId])
 
   const fetchClientDetails = async () => {
     try {
+      setLoading(true)
+      setError(null)
       const supabase = createClient()
 
       // Fetch client profile
-      const { data: clientData } = await supabase
+      const { data: clientData, error: clientError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', clientId)
         .single()
+
+      if (clientError) {
+        setError('Client not found')
+        setLoading(false)
+        return
+      }
 
       if (clientData) {
         setClient(clientData)
@@ -70,22 +70,10 @@ export default function ClientDetailPage({ params }: Props) {
         .order('created_at', { ascending: false })
 
       setTransactions(transData || [])
-
-      // Fetch projects (if projects table exists)
-      try {
-        const { data: projData } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('client_id', clientId)
-          .order('created_at', { ascending: false })
-
-        setProjects(projData || [])
-      } catch {
-        // Projects table might not exist, continue
-      }
+      setLoading(false)
     } catch (err) {
       console.error('Failed to fetch client details:', err)
-    } finally {
+      setError('Failed to load client details')
       setLoading(false)
     }
   }
@@ -127,34 +115,38 @@ export default function ClientDetailPage({ params }: Props) {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--cmd-muted)' }}>
-        Loading client details...
+      <div style={{ background: 'var(--cmd-bg)', minHeight: '100vh', padding: '24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <p style={{ color: 'var(--cmd-muted)', fontSize: '16px' }}>Loading client details...</p>
+        </div>
       </div>
     )
   }
 
-  if (!client) {
+  if (error || !client) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <p style={{ fontSize: '32px', margin: '0 0 12px' }}>🚫</p>
-        <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 4px' }}>
-          Client not found
-        </p>
-        <p style={{ fontSize: '14px', color: 'var(--cmd-muted)', margin: '0 0 20px' }}>
-          The client you're looking for doesn't exist
-        </p>
-        <Link href="/admin/clients" style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#fff',
-          background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          display: 'inline-block',
-        }}>
-          ← Back to Clients
-        </Link>
+      <div style={{ background: 'var(--cmd-bg)', minHeight: '100vh', padding: '24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', paddingTop: '60px' }}>
+          <p style={{ fontSize: '32px', margin: '0 0 12px' }}>🚫</p>
+          <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 4px' }}>
+            {error || 'Client not found'}
+          </p>
+          <p style={{ fontSize: '14px', color: 'var(--cmd-muted)', margin: '0 0 20px' }}>
+            The client you're looking for doesn't exist
+          </p>
+          <Link href="/admin/clients" style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#fff',
+            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            display: 'inline-block',
+          }}>
+            ← Back to Clients
+          </Link>
+        </div>
       </div>
     )
   }
