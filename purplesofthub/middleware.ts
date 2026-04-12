@@ -2,11 +2,11 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // DO NOT create response before supabase operations
-  // The supabase client needs to update it with refreshed cookies
-
+  // Create response FIRST with request headers properly forwarded
   let response = NextResponse.next({
-    request,
+    request: {
+      headers: request.headers,
+    },
   })
 
   const supabase = createServerClient(
@@ -17,15 +17,9 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
+        // When supabase needs to set cookies (e.g. refreshed token),
+        // update the response object we created above
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set(name, value)
-          )
-          // Update BOTH request (for subsequent reads in this request)
-          // AND response (for sending back to browser)
-          response = NextResponse.next({
-            request,
-          })
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           )
@@ -34,7 +28,8 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // This call refreshes expired tokens and updates cookies via setAll above
+  // This reads the request cookies and may call setAll() if token needs refresh
+  // Any cookies set will be in the response object above
   await supabase.auth.getUser()
 
   return response
