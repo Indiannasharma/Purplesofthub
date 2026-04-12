@@ -59,9 +59,8 @@ export async function GET(request: NextRequest) {
           .map(e => e.trim().toLowerCase())
           .filter(Boolean)
 
-        const isAdminEmail = adminEmails.includes(
-          (user.email || '').toLowerCase()
-        )
+        const isAdminEmail = adminEmails.length > 0 &&
+          adminEmails.includes((user.email || '').toLowerCase())
 
         if (!existingProfile) {
           // No profile row — create one now (trigger may not have run)
