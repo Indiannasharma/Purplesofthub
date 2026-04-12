@@ -51,67 +51,161 @@ export default async function ClientFilesPage() {
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-black dark:text-white">My Files</h2>
-          <p className="text-sm text-bodydark2 mt-1">{files?.length || 0} files</p>
-        </div>
-        <div className="px-4 py-3 bg-blue-500/10 border border-blue-500/30 rounded text-blue-600 text-sm">
-          File upload feature is being restored. Check back soon!
-        </div>
+      {/* Header */}
+      <div style={{ marginBottom: '28px' }}>
+        <h1 style={{
+          fontSize: '24px',
+          fontWeight: 900,
+          color: 'var(--cmd-heading)',
+          margin: '0 0 4px',
+        }}>
+          My Files
+        </h1>
+        <p style={{
+          fontSize: '14px',
+          color: 'var(--cmd-body)',
+          margin: 0,
+        }}>
+          {files?.length || 0} files
+        </p>
       </div>
 
+      {/* Info banner */}
+      <div style={{
+        background: 'rgba(124,58,237,0.08)',
+        border: '1px solid rgba(124,58,237,0.2)',
+        borderRadius: '10px',
+        padding: '12px 16px',
+        marginBottom: '24px',
+        color: '#a855f7',
+        fontSize: '14px',
+      }}>
+        File upload feature is being restored. Check back soon!
+      </div>
+
+      {/* Files list or empty state */}
       {!files?.length ? (
-        <div className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark p-12 text-center">
-          <p className="text-5xl mb-4">📁</p>
-          <p className="font-semibold text-black dark:text-white mb-2">No files yet</p>
-          <p className="text-sm text-bodydark2">Upload project briefs, assets, or reference files</p>
+        <div style={{
+          background: 'var(--cmd-card)',
+          border: '1px solid rgba(124,58,237,0.15)',
+          borderRadius: '16px',
+          padding: '60px 24px',
+          textAlign: 'center',
+        }}>
+          <p style={{ fontSize: '48px', margin: '0 0 16px' }}>📁</p>
+          <p style={{
+            fontSize: '16px',
+            fontWeight: 700,
+            color: 'var(--cmd-heading)',
+            margin: '0 0 8px',
+          }}>
+            No files yet
+          </p>
+          <p style={{
+            fontSize: '13px',
+            color: 'var(--cmd-body)',
+            margin: 0,
+          }}>
+            Upload project briefs, assets, or reference files
+          </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-stroke dark:border-strokedark">
-                {['File', 'Project', 'Size', 'Date', 'Actions'].map(h => (
-                  <th key={h} className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-bodydark2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {files.map((file: any) => (
-                <tr key={file.id} className="border-b border-stroke/50 dark:border-strokedark/50 hover:bg-brand-500/5 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{getFileIcon(file.file_url || '')}</span>
-                      <div>
-                        <p className="text-sm font-medium text-black dark:text-white line-clamp-1">
-                          {file.file_name || 'Unnamed file'}
-                        </p>
-                        <p className="text-xs text-bodydark2 uppercase">{file.file_type || '—'}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-bodydark2">{file.projects?.title || '—'}</td>
-                  <td className="px-6 py-4 text-sm text-bodydark2">{formatFileSize(file.file_size)}</td>
-                  <td className="px-6 py-4 text-sm text-bodydark2">
-                    {format(new Date(file.created_at), 'MMM d, yyyy')}
-                  </td>
-                  <td className="px-6 py-4">
-                    <a
-                      href={file.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs px-3 py-1.5 rounded-lg border border-brand-500 text-brand-500 hover:bg-brand-500 hover:text-white transition-all"
-                    >
-                      Download
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {files.map((file: any) => (
+            <div
+              key={file.id}
+              style={{
+                background: 'var(--cmd-card)',
+                border: '1px solid rgba(124,58,237,0.12)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+              }}
+            >
+              {/* File icon */}
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '10px',
+                background: 'rgba(124,58,237,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '22px',
+                flexShrink: 0,
+              }}>
+                {getFileIcon(file.file_url || '')}
+              </div>
+
+              {/* File info */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  color: 'var(--cmd-heading)',
+                  margin: '0 0 4px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {file.file_name || 'Unnamed file'}
+                </p>
+                <p style={{
+                  fontSize: '12px',
+                  color: 'var(--cmd-muted)',
+                  margin: 0,
+                }}>
+                  {file.file_type ? file.file_type.toUpperCase() : '—'}
+                  {file.projects?.title ? ` · ${file.projects.title}` : ''}
+                </p>
+              </div>
+
+              {/* File size + date */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                gap: '4px',
+                flexShrink: 0,
+              }}>
+                <span style={{
+                  fontSize: '12px',
+                  color: 'var(--cmd-muted)',
+                }}>
+                  {formatFileSize(file.file_size)}
+                </span>
+                <span style={{
+                  fontSize: '11px',
+                  color: 'var(--cmd-muted)',
+                }}>
+                  {format(new Date(file.created_at), 'MMM d, yyyy')}
+                </span>
+              </div>
+
+              {/* Download button */}
+              <a
+                href={file.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  flexShrink: 0,
+                  padding: '7px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(124,58,237,0.35)',
+                  background: 'transparent',
+                  color: '#a855f7',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Download
+              </a>
+            </div>
+          ))}
         </div>
       )}
     </>

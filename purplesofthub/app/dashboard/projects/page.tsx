@@ -166,6 +166,7 @@ export default async function ClientProjectsPage() {
                   border: '1px solid rgba(124,58,237,0.15)',
                   borderRadius: '16px',
                   overflow: 'hidden',
+                  position: 'relative',
                 }}
               >
                 {/* Gradient top border */}
