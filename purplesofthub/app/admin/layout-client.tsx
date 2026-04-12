@@ -206,6 +206,8 @@ export default function AdminLayoutClient({
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [user, setUser] = useState<{
     name: string
     email: string
@@ -217,10 +219,10 @@ export default function AdminLayoutClient({
       const supabase = createClient()
       const { data: { user: u } } = await supabase.auth.getUser()
       if (u) {
-        const name = 
+        const name =
           u.user_metadata?.full_name ||
           u.user_metadata?.name ||
-          u.email?.split('@')[0] || 
+          u.email?.split('@')[0] ||
           'Admin'
         const initials = name
           .split(' ')
@@ -228,15 +230,44 @@ export default function AdminLayoutClient({
           .join('')
           .toUpperCase()
           .slice(0, 2)
-        setUser({ 
-          name, 
-          email: u.email || '', 
-          initials 
+        setUser({
+          name,
+          email: u.email || '',
+          initials
         })
       }
     }
     getUser()
   }, [])
+
+  // Handle keyboard shortcut for search (⌘K or Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+      if (e.key === 'Escape') {
+        setSearchOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Search navigation
+  const handleSearch = (page: string) => {
+    router.push(page)
+    setSearchOpen(false)
+    setSearchQuery('')
+  }
+
+  const searchResults = adminNavItems
+    .flatMap(section => section.items)
+    .filter(item =>
+      item.label.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .slice(0, 8)
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -527,8 +558,9 @@ export default function AdminLayoutClient({
           padding: '0 24px',
           position: 'sticky',
           top: 0,
-          zIndex: 50,
+          zIndex: 150,
           backdropFilter: 'blur(12px)',
+          willChange: 'transform',
         }}>
 
           {/* Left */}
@@ -580,7 +612,8 @@ export default function AdminLayoutClient({
             </Link>
 
             {/* Search — desktop */}
-            <div
+            <button
+              onClick={() => setSearchOpen(true)}
               className="admin-search"
               style={{
                 display: 'flex',
@@ -593,6 +626,21 @@ export default function AdminLayoutClient({
                 borderRadius: '10px',
                 padding: '7px 14px',
                 minWidth: '220px',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'left',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.25)'
+                (e.currentTarget as HTMLButtonElement).style.background = theme === 'dark'
+                  ? 'rgba(124,58,237,0.1)'
+                  : 'rgba(124,58,237,0.08)'
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.12)'
+                (e.currentTarget as HTMLButtonElement).style.background = theme === 'dark'
+                  ? 'rgba(124,58,237,0.06)'
+                  : 'rgba(124,58,237,0.04)'
               }}
             >
               <svg width="14" height="14"
@@ -614,7 +662,119 @@ export default function AdminLayoutClient({
               }}>
                 ⌘K
               </span>
-            </div>
+            </button>
+
+            {/* Search Modal */}
+            {searchOpen && (
+              <>
+                <div
+                  onClick={() => setSearchOpen(false)}
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.3)',
+                    zIndex: 999,
+                    backdropFilter: 'blur(4px)',
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '90%',
+                    maxWidth: '500px',
+                    background: theme === 'dark' ? '#13131f' : '#ffffff',
+                    border: `1px solid rgba(124,58,237,0.2)`,
+                    borderRadius: '14px',
+                    boxShadow: '0 20px 60px rgba(124,58,237,0.3)',
+                    zIndex: 1000,
+                    overflow: 'hidden',
+                    animation: 'scaleIn 0.2s ease-out',
+                  }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '14px 16px',
+                    borderBottom: `1px solid rgba(124,58,237,0.1)`,
+                  }}>
+                    <svg width="16" height="16"
+                      viewBox="0 0 24 24" fill="none"
+                      stroke="#6b5fa0" strokeWidth="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search pages..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      autoFocus
+                      style={{
+                        flex: 1,
+                        background: 'transparent',
+                        border: 'none',
+                        outline: 'none',
+                        color: 'var(--cmd-heading)',
+                        fontSize: '14px',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                    <span style={{
+                      fontSize: '11px',
+                      color: '#4b5563',
+                    }}>
+                      ESC
+                    </span>
+                  </div>
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {searchResults.length > 0 ? (
+                      searchResults.map((item, idx) => (
+                        <button
+                          key={item.href}
+                          onClick={() => handleSearch(item.href)}
+                          style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            border: 'none',
+                            background: idx % 2 === 0 ? 'transparent' : theme === 'dark' ? 'rgba(124,58,237,0.03)' : 'rgba(124,58,237,0.02)',
+                            textAlign: 'left',
+                            color: 'var(--cmd-body)',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            transition: 'background 0.1s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.1)'
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = idx % 2 === 0 ? 'transparent' : theme === 'dark' ? 'rgba(124,58,237,0.03)' : 'rgba(124,58,237,0.02)'
+                          }}
+                        >
+                          <span style={{ color: '#a855f7' }}>{item.icon}</span>
+                          {item.label}
+                        </button>
+                      ))
+                    ) : (
+                      <div style={{
+                        padding: '32px 16px',
+                        textAlign: 'center',
+                        color: '#9d8fd4',
+                        fontSize: '13px',
+                      }}>
+                        No pages found
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Right */}
@@ -745,6 +905,17 @@ export default function AdminLayoutClient({
 
       {/* RESPONSIVE CSS */}
       <style>{`
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+
         @media (max-width: 1024px) {
           .admin-sidebar {
             transform: translateX(-100%) !important;
