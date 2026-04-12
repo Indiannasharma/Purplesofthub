@@ -61,6 +61,10 @@ export default function SignInPage() {
         return
       }
 
+      // Small delay so the session cookie set by signInWithPassword
+      // is flushed to the browser before the server-side role fetch.
+      await new Promise(r => setTimeout(r, 200))
+
       // Redirect based on the server-owned profile role, not auth metadata.
       const roleResponse = await fetch('/api/auth/role')
       const roleData = await roleResponse.json().catch(() => null)

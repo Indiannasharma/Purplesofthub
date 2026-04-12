@@ -1,8 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createAdminSupabase } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthenticatedProfile } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -35,35 +34,37 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      // Get the freshly authenticated user
+      // Use the SAME supabase client (which already has the new session in its
+      // cookie store) — NOT a new createClient() call which would read stale
+      // request cookies and see no session.
       const { data: { user } } = await supabase.auth.getUser()
 
+      // Determine if this email is designated as admin
+      const adminEmails = (process.env.ADMIN_EMAIL || '')
+        .split(',')
+        .map(e => e.trim().toLowerCase())
+        .filter(Boolean)
+
+      const isAdminEmail =
+        adminEmails.length > 0 &&
+        adminEmails.includes((user?.email || '').toLowerCase())
+
       if (user && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-        // Use the service-role admin client to bypass RLS for profile upsert
-        const adminClient = createClient(
+        const adminClient = createAdminSupabase(
           process.env.NEXT_PUBLIC_SUPABASE_URL,
           process.env.SUPABASE_SERVICE_ROLE_KEY,
           { auth: { autoRefreshToken: false } }
         )
 
-        // Check if a profile row already exists
+        // Check if profile row exists
         const { data: existingProfile } = await adminClient
           .from('profiles')
           .select('id, role')
           .eq('id', user.id)
           .maybeSingle()
 
-        // Determine role: use ADMIN_EMAIL env var to designate the admin account
-        const adminEmails = (process.env.ADMIN_EMAIL || '')
-          .split(',')
-          .map(e => e.trim().toLowerCase())
-          .filter(Boolean)
-
-        const isAdminEmail = adminEmails.length > 0 &&
-          adminEmails.includes((user.email || '').toLowerCase())
-
         if (!existingProfile) {
-          // No profile row — create one now (trigger may not have run)
+          // Create profile — no row yet
           await adminClient.from('profiles').insert({
             id: user.id,
             email: user.email,
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
             role: isAdminEmail ? 'admin' : 'client',
           })
         } else if (isAdminEmail && existingProfile.role !== 'admin') {
-          // Profile exists but role is wrong — promote to admin
+          // Promote to admin if needed
           await adminClient
             .from('profiles')
             .update({ role: 'admin' })
@@ -79,10 +80,11 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Security note: role comes from the server-owned profiles table.
-      const auth = await getAuthenticatedProfile()
-
-      if (auth.ok && auth.role === 'admin') {
+      // Redirect decision: use isAdminEmail directly — do NOT call
+      // getAuthenticatedProfile() here because the new session cookies were
+      // just set on the response and a fresh createClient() would still see
+      // the old (empty) request cookies and return ok:false.
+      if (isAdminEmail) {
         return NextResponse.redirect(new URL('/admin', request.url))
       }
 
