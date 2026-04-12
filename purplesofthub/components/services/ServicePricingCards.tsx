@@ -23,15 +23,16 @@ export default function ServicePricingCards({
   const [userName, setUserName] = useState('')
   const [userPhone, setUserPhone] = useState('')
 
-  // Check if user is logged in
+  // Check if user is logged in using the SSR-aware browser client
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { createClient } = await import('@supabase/supabase-js')
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        )
+        // Must use createBrowserClient (from @supabase/ssr) — it reads the
+        // cookie-based session that Next.js middleware sets. The plain
+        // @supabase/supabase-js createClient does NOT read cookies and will
+        // always return null for the user even when signed in.
+        const { createClient } = await import('@/lib/supabase/client')
+        const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
         if (user) {
@@ -39,19 +40,15 @@ export default function ServicePricingCards({
           setUserEmail(user.email || '')
           setUserName(user.user_metadata?.full_name || '')
 
-          // Get phone from profile
+          // Get phone + full_name from profiles table
           const { data: profile } = await supabase
             .from('profiles')
             .select('phone, full_name')
             .eq('id', user.id)
             .single()
 
-          if (profile?.phone) {
-            setUserPhone(profile.phone)
-          }
-          if (profile?.full_name) {
-            setUserName(profile.full_name)
-          }
+          if (profile?.phone) setUserPhone(profile.phone)
+          if (profile?.full_name) setUserName(profile.full_name)
         }
       } catch (err) {
         console.error('Session check error:', err)

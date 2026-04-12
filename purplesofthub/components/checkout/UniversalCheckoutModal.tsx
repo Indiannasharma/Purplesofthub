@@ -28,6 +28,7 @@ export default function UniversalCheckoutModal({
 }: Props) {
   const [step, setStep] = useState<Step>(isLoggedIn ? 'payment' : 'details')
   const [error, setError] = useState('')
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(isLoggedIn)
   const [form, setForm] = useState({
     firstName: userName.split(' ')[0] || '',
     lastName: userName.split(' ').slice(1).join(' ') || '',
@@ -37,19 +38,55 @@ export default function UniversalCheckoutModal({
     password: '',
   })
 
-  // Pre-fill form for logged-in users
+  // On mount: do an independent session check using the SSR-aware client.
+  // This is the source of truth — it runs regardless of what props were passed,
+  // so logged-in users always reach the payment step even if the parent
+  // component's async check hadn't finished when the modal was opened.
   useEffect(() => {
-    if (isLoggedIn && userEmail) {
-      setForm(p => ({
-        ...p,
-        email: userEmail,
-        firstName: userName.split(' ')[0] || '',
-        lastName: userName.split(' ').slice(1).join(' ') || '',
-        phone: userPhone || '',
-      }))
-      setStep('payment')
+    const checkAndPrefill = async () => {
+      try {
+        const { createClient } = await import('@/lib/supabase/client')
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (user) {
+          setIsUserLoggedIn(true)
+
+          // Build name parts
+          const fullName =
+            user.user_metadata?.full_name || userName || ''
+          const parts = fullName.trim().split(' ')
+          const first = parts[0] || ''
+          const last = parts.slice(1).join(' ') || ''
+
+          // Pull phone from profiles table
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('phone, full_name')
+            .eq('id', user.id)
+            .single()
+
+          const phone = profile?.phone || userPhone || ''
+          const nameFromProfile = profile?.full_name || fullName
+          const nameParts = nameFromProfile.trim().split(' ')
+
+          setForm(p => ({
+            ...p,
+            email: user.email || userEmail || '',
+            firstName: nameParts[0] || first,
+            lastName: nameParts.slice(1).join(' ') || last,
+            phone,
+          }))
+          // Skip the "Create Account" step entirely
+          setStep('payment')
+        }
+      } catch {
+        // Silent fallback — non-logged-in flow works normally
+      }
     }
-  }, [isLoggedIn, userEmail, userName, userPhone])
+    checkAndPrefill()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const update = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -68,7 +105,7 @@ export default function UniversalCheckoutModal({
       setError('Phone number required')
       return false
     }
-    if (!isLoggedIn && form.password.length < 8) {
+    if (!isUserLoggedIn && form.password.length < 8) {
       setError('Password must be 8+ characters')
       return false
     }
@@ -158,7 +195,7 @@ export default function UniversalCheckoutModal({
           billingType: plan.billingType,
           paymentReference: reference,
           paymentMethod: method,
-          isLoggedIn,
+          isLoggedIn: isUserLoggedIn,
         }),
       })
       const data = await res.json()
@@ -394,7 +431,7 @@ export default function UniversalCheckoutModal({
                 margin: '0 0 8px',
               }}
             >
-              {isLoggedIn ? 'Processing payment...' : 'Setting up your account...'}
+              {isUserLoggedIn ? 'Processing payment...' : 'Setting up your account...'}
             </p>
             <p style={{ fontSize: '13px', color: 'var(--cyber-body, #4a3f6b)', margin: 0 }}>
               Please don't close this window
@@ -471,7 +508,7 @@ export default function UniversalCheckoutModal({
         {/* PAYMENT STEP */}
         {step === 'payment' && (
           <>
-            {!isLoggedIn && (
+            {!isUserLoggedIn && (
               <button
                 onClick={() => setStep('details')}
                 style={{
