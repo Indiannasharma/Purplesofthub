@@ -229,15 +229,27 @@ export default function RecoveryRequestsPage() {
 
   const inputStyle = {
     width: '100%',
-    padding: '10px 14px',
-    borderRadius: '10px',
-    border: '1.5px solid rgba(124,58,237,0.2)',
-    background: 'rgba(124,58,237,0.06)',
+    padding: '12px 16px',
+    borderRadius: '12px',
+    border: '1.5px solid rgba(124,58,237,0.25)',
+    background: 'rgba(124,58,237,0.08)',
     color: 'var(--cmd-heading)',
     fontSize: '14px',
     outline: 'none',
     fontFamily: 'inherit',
     boxSizing: 'border-box' as const,
+    transition: 'all 0.2s ease',
+    WebkitAppearance: 'none' as any,
+  }
+
+  const selectStyle = {
+    ...inputStyle,
+    appearance: 'none',
+    backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(124,58,237,0.6)' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    backgroundSize: '18px',
+    paddingRight: '40px',
   }
 
   const labelStyle = {
@@ -246,7 +258,7 @@ export default function RecoveryRequestsPage() {
     color: 'var(--cmd-body)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
-    marginBottom: '6px',
+    marginBottom: '8px',
     display: 'block',
   }
 
@@ -367,22 +379,35 @@ export default function RecoveryRequestsPage() {
       {/* Create New Request Form */}
       {showForm && (
         <div style={{
-          background: 'var(--cmd-card)',
-          border: '1px solid rgba(124,58,237,0.2)',
-          borderRadius: '16px',
-          padding: '24px',
-          marginBottom: '24px',
+          background: 'linear-gradient(135deg, rgba(124,58,237,0.05) 0%, rgba(168,85,247,0.03) 100%)',
+          border: '1.5px solid rgba(124,58,237,0.25)',
+          borderRadius: '18px',
+          padding: '32px',
+          marginBottom: '28px',
+          boxShadow: '0 8px 32px rgba(124,58,237,0.08)',
         }}>
-          <h3 style={{
-            fontSize: '16px',
-            fontWeight: 800,
-            color: 'var(--cmd-heading)',
-            margin: '0 0 20px',
-          }}>
-            ✍️ Create Manual Recovery Request
-          </h3>
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: 900,
+              color: 'var(--cmd-heading)',
+              margin: '0 0 8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}>
+              ✍️ Create Manual Recovery Request
+            </h3>
+            <p style={{
+              fontSize: '13px',
+              color: 'var(--cmd-muted)',
+              margin: 0,
+            }}>
+              Fill in the details below to create a new account recovery request
+            </p>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
             <div>
               <label style={labelStyle}>Client Email *</label>
               <input
@@ -432,14 +457,15 @@ export default function RecoveryRequestsPage() {
               <select
                 value={newRequest.platform}
                 onChange={e => setNewRequest(p => ({ ...p, platform: e.target.value }))}
-                style={inputStyle}
+                style={selectStyle as any}
               >
-                <option value="facebook">Facebook</option>
-                <option value="instagram">Instagram</option>
-                <option value="tiktok">TikTok</option>
-                <option value="twitter">Twitter/X</option>
-                <option value="youtube">YouTube</option>
-                <option value="others">Others</option>
+                <option value="">Select a platform...</option>
+                <option value="facebook">📘 Facebook</option>
+                <option value="instagram">📸 Instagram</option>
+                <option value="tiktok">🎵 TikTok</option>
+                <option value="twitter">𝕏 Twitter/X</option>
+                <option value="youtube">▶️ YouTube</option>
+                <option value="others">📱 Others</option>
               </select>
             </div>
 
@@ -450,7 +476,7 @@ export default function RecoveryRequestsPage() {
                 value={newRequest.handle}
                 onChange={e => setNewRequest(p => ({ ...p, handle: e.target.value }))}
                 placeholder="@username"
-                style={inputStyle}
+                style={inputStyle as any}
               />
             </div>
 
@@ -459,97 +485,154 @@ export default function RecoveryRequestsPage() {
               <select
                 value={newRequest.issueType}
                 onChange={e => setNewRequest(p => ({ ...p, issueType: e.target.value }))}
-                style={inputStyle}
+                style={selectStyle as any}
               >
+                <option value="">Select an issue type...</option>
                 <option value="hacked">🔓 Account Hacked</option>
                 <option value="disabled">🚫 Account Disabled</option>
                 <option value="suspended">⏸️ Account Suspended</option>
                 <option value="banned">⛔ Account Banned</option>
                 <option value="compromised">⚠️ Account Compromised</option>
                 <option value="appeal">📝 Appeal Decision</option>
-                <option value="other">Other</option>
+                <option value="other">❓ Other</option>
               </select>
             </div>
 
             {/* Appeal Message */}
-            <div style={{ gridColumn: 'span 2' }}>
+            <div style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Appeal Message *</label>
               <textarea
                 value={newRequest.appeal_message}
                 onChange={e => setNewRequest(p => ({ ...p, appeal_message: e.target.value }))}
                 placeholder="Describe when you lost access, what happened, any details that could help recover the account faster..."
-                rows={4}
-                style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }}
+                rows={5}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '120px', fontFamily: 'inherit' } as any}
               />
             </div>
 
             {/* Admin Notes */}
-            <div style={{ gridColumn: 'span 2' }}>
+            <div style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Admin Notes (Internal - Optional)</label>
               <textarea
                 value={newRequest.admin_notes}
                 onChange={e => setNewRequest(p => ({ ...p, admin_notes: e.target.value }))}
                 placeholder="Internal admin notes (not visible to client when created)..."
                 rows={3}
-                style={{ ...inputStyle, resize: 'vertical', minHeight: '80px', background: 'rgba(245,158,11,0.06)', borderColor: 'rgba(245,158,11,0.2)' }}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '100px', background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)', fontFamily: 'inherit' } as any}
               />
             </div>
 
             {/* ID Upload */}
-            <div>
-              <label style={labelStyle}>Upload ID Document</label>
-              <input
-                type="file"
-                accept="image/*,.pdf"
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) setNewRequest(p => ({ ...p, idFile: file }))
-                }}
-                style={{ ...inputStyle, padding: '8px' }}
-              />
-              {newRequest.idFile && (
-                <p style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>
-                  ✓ {newRequest.idFile.name}
-                </p>
-              )}
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={labelStyle}>📄 Upload ID Document</label>
+              <div style={{
+                border: '2px dashed rgba(124,58,237,0.35)',
+                borderRadius: '12px',
+                padding: '20px',
+                textAlign: 'center',
+                background: 'rgba(124,58,237,0.05)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (file) setNewRequest(p => ({ ...p, idFile: file }))
+                  }}
+                  style={{ display: 'none' }}
+                  id="idFile"
+                />
+                <label htmlFor="idFile" style={{ cursor: 'pointer', display: 'block' }}>
+                  {newRequest.idFile ? (
+                    <div>
+                      <p style={{ fontSize: '13px', color: '#10b981', margin: '0 0 4px', fontWeight: 600 }}>
+                        ✓ File selected
+                      </p>
+                      <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+                        {newRequest.idFile.name}
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 4px', fontWeight: 600 }}>
+                        Click to upload or drag and drop
+                      </p>
+                      <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                        PNG, JPG, PDF (max 10MB)
+                      </p>
+                    </div>
+                  )}
+                </label>
+              </div>
             </div>
 
             {/* Screenshot Upload */}
-            <div>
-              <label style={labelStyle}>Upload Screenshot (Optional)</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) setNewRequest(p => ({ ...p, screenshotFile: file }))
-                }}
-                style={{ ...inputStyle, padding: '8px' }}
-              />
-              {newRequest.screenshotFile && (
-                <p style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>
-                  ✓ {newRequest.screenshotFile.name}
-                </p>
-              )}
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={labelStyle}>📸 Upload Screenshot (Optional)</label>
+              <div style={{
+                border: '2px dashed rgba(124,58,237,0.35)',
+                borderRadius: '12px',
+                padding: '20px',
+                textAlign: 'center',
+                background: 'rgba(124,58,237,0.05)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (file) setNewRequest(p => ({ ...p, screenshotFile: file }))
+                  }}
+                  style={{ display: 'none' }}
+                  id="screenshotFile"
+                />
+                <label htmlFor="screenshotFile" style={{ cursor: 'pointer', display: 'block' }}>
+                  {newRequest.screenshotFile ? (
+                    <div>
+                      <p style={{ fontSize: '13px', color: '#10b981', margin: '0 0 4px', fontWeight: 600 }}>
+                        ✓ File selected
+                      </p>
+                      <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+                        {newRequest.screenshotFile.name}
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 4px', fontWeight: 600 }}>
+                        Click to upload or drag and drop
+                      </p>
+                      <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                        PNG, JPG, GIF (max 5MB)
+                      </p>
+                    </div>
+                  )}
+                </label>
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(124,58,237,0.15)' }}>
             <button
               onClick={createRecoveryRequest}
               disabled={creatingRequest}
               style={{
-                padding: '12px 24px',
-                borderRadius: '10px',
+                padding: '14px 32px',
+                borderRadius: '12px',
                 border: 'none',
-                background: creatingRequest 
-                  ? 'rgba(124,58,237,0.5)'
-                  : 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                background: creatingRequest
+                  ? 'rgba(124,58,237,0.4)'
+                  : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
                 color: '#fff',
                 fontSize: '14px',
                 fontWeight: 700,
                 cursor: creatingRequest ? 'not-allowed' : 'pointer',
                 fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+                boxShadow: creatingRequest ? 'none' : '0 4px 12px rgba(124,58,237,0.3)',
               }}
             >
               {creatingRequest ? '⏳ Creating Request...' : '✅ Create Request'}
@@ -557,14 +640,24 @@ export default function RecoveryRequestsPage() {
             <button
               onClick={() => setShowForm(false)}
               style={{
-                padding: '12px 20px',
-                borderRadius: '10px',
-                border: '1px solid rgba(124,58,237,0.2)',
+                padding: '14px 28px',
+                borderRadius: '12px',
+                border: '1.5px solid rgba(124,58,237,0.25)',
                 background: 'transparent',
                 color: 'var(--cmd-body)',
                 fontSize: '14px',
+                fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(124,58,237,0.08)'
+                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.35)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'
               }}
             >
               Cancel
@@ -975,6 +1068,59 @@ export default function RecoveryRequestsPage() {
           })}
         </div>
       )}
+
+      <style>{`
+        select option {
+          background: var(--cmd-card);
+          color: var(--cmd-heading);
+          padding: 12px 10px;
+          border-bottom: 1px solid rgba(124,58,237,0.1);
+          font-size: 14px;
+        }
+
+        select option:checked {
+          background: linear-gradient(#7c3aed, #7c3aed);
+          background-color: #7c3aed !important;
+          color: #fff;
+        }
+
+        select:focus {
+          border-color: rgba(124,58,237,0.5) !important;
+          box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
+        }
+
+        input:focus {
+          border-color: rgba(124,58,237,0.5) !important;
+          box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
+        }
+
+        textarea:focus {
+          border-color: rgba(124,58,237,0.5) !important;
+          box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
+        }
+
+        input[type="file"]::file-selector-button {
+          background: linear-gradient(135deg, #7c3aed, #a855f7);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          margin-right: 12px;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+          background: linear-gradient(135deg, #7c3aed, #a855f7);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          margin-right: 12px;
+        }
+      `}</style>
     </div>
   )
 }
