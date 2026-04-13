@@ -123,6 +123,7 @@ export default function Preloader() {
               src="/Purplesoft-logo-main.png"
               alt="PurpleSoftHub"
               fill
+              sizes="100px"
               style={{ objectFit: 'contain' }}
               priority
             />

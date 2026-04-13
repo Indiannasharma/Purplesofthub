@@ -130,6 +130,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="dark">
+      <head>
+        {/* Preconnect to Google Fonts CDN before CSS is parsed — eliminates render-blocking font delay */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Non-blocking font load via <link> instead of CSS @import */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
         <Preloader />
         <ThemeProvider>
@@ -143,14 +153,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
-        {/* Payment Gateway Scripts */}
-        <Script 
-          src="https://js.paystack.co/v1/inline.js" 
-          strategy="afterInteractive" 
+        {/* Payment Gateway Scripts — lazyOnload defers until page is fully idle */}
+        <Script
+          src="https://js.paystack.co/v1/inline.js"
+          strategy="lazyOnload"
         />
-        <Script 
-          src="https://checkout.flutterwave.com/v3.js" 
-          strategy="afterInteractive" 
+        <Script
+          src="https://checkout.flutterwave.com/v3.js"
+          strategy="lazyOnload"
         />
       </body>
     </html>

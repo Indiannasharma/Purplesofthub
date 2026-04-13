@@ -136,8 +136,8 @@ export default async function Home() {
         {/* Layered background */}
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 70% 50%, rgba(124,58,237,0.15) 0%, transparent 60%), radial-gradient(ellipse at 30% 80%, rgba(34,211,238,0.08) 0%, transparent 50%)", pointerEvents: "none" }} />
 
-        {/* Floating particles — hidden on mobile via CSS */}
-        {[...Array(12)].map((_, i) => (
+        {/* Floating particles — hidden on mobile via CSS (reduced to 6 for DOM size) */}
+        {[...Array(6)].map((_, i) => (
           <div
             key={i}
             className="hero-particle"
@@ -382,8 +382,8 @@ export default async function Home() {
                   zIndex: 3,
                 }}/>
 
-                {/* ── Orbiting dot sparkles ── */}
-                {[...Array(8)].map((_, i) => (
+                {/* ── Orbiting dot sparkles (reduced to 5 for DOM size) ── */}
+                {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
                     className={`pl-dot-orbit pl-dot-${i}`}
