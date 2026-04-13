@@ -20,23 +20,16 @@ export async function GET() {
       }
     )
 
-    // Fetch published blog posts first
-    let { data: posts, error } = await supabase
+    // Fetch all blog posts (not filtered by status)
+    const { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('id, title, slug, excerpt, content, featured_image, author_name, published_at, created_at, status')
-      .eq('status', 'published')
+      .select('*')
       .order('published_at', { ascending: false })
       .limit(50)
 
     if (error) {
-      console.error('Error fetching published posts:', error)
-      // Fallback: try to fetch all posts regardless of status
-      const fallback = await supabase
-        .from('blog_posts')
-        .select('id, title, slug, excerpt, content, featured_image, author_name, published_at, created_at, status')
-        .order('created_at', { ascending: false })
-        .limit(50)
-      posts = fallback.data
+      console.error('Error fetching posts:', error)
+      console.log('Database error details:', error.message)
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.purplesofthub.com'
