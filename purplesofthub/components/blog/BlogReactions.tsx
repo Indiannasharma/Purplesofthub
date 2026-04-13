@@ -115,72 +115,35 @@ export default function BlogReactions({ postId }: Props) {
   return (
     <div
       style={{
-        margin: '40px 0',
-        padding: '28px',
+        margin: '28px 0',
+        padding: '14px 16px',
         background: 'var(--blog-sidebar-bg)',
         border: '1px solid var(--blog-card-border)',
-        borderRadius: '20px',
+        borderRadius: '14px',
         backdropFilter: 'blur(10px)',
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '10px',
       }}
     >
-      <div
+      {/* Label */}
+      <span
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '20px',
-          flexWrap: 'wrap',
-          gap: '12px',
+          fontSize: '11px',
+          fontWeight: 700,
+          color: 'var(--blog-text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          whiteSpace: 'nowrap',
+          marginRight: '2px',
         }}
       >
-        <div>
-          <h3
-            style={{
-              fontSize: '16px',
-              fontWeight: 800,
-              color: 'var(--blog-heading)',
-              margin: '0 0 4px',
-            }}
-          >
-            Reactions
-          </h3>
-          <p
-            style={{
-              fontSize: '13px',
-              color: 'var(--blog-text-muted)',
-              margin: 0,
-            }}
-          >
-            {totalReactions > 0
-              ? `${totalReactions} ${totalReactions === 1 ? 'reaction' : 'reactions'} so far`
-              : 'Be the first to react!'}
-          </p>
-        </div>
+        {totalReactions > 0 ? `${totalReactions} reaction${totalReactions !== 1 ? 's' : ''}` : 'React:'}
+      </span>
 
-        {userReaction && (
-          <span
-            style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              color: '#a855f7',
-              background: 'rgba(124,58,237,0.1)',
-              border: '1px solid rgba(124,58,237,0.25)',
-              padding: '4px 12px',
-              borderRadius: '100px',
-            }}
-          >
-            You reacted!
-          </span>
-        )}
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          flexWrap: 'wrap',
-        }}
-      >
+      {/* Reaction pills */}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
         {REACTIONS.map((reaction) => {
           const isActive = userReaction === reaction.type
           const isAnimating = animating === reaction.type
@@ -191,64 +154,69 @@ export default function BlogReactions({ postId }: Props) {
               key={reaction.type}
               onClick={() => handleReaction(reaction.type)}
               disabled={loading}
+              title={reaction.label}
               style={{
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
+                gap: '5px',
+                padding: '4px 10px',
                 borderRadius: '100px',
-                border: isActive ? '1.5px solid rgba(124,58,237,0.6)' : '1.5px solid var(--blog-card-border)',
-                background: isActive ? 'rgba(124,58,237,0.15)' : 'transparent',
-                cursor: 'pointer',
+                border: isActive
+                  ? '1px solid rgba(124,58,237,0.55)'
+                  : '1px solid var(--blog-card-border)',
+                background: isActive ? 'rgba(124,58,237,0.12)' : 'transparent',
+                cursor: loading ? 'default' : 'pointer',
                 transition: 'all 0.2s',
-                transform: isAnimating ? 'scale(1.25)' : 'scale(1)',
-                boxShadow: isActive ? '0 0 16px rgba(124,58,237,0.25)' : 'none',
+                transform: isAnimating ? 'scale(1.2)' : 'scale(1)',
+                boxShadow: isActive ? '0 0 10px rgba(124,58,237,0.2)' : 'none',
                 fontFamily: 'inherit',
+                outline: 'none',
               }}
             >
               <span
                 style={{
-                  fontSize: isAnimating ? '26px' : '22px',
-                  transition: 'font-size 0.2s',
-                  display: 'block',
+                  fontSize: isAnimating ? '16px' : '14px',
+                  transition: 'font-size 0.15s',
                   lineHeight: 1,
+                  display: 'block',
                 }}
               >
                 {reaction.emoji}
               </span>
-              <div
+              <span
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: isActive ? '#a855f7' : 'var(--blog-text-muted)',
+                  lineHeight: 1,
+                  minWidth: '8px',
                 }}
               >
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: isActive ? '#a855f7' : 'var(--blog-text-muted)',
-                    lineHeight: 1,
-                    marginBottom: '2px',
-                  }}
-                >
-                  {reaction.label}
-                </span>
-                <span
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: 800,
-                    color: isActive ? '#a855f7' : 'var(--blog-heading)',
-                    lineHeight: 1,
-                  }}
-                >
-                  {count}
-                </span>
-              </div>
+                {count}
+              </span>
             </button>
           )
         })}
       </div>
+
+      {/* "You reacted" badge */}
+      {userReaction && (
+        <span
+          style={{
+            marginLeft: 'auto',
+            fontSize: '10px',
+            fontWeight: 600,
+            color: '#a855f7',
+            background: 'rgba(124,58,237,0.08)',
+            border: '1px solid rgba(124,58,237,0.2)',
+            padding: '3px 9px',
+            borderRadius: '100px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          You reacted!
+        </span>
+      )}
     </div>
   )
 }
