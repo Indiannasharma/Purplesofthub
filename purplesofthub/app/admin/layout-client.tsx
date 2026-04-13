@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useTheme } from '@/context/ThemeContext'
+import NotificationBell from '@/components/admin/NotificationBell'
 
 const SIDEBAR_WIDTH = 260
 
@@ -209,6 +210,7 @@ export default function AdminLayoutClient({
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [user, setUser] = useState<{
+    id: string
     name: string
     email: string
     initials: string
@@ -231,9 +233,10 @@ export default function AdminLayoutClient({
           .toUpperCase()
           .slice(0, 2)
         setUser({
+          id: u.id,
           name,
           email: u.email || '',
-          initials
+          initials,
         })
       }
     }
@@ -822,43 +825,7 @@ export default function AdminLayoutClient({
             </button>
 
             {/* Notifications */}
-            <button style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              border: `1px solid rgba(124,58,237,0.15)`,
-              background: 'transparent',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9d8fd4',
-              position: 'relative',
-            }}>
-              <svg width="16" height="16"
-                viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              <span style={{
-                position: 'absolute',
-                top: '-2px',
-                right: '-2px',
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                background: '#ef4444',
-                color: '#fff',
-                fontSize: '9px',
-                fontWeight: 800,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                1
-              </span>
-            </button>
+            {user?.id && <NotificationBell adminId={user.id} />}
 
             {/* Admin avatar */}
             <div style={{
