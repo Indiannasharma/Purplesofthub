@@ -468,6 +468,77 @@ const services: Service[] = [
   },
 
   {
+    slug: "logo-design",
+    title: "Logo Design",
+    shortTitle: "Logo Design",
+    tagline: "A memorable logo that makes your brand instantly recognisable",
+    category: "Design",
+    icon: "🎨",
+    color: "#ec4899",
+    heroDescription:
+      "Custom, original logo designs built around your brand story. From clean minimal marks to full wordmarks and icon suites — every design is 100% yours.",
+    overview:
+      "Your logo is the face of your business. We create professional, versatile logos that work everywhere — from business cards to billboards, app icons to social media. Every logo is 100% custom, original, and delivered in all formats you'll ever need.",
+    features: [
+      "Custom Logo Concepts",
+      "Wordmark & Lettermark Design",
+      "Icon / Symbol Design",
+      "Logo Variations (dark, light, stacked)",
+      "Colour Palette Selection",
+      "Typography Pairing",
+      "Brand Pattern & Textures",
+      "All File Formats Included (AI, SVG, PNG, PDF)",
+    ],
+    process: [
+      { step: "01", title: "Brief", desc: "We learn your brand, industry, audience, and style preferences." },
+      { step: "02", title: "Concepts", desc: "We present 3 distinct logo directions for you to review." },
+      { step: "03", title: "Refine", desc: "We polish your chosen concept with unlimited revisions." },
+      { step: "04", title: "Deliver", desc: "You receive print-ready and digital files in every format." },
+    ],
+    technologies: ["Adobe Illustrator", "Figma", "Adobe Photoshop", "Adobe InDesign", "Canva Pro"],
+    benefits: [
+      "100% original — no stock or templates",
+      "Scalable vector files for any size",
+      "Works on light and dark backgrounds",
+      "Fast turnaround without compromising quality",
+    ],
+    faqs: [
+      {
+        q: "What file formats will I receive?",
+        a: "You'll get AI, EPS, SVG, PNG (transparent), and PDF — every format for print and digital use.",
+      },
+      {
+        q: "How many concepts do you provide?",
+        a: "We present 3 initial concepts. Once you choose a direction, revisions are included until you're 100% happy.",
+      },
+      {
+        q: "How long does a logo take?",
+        a: "Basic logos are delivered in 3–5 business days. Full brand identity packages take 7–14 days.",
+      },
+      {
+        q: "Can I use my logo commercially?",
+        a: "Yes — you receive full commercial ownership and copyright of your final logo design.",
+      },
+      {
+        q: "Do you design logos for startups and small businesses?",
+        a: "Absolutely. We work with startups, entrepreneurs, SMEs, and personal brands at every budget level.",
+      },
+    ],
+    relatedServices: ["branding-design", "ui-ux-design", "web-development"],
+    metaTitle: "Logo Design Services — PurpleSoftHub",
+    metaDescription:
+      "Professional logo design for businesses, startups, and creators. Custom logos with unlimited revisions and all file formats. Starting from ₦25,000.",
+    keywords: [
+      "logo design Nigeria",
+      "logo designer Africa",
+      "custom logo design",
+      "professional logo design",
+      "affordable logo design Nigeria",
+      "brand logo design Lagos",
+    ],
+  },
+
+  {
     slug: "social-media-management",
     title: "Social Media Management",
     shortTitle: "Social Media",
