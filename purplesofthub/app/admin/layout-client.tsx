@@ -631,16 +631,14 @@ export default function AdminLayoutClient({
                 textAlign: 'left',
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.25)'
-                (e.currentTarget as HTMLButtonElement).style.background = theme === 'dark'
-                  ? 'rgba(124,58,237,0.1)'
-                  : 'rgba(124,58,237,0.08)'
+                const el = e.currentTarget as HTMLButtonElement
+                el.style.borderColor = 'rgba(124,58,237,0.25)'
+                el.style.background = theme === 'dark' ? 'rgba(124,58,237,0.1)' : 'rgba(124,58,237,0.08)'
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.12)'
-                (e.currentTarget as HTMLButtonElement).style.background = theme === 'dark'
-                  ? 'rgba(124,58,237,0.06)'
-                  : 'rgba(124,58,237,0.04)'
+                const el = e.currentTarget as HTMLButtonElement
+                el.style.borderColor = 'rgba(124,58,237,0.12)'
+                el.style.background = theme === 'dark' ? 'rgba(124,58,237,0.06)' : 'rgba(124,58,237,0.04)'
               }}
             >
               <svg width="14" height="14"
