@@ -71,7 +71,6 @@ function CloseIcon({ className = "" }: { className?: string }) {
 
 const NAV_LINKS = [
   { label: "Services", href: "/services" },
-  { label: "Pricing", href: "/services/web-development/pricing" },
   { label: "Academy", href: "/academy" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Music", href: "/#music" },
