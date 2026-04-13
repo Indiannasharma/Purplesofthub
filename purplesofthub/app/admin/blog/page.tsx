@@ -599,7 +599,7 @@ export default function BlogManager() {
                       flexWrap: 'wrap',
                     }}>
                       <Link
-                        href={`/admin/blog/create?id=${post.id}`}
+                        href={`/admin/blog/edit/${post.id}`}
                         style={{
                           flex: 1,
                           minWidth: '80px',

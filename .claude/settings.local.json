@@ -41,7 +41,11 @@
       "Bash([ -d \"purplesofthub\" ])",
       "Bash(powershell -Command ':*)",
       "Bash(git checkout:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(grep -r \"ADMIN\\\\|admin_email\\\\|NEXT_PUBLIC_ADMIN\" purplesofthub/.env* purplesofthub/.env.local)",
+      "Bash(ls -la /c/Users/HP/Documents/Code/Softwork/purplesofthub/.claude/worktrees/epic-bhaskara/purplesofthub/.env*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)"
     ]
   }
 }
