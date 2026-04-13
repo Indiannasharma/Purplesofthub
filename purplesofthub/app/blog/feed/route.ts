@@ -20,13 +20,24 @@ export async function GET() {
       }
     )
 
-    // Fetch published blog posts
-    const { data: posts } = await supabase
+    // Fetch published blog posts first
+    let { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('id, title, slug, excerpt, content, featured_image, author_name, published_at, created_at')
+      .select('id, title, slug, excerpt, content, featured_image, author_name, published_at, created_at, status')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(50)
+
+    if (error) {
+      console.error('Error fetching published posts:', error)
+      // Fallback: try to fetch all posts regardless of status
+      const fallback = await supabase
+        .from('blog_posts')
+        .select('id, title, slug, excerpt, content, featured_image, author_name, published_at, created_at, status')
+        .order('created_at', { ascending: false })
+        .limit(50)
+      posts = fallback.data
+    }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.purplesofthub.com'
 
@@ -43,8 +54,11 @@ export async function GET() {
     ${
       (posts || [])
         .map((post: any) => {
+          if (!post.slug || !post.title) return ''
           const postUrl = `${baseUrl}/blog/${post.slug}`
-          const pubDate = new Date(post.published_at || post.created_at).toUTCString()
+          const pubDate = post.published_at
+            ? new Date(post.published_at).toUTCString()
+            : new Date(post.created_at).toUTCString()
 
           return `
     <item>
@@ -53,15 +67,16 @@ export async function GET() {
       <guid isPermaLink="true">${postUrl}</guid>
       <pubDate>${pubDate}</pubDate>
       <author>${escapeXml(post.author_name || 'PurpleSoftHub')}</author>
-      <description>${escapeXml(post.excerpt || '')}</description>
+      <description>${escapeXml(post.excerpt || post.content?.substring(0, 200) || '')}</description>
       <content:encoded><![CDATA[
-${post.content || ''}
-${post.featured_image ? `<br /><img src="${post.featured_image}" alt="${escapeXml(post.title)}" />` : ''}
+${post.content ? sanitizeHtml(post.content) : ''}
+${post.featured_image ? `<br /><img src="${post.featured_image}" alt="${escapeXml(post.title)}" style="max-width: 100%; height: auto;" />` : ''}
       ]]></content:encoded>
       ${post.featured_image ? `<image><url>${post.featured_image}</url><title>${escapeXml(post.title)}</title><link>${postUrl}</link></image>` : ''}
     </item>
           `
         })
+        .filter(Boolean)
         .join('')
     }
   </channel>
@@ -75,7 +90,23 @@ ${post.featured_image ? `<br /><img src="${post.featured_image}" alt="${escapeXm
     })
   } catch (error) {
     console.error('Failed to generate RSS feed:', error)
-    return new Response('Failed to generate feed', { status: 500 })
+    // Return empty but valid RSS on error
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.purplesofthub.com'
+    return new Response(
+      `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>PurpleSoftHub Blog</title>
+    <link>${baseUrl}/blog</link>
+    <description>Insights on web development, digital marketing, music and tech from Africa's Digital Innovation Studio.</description>
+  </channel>
+</rss>`,
+      {
+        headers: {
+          'Content-Type': 'application/rss+xml; charset=utf-8',
+        },
+      }
+    )
   }
 }
 
@@ -88,4 +119,14 @@ function escapeXml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
+}
+
+// Sanitize HTML content for RSS
+function sanitizeHtml(html: string): string {
+  if (!html) return ''
+  // Remove script tags and content
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .trim()
 }
