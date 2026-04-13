@@ -76,11 +76,17 @@ export default function BlogManager() {
   }, [])
 
   const fetchPosts = async () => {
+    setLoading(true)
     const supabase = createClient()
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('[BlogManager] fetchPosts error:', error.message, error.details)
+    }
+
     setPosts(data || [])
     setLoading(false)
   }
@@ -138,28 +144,49 @@ export default function BlogManager() {
               Create, manage, and organize your blog posts
             </p>
           </div>
-          <Link
-            href="/admin/blog/create"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
-              padding: '12px 28px',
-              borderRadius: '12px',
-              textDecoration: 'none',
-              fontWeight: 700,
-              fontSize: 'clamp(13px, 2vw, 15px)',
-              boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-          >
-            ✍️ New Post
-          </Link>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              onClick={fetchPosts}
+              disabled={loading}
+              title="Refresh posts"
+              style={{
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: '1px solid rgba(124,58,237,0.3)',
+                background: 'transparent',
+                color: '#a855f7',
+                fontWeight: 600,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontSize: '14px',
+                opacity: loading ? 0.6 : 1,
+                transition: 'all 0.2s',
+              }}
+            >
+              {loading ? '⏳' : '🔄'}
+            </button>
+            <Link
+              href="/admin/blog/create"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: '#fff',
+                padding: '12px 28px',
+                borderRadius: '12px',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: 'clamp(13px, 2vw, 15px)',
+                boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              ✍️ New Post
+            </Link>
+          </div>
         </div>
 
         {/* ── STATS ── */}
