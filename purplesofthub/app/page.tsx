@@ -115,8 +115,8 @@ export default async function Home() {
   const { data: trendingPostsData } = await supabase
     .from('blog_posts')
     .select('id, title, slug, excerpt, read_time, comment_count, likes_count')
-    .eq('published', true)
-    .order('comment_count', { ascending: false })
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
     .limit(3);
 
   const trendingPosts = trendingPostsData || [];
@@ -128,19 +128,19 @@ export default async function Home() {
       {/* Background Effects */}
       <div className="cyber-glow-top-left" />
       <div className="cyber-glow-bottom-right" />
-      <div className="cyber-grid-bg" style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />
 
       <Navbar />
 
       {/* ── HERO ── */}
-      <section id="home" style={{ minHeight: "100vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", padding: "100px 5% 60px" }}>
+      <section id="home" className="hero-section" style={{ minHeight: "100vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", padding: "100px 5% 60px" }}>
         {/* Layered background */}
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 70% 50%, rgba(124,58,237,0.15) 0%, transparent 60%), radial-gradient(ellipse at 30% 80%, rgba(34,211,238,0.08) 0%, transparent 50%)", pointerEvents: "none" }} />
-        
-        {/* Floating particles */}
+
+        {/* Floating particles — hidden on mobile via CSS */}
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
+            className="hero-particle"
             style={{
               position: 'absolute',
               width: i % 3 === 0 ? '4px' : i % 3 === 1 ? '6px' : '3px',
@@ -156,8 +156,8 @@ export default async function Home() {
             }}
           />
         ))}
-        
-        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center", position: "relative", zIndex: 2 }}>
+
+        <div className="hero-grid" style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center", position: "relative", zIndex: 2 }}>
           <div>
             <Reveal>
               {/* Premium Badge */}
@@ -171,7 +171,6 @@ export default async function Home() {
                 padding: '7px 18px',
                 marginBottom: '28px',
                 boxShadow: '0 0 20px rgba(124,58,237,0.15)',
-                backdropFilter: 'blur(10px)',
               }}>
                 <span style={{
                   width: '7px',
@@ -224,7 +223,7 @@ export default async function Home() {
               </p>
             </Reveal>
             <Reveal delay={0.3}>
-              <div className="cta-row" style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 48 }}>
+              <div className="cta-row hero-cta-row" style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 48 }}>
                 <Link href="/contact">
                   <button className="cyber-btn-primary" style={{ padding: "14px 32px", fontSize: 16 }}>Start a Project</button>
                 </Link>
@@ -242,12 +241,11 @@ export default async function Home() {
                   [10, "Core Services", ""],
                   [98, "Client Satisfaction", "%"]
                 ].map(([n, l, suffix]) => (
-                  <div key={l} style={{
+                  <div key={l} className="hero-stat-card" style={{
                     background: 'var(--cyber-card, rgba(255,255,255,0.7))',
                     border: '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
                     borderRadius: '16px',
                     padding: '20px 24px',
-                    backdropFilter: 'blur(10px)',
                     boxShadow: '0 4px 20px var(--cyber-glow, rgba(124,58,237,0.08))',
                     transition: 'all 0.3s',
                     position: 'relative',
@@ -278,6 +276,7 @@ export default async function Home() {
           </div>
 
           {/* ✨ PREMIUM COSMIC PLANET ✨ */}
+          <div className="planet-col" style={{ position: 'relative' }}>
           <Reveal delay={0.2}>
             {/* Outer Nebula Glow — breathes */}
             <div style={{
@@ -308,10 +307,10 @@ export default async function Home() {
             }}/>
 
             {/* ── Float wrapper (handles Y bob only) ── */}
-            <div style={{
+            <div className="pl-float-wrapper" style={{
               position: 'relative',
-              width: 'clamp(280px, 38vw, 520px)',
-              height: 'clamp(280px, 38vw, 520px)',
+              width: 'clamp(220px, 38vw, 520px)',
+              height: 'clamp(220px, 38vw, 520px)',
               flexShrink: 0,
               margin: '0 auto',
               animation: 'pl-float 7s ease-in-out infinite',
@@ -417,6 +416,7 @@ export default async function Home() {
               </div>{/* /tilt */}
             </div>{/* /float */}
           </Reveal>
+          </div>{/* /planet-col */}
 
           {/* ── Planet keyframes ── */}
           <style>{`
@@ -496,6 +496,87 @@ export default async function Home() {
             @keyframes pl-blink {
               0%   { opacity: 0.6; transform: scale(0.85); }
               100% { opacity: 1.0; transform: scale(1.3);  }
+            }
+
+            /* ═══════════════════════════════════════════════
+               MOBILE HERO — full responsive layout + perf
+            ═══════════════════════════════════════════════ */
+            @media (max-width: 767px) {
+
+              /* Stack hero to single column */
+              .hero-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0 !important;
+              }
+
+              /* Reduce hero section padding */
+              .hero-section {
+                padding: 88px 5% 48px !important;
+                min-height: auto !important;
+              }
+
+              /* Hide particles — saves ~12 animated elements */
+              .hero-particle { display: none !important; }
+
+              /* CTA buttons: stack full-width on mobile */
+              .hero-cta-row {
+                flex-direction: column !important;
+                gap: 10px !important;
+                margin-bottom: 32px !important;
+              }
+              .hero-cta-row a, .hero-cta-row button {
+                width: 100% !important;
+                text-align: center !important;
+                justify-content: center !important;
+              }
+
+              /* Stats: compact 3-in-a-row */
+              .hero-stats {
+                gap: 8px !important;
+                flex-wrap: nowrap !important;
+                margin-bottom: 0 !important;
+              }
+              .hero-stat-card {
+                padding: 12px 8px !important;
+                border-radius: 12px !important;
+                flex: 1 !important;
+                min-width: 0 !important;
+              }
+
+              /* Planet column: constrained height, centered */
+              .planet-col {
+                height: 300px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin-top: 24px !important;
+                overflow: visible !important;
+              }
+
+              /* Disable ring orbit animations — biggest perf win */
+              .pl-ring-a {
+                animation: none !important;
+                transform: translate(-50%,-50%) rotateX(68deg) rotateZ(12deg) !important;
+              }
+              .pl-ring-b {
+                animation: none !important;
+                transform: translate(-50%,-50%) rotateX(68deg) rotateZ(12deg) !important;
+              }
+              .pl-ring-c {
+                animation: none !important;
+                transform: translate(-50%,-50%) rotateX(68deg) rotateZ(0deg) !important;
+              }
+
+              /* Disable surface spin */
+              .pl-surface-spin { animation: none !important; }
+
+              /* Hide 5 of 8 orbit dots — keep 3 for visual */
+              .pl-dot-2,.pl-dot-3,.pl-dot-5,.pl-dot-6,.pl-dot-7 { display: none !important; }
+            }
+
+            /* Extra small phones */
+            @media (max-width: 380px) {
+              .hero-stat-card { padding: 10px 6px !important; }
             }
           `}</style>
         </div>
