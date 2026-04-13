@@ -152,8 +152,15 @@ export default function CreateBlogPost() {
     }
 
     setSaving(true)
+    setError('')
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      setError('You must be logged in to save a post.')
+      setSaving(false)
+      return
+    }
 
     try {
       const postData = {
@@ -168,15 +175,23 @@ export default function CreateBlogPost() {
         seo_description: form.seoDescription || form.excerpt,
         focus_keyword: form.focusKeyword || null,
         status: 'draft',
-        author_id: user?.id,
-        author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0],
+        author_id: user.id,
+        author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
         updated_at: new Date().toISOString(),
       }
 
+      let dbError: any = null
       if (postId) {
-        await supabase.from('blog_posts').update(postData).eq('id', postId)
+        const { error } = await supabase.from('blog_posts').update(postData).eq('id', postId)
+        dbError = error
       } else {
-        await supabase.from('blog_posts').insert({ ...postData, published_at: null })
+        const { error } = await supabase.from('blog_posts').insert({ ...postData, published_at: null })
+        dbError = error
+      }
+
+      if (dbError) {
+        setError(`Failed to save: ${dbError.message}`)
+        return
       }
 
       setSuccess(postId ? '✅ Draft updated!' : '✅ Draft saved!')
@@ -190,15 +205,23 @@ export default function CreateBlogPost() {
 
   const publishPost = async () => {
     if (!form.title.trim() || !form.content.trim() || !form.excerpt.trim()) {
-      setError('Title, content, and excerpt are required')
+      setError('Title, content, and excerpt are required to publish')
       return
     }
 
     setPublishing(true)
+    setError('')
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
+    if (!user) {
+      setError('You must be logged in to publish a post.')
+      setPublishing(false)
+      return
+    }
+
     try {
+      const now = new Date().toISOString()
       const postData = {
         title: form.title,
         slug: form.slug || toSlug(form.title),
@@ -211,24 +234,28 @@ export default function CreateBlogPost() {
         seo_description: form.seoDescription || form.excerpt,
         focus_keyword: form.focusKeyword || null,
         status: 'published',
-        author_id: user?.id,
-        author_name: user?.user_metadata?.full_name || user?.email?.split('@')[0],
-        updated_at: new Date().toISOString(),
+        author_id: user.id,
+        author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+        published_at: now,
+        updated_at: now,
       }
 
+      let dbError: any = null
       if (postId) {
-        await supabase.from('blog_posts').update({
-          ...postData,
-          published_at: new Date().toISOString(),
-        }).eq('id', postId)
+        const { error } = await supabase.from('blog_posts').update(postData).eq('id', postId)
+        dbError = error
       } else {
-        await supabase.from('blog_posts').insert({
-          ...postData,
-          published_at: new Date().toISOString(),
-        })
+        const { error } = await supabase.from('blog_posts').insert(postData)
+        dbError = error
       }
 
-      setSuccess(postId ? '✅ Post updated & published!' : '🎉 Post published!')
+      if (dbError) {
+        // Common causes: RLS policy blocking insert, duplicate slug, missing required column
+        setError(`Failed to publish: ${dbError.message}${dbError.details ? ` — ${dbError.details}` : ''}`)
+        return
+      }
+
+      setSuccess(postId ? '✅ Post updated & published!' : '🎉 Post published successfully!')
       setTimeout(() => router.push('/admin/blog'), 1500)
     } catch (err: any) {
       setError(err.message || 'Failed to publish')
