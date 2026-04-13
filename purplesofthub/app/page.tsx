@@ -279,162 +279,225 @@ export default async function Home() {
 
           {/* ✨ PREMIUM COSMIC PLANET ✨ */}
           <Reveal delay={0.2}>
-            {/* Outer Nebula Glow */}
+            {/* Outer Nebula Glow — breathes */}
             <div style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
+              top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)',
               width: 'clamp(380px, 50vw, 700px)',
               height: 'clamp(380px, 50vw, 700px)',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(124,58,237,0.3) 0%, rgba(34,211,238,0.1) 40%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(34,211,238,0.12) 40%, transparent 70%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
-              animation: 'nebulaPulse 5s ease-in-out infinite alternate',
+              animation: 'pl-nebula 5s ease-in-out infinite alternate',
               zIndex: 0,
             }}/>
-            
-            {/* Atmosphere Halo */}
+
+            {/* Atmosphere Halo — slow pulse */}
             <div style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
+              top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)',
               width: 'clamp(310px, 42vw, 580px)',
               height: 'clamp(310px, 42vw, 580px)',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, transparent 55%, rgba(124,58,237,0.2) 70%, rgba(34,211,238,0.15) 85%, transparent 100%)',
-              animation: 'atmospherePulse 8s ease-in-out infinite',
+              background: 'radial-gradient(circle, transparent 55%, rgba(124,58,237,0.22) 70%, rgba(34,211,238,0.16) 85%, transparent 100%)',
+              animation: 'pl-atmos 8s ease-in-out infinite',
               zIndex: 1,
             }}/>
 
-            {/* Planet Container with Tilt */}
+            {/* ── Float wrapper (handles Y bob only) ── */}
             <div style={{
               position: 'relative',
               width: 'clamp(280px, 38vw, 520px)',
               height: 'clamp(280px, 38vw, 520px)',
               flexShrink: 0,
-              animation: 'planetFloat 7s ease-in-out infinite',
               margin: '0 auto',
-              transform: 'rotateZ(-12deg)',
+              animation: 'pl-float 7s ease-in-out infinite',
               zIndex: 2,
             }}>
-              {/* Main Planet Body */}
+              {/* ── Tilt wrapper (static -12 deg tilt, no conflict) ── */}
               <div style={{
-                position: 'absolute',
-                inset: '8%',
-                borderRadius: '50%',
-                background: `
-                  radial-gradient(circle at 30% 25%, 
-                    #e879f9 0%, 
-                    #a855f7 15%, 
-                    #7c3aed 35%, 
-                    #5b21b6 60%, 
-                    #1e1b4b 85%, 
-                    #0f0a1f 100%
-                  )
-                `,
-                boxShadow: `
-                  0 0 80px rgba(124,58,237,0.6),
-                  0 0 120px rgba(124,58,237,0.3),
-                  inset -30px -30px 60px rgba(0,0,0,0.5),
-                  inset 20px 20px 40px rgba(232,121,249,0.2)
-                `,
+                position: 'absolute', inset: 0,
+                transform: 'rotateZ(-12deg)',
+                transformStyle: 'preserve-3d',
               }}>
-                {/* Surface Highlight */}
+
+                {/* ── Main Planet Body ── */}
                 <div style={{
-                  position: 'absolute',
-                  top: '18%',
-                  left: '22%',
-                  width: '30%',
-                  height: '20%',
+                  position: 'absolute', inset: '8%',
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
-                  filter: 'blur(8px)',
+                  background: `radial-gradient(circle at 30% 25%,
+                    #e879f9 0%, #a855f7 15%, #7c3aed 35%,
+                    #5b21b6 60%, #1e1b4b 85%, #0f0a1f 100%)`,
+                  boxShadow: `
+                    0 0 80px rgba(124,58,237,0.65),
+                    0 0 140px rgba(124,58,237,0.3),
+                    inset -30px -30px 60px rgba(0,0,0,0.55),
+                    inset 20px 20px 40px rgba(232,121,249,0.22)`,
+                  animation: 'pl-glow 4s ease-in-out infinite alternate',
+                  overflow: 'hidden',
+                }}>
+                  {/* Static specular highlight */}
+                  <div style={{
+                    position: 'absolute', top: '18%', left: '22%',
+                    width: '30%', height: '20%', borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)',
+                    filter: 'blur(8px)',
+                  }}/>
+                  {/* Rotating surface shimmer band */}
+                  <div className="pl-surface-spin" style={{
+                    position: 'absolute', inset: 0, borderRadius: '50%',
+                    background: 'conic-gradient(from 0deg, transparent 0%, rgba(168,85,247,0.08) 20%, rgba(34,211,238,0.06) 40%, transparent 60%, rgba(168,85,247,0.05) 80%, transparent 100%)',
+                  }}/>
+                </div>
+
+                {/* ── Outer ring — orbits clockwise ── */}
+                <div className="pl-ring-a" style={{
+                  position: 'absolute', top: '50%', left: '50%',
+                  width: '185%', height: '185%',
+                  borderRadius: '50%',
+                  border: '5px solid transparent',
+                  background: 'linear-gradient(90deg,transparent,rgba(34,211,238,0.45),rgba(124,58,237,0.55),rgba(34,211,238,0.35),transparent) border-box',
+                  boxShadow: '0 0 28px rgba(34,211,238,0.3)',
+                  zIndex: 3,
                 }}/>
-              </div>
 
-              {/* ✨ TILTED SATURN RINGS ✨ */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%) rotateX(68deg) rotateZ(12deg)',
-                width: '185%',
-                height: '185%',
-                borderRadius: '50%',
-                border: '6px solid transparent',
-                background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.4), rgba(124,58,237,0.5), rgba(34,211,238,0.3), transparent) border-box',
-                boxShadow: '0 0 30px rgba(34,211,238,0.3)',
-                zIndex: 3,
-              }}/>
+                {/* ── Middle ring — orbits counter-clockwise ── */}
+                <div className="pl-ring-b" style={{
+                  position: 'absolute', top: '50%', left: '50%',
+                  width: '155%', height: '155%',
+                  borderRadius: '50%',
+                  border: '3px solid rgba(168,85,247,0.45)',
+                  boxShadow: '0 0 18px rgba(168,85,247,0.3)',
+                  zIndex: 3,
+                }}/>
 
-              {/* Inner Ring */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%) rotateX(68deg) rotateZ(12deg)',
-                width: '155%',
-                height: '155%',
-                borderRadius: '50%',
-                border: '4px solid rgba(168,85,247,0.4)',
-                boxShadow: '0 0 20px rgba(168,85,247,0.3)',
-                zIndex: 3,
-              }}/>
+                {/* ── Outer faint ring ── */}
+                <div className="pl-ring-c" style={{
+                  position: 'absolute', top: '50%', left: '50%',
+                  width: '215%', height: '215%',
+                  borderRadius: '50%',
+                  border: '1.5px solid rgba(124,58,237,0.18)',
+                  zIndex: 3,
+                }}/>
 
-              {/* Outer Faint Ring */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%) rotateX(68deg) rotateZ(12deg)',
-                width: '210%',
-                height: '210%',
-                borderRadius: '50%',
-                border: '2px solid rgba(124,58,237,0.2)',
-                zIndex: 3,
-              }}/>
+                {/* ── Orbiting dot sparkles ── */}
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`pl-dot-orbit pl-dot-${i}`}
+                    style={{
+                      position: 'absolute', top: '50%', left: '50%',
+                      width: i % 3 === 0 ? 10 : 6,
+                      height: i % 3 === 0 ? 10 : 6,
+                      borderRadius: '50%',
+                      background: i % 2 === 0 ? '#22d3ee' : '#a855f7',
+                      boxShadow: i % 2 === 0
+                        ? '0 0 16px #22d3ee, 0 0 24px rgba(34,211,238,0.5)'
+                        : '0 0 14px #a855f7, 0 0 20px rgba(168,85,247,0.5)',
+                      marginLeft: -(i % 3 === 0 ? 5 : 3),
+                      marginTop:  -(i % 3 === 0 ? 5 : 3),
+                      zIndex: 4,
+                    }}
+                  />
+                ))}
 
-              {/* Orbiting Sparkles */}
-              {[...Array(8)].map((_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: i % 3 === 0 ? '10px' : '6px',
-                    height: i % 3 === 0 ? '10px' : '6px',
-                    borderRadius: '50%',
-                    background: i % 2 === 0 ? '#22d3ee' : '#a855f7',
-                    boxShadow: i % 2 === 0 
-                      ? '0 0 16px #22d3ee, 0 0 24px rgba(34,211,238,0.5)' 
-                      : '0 0 14px #a855f7, 0 0 20px rgba(168,85,247,0.5)',
-                    transform: `rotate(${i * 45}deg) translateX(${145 + (i * 8)}px)`,
-                    animation: `orbitSparkle ${12 + (i * 2)}s linear infinite`,
-                    animationDelay: `${i * 0.7}s`,
-                    zIndex: 4,
-                  }}
-                />
-              ))}
+                {/* ── Accent cyan particle (pulses) ── */}
+                <div style={{
+                  position: 'absolute', top: '10%', left: '63%',
+                  width: 14, height: 14, borderRadius: '50%',
+                  background: '#22d3ee',
+                  boxShadow: '0 0 20px #22d3ee, 0 0 36px rgba(34,211,238,0.45)',
+                  animation: 'pl-blink 3s ease-in-out infinite alternate',
+                  zIndex: 4,
+                }}/>
 
-              {/* Single large glow particle */}
-              <div style={{
-                position: 'absolute',
-                top: '12%',
-                left: '62%',
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                background: '#22d3ee',
-                boxShadow: '0 0 24px #22d3ee, 0 0 40px rgba(34,211,238,0.4)',
-                animation: 'sparklePulse 3s ease-in-out infinite alternate',
-                zIndex: 4,
-              }}/>
-            </div>
+              </div>{/* /tilt */}
+            </div>{/* /float */}
           </Reveal>
+
+          {/* ── Planet keyframes ── */}
+          <style>{`
+            /* Float: gentle vertical bob */
+            @keyframes pl-float {
+              0%,100% { transform: translateY(0px);    }
+              33%      { transform: translateY(-18px);  }
+              66%      { transform: translateY(-8px);   }
+            }
+
+            /* Nebula background breathe */
+            @keyframes pl-nebula {
+              0%   { opacity: 0.5; transform: translate(-50%,-50%) scale(1);    }
+              100% { opacity: 0.85; transform: translate(-50%,-50%) scale(1.1); }
+            }
+
+            /* Atmosphere halo pulse */
+            @keyframes pl-atmos {
+              0%,100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1);    }
+              50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.06); }
+            }
+
+            /* Planet glow breathe */
+            @keyframes pl-glow {
+              0%   { box-shadow: 0 0 70px rgba(124,58,237,0.55),  0 0 120px rgba(124,58,237,0.25), inset -30px -30px 60px rgba(0,0,0,0.55), inset 20px 20px 40px rgba(232,121,249,0.18); }
+              100% { box-shadow: 0 0 110px rgba(124,58,237,0.85), 0 0 180px rgba(124,58,237,0.4),  inset -30px -30px 60px rgba(0,0,0,0.55), inset 20px 20px 40px rgba(232,121,249,0.3);  }
+            }
+
+            /* Surface shimmer spin */
+            @keyframes pl-surface {
+              from { transform: rotate(0deg);   }
+              to   { transform: rotate(360deg); }
+            }
+            .pl-surface-spin { animation: pl-surface 28s linear infinite; }
+
+            /* Outer ring — slow clockwise orbit */
+            @keyframes pl-ring-orbit-a {
+              from { transform: translate(-50%,-50%) rotateX(68deg) rotateZ(12deg);   }
+              to   { transform: translate(-50%,-50%) rotateX(68deg) rotateZ(372deg);  }
+            }
+            .pl-ring-a { animation: pl-ring-orbit-a 22s linear infinite; }
+
+            /* Middle ring — counter-clockwise */
+            @keyframes pl-ring-orbit-b {
+              from { transform: translate(-50%,-50%) rotateX(68deg) rotateZ(12deg);   }
+              to   { transform: translate(-50%,-50%) rotateX(68deg) rotateZ(-348deg); }
+            }
+            .pl-ring-b { animation: pl-ring-orbit-b 32s linear infinite; }
+
+            /* Faint outer ring — very slow clockwise */
+            @keyframes pl-ring-orbit-c {
+              from { transform: translate(-50%,-50%) rotateX(68deg) rotateZ(0deg);   }
+              to   { transform: translate(-50%,-50%) rotateX(68deg) rotateZ(360deg); }
+            }
+            .pl-ring-c { animation: pl-ring-orbit-c 48s linear infinite; }
+
+            /* Dot orbits — each dot gets its own radius + speed */
+            @keyframes pl-orbit-0 { from{transform:rotate(0deg)   translateX(152px) scale(1);}  50%{transform:rotate(180deg)  translateX(152px) scale(1.4);} to{transform:rotate(360deg)  translateX(152px) scale(1);}  }
+            @keyframes pl-orbit-1 { from{transform:rotate(45deg)  translateX(140px) scale(1);}  50%{transform:rotate(225deg)  translateX(140px) scale(1.3);} to{transform:rotate(405deg)  translateX(140px) scale(1);}  }
+            @keyframes pl-orbit-2 { from{transform:rotate(90deg)  translateX(158px) scale(1);}  50%{transform:rotate(270deg)  translateX(158px) scale(1.4);} to{transform:rotate(450deg)  translateX(158px) scale(1);}  }
+            @keyframes pl-orbit-3 { from{transform:rotate(135deg) translateX(132px) scale(1);}  50%{transform:rotate(315deg)  translateX(132px) scale(1.5);} to{transform:rotate(495deg)  translateX(132px) scale(1);}  }
+            @keyframes pl-orbit-4 { from{transform:rotate(180deg) translateX(145px) scale(1);}  50%{transform:rotate(360deg)  translateX(145px) scale(1.3);} to{transform:rotate(540deg)  translateX(145px) scale(1);}  }
+            @keyframes pl-orbit-5 { from{transform:rotate(225deg) translateX(162px) scale(1);}  50%{transform:rotate(405deg)  translateX(162px) scale(1.4);} to{transform:rotate(585deg)  translateX(162px) scale(1);}  }
+            @keyframes pl-orbit-6 { from{transform:rotate(270deg) translateX(138px) scale(1);}  50%{transform:rotate(450deg)  translateX(138px) scale(1.3);} to{transform:rotate(630deg)  translateX(138px) scale(1);}  }
+            @keyframes pl-orbit-7 { from{transform:rotate(315deg) translateX(168px) scale(1);}  50%{transform:rotate(495deg)  translateX(168px) scale(1.5);} to{transform:rotate(675deg)  translateX(168px) scale(1);}  }
+
+            .pl-dot-0 { animation: pl-orbit-0 14s linear infinite; }
+            .pl-dot-1 { animation: pl-orbit-1 17s linear infinite 0.8s; }
+            .pl-dot-2 { animation: pl-orbit-2 13s linear infinite 1.5s; }
+            .pl-dot-3 { animation: pl-orbit-3 19s linear infinite 0.3s; }
+            .pl-dot-4 { animation: pl-orbit-4 15s linear infinite 1.1s; }
+            .pl-dot-5 { animation: pl-orbit-5 16s linear infinite 0.6s; }
+            .pl-dot-6 { animation: pl-orbit-6 12s linear infinite 2.0s; }
+            .pl-dot-7 { animation: pl-orbit-7 20s linear infinite 0.4s; }
+
+            /* Cyan accent pulse */
+            @keyframes pl-blink {
+              0%   { opacity: 0.6; transform: scale(0.85); }
+              100% { opacity: 1.0; transform: scale(1.3);  }
+            }
+          `}</style>
         </div>
       </section>
 
