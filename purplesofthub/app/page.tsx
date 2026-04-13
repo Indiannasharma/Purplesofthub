@@ -57,9 +57,24 @@ const SERVICES = [
 ];
 
 const SUCCESS = [
-  { icon: "📈", tag: "E-Commerce Growth", challenge: "Low sales, high CPA", solution: "Shopify + Facebook Ads", result: "3.5× Revenue Increase" },
-  { icon: "📱", tag: "App Development", challenge: "Build a Fitness App", solution: "Flutter & React Native", result: "50K+ Downloads" },
-  { icon: "5", tag: "Music Promotion", challenge: "Increase Spotify Streams", solution: "Playlist Campaigns", result: "500K+ Streams" },
+  {
+    icon: "📈", tag: "E-Commerce", category: "Digital Marketing",
+    challenge: "Low sales, high CPA", solution: "Shopify + Facebook Ads",
+    result: "3.5×", resultLabel: "Revenue Increase",
+    accent: "#7c3aed", accentLight: "rgba(124,58,237,0.12)", accentBorder: "rgba(124,58,237,0.35)",
+  },
+  {
+    icon: "📱", tag: "App Development", category: "Mobile Engineering",
+    challenge: "Build a Fitness App", solution: "Flutter & React Native",
+    result: "50K+", resultLabel: "App Downloads",
+    accent: "#06b6d4", accentLight: "rgba(6,182,212,0.1)", accentBorder: "rgba(6,182,212,0.3)",
+  },
+  {
+    icon: "🎵", tag: "Music Promotion", category: "Music Distribution",
+    challenge: "Increase Spotify Streams", solution: "Playlist Campaigns",
+    result: "500K+", resultLabel: "Spotify Streams",
+    accent: "#10b981", accentLight: "rgba(16,185,129,0.1)", accentBorder: "rgba(16,185,129,0.3)",
+  },
 ];
 
 const PROCESS = [
@@ -620,33 +635,123 @@ export default async function Home() {
       </section>
 
       {/* ── SUCCESS STORIES ── */}
-      <section style={{ padding: "90px 5%", background: "var(--cyber-bg2)", borderTop: "1px solid var(--cyber-border)", borderBottom: "1px solid var(--cyber-border)", position: "relative", zIndex: 2 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <section style={{ padding: "90px 5%", background: "var(--cyber-bg2)", borderTop: "1px solid var(--cyber-border)", borderBottom: "1px solid var(--cyber-border)", position: "relative", zIndex: 2, overflow: "hidden" }}>
+        {/* Ambient glow */}
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 300, background: "radial-gradient(ellipse,rgba(124,58,237,0.07) 0%,transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
           <Reveal>
-            <div style={{ textAlign: "center", marginBottom: 60 }}>
-              <h2 className="cyber-section-heading" style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,42px)", fontWeight: 900, letterSpacing: "-1px" }}>✦ Our Success Stories ✦</h2>
+            <div style={{ textAlign: "center", marginBottom: 64 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "#a855f7", textTransform: "uppercase", marginBottom: 12 }}>Proven Results</p>
+              <h2 className="cyber-section-heading" style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,46px)", fontWeight: 900, letterSpacing: "-1.5px", margin: "0 0 14px" }}>
+                Our <span className="grad-text">Success Stories</span>
+              </h2>
+              <p style={{ fontSize: 15, color: "var(--cyber-body)", maxWidth: 440, margin: "0 auto", lineHeight: 1.7 }}>
+                Real clients, real results — here's what we've helped build.
+              </p>
             </div>
           </Reveal>
-          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 20 }}>
+
+          <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 24 }}>
             {SUCCESS.map((s) => (
               <StaggerItem key={s.tag}>
-                <div className="cyber-card" style={{ padding: "28px 24px", position: "relative", overflow: "hidden" }}>
-                  <div className="cyber-corner-tl" />
-                  <div className="cyber-corner-br" />
-                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#7c3aed,#22d3ee,#a855f7)" }} />
-                  <div style={{ fontSize: 32, marginBottom: 12 }}>{s.icon}</div>
-                  <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--cyber-heading)", marginBottom: 18 }}>{s.tag}</div>
-                  {[["Challenge", s.challenge], ["Solution", s.solution], ["Result", s.result]].map(([label, val]) => (
-                    <div key={label} style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: label === "Result" ? "#22d3ee" : "var(--cyber-muted)", minWidth: 65 }}>{label}:</span>
-                      <span style={{ fontSize: 13, color: label === "Result" ? "#10b981" : "var(--cyber-body)", fontWeight: label === "Result" ? 700 : 400 }}>{val}</span>
+                <div className="success-story-card" style={{
+                  background: "var(--cyber-card)",
+                  border: `1px solid ${s.accentBorder}`,
+                  borderRadius: 20,
+                  padding: "30px 28px",
+                  position: "relative",
+                  overflow: "hidden",
+                  backdropFilter: "blur(16px)",
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  cursor: "default",
+                }}>
+                  {/* Card ambient glow */}
+                  <div style={{ position: "absolute", top: -60, right: -60, width: 180, height: 180, borderRadius: "50%", background: `radial-gradient(circle, ${s.accentLight} 0%, transparent 70%)`, pointerEvents: "none" }} />
+
+                  {/* Top accent bar */}
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${s.accent}, transparent)` }} />
+
+                  {/* Header: icon + category */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
+                    <div style={{
+                      width: 46, height: 46, borderRadius: 13,
+                      background: s.accentLight,
+                      border: `1px solid ${s.accentBorder}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 22,
+                      boxShadow: `0 0 16px ${s.accentLight}`,
+                    }}>
+                      {s.icon}
                     </div>
-                  ))}
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+                      color: s.accent, textTransform: "uppercase",
+                      background: s.accentLight,
+                      border: `1px solid ${s.accentBorder}`,
+                      padding: "4px 10px", borderRadius: 100,
+                    }}>
+                      {s.category}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 18, color: "var(--cyber-heading)", marginBottom: 20, letterSpacing: "-0.3px" }}>
+                    {s.tag}
+                  </div>
+
+                  {/* Challenge & Solution rows */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22 }}>
+                    {[
+                      { label: "Challenge", val: s.challenge, icon: "⚡" },
+                      { label: "Solution",  val: s.solution,  icon: "💡" },
+                    ].map(({ label, val, icon: rowIcon }) => (
+                      <div key={label} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 12 }}>{rowIcon}</span>
+                        <div>
+                          <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cyber-muted)", marginRight: 6 }}>{label}</span>
+                          <span style={{ fontSize: 13, color: "var(--cyber-body)" }}>{val}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Result metric — hero element */}
+                  <div style={{
+                    background: s.accentLight,
+                    border: `1px solid ${s.accentBorder}`,
+                    borderRadius: 14,
+                    padding: "16px 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                  }}>
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: s.accent,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 16, flexShrink: 0,
+                      boxShadow: `0 0 12px ${s.accentLight}`,
+                    }}>
+                      ✦
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: s.accent, marginBottom: 2 }}>Result</div>
+                      <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: 22, color: s.accent, lineHeight: 1 }}>
+                        {s.result} <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.85 }}>{s.resultLabel}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </StaggerItem>
             ))}
           </StaggerContainer>
         </div>
+        <style>{`
+          .success-story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 30px rgba(124,58,237,0.12);
+          }
+        `}</style>
       </section>
 
       {/* ── PROCESS ── */}
