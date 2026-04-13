@@ -811,22 +811,103 @@ export default async function Home() {
       </section>
 
       {/* ── WORLDWIDE ── */}
-      <section style={{ padding: "80px 5%", textAlign: "center", position: "relative", zIndex: 2 }}>
-        <FadeInUp>
-          <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3vw,38px)", fontWeight: 900, color: "var(--cyber-heading)", letterSpacing: "-1px", marginBottom: 10 }}>
-            Empowering Businesses <span className="grad-text">Worldwide</span>
-          </h2>
-          <p style={{ color: "var(--cyber-body)", marginBottom: 44, fontSize: 15 }}>Partner with us to elevate your business</p>
-        </FadeInUp>
-        <FadeInUp delay={0.1}>
-          <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 14 }}>
-            {[["🇺🇸","🇦🇺"],["🇬🇧","🇵🇪"],["🇨🇦","🇳🇬"],["🇳🇬","🇿🇦"]].map((pair, i) => (
-              <div key={i} className="cyber-card" style={{ padding: "12px 18px", display: "flex", gap: 8, fontSize: 24 }}>
-                {pair.map(f => <span key={f}>{f}</span>)}
+      <section style={{ padding: "80px 0", textAlign: "center", position: "relative", zIndex: 2, overflow: "hidden" }}>
+        {/* Background gradient */}
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(124,58,237,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+        {/* Top + bottom fade masks */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "var(--cyber-border)" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "var(--cyber-border)" }} />
+
+        <div style={{ position: "relative", padding: "0 5%" }}>
+          <FadeInUp>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "#a855f7", textTransform: "uppercase", marginBottom: 12 }}>Global Reach</p>
+            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3.5vw,44px)", fontWeight: 900, color: "var(--cyber-heading)", letterSpacing: "-1.5px", marginBottom: 10 }}>
+              Empowering Businesses <span className="grad-text">Worldwide</span>
+            </h2>
+            <p style={{ color: "var(--cyber-body)", marginBottom: 40, fontSize: 15, maxWidth: 400, margin: "0 auto 40px" }}>
+              Trusted by founders and teams across 4 continents
+            </p>
+          </FadeInUp>
+
+          {/* Stats row */}
+          <FadeInUp delay={0.05}>
+            <div style={{ display: "flex", justifyContent: "center", gap: "clamp(24px,5vw,60px)", marginBottom: 52, flexWrap: "wrap" }}>
+              {[
+                { value: "12+", label: "Countries" },
+                { value: "4",   label: "Continents" },
+                { value: "80+", label: "Clients Served" },
+              ].map(({ value, label }) => (
+                <div key={label} style={{ textAlign: "center" }}>
+                  <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: "clamp(26px,3vw,36px)", background: "linear-gradient(135deg,#a855f7,#7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1 }}>
+                    {value}
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "var(--cyber-muted)", marginTop: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FadeInUp>
+        </div>
+
+        {/* Marquee rows */}
+        {(() => {
+          const row1 = [
+            { flag: "🇺🇸", name: "United States" }, { flag: "🇬🇧", name: "United Kingdom" },
+            { flag: "🇨🇦", name: "Canada" },         { flag: "🇦🇺", name: "Australia" },
+            { flag: "🇩🇪", name: "Germany" },         { flag: "🇫🇷", name: "France" },
+          ]
+          const row2 = [
+            { flag: "🇳🇬", name: "Nigeria" },         { flag: "🇿🇦", name: "South Africa" },
+            { flag: "🇬🇭", name: "Ghana" },            { flag: "🇰🇪", name: "Kenya" },
+            { flag: "🇦🇪", name: "UAE" },              { flag: "🇮🇳", name: "India" },
+          ]
+          const Pill = ({ flag, name }: { flag: string; name: string }) => (
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "8px 16px", borderRadius: 100,
+              background: "var(--cyber-card)",
+              border: "1px solid var(--cyber-border)",
+              backdropFilter: "blur(12px)",
+              whiteSpace: "nowrap", flexShrink: 0,
+            }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>{flag}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--cyber-body)" }}>{name}</span>
+            </div>
+          )
+          return (
+            <>
+              {/* Row 1 — scrolls left */}
+              <div style={{ overflow: "hidden", marginBottom: 12, WebkitMaskImage: "linear-gradient(90deg,transparent,black 10%,black 90%,transparent)", maskImage: "linear-gradient(90deg,transparent,black 10%,black 90%,transparent)" }}>
+                <div className="marquee-left" style={{ display: "flex", gap: 12, width: "max-content" }}>
+                  {[...row1, ...row1].map((c, i) => <Pill key={i} flag={c.flag} name={c.name} />)}
+                </div>
               </div>
-            ))}
-          </div>
-        </FadeInUp>
+              {/* Row 2 — scrolls right */}
+              <div style={{ overflow: "hidden", WebkitMaskImage: "linear-gradient(90deg,transparent,black 10%,black 90%,transparent)", maskImage: "linear-gradient(90deg,transparent,black 10%,black 90%,transparent)" }}>
+                <div className="marquee-right" style={{ display: "flex", gap: 12, width: "max-content" }}>
+                  {[...row2, ...row2].map((c, i) => <Pill key={i} flag={c.flag} name={c.name} />)}
+                </div>
+              </div>
+            </>
+          )
+        })()}
+
+        <style>{`
+          @keyframes scroll-left {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+          }
+          @keyframes scroll-right {
+            from { transform: translateX(-50%); }
+            to   { transform: translateX(0); }
+          }
+          .marquee-left  { animation: scroll-left  28s linear infinite; }
+          .marquee-right { animation: scroll-right 28s linear infinite; }
+          .marquee-left:hover,
+          .marquee-right:hover { animation-play-state: paused; }
+        `}</style>
       </section>
 
       {/* ── TRENDING BLOG POSTS ── */}
