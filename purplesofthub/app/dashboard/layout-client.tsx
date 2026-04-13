@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useTheme } from '@/context/ThemeContext'
+import UserNotificationBell from '@/components/dashboard/UserNotificationBell'
 
 const SIDEBAR_WIDTH = 260
 
@@ -134,6 +135,7 @@ export default function DashboardLayoutClient({
   const { theme, toggleTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<{
+    id: string
     name: string
     email: string
     initials: string
@@ -144,10 +146,10 @@ export default function DashboardLayoutClient({
       const supabase = createClient()
       const { data: { user: u } } = await supabase.auth.getUser()
       if (u) {
-        const name = 
+        const name =
           u.user_metadata?.full_name ||
           u.user_metadata?.name ||
-          u.email?.split('@')[0] || 
+          u.email?.split('@')[0] ||
           'User'
         const initials = name
           .split(' ')
@@ -155,11 +157,7 @@ export default function DashboardLayoutClient({
           .join('')
           .toUpperCase()
           .slice(0, 2)
-        setUser({ 
-          name, 
-          email: u.email || '', 
-          initials 
-        })
+        setUser({ id: u.id, name, email: u.email || '', initials })
       }
     }
     getUser()
@@ -624,47 +622,9 @@ export default function DashboardLayoutClient({
             </button>
 
             {/* Notifications */}
-            <button style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              border: `1px solid ${
-                theme === 'dark'
-                  ? 'rgba(124,58,237,0.15)'
-                  : 'rgba(124,58,237,0.1)'
-              }`,
-              background: 'transparent',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: theme === 'dark' ? '#9d8fd4' : '#6b7280',
-              position: 'relative',
-            }}>
-              <svg width="16" height="16"
-                viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              <span style={{
-                position: 'absolute',
-                top: '-2px',
-                right: '-2px',
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
-                background: '#ef4444',
-                color: '#fff',
-                fontSize: '9px',
-                fontWeight: 800,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                1
-              </span>
-            </button>
+            {user?.id && (
+              <UserNotificationBell userId={user.id} theme={theme} />
+            )}
 
             {/* User avatar */}
             <div style={{
