@@ -405,28 +405,25 @@ export default function CheckoutModal({
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '12px 16px',
-    borderRadius: '10px',
-    border: '1.5px solid rgba(124,58,237,0.25)',
-    background: 'rgba(124,58,237,0.06)',
-    color: '#ffffff',
-    fontSize: '14px',
+    padding: '9px 12px',
+    borderRadius: 9,
+    border: '1px solid rgba(168,85,247,0.22)',
+    background: 'rgba(124,58,237,0.07)',
+    color: '#e9e4ff',
+    fontSize: 13,
     outline: 'none',
     fontFamily: 'inherit',
     boxSizing: 'border-box',
+    transition: 'border-color 0.15s, box-shadow 0.15s',
   }
 
-  const buttonBase: React.CSSProperties = {
-    width: '100%',
-    padding: '18px 20px',
-    borderRadius: '14px',
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    transition: 'transform 0.2s, opacity 0.2s',
+  const onFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = 'rgba(168,85,247,0.55)'
+    e.target.style.boxShadow   = '0 0 0 3px rgba(124,58,237,0.12)'
+  }
+  const onBlurInput = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = 'rgba(168,85,247,0.22)'
+    e.target.style.boxShadow   = 'none'
   }
 
   return (
@@ -434,13 +431,13 @@ export default function CheckoutModal({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0,0,0,0.72)',
+        background: 'rgba(0,0,0,0.78)',
         backdropFilter: 'blur(10px)',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '16px',
       }}
       onClick={e => {
         if (e.target === e.currentTarget) onClose()
@@ -449,383 +446,347 @@ export default function CheckoutModal({
       <div
         style={{
           background: 'linear-gradient(180deg, #0f0b1f 0%, #090712 100%)',
-          border: '1px solid rgba(124,58,237,0.3)',
-          borderRadius: '24px',
+          border: '1px solid rgba(124,58,237,0.28)',
+          borderRadius: 20,
           width: '100%',
-          maxWidth: '560px',
-          maxHeight: '90vh',
+          maxWidth: 440,
+          maxHeight: '92vh',
           overflowY: 'auto',
-          padding: 'clamp(24px, 4vw, 40px)',
           position: 'relative',
-          boxShadow: '0 0 60px rgba(124,58,237,0.2)',
+          boxShadow: '0 24px 80px rgba(124,58,237,0.25)',
           color: '#e9e4ff',
         }}
       >
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-            width: '34px',
-            height: '34px',
-            borderRadius: '50%',
-            border: '1px solid rgba(124,58,237,0.2)',
-            background: 'rgba(124,58,237,0.08)',
-            color: '#e9e4ff',
-            fontSize: '18px',
-            cursor: 'pointer',
-          }}
-          aria-label="Close checkout"
-        >
-          ×
-        </button>
+        {/* Top gradient accent */}
+        <div style={{ height: 2, background: 'linear-gradient(90deg,transparent,#7c3aed,#a855f7,#7c3aed,transparent)', borderRadius: '20px 20px 0 0' }} />
 
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(124,58,237,0.1)',
-            border: '1px solid rgba(124,58,237,0.3)',
-            borderRadius: '100px',
-            padding: '5px 14px',
-            marginBottom: '20px',
-          }}
-        >
-          <span
+        <div style={{ padding: '18px 20px 20px' }}>
+          {/* Close */}
+          <button
+            onClick={onClose}
             style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              background: '#22d3ee',
-              boxShadow: '0 0 8px #22d3ee',
-              animation: 'pulse 1.8s infinite',
-              display: 'inline-block',
+              position: 'absolute', top: 12, right: 12,
+              width: 28, height: 28, borderRadius: '50%',
+              border: '1px solid rgba(124,58,237,0.22)',
+              background: 'rgba(124,58,237,0.08)',
+              color: '#e9e4ff', fontSize: 16, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'inherit', lineHeight: 1,
             }}
-          />
-          <span
-            style={{
-              fontSize: '12px',
-              fontWeight: 700,
-              color: '#a855f7',
-              textTransform: 'uppercase',
-              letterSpacing: '0.07em',
-            }}
+            aria-label="Close checkout"
           >
-            {serviceName || 'PurpleSoftHub Checkout'} - ₦{amount.toLocaleString()}
-          </span>
-        </div>
+            ×
+          </button>
 
-        {step === 'details' && (
-          <>
-            <h2 style={{ fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 900, margin: '0 0 8px' }}>
-              Create Your Account
-            </h2>
-            <p style={{ fontSize: '14px', color: '#c6b8ef', margin: '0 0 24px', lineHeight: 1.6 }}>
-              Complete your details to continue to secure payment.
-            </p>
+          {/* Plan badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'rgba(124,58,237,0.1)',
+            border: '1px solid rgba(124,58,237,0.28)',
+            borderRadius: 100, padding: '4px 11px', marginBottom: 16,
+          }}>
+            <span style={{
+              width: 5, height: 5, borderRadius: '50%',
+              background: '#22d3ee', boxShadow: '0 0 6px #22d3ee',
+              animation: 'cm-pulse 1.8s infinite', display: 'inline-block',
+            }} />
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+              {serviceName || 'PurpleSoftHub Checkout'} — ₦{amount.toLocaleString()}
+            </span>
+          </div>
 
-            {error && (
-              <div
-                style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  border: '1px solid rgba(239,68,68,0.3)',
-                  borderRadius: '10px',
-                  padding: '12px 14px',
-                  marginBottom: '16px',
-                  fontSize: '13px',
-                  color: '#fca5a5',
-                }}
-              >
-                {error}
-              </div>
-            )}
-
-            <div style={{ display: 'grid', gap: '14px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={labelStyle}>First Name *</label>
-                  <input value={form.firstName} onChange={e => update('firstName', e.target.value)} placeholder="Emmanuel" style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Last Name</label>
-                  <input value={form.lastName} onChange={e => update('lastName', e.target.value)} placeholder="Ekanem" style={inputStyle} />
-                </div>
-              </div>
-
-              <div>
-                <label style={labelStyle}>Email Address *</label>
-                <input value={form.email} onChange={e => update('email', e.target.value)} placeholder="you@business.com" style={inputStyle} />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Phone Number *</label>
-                <input value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+234 900 000 0000" style={inputStyle} />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Business Name</label>
-                <input value={form.businessName} onChange={e => update('businessName', e.target.value)} placeholder="Your Business" style={inputStyle} />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Create Password *</label>
-                <input
-                  type="password"
-                  value={form.password}
-                  onChange={e => update('password', e.target.value)}
-                  placeholder="Min 8 characters"
-                  style={inputStyle}
-                />
-              </div>
-
-              <button
-                onClick={() => {
-                  if (validateGuestDetails()) setStep('payment')
-                }}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                  color: '#fff',
-                  fontSize: '15px',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 20px rgba(124,58,237,0.35)',
-                }}
-              >
-                Continue to Payment →
-              </button>
-
-              <p style={{ fontSize: '12px', color: '#c6b8ef', textAlign: 'center', margin: 0 }}>
-                Already have an account?{' '}
-                <Link href="/sign-in" style={{ color: '#a855f7', fontWeight: 700, textDecoration: 'none' }}>
-                  Sign in
-                </Link>
+          {step === 'details' && (
+            <>
+              <h2 style={{ fontSize: 17, fontWeight: 900, margin: '0 0 4px' }}>
+                Create Your Account
+              </h2>
+              <p style={{ fontSize: 12, color: '#c6b8ef', margin: '0 0 16px', lineHeight: 1.5 }}>
+                Complete your details to continue to secure payment.
               </p>
-            </div>
-          </>
-        )}
 
-        {step === 'payment' && (
-          <>
-            {!isLoggedIn && (
-              <button
-                onClick={() => setStep('details')}
-                style={backButtonStyle}
-              >
-                ← Back
-              </button>
-            )}
+              {error && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
+                  borderRadius: 8, padding: '8px 12px', marginBottom: 12,
+                  fontSize: 12, color: '#fca5a5',
+                }}>
+                  ⚠️ {error}
+                </div>
+              )}
 
-            <h2 style={{ fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 900, margin: '0 0 8px' }}>
-              Choose Payment Method
-            </h2>
-            <p style={{ fontSize: '14px', color: '#c6b8ef', margin: '0 0 24px', lineHeight: 1.6 }}>
-              Secure payment for <strong style={{ color: '#a855f7' }}>{plan}</strong> plan. Approx. ${amountUSD}.
-            </p>
-
-            {error && (
-              <div
-                style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  border: '1px solid rgba(239,68,68,0.3)',
-                  borderRadius: '10px',
-                  padding: '12px 14px',
-                  marginBottom: '16px',
-                  fontSize: '13px',
-                  color: '#fca5a5',
-                }}
-              >
-                {error}
-              </div>
-            )}
-
-            {profileLoading && (
-              <p style={{ fontSize: '12px', color: '#22d3ee', margin: '0 0 8px', fontWeight: 700 }}>
-                Loading your profile...
-              </p>
-            )}
-
-            <div style={{ display: 'grid', gap: '12px' }}>
-              <button
-                onClick={() => void initSecureRedirect('paystack')}
-                disabled={gatewayOpening !== null || profileLoading}
-                style={{
-                  ...buttonBase,
-                  border: '2px solid rgba(0,192,120,0.28)',
-                  background: 'rgba(0,192,120,0.08)',
-                  opacity: gatewayOpening === 'paystack' ? 0.85 : 1,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={methodIconStyle('#00C078')}>💳</div>
-                  <div style={{ textAlign: 'left' }}>
-                    <p style={methodTitleStyle}>Pay with Paystack</p>
-                    <p style={methodSubtitleStyle}>Card, bank transfer and USSD</p>
+              <div style={{ display: 'grid', gap: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <label style={labelStyle}>First Name *</label>
+                    <input value={form.firstName} onChange={e => update('firstName', e.target.value)} placeholder="Emmanuel" style={inputStyle} onFocus={onFocusInput} onBlur={onBlurInput} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Last Name</label>
+                    <input value={form.lastName} onChange={e => update('lastName', e.target.value)} placeholder="Ekanem" style={inputStyle} onFocus={onFocusInput} onBlur={onBlurInput} />
                   </div>
                 </div>
-                <span style={{ fontSize: '18px', color: '#00C078' }}>
-                  {gatewayOpening === 'paystack' ? '...' : '→'}
-                </span>
-              </button>
 
-              <button
-                onClick={() => void initSecureRedirect('flutterwave')}
-                disabled={gatewayOpening !== null || profileLoading}
-                style={{
-                  ...buttonBase,
-                  border: '2px solid rgba(245,166,35,0.28)',
-                  background: 'rgba(245,166,35,0.08)',
-                  opacity: gatewayOpening === 'flutterwave' ? 0.85 : 1,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={methodIconStyle('#F5A623')}>⚡</div>
-                  <div style={{ textAlign: 'left' }}>
-                    <p style={methodTitleStyle}>Pay with Flutterwave</p>
-                    <p style={methodSubtitleStyle}>Card, mobile money and bank</p>
-                  </div>
+                <div>
+                  <label style={labelStyle}>Email Address *</label>
+                  <input value={form.email} onChange={e => update('email', e.target.value)} placeholder="you@business.com" style={inputStyle} onFocus={onFocusInput} onBlur={onBlurInput} />
                 </div>
-                <span style={{ fontSize: '18px', color: '#F5A623' }}>
-                  {gatewayOpening === 'flutterwave' ? '...' : '→'}
-                </span>
-              </button>
 
-              {gatewayOpening && (
-                <p style={{ fontSize: '12px', color: '#22d3ee', textAlign: 'center', margin: '2px 0 0', fontWeight: 700 }}>
-                  Opening secure payment...
+                <div>
+                  <label style={labelStyle}>Phone Number *</label>
+                  <input value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+234 900 000 0000" style={inputStyle} onFocus={onFocusInput} onBlur={onBlurInput} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Business Name <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+                  <input value={form.businessName} onChange={e => update('businessName', e.target.value)} placeholder="Your Business" style={inputStyle} onFocus={onFocusInput} onBlur={onBlurInput} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Create Password *</label>
+                  <input
+                    type="password"
+                    value={form.password}
+                    onChange={e => update('password', e.target.value)}
+                    placeholder="Min 8 characters"
+                    style={inputStyle}
+                    onFocus={onFocusInput}
+                    onBlur={onBlurInput}
+                  />
+                </div>
+
+                <button
+                  onClick={() => { if (validateGuestDetails()) setStep('payment') }}
+                  className="btn-main"
+                  style={{ width: '100%', padding: '10px', fontSize: 13, fontWeight: 700, marginTop: 2 }}
+                >
+                  Continue to Payment →
+                </button>
+
+                <p style={{ fontSize: 11, color: '#c6b8ef', textAlign: 'center', margin: 0 }}>
+                  Already have an account?{' '}
+                  <Link href="/sign-in" style={{ color: '#a855f7', fontWeight: 700, textDecoration: 'none' }}>
+                    Sign in
+                  </Link>
+                </p>
+              </div>
+            </>
+          )}
+
+          {step === 'payment' && (
+            <>
+              {!isLoggedIn && (
+                <button onClick={() => setStep('details')} style={backButtonStyle}>
+                  ← Back
+                </button>
+              )}
+
+              <h2 style={{ fontSize: 17, fontWeight: 900, margin: '0 0 4px' }}>
+                Choose Payment Method
+              </h2>
+              <p style={{ fontSize: 12, color: '#c6b8ef', margin: '0 0 14px', lineHeight: 1.5 }}>
+                Secure payment for <strong style={{ color: '#a855f7' }}>{plan}</strong> plan. Approx. ${amountUSD}.
+              </p>
+
+              {error && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
+                  borderRadius: 8, padding: '8px 12px', marginBottom: 12,
+                  fontSize: 12, color: '#fca5a5',
+                }}>
+                  ⚠️ {error}
+                </div>
+              )}
+
+              {profileLoading && (
+                <p style={{ fontSize: 11, color: '#22d3ee', margin: '0 0 10px', fontWeight: 700 }}>
+                  Loading your profile…
                 </p>
               )}
+
+              <div style={{ display: 'grid', gap: 10 }}>
+                <button
+                  onClick={() => void initSecureRedirect('paystack')}
+                  disabled={gatewayOpening !== null || profileLoading}
+                  style={{
+                    width: '100%', padding: '12px 14px', borderRadius: 12,
+                    border: '1.5px solid rgba(0,192,120,0.28)',
+                    background: 'rgba(0,192,120,0.06)',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    transition: 'all 0.15s',
+                    opacity: gatewayOpening === 'paystack' ? 0.75 : 1,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={methodIconStyle('#00C078')}>💳</div>
+                    <div style={{ textAlign: 'left' }}>
+                      <p style={methodTitleStyle}>Pay with Paystack</p>
+                      <p style={methodSubtitleStyle}>Card · Bank Transfer · USSD</p>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 16, color: '#00C078' }}>{gatewayOpening === 'paystack' ? '…' : '→'}</span>
+                </button>
+
+                <button
+                  onClick={() => void initSecureRedirect('flutterwave')}
+                  disabled={gatewayOpening !== null || profileLoading}
+                  style={{
+                    width: '100%', padding: '12px 14px', borderRadius: 12,
+                    border: '1.5px solid rgba(245,166,35,0.28)',
+                    background: 'rgba(245,166,35,0.06)',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    transition: 'all 0.15s',
+                    opacity: gatewayOpening === 'flutterwave' ? 0.75 : 1,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={methodIconStyle('#F5A623')}>⚡</div>
+                    <div style={{ textAlign: 'left' }}>
+                      <p style={methodTitleStyle}>Pay with Flutterwave</p>
+                      <p style={methodSubtitleStyle}>Card · Mobile Money · Bank</p>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 16, color: '#F5A623' }}>{gatewayOpening === 'flutterwave' ? '…' : '→'}</span>
+                </button>
+
+                {gatewayOpening && (
+                  <p style={{ fontSize: 11, color: '#22d3ee', textAlign: 'center', margin: '2px 0 0', fontWeight: 700 }}>
+                    Opening secure payment…
+                  </p>
+                )}
+
+                <p style={{ fontSize: 11, color: '#c6b8ef', textAlign: 'center', margin: '2px 0 0', opacity: 0.7 }}>
+                  🔒 Secure &amp; encrypted payment
+                </p>
+              </div>
+            </>
+          )}
+
+          {step === 'processing' && (
+            <div style={{ textAlign: 'center', padding: '30px 0' }}>
+              <div style={spinnerStyle} />
+              <p style={{ fontSize: 14, fontWeight: 800, margin: '0 0 6px' }}>Processing your request…</p>
+              <p style={{ fontSize: 12, color: '#c6b8ef', margin: 0 }}>Please do not close this window.</p>
             </div>
-          </>
-        )}
+          )}
 
-        {step === 'processing' && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <div style={spinnerStyle} />
-            <p style={{ fontSize: '16px', fontWeight: 800, margin: '0 0 8px' }}>Processing your request...</p>
-            <p style={{ fontSize: '13px', color: '#c6b8ef', margin: 0 }}>Please do not close this window.</p>
-          </div>
-        )}
+          {step === 'success' && (
+            <div style={{ textAlign: 'center', padding: '16px 0' }}>
+              <div style={successBadgeStyle}>🎉</div>
+              <h2 style={{ fontSize: 18, fontWeight: 900, margin: '0 0 8px' }}>Welcome to PurpleSoftHub!</h2>
+              <p style={{ fontSize: 13, color: '#c6b8ef', lineHeight: 1.6, margin: '0 0 6px' }}>
+                Your <strong style={{ color: '#a855f7' }}>{plan}</strong> plan is now active.
+              </p>
+              <p style={{ fontSize: 12, color: '#c6b8ef', margin: '0 0 20px' }}>
+                Check your email for login instructions.
+              </p>
+              <Link href="/sign-in" style={primaryLinkStyle}>
+                Go to Dashboard →
+              </Link>
+            </div>
+          )}
 
-        {step === 'success' && (
-          <div style={{ textAlign: 'center', padding: '20px 0' }}>
-            <div style={successBadgeStyle}>🎉</div>
-            <h2 style={{ fontSize: '24px', fontWeight: 900, margin: '0 0 12px' }}>Welcome to PurpleSoftHub!</h2>
-            <p style={{ fontSize: '15px', color: '#c6b8ef', lineHeight: 1.6, margin: '0 0 8px' }}>
-              Your <strong style={{ color: '#a855f7' }}>{plan}</strong> plan is now active.
-            </p>
-            <p style={{ fontSize: '13px', color: '#c6b8ef', margin: '0 0 28px' }}>
-              Check your email for login instructions.
-            </p>
-            <Link href="/sign-in" style={primaryLinkStyle}>
-              Go to Dashboard →
-            </Link>
-          </div>
-        )}
-
-        <style>{`
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.65); }
-          }
-        `}</style>
+          <style>{`
+            @keyframes cm-spin {
+              from { transform: rotate(0deg); }
+              to   { transform: rotate(360deg); }
+            }
+            @keyframes cm-pulse {
+              0%, 100% { opacity: 1; transform: scale(1); }
+              50%       { opacity: 0.3; transform: scale(0.65); }
+            }
+          `}</style>
+        </div>
       </div>
     </div>
   )
 }
 
 const labelStyle: React.CSSProperties = {
-  fontSize: '12px',
-  fontWeight: 600,
-  color: '#c6b8ef',
   display: 'block',
-  marginBottom: '6px',
+  fontSize: 10,
+  fontWeight: 700,
+  color: 'rgba(198,184,239,0.8)',
   textTransform: 'uppercase',
-  letterSpacing: '0.06em',
+  letterSpacing: '0.08em',
+  marginBottom: 4,
 }
 
 const backButtonStyle: React.CSSProperties = {
   background: 'none',
   border: 'none',
   color: '#c6b8ef',
-  fontSize: '13px',
+  fontSize: 12,
   cursor: 'pointer',
-  marginBottom: '20px',
+  marginBottom: 14,
   fontFamily: 'inherit',
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '4px',
+  gap: 4,
   padding: 0,
 }
 
 const methodTitleStyle: React.CSSProperties = {
-  fontSize: '15px',
+  fontSize: 13,
   fontWeight: 800,
   color: '#ffffff',
-  margin: '0 0 2px',
+  margin: '0 0 1px',
 }
 
 const methodSubtitleStyle: React.CSSProperties = {
-  fontSize: '12px',
+  fontSize: 11,
   color: '#c6b8ef',
   margin: 0,
 }
 
 const methodIconStyle = (color: string): React.CSSProperties => ({
-  width: '40px',
-  height: '40px',
-  borderRadius: '10px',
+  width: 36,
+  height: 36,
+  borderRadius: 9,
   background: color,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '18px',
+  fontSize: 16,
+  flexShrink: 0,
 })
 
 const spinnerStyle: React.CSSProperties = {
-  width: '60px',
-  height: '60px',
+  width: 44,
+  height: 44,
   borderRadius: '50%',
-  border: '3px solid rgba(124,58,237,0.2)',
+  border: '3px solid rgba(124,58,237,0.15)',
   borderTop: '3px solid #7c3aed',
-  margin: '0 auto 20px',
-  animation: 'spin 1s linear infinite',
+  margin: '0 auto 16px',
+  animation: 'cm-spin 1s linear infinite',
 }
 
 const successBadgeStyle: React.CSSProperties = {
-  width: '80px',
-  height: '80px',
+  width: 60,
+  height: 60,
   borderRadius: '50%',
-  background: 'rgba(16,185,129,0.15)',
-  border: '2px solid rgba(16,185,129,0.4)',
+  background: 'rgba(16,185,129,0.12)',
+  border: '2px solid rgba(16,185,129,0.35)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '36px',
-  margin: '0 auto 24px',
-  boxShadow: '0 0 30px rgba(16,185,129,0.2)',
+  fontSize: 28,
+  margin: '0 auto 16px',
+  boxShadow: '0 0 24px rgba(16,185,129,0.18)',
 }
 
 const primaryLinkStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '8px',
+  gap: 6,
   background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
   color: '#fff',
-  padding: '13px 28px',
-  borderRadius: '12px',
+  padding: '9px 22px',
+  borderRadius: 10,
   textDecoration: 'none',
   fontWeight: 800,
-  fontSize: '15px',
-  boxShadow: '0 4px 20px rgba(124,58,237,0.35)',
+  fontSize: 13,
+  boxShadow: '0 4px 16px rgba(124,58,237,0.3)',
 }
