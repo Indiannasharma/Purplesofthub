@@ -7,14 +7,72 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
+    // Optimize image formats for better performance
+    formats: ["image/avif", "image/webp"],
+    // Device sizes for responsive images
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Minimum cache TTL for images (60 seconds)
+    minimumCacheTTL: 60,
   },
-  turbopack: {
-    rules: {
-      "*.svg": {
-        loaders: ["@svgr/webpack"],
-        as: "*.js",
-      },
+  // Enable React strict mode for better performance detection
+  reactStrictMode: true,
+  // Optimize webpack bundling
+  webpack: (config, { isServer }) => {
+    // Reduce bundle size by removing unused moment.js locales
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    return config;
+  },
+  // Headers for better caching
+  headers: async () => [
+    {
+      // Cache static assets aggressively
+      source: "/static/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
     },
+    {
+      // Cache images
+      source: "/images/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+        },
+      ],
+    },
+    {
+      // Security headers
+      source: "/(.*)",
+      headers: [
+        {
+          key: "X-Content-Type-Options",
+          value: "nosniff",
+        },
+        {
+          key: "X-Frame-Options",
+          value: "DENY",
+        },
+        {
+          key: "X-XSS-Protection",
+          value: "1; mode=block",
+        },
+      ],
+    },
+  ],
+  // Experimental features for better performance
+  experimental: {
+    // Optimize server components
+    optimizePackageImports: ["lucide-react", "recharts", "react-apexcharts"],
   },
 };
 
