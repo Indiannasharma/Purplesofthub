@@ -17,9 +17,13 @@ const nextConfig = {
   },
   // Enable React strict mode for better performance detection
   reactStrictMode: true,
-  // Optimize webpack bundling
+  // Turbopack configuration (Next.js 16 default bundler)
+  turbopack: {
+    // Empty config to use Turbopack defaults - most webpack configs work as-is
+  },
+  // Optimize webpack bundling (also used for Turbopack compatibility)
   webpack: (config, { isServer }) => {
-    // Reduce bundle size by removing unused moment.js locales
+    // Reduce bundle size by removing unused modules
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
