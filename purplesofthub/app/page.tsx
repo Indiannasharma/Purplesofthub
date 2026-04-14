@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
@@ -15,26 +14,6 @@ import {
 } from "@/components/motion";
 import { CountUp } from "@/components/motion/CountUp";
 import { createClient } from "@/lib/supabase/server";
-
-// Dynamic imports for heavy components (code splitting)
-const TypewriterEffect = dynamic(
-  () => import("@/components/common/TypewriterEffect").then(mod => ({ default: mod.TypewriterEffect })),
-  { 
-    ssr: false,
-    loading: () => (
-      <div style={{ 
-        fontSize: 'clamp(32px, 5vw, 60px)', 
-        fontWeight: 900, 
-        minHeight: 'clamp(44px, 7vw, 80px)',
-        background: 'linear-gradient(135deg, #7c3aed, #a855f7, #22d3ee)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-      }}>
-        Loading...
-      </div>
-    )
-  }
-);
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
