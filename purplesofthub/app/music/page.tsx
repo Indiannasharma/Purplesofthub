@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { useTheme } from '@/context/ThemeContext'
 
 const platforms = [
   { name: 'Spotify', color: '#1DB954', bg: '#191414', icon: '🎵' },
@@ -123,9 +124,23 @@ const plans = [
 ]
 
 export default function MusicPage() {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const [activePlan, setActivePlan] = useState(1)
   const [tIdx, setTIdx] = useState(0)
   const [floatOffset, setFloatOffset] = useState(0)
+
+  const music = {
+    pageBg: isDark ? '#06030f' : '#f7f3ff',
+    pageText: isDark ? '#ffffff' : '#1a1a2e',
+    titleAccent: isDark ? '#c4b5fd' : '#5f4b8b',
+    muted: isDark ? '#9d8fd4' : '#6b5fa0',
+    mutedStrong: isDark ? '#6b5fa0' : '#7a6a96',
+    quote: isDark ? '#e2d9f3' : '#4a3f6b',
+    card: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
+    cardSoft: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.9)',
+    cardStrong: isDark ? 'rgba(6,3,15,0.95)' : 'rgba(255,255,255,0.95)',
+  }
 
   useEffect(() => {
     const t = setInterval(() => setTIdx(i => (i + 1) % testimonials.length), 4500)
@@ -149,10 +164,10 @@ export default function MusicPage() {
 
       <div style={{
         minHeight: '100vh',
-        background: '#06030f',
+        background: music.pageBg,
         fontFamily: 'Outfit, Inter, sans-serif',
         overflowX: 'hidden',
-        color: '#fff',
+        color: music.pageText,
       }}>
 
         {/* ── STAR BACKGROUND ── */}
@@ -307,13 +322,13 @@ export default function MusicPage() {
 
           <p style={{
             fontSize: 'clamp(16px, 2.2vw, 20px)',
-            color: '#9d8fd4',
+            color: music.muted,
             maxWidth: '600px',
             margin: '0 0 48px',
             lineHeight: 1.75,
             zIndex: 1,
           }}>
-            Distribute to Spotify, Apple Music, TikTok, YouTube Music, Boomplay and <strong style={{ color: '#c4b5fd' }}>150+ platforms</strong> worldwide. Keep 100% of your royalties.
+            Distribute to Spotify, Apple Music, TikTok, YouTube Music, Boomplay and <strong style={{ color: music.titleAccent }}>150+ platforms</strong> worldwide. Keep 100% of your royalties.
           </p>
 
           {/* CTA Buttons */}
@@ -324,7 +339,7 @@ export default function MusicPage() {
               gap: '8px',
               background: 'linear-gradient(135deg, #7c3aed, #a855f7, #7c3aed)',
               backgroundSize: '200% 100%',
-              color: '#fff',
+              color: music.pageText,
               padding: '16px 40px',
               borderRadius: '12px',
               fontWeight: 800,
@@ -395,10 +410,10 @@ export default function MusicPage() {
             animation: 'bounce 2s ease-in-out infinite',
             zIndex: 1,
           }}>
-            <p style={{ fontSize: '11px', color: '#4b5563', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
+            <p style={{ fontSize: '11px', color: music.mutedStrong, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
               Scroll
             </p>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={music.mutedStrong} strokeWidth="2">
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </div>
@@ -415,7 +430,7 @@ export default function MusicPage() {
                 Listener
               </span>
             </h2>
-            <p style={{ fontSize: '16px', color: '#9d8fd4', maxWidth: '480px', margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '16px', color: music.muted, maxWidth: '480px', margin: '0 auto', lineHeight: 1.7 }}>
               One upload. 150+ platforms. Your music everywhere your fans are.
             </p>
           </div>
@@ -429,7 +444,7 @@ export default function MusicPage() {
           }}>
             {platforms.map((p, i) => (
               <div key={i} style={{
-                background: 'rgba(255,255,255,0.03)',
+                background: music.card,
                 border: `1px solid ${p.color}28`,
                 borderRadius: '16px',
                 padding: '20px 16px',
@@ -447,7 +462,7 @@ export default function MusicPage() {
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget as HTMLDivElement
-                  el.style.background = 'rgba(255,255,255,0.03)'
+                  el.style.background = music.card
                   el.style.borderColor = `${p.color}28`
                   el.style.transform = 'translateY(0)'
                   el.style.boxShadow = 'none'
@@ -471,7 +486,7 @@ export default function MusicPage() {
               justifyContent: 'center',
             }}>
               <p style={{ fontSize: '20px', fontWeight: 900, color: '#a855f7', margin: '0 0 6px' }}>+141</p>
-              <p style={{ fontSize: '12px', color: '#6b5fa0', margin: 0, fontWeight: 600 }}>more platforms</p>
+              <p style={{ fontSize: '12px', color: music.mutedStrong, margin: 0, fontWeight: 600 }}>more platforms</p>
             </div>
           </div>
         </section>
@@ -498,7 +513,7 @@ export default function MusicPage() {
                 Artists
               </span>
             </h2>
-            <p style={{ fontSize: '16px', color: '#9d8fd4', maxWidth: '460px', margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '16px', color: music.muted, maxWidth: '460px', margin: '0 auto', lineHeight: 1.7 }}>
               We take care of the business so you can focus on the music.
             </p>
           </div>
@@ -512,7 +527,7 @@ export default function MusicPage() {
           }}>
             {features.map((f, i) => (
               <div key={i} style={{
-                background: 'rgba(255,255,255,0.02)',
+                background: music.cardSoft,
                 border: '1px solid rgba(124,58,237,0.12)',
                 borderRadius: '20px',
                 padding: '28px',
@@ -530,7 +545,7 @@ export default function MusicPage() {
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget as HTMLDivElement
-                  el.style.background = 'rgba(255,255,255,0.02)'
+                  el.style.background = music.cardSoft
                   el.style.borderColor = 'rgba(124,58,237,0.12)'
                   el.style.transform = 'translateY(0)'
                   el.style.boxShadow = 'none'
@@ -548,8 +563,8 @@ export default function MusicPage() {
                 }}>
                   {f.icon}
                 </div>
-                <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#fff', margin: '0 0 10px' }}>{f.title}</h3>
-                <p style={{ fontSize: '14px', color: '#9d8fd4', margin: 0, lineHeight: 1.7 }}>{f.desc}</p>
+                <h3 style={{ fontSize: '17px', fontWeight: 800, color: music.pageText, margin: '0 0 10px' }}>{f.title}</h3>
+                <p style={{ fontSize: '14px', color: music.muted, margin: 0, lineHeight: 1.7 }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -592,7 +607,7 @@ export default function MusicPage() {
 
             {steps.map((s, i) => (
               <div key={i} style={{
-                background: 'rgba(255,255,255,0.02)',
+                background: music.cardSoft,
                 border: '1px solid rgba(124,58,237,0.15)',
                 borderRadius: '20px',
                 padding: '28px',
@@ -608,7 +623,7 @@ export default function MusicPage() {
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget as HTMLDivElement
-                  el.style.background = 'rgba(255,255,255,0.02)'
+                  el.style.background = music.cardSoft
                   el.style.borderColor = 'rgba(124,58,237,0.15)'
                   el.style.transform = 'translateY(0)'
                 }}
@@ -625,8 +640,8 @@ export default function MusicPage() {
                   {s.icon}
                 </div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#a855f7', letterSpacing: '0.1em' }}>STEP {s.step}</span>
-                <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#fff', margin: '8px 0 10px' }}>{s.title}</h3>
-                <p style={{ fontSize: '13px', color: '#9d8fd4', margin: 0, lineHeight: 1.7 }}>{s.desc}</p>
+                <h3 style={{ fontSize: '16px', fontWeight: 800, color: music.pageText, margin: '8px 0 10px' }}>{s.title}</h3>
+                <p style={{ fontSize: '13px', color: music.muted, margin: 0, lineHeight: 1.7 }}>{s.desc}</p>
               </div>
             ))}
           </div>
@@ -646,7 +661,7 @@ export default function MusicPage() {
                 Artist
               </span>
             </h2>
-            <p style={{ fontSize: '16px', color: '#9d8fd4', maxWidth: '440px', margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '16px', color: music.muted, maxWidth: '440px', margin: '0 auto', lineHeight: 1.7 }}>
               No subscription traps. No royalty cuts. Just simple, fair pricing.
             </p>
           </div>
@@ -663,8 +678,8 @@ export default function MusicPage() {
                 onClick={() => setActivePlan(i)}
                 style={{
                   background: plan.popular
-                    ? `linear-gradient(135deg, ${plan.color}20, rgba(6,3,15,0.95))`
-                    : 'rgba(255,255,255,0.02)',
+                    ? `linear-gradient(135deg, ${plan.color}20, ${music.cardStrong})`
+                    : music.cardSoft,
                   border: `1px solid ${activePlan === i ? plan.color + '66' : plan.popular ? plan.color + '44' : 'rgba(124,58,237,0.15)'}`,
                   borderRadius: '24px',
                   padding: '32px',
@@ -693,7 +708,7 @@ export default function MusicPage() {
                     left: '50%',
                     transform: 'translateX(-50%)',
                     background: `linear-gradient(135deg, ${plan.color}, ${plan.color}aa)`,
-                    color: '#fff',
+                    color: music.pageText,
                     padding: '4px 18px',
                     borderRadius: '100px',
                     fontSize: '11px',
@@ -707,14 +722,14 @@ export default function MusicPage() {
                 )}
 
                 <p style={{ fontSize: '14px', fontWeight: 700, color: plan.color, margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{plan.name}</p>
-                <p style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: '#fff', margin: '0 0 4px', letterSpacing: '-1px' }}>{plan.price}</p>
-                <p style={{ fontSize: '14px', color: '#6b5fa0', margin: '0 0 24px' }}>{plan.usd} · {plan.period}</p>
+                <p style={{ fontSize: 'clamp(32px, 5vw, 44px)', fontWeight: 900, color: music.pageText, margin: '0 0 4px', letterSpacing: '-1px' }}>{plan.price}</p>
+                <p style={{ fontSize: '14px', color: music.mutedStrong, margin: '0 0 24px' }}>{plan.usd} · {plan.period}</p>
 
                 <div style={{ marginBottom: '28px' }}>
                   {plan.features.map((feat, j) => (
                     <div key={j} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                       <span style={{ color: plan.color, fontSize: '14px', fontWeight: 800, flexShrink: 0 }}>✓</span>
-                      <span style={{ fontSize: '14px', color: '#c4b5fd' }}>{feat}</span>
+                      <span style={{ fontSize: '14px', color: music.titleAccent }}>{feat}</span>
                     </div>
                   ))}
                 </div>
@@ -726,7 +741,7 @@ export default function MusicPage() {
                   borderRadius: '12px',
                   background: plan.popular ? `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)` : 'transparent',
                   border: `1px solid ${plan.color}55`,
-                  color: plan.popular ? '#fff' : plan.color,
+                  color: plan.popular ? music.pageText : plan.color,
                   fontWeight: 700,
                   fontSize: '14px',
                   textDecoration: 'none',
@@ -755,7 +770,7 @@ export default function MusicPage() {
 
           <div style={{ maxWidth: '680px', margin: '0 auto' }}>
             <div style={{
-              background: 'rgba(255,255,255,0.03)',
+              background: music.card,
               border: '1px solid rgba(124,58,237,0.2)',
               borderRadius: '24px',
               padding: 'clamp(28px, 4vw, 48px)',
@@ -768,7 +783,7 @@ export default function MusicPage() {
               </div>
               <p style={{
                 fontSize: 'clamp(15px, 2.2vw, 18px)',
-                color: '#e2d9f3',
+                color: music.quote,
                 lineHeight: 1.8,
                 margin: '0 0 24px',
                 fontStyle: 'italic',
@@ -776,8 +791,8 @@ export default function MusicPage() {
                 "{testimonials[tIdx].text}"
               </p>
               <div>
-                <p style={{ fontSize: '15px', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>{testimonials[tIdx].name}</p>
-                <p style={{ fontSize: '13px', color: '#9d8fd4', margin: '0 0 8px' }}>{testimonials[tIdx].role}</p>
+                <p style={{ fontSize: '15px', fontWeight: 800, color: music.pageText, margin: '0 0 4px' }}>{testimonials[tIdx].name}</p>
+                <p style={{ fontSize: '13px', color: music.muted, margin: '0 0 8px' }}>{testimonials[tIdx].role}</p>
                 <span style={{
                   fontSize: '12px',
                   fontWeight: 700,
@@ -847,7 +862,7 @@ export default function MusicPage() {
                 Your Music?
               </span>
             </h2>
-            <p style={{ fontSize: '17px', color: '#9d8fd4', margin: '0 0 40px', lineHeight: 1.7, maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
+            <p style={{ fontSize: '17px', color: music.muted, margin: '0 0 40px', lineHeight: 1.7, maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
               Join thousands of African artists already distributing with PurpleSoftHub Music.
             </p>
 
@@ -856,7 +871,7 @@ export default function MusicPage() {
               alignItems: 'center',
               gap: '10px',
               background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
+              color: music.pageText,
               padding: '18px 48px',
               borderRadius: '14px',
               fontWeight: 900,
@@ -880,7 +895,7 @@ export default function MusicPage() {
               🎵 Upload Your Music Now — It&apos;s Free
             </Link>
 
-            <p style={{ fontSize: '13px', color: '#4b5563', margin: '16px 0 0' }}>No credit card required · Live in 48 hours</p>
+            <p style={{ fontSize: '13px', color: music.mutedStrong, margin: '16px 0 0' }}>No credit card required · Live in 48 hours</p>
           </div>
         </section>
 
