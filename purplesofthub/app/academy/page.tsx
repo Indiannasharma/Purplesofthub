@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { useTheme } from '@/context/ThemeContext'
 
 const programs = [
   {
@@ -129,12 +130,26 @@ const stats = [
 ]
 
 export default function AcademyPage() {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const [activeProgram, setActiveProgram] = useState<number | null>(null)
   const [testimonialIdx, setTestimonialIdx] = useState(0)
   const [email, setEmail] = useState('')
   const [enrolled, setEnrolled] = useState(false)
   const [notifyLoading, setNotifyLoading] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
+
+  const academy = {
+    pageBg: isDark ? '#06030f' : '#f7f3ff',
+    pageText: isDark ? '#ffffff' : '#1a1a2e',
+    titleAccent: isDark ? '#c4b5fd' : '#5f4b8b',
+    muted: isDark ? '#9d8fd4' : '#6b5fa0',
+    mutedStrong: isDark ? '#6b5fa0' : '#7a6a96',
+    quote: isDark ? '#e2d9f3' : '#4a3f6b',
+    card: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
+    cardStrong: isDark ? 'rgba(6,3,15,0.8)' : 'rgba(255,255,255,0.92)',
+    inputBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(124,58,237,0.05)',
+  }
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -164,10 +179,10 @@ export default function AcademyPage() {
 
       <div style={{
         minHeight: '100vh',
-        background: '#06030f',
+        background: academy.pageBg,
         fontFamily: 'Outfit, Inter, sans-serif',
         overflowX: 'hidden',
-        color: '#fff',
+        color: academy.pageText,
       }}>
 
         {/* ── GLOBAL STAR GRID ── */}
@@ -207,7 +222,9 @@ export default function AcademyPage() {
             transform: 'translate(-50%, -60%)',
             width: '900px',
             height: '900px',
-            background: 'radial-gradient(circle, rgba(124,58,237,0.18) 0%, rgba(76,29,149,0.1) 40%, transparent 70%)',
+            background: isDark
+              ? 'radial-gradient(circle, rgba(124,58,237,0.18) 0%, rgba(76,29,149,0.1) 40%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(124,58,237,0.05) 40%, transparent 70%)',
             pointerEvents: 'none',
           }} />
           {/* Cyan glow top-right */}
@@ -217,7 +234,9 @@ export default function AcademyPage() {
             right: '-5%',
             width: '500px',
             height: '500px',
-            background: 'radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 65%)',
+            background: isDark
+              ? 'radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 65%)'
+              : 'radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 65%)',
             pointerEvents: 'none',
           }} />
           {/* Planet orb */}
@@ -228,7 +247,9 @@ export default function AcademyPage() {
             width: '260px',
             height: '260px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #a855f7, #4c1d95, #06030f)',
+            background: isDark
+              ? 'radial-gradient(circle at 35% 35%, #a855f7, #4c1d95, #06030f)'
+              : 'radial-gradient(circle at 35% 35%, #c084fc, #8b5cf6, #f7f3ff)',
             boxShadow: '0 0 80px rgba(168,85,247,0.35), 0 0 160px rgba(124,58,237,0.2)',
             animation: 'rotatePlanet 20s linear infinite',
           }}>
@@ -283,7 +304,7 @@ export default function AcademyPage() {
             maxWidth: '900px',
             zIndex: 1,
           }}>
-            <span style={{ color: '#fff' }}>PurpleSoftHub</span>{' '}
+            <span style={{ color: academy.pageText }}>PurpleSoftHub</span>{' '}
             <span style={{
               background: 'linear-gradient(135deg, #a855f7, #06b6d4)',
               WebkitBackgroundClip: 'text',
@@ -297,7 +318,7 @@ export default function AcademyPage() {
           <p style={{
             fontSize: 'clamp(18px, 3vw, 26px)',
             fontWeight: 600,
-            color: '#c4b5fd',
+            color: academy.titleAccent,
             margin: '0 0 14px',
             zIndex: 1,
           }}>
@@ -305,7 +326,7 @@ export default function AcademyPage() {
           </p>
           <p style={{
             fontSize: 'clamp(15px, 2vw, 18px)',
-            color: '#9d8fd4',
+            color: academy.muted,
             margin: '0 0 44px',
             maxWidth: '580px',
             lineHeight: 1.7,
@@ -321,7 +342,7 @@ export default function AcademyPage() {
               alignItems: 'center',
               gap: '8px',
               background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
+              color: academy.pageText,
               padding: '16px 36px',
               borderRadius: '12px',
               fontWeight: 800,
@@ -374,11 +395,11 @@ export default function AcademyPage() {
               <div key={i} style={{
                 padding: '24px 16px',
                 textAlign: 'center',
-                background: 'rgba(6,3,15,0.8)',
+                background: academy.cardStrong,
                 backdropFilter: 'blur(12px)',
               }}>
                 <p style={{ fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 900, color: '#a855f7', margin: '0 0 4px' }}>{s.value}</p>
-                <p style={{ fontSize: '12px', color: '#6b5fa0', margin: 0, fontWeight: 600 }}>{s.label}</p>
+                <p style={{ fontSize: '12px', color: academy.mutedStrong, margin: 0, fontWeight: 600 }}>{s.label}</p>
               </div>
             ))}
           </div>
@@ -410,7 +431,7 @@ export default function AcademyPage() {
                 Succeed
               </span>
             </h2>
-            <p style={{ fontSize: '16px', color: '#9d8fd4', maxWidth: '500px', margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '16px', color: academy.muted, maxWidth: '500px', margin: '0 auto', lineHeight: 1.7 }}>
               We built the academy we wish existed when we were starting out.
             </p>
           </div>
@@ -424,7 +445,7 @@ export default function AcademyPage() {
           }}>
             {whyCards.map((card, i) => (
               <div key={i} style={{
-                background: 'rgba(255,255,255,0.03)',
+                background: academy.card,
                 border: '1px solid rgba(124,58,237,0.15)',
                 borderRadius: '20px',
                 padding: '28px',
@@ -440,7 +461,7 @@ export default function AcademyPage() {
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget as HTMLDivElement
-                  el.style.background = 'rgba(255,255,255,0.03)'
+                  el.style.background = academy.card
                   el.style.borderColor = 'rgba(124,58,237,0.15)'
                   el.style.transform = 'translateY(0)'
                 }}
@@ -459,8 +480,8 @@ export default function AcademyPage() {
                 }}>
                   {card.icon}
                 </div>
-                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: '0 0 10px', color: '#fff' }}>{card.title}</h3>
-                <p style={{ fontSize: '14px', color: '#9d8fd4', margin: 0, lineHeight: 1.7 }}>{card.desc}</p>
+                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: '0 0 10px', color: academy.pageText }}>{card.title}</h3>
+                <p style={{ fontSize: '14px', color: academy.muted, margin: 0, lineHeight: 1.7 }}>{card.desc}</p>
               </div>
             ))}
           </div>
@@ -480,7 +501,7 @@ export default function AcademyPage() {
                 Program
               </span>
             </h2>
-            <p style={{ fontSize: '16px', color: '#9d8fd4', maxWidth: '500px', margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '16px', color: academy.muted, maxWidth: '500px', margin: '0 auto', lineHeight: 1.7 }}>
               5 career-changing programs. Choose your path and start building your future today.
             </p>
           </div>
@@ -498,8 +519,8 @@ export default function AcademyPage() {
                 onMouseLeave={() => setActiveProgram(null)}
                 style={{
                   background: activeProgram === i
-                    ? `linear-gradient(135deg, ${prog.color}18, rgba(6,3,15,0.9))`
-                    : 'rgba(255,255,255,0.03)',
+                    ? `linear-gradient(135deg, ${prog.color}18, ${academy.cardStrong})`
+                    : academy.card,
                   border: `1px solid ${activeProgram === i ? prog.color + '55' : 'rgba(124,58,237,0.15)'}`,
                   borderRadius: '20px',
                   padding: '28px',
@@ -546,17 +567,17 @@ export default function AcademyPage() {
                   {prog.icon}
                 </div>
 
-                <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 10px', color: '#fff', paddingRight: '60px' }}>{prog.title}</h3>
-                <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 20px', lineHeight: 1.7 }}>{prog.desc}</p>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 10px', color: academy.pageText, paddingRight: '60px' }}>{prog.title}</h3>
+                <p style={{ fontSize: '14px', color: academy.muted, margin: '0 0 20px', lineHeight: 1.7 }}>{prog.desc}</p>
 
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                  <span style={{ fontSize: '12px', color: '#6b5fa0', background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
+                  <span style={{ fontSize: '12px', color: academy.mutedStrong, background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
                     ⏱ {prog.duration}
                   </span>
-                  <span style={{ fontSize: '12px', color: '#6b5fa0', background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
+                  <span style={{ fontSize: '12px', color: academy.mutedStrong, background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
                     📊 {prog.level}
                   </span>
-                  <span style={{ fontSize: '12px', color: '#6b5fa0', background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
+                  <span style={{ fontSize: '12px', color: academy.mutedStrong, background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
                     👥 {prog.students} enrolled
                   </span>
                 </div>
@@ -612,7 +633,7 @@ export default function AcademyPage() {
           <div style={{
             maxWidth: '700px',
             margin: '0 auto',
-            background: 'rgba(255,255,255,0.03)',
+              background: academy.card,
             border: '1px solid rgba(124,58,237,0.2)',
             borderRadius: '24px',
             padding: 'clamp(28px, 4vw, 48px)',
@@ -627,7 +648,7 @@ export default function AcademyPage() {
             <p style={{
               fontSize: 'clamp(16px, 2.5vw, 20px)',
               lineHeight: 1.8,
-              color: '#e2d9f3',
+              color: academy.quote,
               margin: '0 0 28px',
               fontStyle: 'italic',
             }}>
@@ -647,10 +668,10 @@ export default function AcademyPage() {
                 {testimonials[testimonialIdx].avatar}
               </div>
               <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '15px', fontWeight: 800, color: '#fff', margin: 0 }}>
+                <p style={{ fontSize: '15px', fontWeight: 800, color: academy.pageText, margin: 0 }}>
                   {testimonials[testimonialIdx].name}
                 </p>
-                <p style={{ fontSize: '13px', color: '#9d8fd4', margin: 0 }}>
+                <p style={{ fontSize: '13px', color: academy.muted, margin: 0 }}>
                   {testimonials[testimonialIdx].role}
                 </p>
               </div>
@@ -750,7 +771,7 @@ export default function AcademyPage() {
 
             <p style={{
               fontSize: '17px',
-              color: '#9d8fd4',
+              color: academy.muted,
               margin: '0 0 40px',
               lineHeight: 1.7,
               maxWidth: '500px',
@@ -793,7 +814,7 @@ export default function AcademyPage() {
                   style={{
                     flex: 1,
                     minWidth: '220px',
-                    background: 'rgba(255,255,255,0.06)',
+                    background: academy.inputBg,
                     border: '1px solid rgba(124,58,237,0.3)',
                     borderRadius: '12px',
                     padding: '14px 18px',
@@ -829,7 +850,7 @@ export default function AcademyPage() {
               </div>
             )}
 
-            <p style={{ fontSize: '13px', color: '#4b5563', margin: '16px 0 0' }}>
+            <p style={{ fontSize: '13px', color: academy.mutedStrong, margin: '16px 0 0' }}>
               No spam. Unsubscribe anytime.
             </p>
           </div>

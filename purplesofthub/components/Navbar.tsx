@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 import { createClient } from "@/lib/supabase/client";
+import { useTheme } from "@/context/ThemeContext";
 
 function SunIcon({ className = "" }: { className?: string }) {
   return (
@@ -96,9 +97,10 @@ const listItemVariants = {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dark, setDark] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const dark = theme === "dark";
   const portalHref = isAdmin ? '/admin' : '/dashboard';
   const portalLabel = isAdmin ? 'Admin Panel' : 'Dashboard';
 
@@ -128,29 +130,6 @@ export default function Navbar() {
     });
     return () => subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    let isDark = saved ? saved === "dark" : true;
-    setDark(isDark);
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = !dark;
-    setDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
