@@ -1,9 +1,10 @@
 import type React from "react";
 
 interface CheckboxProps {
-  label?: string;
+  label?: React.ReactNode;
   checked: boolean;
   className?: string;
+  wrapperClassName?: string;
   id?: string;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
@@ -15,11 +16,12 @@ const Checkbox: React.FC<CheckboxProps> = ({
   id,
   onChange,
   className = "",
+  wrapperClassName = "",
   disabled = false,
 }) => {
   return (
     <label
-      className={`flex items-center space-x-3 group cursor-pointer ${
+      className={`flex items-center space-x-3 group cursor-pointer ${wrapperClassName} ${
         disabled ? "cursor-not-allowed opacity-60" : ""
       }`}
     >
