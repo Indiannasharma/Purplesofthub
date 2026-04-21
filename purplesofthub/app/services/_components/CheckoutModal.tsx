@@ -9,7 +9,7 @@ const PLAN_PRICES: Record<string, number> = {
   Growth: 250000,
   Scale: 400000,
   Enterprise: 600000,
-  'Flex Weekly': 85000,
+  'Flex Weekly': 42000,
 }
 
 const DRAFT_KEY = 'purplesofthub.checkout.draft'

@@ -12,12 +12,12 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"
 
 export const metadata: Metadata = {
   title: "Facebook & Instagram Ads Services | PurpleSoftHub",
-  description: "Professional Facebook and Instagram ad management. We create targeted campaigns that drive real results. Plans from ₦150,000.",
+  description: "Professional Facebook and Instagram ad management. We create targeted campaigns that drive real results. Plans from ₦42,000.",
   keywords: ["facebook ads", "instagram ads", "meta ads", "social media advertising", "facebook ads pricing"],
   alternates: { canonical: `${SITE_URL}/services/facebook-ads` },
   openGraph: {
     title: "Facebook & Instagram Ads Services | PurpleSoftHub",
-    description: "Professional Facebook and Instagram Ads management from ₦150,000",
+    description: "Professional Facebook and Instagram Ads management from ₦42,000",
     url: `${SITE_URL}/services/facebook-ads`,
     siteName: "PurpleSoftHub",
     type: "website",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Facebook & Instagram Ads Services",
-    description: "Professional Facebook and Instagram Ads management from ₦150,000",
+    description: "Professional Facebook and Instagram Ads management from ₦42,000",
   },
 };
 
@@ -157,7 +157,7 @@ export default function FacebookAdsPage() {
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
-                From ₦85,000
+                From ₦42,000
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
                 We offer 5 transparent pricing plans: Flex Weekly, Starter, Growth, Scale & Enterprise. Perfect for testing campaigns or scaling your business.

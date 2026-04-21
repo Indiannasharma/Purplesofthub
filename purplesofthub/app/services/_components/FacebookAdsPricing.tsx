@@ -11,8 +11,8 @@ export default function FacebookAdsPricing() {
   const plans = [
     {
       name: 'Flex Weekly',
-      ngn: 85000,
-      usd: 61,
+      ngn: 42000,
+      usd: 30,
       subtitle: 'Perfect for testing • Minimum 2 weeks',
       features: [
         'Full campaign setup & strategy for the week',
@@ -91,7 +91,7 @@ export default function FacebookAdsPricing() {
           margin: '0 auto',
           lineHeight: 1.7,
         }}>
-          Starting from ₦85,000 / $61 per week.
+          Starting from ₦42,000 / $30 per week.
           No hidden fees. No surprises.
         </p>
       </div>
