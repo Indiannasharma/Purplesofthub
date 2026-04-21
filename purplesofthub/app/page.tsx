@@ -276,7 +276,7 @@ export default async function Home() {
           </div>
 
           {/* ✨ PREMIUM COSMIC PLANET ✨ */}
-          <div className="planet-col" style={{ position: 'relative' }}>
+          <div className="planet-col hero-planet-shell" style={{ position: 'relative' }}>
           <Reveal delay={0.2}>
             {/* Outer Nebula Glow — breathes */}
             <div style={{
@@ -501,7 +501,7 @@ export default async function Home() {
             /* ═══════════════════════════════════════════════
                MOBILE HERO — full responsive layout + perf
             ═══════════════════════════════════════════════ */
-            @media (max-width: 767px) {
+            @media (max-width: 1023px) {
 
               /* Stack hero to single column */
               .hero-grid {
@@ -511,7 +511,7 @@ export default async function Home() {
 
               /* Reduce hero section padding */
               .hero-section {
-                padding: 88px 5% 48px !important;
+                padding: 88px 24px 48px !important;
                 min-height: auto !important;
               }
 
@@ -532,46 +532,22 @@ export default async function Home() {
 
               /* Stats: compact 3-in-a-row */
               .hero-stats {
-                gap: 8px !important;
-                flex-wrap: nowrap !important;
+                gap: 10px !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
                 margin-bottom: 0 !important;
               }
               .hero-stat-card {
                 padding: 12px 8px !important;
                 border-radius: 12px !important;
-                flex: 1 !important;
-                min-width: 0 !important;
+                flex: 1 1 140px !important;
+                min-width: 140px !important;
               }
 
-              /* Planet column: constrained height, centered */
-              .planet-col {
-                height: 300px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                margin-top: 24px !important;
-                overflow: visible !important;
+              /* Heavy planet animation: hide completely on tablet/mobile */
+              .hero-planet-shell {
+                display: none !important;
               }
-
-              /* Disable ring orbit animations — biggest perf win */
-              .pl-ring-a {
-                animation: none !important;
-                transform: translate(-50%,-50%) rotateX(68deg) rotateZ(12deg) !important;
-              }
-              .pl-ring-b {
-                animation: none !important;
-                transform: translate(-50%,-50%) rotateX(68deg) rotateZ(12deg) !important;
-              }
-              .pl-ring-c {
-                animation: none !important;
-                transform: translate(-50%,-50%) rotateX(68deg) rotateZ(0deg) !important;
-              }
-
-              /* Disable surface spin */
-              .pl-surface-spin { animation: none !important; }
-
-              /* Hide 5 of 8 orbit dots — keep 3 for visual */
-              .pl-dot-2,.pl-dot-3,.pl-dot-5,.pl-dot-6,.pl-dot-7 { display: none !important; }
             }
 
             /* Extra small phones */
