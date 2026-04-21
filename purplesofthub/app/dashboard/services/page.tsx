@@ -39,17 +39,8 @@ const SERVICES: Service[] = [
     description: 'Professional ad campaigns with targeting, creative, and analytics.',
     category: 'Marketing',
     delivery_time: 'Ongoing',
-    starting_price: 60000,
+    starting_price: 42000,
     icon: '📣',
-  },
-  {
-    id: 'flex-weekly',
-    name: 'Flex Weekly Ads',
-    description: 'Weekly ad management with flexible budget and creative updates.',
-    category: 'Marketing',
-    delivery_time: 'Weekly',
-    starting_price: 60000,
-    icon: '⚡',
   },
   {
     id: 'music-promotion',

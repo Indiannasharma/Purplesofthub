@@ -29,8 +29,8 @@ interface ServicePlanModalProps {
 const SERVICE_PLANS: Record<string, Plan[]> = {
   'meta-ads': [
     {
-      name: 'Flex Weekly (Testing)',
-      price: 60000,
+      name: 'Flex Weekly',
+      price: 42000,
       deliveryTime: 'Per Week',
       features: ['Weekly ad management', 'Flexible budget', 'Creative updates', 'Basic analytics', '1 ad campaign'],
     },
