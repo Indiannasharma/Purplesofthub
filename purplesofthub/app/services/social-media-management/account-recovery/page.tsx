@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { useState, useRef } from 'react'
+import { useId, useState, useRef } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -9,7 +9,7 @@ const PLATFORMS = [
   {
     id: 'facebook',
     name: 'Facebook',
-    icon: '📘',
+    icon: 'ðŸ“˜',
     color: '#1877F2',
     gradient: 'linear-gradient(135deg, #1877F2, #0d65d9)',
     bg: 'rgba(24,119,242,0.08)',
@@ -20,7 +20,7 @@ const PLATFORMS = [
   {
     id: 'instagram',
     name: 'Instagram',
-    icon: '📸',
+    icon: 'ðŸ“¸',
     color: '#E1306C',
     gradient: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
     bg: 'rgba(225,48,108,0.08)',
@@ -31,7 +31,7 @@ const PLATFORMS = [
   {
     id: 'tiktok',
     name: 'TikTok',
-    icon: '🎵',
+    icon: 'ðŸŽµ',
     color: '#69C9D0',
     gradient: 'linear-gradient(135deg, #010101, #69C9D0)',
     bg: 'rgba(105,201,208,0.08)',
@@ -75,43 +75,43 @@ const EMPTY_FORM: FormState = {
 
 const PLATFORM_CONFIG = {
   facebook: {
-    icon: '📘',
+    icon: 'ðŸ“˜',
     rgbColor: '24,119,242',
     handleLabel: 'Facebook Handle *',
     handlePlaceholder: 'yourprofilename',
     handlePrefix: 'facebook.com/' as string | null,
     supportOptions: [
-      { value: 'hacked', label: '🔓 Account Hacked' },
-      { value: 'disabled', label: '🚫 Disabled Account' },
+      { value: 'hacked', label: 'ðŸ”“ Account Hacked' },
+      { value: 'disabled', label: 'ðŸš« Disabled Account' },
     ],
   },
   instagram: {
-    icon: '📸',
+    icon: 'ðŸ“¸',
     rgbColor: '225,48,108',
     handleLabel: 'Instagram Handle *',
     handlePlaceholder: '@yourinstagramhandle',
     handlePrefix: null as string | null,
     supportOptions: [
-      { value: 'hacked', label: '🔓 Account Hacked' },
-      { value: 'disabled', label: '🚫 Disabled Account' },
-      { value: 'compromised', label: '⚠️ Account Compromised' },
+      { value: 'hacked', label: 'ðŸ”“ Account Hacked' },
+      { value: 'disabled', label: 'ðŸš« Disabled Account' },
+      { value: 'compromised', label: 'âš ï¸ Account Compromised' },
     ],
   },
   tiktok: {
-    icon: '🎵',
+    icon: 'ðŸŽµ',
     rgbColor: '105,201,208',
     handleLabel: 'TikTok Username *',
     handlePlaceholder: '@yourtiktokusername',
     handlePrefix: null as string | null,
     supportOptions: [
-      { value: 'hacked', label: '🔓 Account Hacked' },
-      { value: 'banned', label: '🚫 Account Banned' },
-      { value: 'suspended', label: '⏸️ Account Suspended' },
+      { value: 'hacked', label: 'ðŸ”“ Account Hacked' },
+      { value: 'banned', label: 'ðŸš« Account Banned' },
+      { value: 'suspended', label: 'â¸ï¸ Account Suspended' },
     ],
   },
 }
 
-// ─── RecoveryForm ────────────────────────────────────────────────
+// â”€â”€â”€ RecoveryForm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface RecoveryFormProps {
   platform: 'facebook' | 'instagram' | 'tiktok'
@@ -140,6 +140,7 @@ function RecoveryForm({
   handleSubmitAndPay, priceNGN, priceUSD,
 }: RecoveryFormProps) {
   const config = PLATFORM_CONFIG[platform]
+  const consentId = useId()
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -302,7 +303,7 @@ function RecoveryForm({
             onBlur={blurInput}
             className="dark:bg-gray-800 dark:text-white dark:border-purple-900/30"
           >
-            <option value="">— Select an option —</option>
+            <option value="">â€” Select an option â€”</option>
             {config.supportOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
@@ -333,15 +334,15 @@ function RecoveryForm({
           >
             {form.idFileName ? (
               <>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>✅</div>
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>âœ…</div>
                 <p style={{ fontSize: '13px', fontWeight: 700, color: '#7c3aed', margin: '0 0 4px' }}>{form.idFileName}</p>
                 <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>Click to change file</p>
               </>
             ) : (
               <>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📎</div>
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>ðŸ“Ž</div>
                 <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--heading-color, #1a1a1a)', margin: '0 0 4px' }} className="dark:text-white">Click to upload your ID</p>
-                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>JPG, PNG or PDF — Max 5MB</p>
+                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>JPG, PNG or PDF â€” Max 5MB</p>
               </>
             )}
           </button>
@@ -374,15 +375,15 @@ function RecoveryForm({
           >
             {form.screenshotFileName ? (
               <>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>🖼️</div>
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>ðŸ–¼ï¸</div>
                 <p style={{ fontSize: '13px', fontWeight: 700, color: '#10b981', margin: '0 0 4px' }}>{form.screenshotFileName}</p>
                 <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>Click to change screenshot</p>
               </>
             ) : (
               <>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📸</div>
+                <div style={{ fontSize: '28px', marginBottom: '8px' }}>ðŸ“¸</div>
                 <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--heading-color, #1a1a1a)', margin: '0 0 4px' }} className="dark:text-white">Click to upload screenshot</p>
-                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>JPG or PNG — Max 5MB</p>
+                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }}>JPG or PNG â€” Max 5MB</p>
               </>
             )}
           </button>
@@ -406,10 +407,10 @@ function RecoveryForm({
         {/* Terms */}
         <div style={{ background: 'rgba(124,58,237,0.04)', border: '1px solid rgba(124,58,237,0.12)', borderRadius: '14px', padding: '20px' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
           <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--heading-color, #1a1a1a)', margin: '0 0 12px' }} className="dark:text-white">
-            📋 Terms & Conditions
+            ðŸ“‹ Terms & Conditions
           </p>
           <div style={{ maxHeight: '160px', overflowY: 'auto', fontSize: '12px', lineHeight: 1.8, color: 'var(--body-color, #6b5fa0)', marginBottom: '16px', paddingRight: '8px' }} className="dark:text-gray-400">
-            <p><strong style={{ color: 'var(--heading-color, #1a1a1a)' }} className="dark:text-white">1. Timeline:</strong>{' '}Recovery takes <strong style={{ color: '#f59e0b' }}>14–30 business days</strong>. Platform response times are beyond our control.</p>
+            <p><strong style={{ color: 'var(--heading-color, #1a1a1a)' }} className="dark:text-white">1. Timeline:</strong>{' '}Recovery takes <strong style={{ color: '#f59e0b' }}>14â€“30 business days</strong>. Platform response times are beyond our control.</p>
             <br />
             <p><strong style={{ color: 'var(--heading-color, #1a1a1a)' }} className="dark:text-white">2. Non-Refundable:</strong>{' '}<strong style={{ color: '#ef4444' }}>ALL PAYMENTS ARE STRICTLY NON-REFUNDABLE.</strong> You are paying for professional services and time regardless of outcome.</p>
             <br />
@@ -419,17 +420,45 @@ function RecoveryForm({
             <br />
             <p><strong style={{ color: 'var(--heading-color, #1a1a1a)' }} className="dark:text-white">5. Privacy:</strong>{' '}All personal information is kept strictly confidential and used only for account recovery purposes.</p>
           </div>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
+          <label
+            htmlFor={consentId}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '14px',
+              cursor: 'pointer',
+              padding: '16px',
+              borderRadius: '14px',
+              background: agreed ? 'rgba(124,58,237,0.10)' : 'var(--card-bg, #ffffff)',
+              border: agreed ? '1px solid rgba(124,58,237,0.28)' : '1px solid rgba(124,58,237,0.16)',
+              boxShadow: agreed ? '0 8px 24px rgba(124,58,237,0.10)' : 'none',
+              touchAction: 'manipulation',
+            }}
+            className="dark:bg-gray-950/30 dark:border-purple-800/30"
+          >
             <input
+              id={consentId}
               type="checkbox"
               checked={agreed}
               onChange={e => setAgreed(e.target.checked)}
-              style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: '#7c3aed', cursor: 'pointer', flexShrink: 0 }}
+              style={{
+                width: '20px',
+                height: '20px',
+                marginTop: '2px',
+                accentColor: '#7c3aed',
+                cursor: 'pointer',
+                flexShrink: 0,
+                filter: agreed ? 'drop-shadow(0 0 4px rgba(124,58,237,0.25))' : 'none',
+              }}
             />
-            <span style={{ fontSize: '13px', color: 'var(--body-color, #6b5fa0)', lineHeight: 1.6 }} className="dark:text-gray-400">
-              I agree to the <strong style={{ color: '#7c3aed' }}>Terms & Conditions</strong>. Payment is{' '}
+            <span style={{ fontSize: '13px', color: 'var(--body-color, #6b5fa0)', lineHeight: 1.7 }} className="dark:text-gray-400">
+              <strong style={{ color: 'var(--heading-color, #1a1a1a)' }} className="dark:text-white">I agree to the Terms & Conditions.</strong>{' '}
+              Payment is{' '}
               <strong style={{ color: '#ef4444' }}>NON-REFUNDABLE</strong> and recovery takes{' '}
-              <strong style={{ color: '#f59e0b' }}>14–30 business days</strong>.
+              <strong style={{ color: '#f59e0b' }}>14-30 business days</strong>.
+              <span style={{ display: 'block', marginTop: '6px', fontSize: '12px', color: '#9d8fd4' }}>
+                Tap anywhere in this box to confirm.
+              </span>
             </span>
           </label>
         </div>
@@ -441,8 +470,8 @@ function RecoveryForm({
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             {[
-              { id: 'paystack' as const, label: '💳 Paystack', sub: 'Cards · Bank · USSD', activeColor: '#0BA4DB', activeBg: 'rgba(11,164,219,0.08)' },
-              { id: 'flutterwave' as const, label: '🌊 Flutterwave', sub: 'International · Mobile', activeColor: '#F5A623', activeBg: 'rgba(245,166,35,0.08)' },
+              { id: 'paystack' as const, label: 'ðŸ’³ Paystack', sub: 'Cards Â· Bank Â· USSD', activeColor: '#0BA4DB', activeBg: 'rgba(11,164,219,0.08)' },
+              { id: 'flutterwave' as const, label: 'ðŸŒŠ Flutterwave', sub: 'International Â· Mobile', activeColor: '#F5A623', activeBg: 'rgba(245,166,35,0.08)' },
             ].map(pm => (
               <button
                 key={pm.id}
@@ -462,7 +491,7 @@ function RecoveryForm({
                 <p style={{ fontSize: '14px', fontWeight: 700, color: paymentMethod === pm.id ? pm.activeColor : 'var(--heading-color, #1a1a1a)', margin: '0 0 4px' }} className="dark:text-white">{pm.label}</p>
                 <p style={{ fontSize: '11px', color: '#9d8fd4', margin: 0 }}>{pm.sub}</p>
                 {paymentMethod === pm.id && (
-                  <span style={{ display: 'inline-block', marginTop: '6px', fontSize: '10px', fontWeight: 700, color: pm.activeColor, background: pm.activeBg, padding: '2px 8px', borderRadius: '100px' }}>✓ Selected</span>
+                  <span style={{ display: 'inline-block', marginTop: '6px', fontSize: '10px', fontWeight: 700, color: pm.activeColor, background: pm.activeBg, padding: '2px 8px', borderRadius: '100px' }}>âœ“ Selected</span>
                 )}
               </button>
             ))}
@@ -472,7 +501,7 @@ function RecoveryForm({
         {/* Error */}
         {submitError && (
           <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '12px', padding: '14px 16px', fontSize: '13px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            ⚠️ {submitError}
+            âš ï¸ {submitError}
           </div>
         )}
 
@@ -515,12 +544,12 @@ function RecoveryForm({
             </>
           ) : (
             <>
-              {paymentMethod === 'paystack' && '💳'}
-              {paymentMethod === 'flutterwave' && '🌊'}
-              {!paymentMethod && '🔐'}
+              {paymentMethod === 'paystack' && 'ðŸ’³'}
+              {paymentMethod === 'flutterwave' && 'ðŸŒŠ'}
+              {!paymentMethod && 'ðŸ”'}
               {' '}
               {paymentMethod
-                ? `Pay ₦${priceNGN.toLocaleString()} / $${priceUSD} via ${paymentMethod === 'paystack' ? 'Paystack' : 'Flutterwave'}`
+                ? `Pay â‚¦${priceNGN.toLocaleString()} / $${priceUSD} via ${paymentMethod === 'paystack' ? 'Paystack' : 'Flutterwave'}`
                 : 'Select Payment Method Above'
               }
             </>
@@ -528,7 +557,7 @@ function RecoveryForm({
         </button>
 
         <p style={{ textAlign: 'center', fontSize: '12px', color: '#9d8fd4', margin: '-8px 0 0' }}>
-          🔒 Secured payment · Non-refundable · 14–30 business days
+          ðŸ”’ Secured payment Â· Non-refundable Â· 14â€“30 business days
         </p>
 
       </div>
@@ -536,7 +565,7 @@ function RecoveryForm({
   )
 }
 
-// ─── Main Page ───────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function AccountRecoveryPage() {
   const [activeTab, setActiveTab] = useState('facebook')
@@ -654,7 +683,7 @@ export default function AccountRecoveryPage() {
     <>
       <Navbar />
 
-      {/* ── HERO ── */}
+      {/* â”€â”€ HERO â”€â”€ */}
       <section style={{ background: 'linear-gradient(135deg, #06030f 0%, #0d0520 60%, #1a0535 100%)', padding: 'clamp(60px, 8vw, 100px) 24px 80px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px', margin: '0 auto' }}>
@@ -672,7 +701,7 @@ export default function AccountRecoveryPage() {
             Professional recovery for hacked or disabled social media accounts. Secure, confidential and reliable.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(20px, 4vw, 48px)', flexWrap: 'wrap' }}>
-            {[{ value: '14–30', label: 'Business Days' }, { value: '100%', label: 'Confidential' }, { value: '3', label: 'Platforms' }].map(stat => (
+            {[{ value: '14â€“30', label: 'Business Days' }, { value: '100%', label: 'Confidential' }, { value: '3', label: 'Platforms' }].map(stat => (
               <div key={stat.label} style={{ textAlign: 'center' }}>
                 <p style={{ fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: 900, margin: '0 0 4px', background: 'linear-gradient(135deg, #7c3aed, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{stat.value}</p>
                 <p style={{ fontSize: '12px', color: '#6b5fa0', margin: 0, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</p>
@@ -682,7 +711,7 @@ export default function AccountRecoveryPage() {
         </div>
       </section>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* â”€â”€ MAIN CONTENT â”€â”€ */}
       <section style={{ maxWidth: '1100px', margin: '0 auto', padding: 'clamp(40px, 5vw, 64px) 16px' }}>
 
         {/* Platform tabs */}
@@ -719,7 +748,7 @@ export default function AccountRecoveryPage() {
         {/* Two column layout */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '28px', alignItems: 'start' }} className="recovery-grid">
 
-          {/* ── LEFT — FORM ── */}
+          {/* â”€â”€ LEFT â€” FORM â”€â”€ */}
           <div>
             {activeTab === 'facebook' && (
               <RecoveryForm
@@ -762,20 +791,20 @@ export default function AccountRecoveryPage() {
             )}
           </div>
 
-          {/* ── RIGHT — SIDEBAR ── */}
+          {/* â”€â”€ RIGHT â€” SIDEBAR â”€â”€ */}
           <div style={{ position: 'sticky', top: '90px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
             {/* Price card */}
             <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(168,85,247,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '20px', padding: '24px' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
               <p style={{ fontSize: '12px', fontWeight: 700, color: '#9d8fd4', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px' }}>Service Fee</p>
-              <p style={{ fontSize: '36px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1 }}>₦{activePlatform.price_ngn.toLocaleString()}</p>
+              <p style={{ fontSize: '36px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1 }}>â‚¦{activePlatform.price_ngn.toLocaleString()}</p>
               <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 20px' }}>${activePlatform.price_usd} USD one-time payment</p>
               <div style={{ display: 'grid', gap: '10px' }}>
                 {[
-                  { icon: '⏱', text: '14–30 business days' },
-                  { icon: '🔒', text: 'Strictly non-refundable' },
-                  { icon: '🛡️', text: 'Confidential & secure' },
-                  { icon: '📧', text: 'Email + WhatsApp updates' },
+                  { icon: 'â±', text: '14â€“30 business days' },
+                  { icon: 'ðŸ”’', text: 'Strictly non-refundable' },
+                  { icon: 'ðŸ›¡ï¸', text: 'Confidential & secure' },
+                  { icon: 'ðŸ“§', text: 'Email + WhatsApp updates' },
                 ].map(item => (
                   <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#6b5fa0' }} className="dark:text-gray-400">
                     <span>{item.icon}</span>{item.text}
@@ -815,10 +844,10 @@ export default function AccountRecoveryPage() {
               style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.2)', borderRadius: '16px', padding: '16px', textDecoration: 'none', transition: 'all 0.2s' }}
               className="dark:bg-green-900/10 dark:border-green-800/30 hover:bg-green-50 dark:hover:bg-green-900/20"
             >
-              <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>💬</div>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>ðŸ’¬</div>
               <div>
                 <p style={{ fontSize: '13px', fontWeight: 700, color: '#25D366', margin: '0 0 2px' }}>Need help? Chat with us</p>
-                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }} className="dark:text-gray-400">WhatsApp · Fast response</p>
+                <p style={{ fontSize: '12px', color: '#9d8fd4', margin: 0 }} className="dark:text-gray-400">WhatsApp Â· Fast response</p>
               </div>
             </Link>
           </div>
@@ -864,3 +893,4 @@ export default function AccountRecoveryPage() {
     </>
   )
 }
+
