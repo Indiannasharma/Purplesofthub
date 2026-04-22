@@ -5,15 +5,60 @@ import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
-// Create email transporter
-function createTransporter() {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  })
+type MailConfig =
+  | { transporter: nodemailer.Transporter; from: string; to: string }
+  | null
+
+const TEAM_RECIPIENTS = [
+  'hello@purplesofthub.com',
+  'purplesofthub@gmail.com',
+]
+
+function createMailConfig(): MailConfig {
+  const from =
+    process.env.EMAIL_FROM ||
+    process.env.EMAIL_USER ||
+    process.env.EMAIL_TO ||
+    'hello@purplesofthub.com'
+  const to = process.env.EMAIL_TO || 'hello@purplesofthub.com'
+
+  const smtpHost = process.env.SMTP_HOST || process.env.EMAIL_HOST
+  const smtpPort = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT || '587')
+  const smtpSecure = (process.env.SMTP_SECURE || process.env.EMAIL_SECURE || '').toLowerCase() === 'true'
+  const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER
+  const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS
+
+  if (smtpHost && smtpUser && smtpPass) {
+    return {
+      transporter: nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpSecure,
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      }),
+      from,
+      to,
+    }
+  }
+
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    return {
+      transporter: nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      }),
+      from,
+      to,
+    }
+  }
+
+  return null
 }
 
 export async function POST(request: NextRequest) {
@@ -91,14 +136,11 @@ export async function POST(request: NextRequest) {
       console.error('DB save failed:', dbError)
     }
 
-    // Send email to PurpleSoftHub team
-    const transporter = createTransporter()
-    await transporter.sendMail({
-      from: `"PurpleSoftHub Contact" <${process.env.EMAIL_USER}>`,
-      to: 'hello@purplesofthub.com',
-      replyTo: safeEmail,
-      subject: `New Contact: ${safeName} — ${safeService}`,
-      html: `
+    // Send email to PurpleSoftHub team when mail credentials are available.
+    const mailConfig = createMailConfig()
+    if (mailConfig) {
+      try {
+        const teamEmailHtml = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -231,15 +273,29 @@ export async function POST(request: NextRequest) {
           </div>
         </body>
         </html>
-      `,
-    })
+      `
 
-    // Send confirmation to user
-    await transporter.sendMail({
-      from: `"PurpleSoftHub" <${process.env.EMAIL_USER}>`,
-      to: safeEmail,
-      subject: 'We received your message 🎉',
-      html: `
+        for (const recipient of TEAM_RECIPIENTS) {
+          try {
+            await mailConfig.transporter.sendMail({
+              from: `"PurpleSoftHub Contact" <${mailConfig.from}>`,
+              to: recipient,
+              replyTo: safeEmail,
+              subject: `New Contact: ${safeName} — ${safeService}`,
+              html: teamEmailHtml,
+            })
+          } catch (recipientError) {
+            console.error(`Contact email send failed for ${recipient}:`, recipientError)
+          }
+        }
+
+        // Send confirmation to user
+        await mailConfig.transporter.sendMail({
+          from: `"PurpleSoftHub" <${mailConfig.from}>`,
+          to: safeEmail,
+          replyTo: mailConfig.to,
+          subject: 'We received your message 🎉',
+          html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -305,7 +361,14 @@ export async function POST(request: NextRequest) {
         </body>
         </html>
       `,
-    })
+        })
+      } catch (emailError) {
+        // Do not fail the whole contact submission if email transport misbehaves.
+        console.error('Contact email send failed:', emailError)
+      }
+    } else {
+      console.warn('Contact email skipped: missing SMTP/EMAIL credentials')
+    }
 
     return NextResponse.json(
       { success: true, message: 'Message sent successfully' },
