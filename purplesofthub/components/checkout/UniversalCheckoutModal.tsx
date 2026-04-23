@@ -159,8 +159,7 @@ export default function UniversalCheckoutModal({
       },
       onclose: () => setStep('payment'),
     }
-    const flw = new (window as any).FlutterwaveCheckout(config)
-    flw.open()
+    ;(window as any).FlutterwaveCheckout(config)
   }
 
   const processPayment = async (reference: string, method: 'paystack' | 'flutterwave') => {
