@@ -9,10 +9,10 @@ import ServicePricingCards from "@/components/services/ServicePricingCards"
 
 const PLANS = [
   {
-    name: 'Flex Weekly (Testing)',
-    ngn: 60000,
-    usd: 43,
-    adSpend: '₦60,000 minimum / week',
+    name: 'Flex Weekly',
+    ngn: 42000,
+    usd: 30,
+    adSpend: '₦42,000 minimum / week',
     features: [
       'Weekly ad management',
       'Flexible budget',

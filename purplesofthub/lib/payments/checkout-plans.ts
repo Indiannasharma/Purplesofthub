@@ -18,7 +18,8 @@ const SERVICE_PLAN_CATALOG: ServicePlanCatalog = {
   'meta-ads': {
     serviceName: 'Facebook Ads Management',
     plans: {
-      'Flex Weekly (Testing)': { amount: 60000, deliveryTime: 'Per Week' },
+      'Flex Weekly': { amount: 42000, deliveryTime: 'Per Week' },
+      'Flex Weekly (Testing)': { amount: 42000, deliveryTime: 'Per Week' },
       Starter: { amount: 150000, deliveryTime: 'Per Month' },
       Growth: { amount: 250000, deliveryTime: 'Per Month' },
       Scale: { amount: 400000, deliveryTime: 'Per Month' },
