@@ -330,6 +330,11 @@ export default function CheckoutModal({
         return
       }
 
+      if (data.payment_link) {
+        window.location.href = data.payment_link
+        return
+      }
+
       const flutterwaveConfig = {
         ...(data.config || {}),
         public_key: data.config?.public_key || process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
