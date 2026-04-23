@@ -374,7 +374,7 @@ export default function CheckoutModal({
         throw new Error('Flutterwave is still loading. Please try again.')
       }
 
-      flutterwaveGlobal({
+      const flutterwaveCheckout = new flutterwaveGlobal({
         ...flutterwaveConfig,
         callback: (response: any) => {
           const ref = String(response?.transaction_id || response?.tx_ref || flutterwaveConfig.tx_ref || '')
@@ -396,6 +396,7 @@ export default function CheckoutModal({
           setError('Payment window closed. You can try again anytime.')
         },
       })
+      flutterwaveCheckout.open()
     } catch (err) {
       setGatewayOpening(null)
       setStep('payment')
