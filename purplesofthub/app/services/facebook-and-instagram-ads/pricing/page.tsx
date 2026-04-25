@@ -95,7 +95,7 @@ export default function FacebookAdsPricingPage() {
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
       <Navbar />
 
-      {/* â”€â”€ HERO â”€â”€ */}
+      {/* ── HERO ── */}
       <section style={{ padding: "120px 5% 80px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.2) 0%,transparent 60%)", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
@@ -120,7 +120,7 @@ export default function FacebookAdsPricingPage() {
         </Reveal>
       </section>
 
-      {/* â”€â”€ PRICING TABLE â”€â”€ */}
+      {/* ── PRICING TABLE ── */}
       <section style={{ padding: "0 5% 80px", position: "relative", zIndex: 2 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 

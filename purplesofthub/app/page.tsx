@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -61,7 +61,7 @@ const SUCCESS = [
   {
     icon: "📈", tag: "E-Commerce", category: "Digital Marketing",
     challenge: "Low sales, high CPA", solution: "Shopify + Facebook Ads",
-    result: "3.5×", resultLabel: "Revenue Increase",
+    result: "3.5Ã—", resultLabel: "Revenue Increase",
     accent: "#7c3aed", accentLight: "rgba(124,58,237,0.12)", accentBorder: "rgba(124,58,237,0.35)",
   },
   {

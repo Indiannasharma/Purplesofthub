@@ -38,7 +38,7 @@ export interface Service {
 }
 
 export const SERVICES: Service[] = [
-  // â”€â”€ WEB DEVELOPMENT â”€â”€
+  // ── WEB DEVELOPMENT ──
   {
     id: 'web-development',
     slug: 'web-development',
@@ -61,7 +61,7 @@ export const SERVICES: Service[] = [
         delivery: '2 weeks',
         description: 'Perfect for small businesses and personal brands',
         features: [
-          '1â€“3 pages',
+          '1–3 pages',
           'Mobile responsive design',
           'Contact form',
           'Basic SEO setup',
@@ -222,7 +222,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ FACEBOOK/INSTAGRAM ADS â”€â”€
+  // ── FACEBOOK/INSTAGRAM ADS ──
   {
     id: 'facebook-ads',
     slug: 'facebook-and-instagram-ads',
@@ -269,7 +269,7 @@ export const SERVICES: Service[] = [
           'Basic audience targeting',
           'Weekly optimization',
           'Monthly performance report',
-          'Recommended ad spend: â‚¦150K-â‚¦300K',
+          'Recommended ad spend: ₦150K-₦300K',
         ],
       },
       {
@@ -289,7 +289,7 @@ export const SERVICES: Service[] = [
           'A/B testing',
           'Bi-weekly strategy calls',
           'Bi-weekly performance report',
-          'Recommended ad spend: â‚¦300K-â‚¦750K',
+          'Recommended ad spend: ₦300K-₦750K',
         ],
         highlighted: true,
         badge: 'Most Popular',
@@ -311,7 +311,7 @@ export const SERVICES: Service[] = [
           'Competitor analysis',
           'Weekly strategy calls',
           'Weekly detailed report',
-          'Recommended ad spend: â‚¦750K+',
+          'Recommended ad spend: ₦750K+',
         ],
       },
       {
@@ -330,19 +330,19 @@ export const SERVICES: Service[] = [
           'Multi-account management',
           'Monthly in-depth audit',
           'Priority support 7 days/week',
-          'Recommended ad spend: â‚¦1.5M+',
+          'Recommended ad spend: ₦1.5M+',
         ],
       },
     ],
   },
 
-  // â”€â”€ MOBILE APP DEVELOPMENT â”€â”€
+  // ── MOBILE APP DEVELOPMENT ──
   {
     id: 'mobile-app-development',
     slug: 'mobile-app-development',
     name: 'Mobile App Development',
     tagline: 'Cross-platform mobile apps users love on iOS and Android',
-    description: 'We build beautiful, high-performance mobile apps using React Native and Flutter. From simple utility apps to complex marketplace platforms â€” delivered on time.',
+    description: 'We build beautiful, high-performance mobile apps using React Native and Flutter. From simple utility apps to complex marketplace platforms — delivered on time.',
     category: 'development',
     icon: '📱',
     startingPriceNGN: 750000,
@@ -357,7 +357,7 @@ export const SERVICES: Service[] = [
         priceUSD: 500,
         billingType: 'one-time',
         delivery: '4-6 weeks',
-        description: 'Simple app for one platform â€” iOS or Android',
+        description: 'Simple app for one platform — iOS or Android',
         features: [
           'iOS OR Android',
           'Up to 5 screens',
@@ -435,7 +435,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ SOCIAL MEDIA MANAGEMENT â”€â”€
+  // ── SOCIAL MEDIA MANAGEMENT ──
   {
     id: 'social-media-management',
     slug: 'social-media-management',
@@ -531,7 +531,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ MUSIC PROMOTION â”€â”€
+  // ── MUSIC PROMOTION ──
   {
     id: 'music-promotion',
     slug: 'music-promotion',
@@ -629,7 +629,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ MUSIC DISTRIBUTION â”€â”€
+  // ── MUSIC DISTRIBUTION ──
   {
     id: 'music-distribution',
     slug: 'music-distribution',
@@ -705,7 +705,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ ACCOUNT RECOVERY â”€â”€
+  // ── ACCOUNT RECOVERY ──
   {
     id: 'account-recovery',
     slug: 'account-recovery',
@@ -814,13 +814,13 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ UI/UX DESIGN â”€â”€
+  // ── UI/UX DESIGN ──
   {
     id: 'ui-ux-design',
     slug: 'ui-ux-design',
     name: 'UI/UX Design',
     tagline: 'Pixel-perfect designs that users love and convert',
-    description: 'We design beautiful, intuitive interfaces for web apps, mobile apps, and dashboards. From wireframes to interactive prototypes â€” with full Figma handoff.',
+    description: 'We design beautiful, intuitive interfaces for web apps, mobile apps, and dashboards. From wireframes to interactive prototypes — with full Figma handoff.',
     category: 'design',
     icon: '🎨',
     startingPriceNGN: 150000,
@@ -909,13 +909,13 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ LOGO DESIGN â”€â”€
+  // ── LOGO DESIGN ──
   {
     id: 'logo-design',
     slug: 'logo-design',
     name: 'Logo Design',
     tagline: 'Memorable logos that represent your brand perfectly',
-    description: 'Professional logo design that captures your brand identity. From simple clean logos to full brand identity packages â€” all delivered in print and digital ready formats.',
+    description: 'Professional logo design that captures your brand identity. From simple clean logos to full brand identity packages — all delivered in print and digital ready formats.',
     category: 'design',
     icon: '✏️',
     startingPriceNGN: 25000,
@@ -1005,7 +1005,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ SEO & CONTENT â”€â”€
+  // ── SEO & CONTENT ──
   {
     id: 'seo-content',
     slug: 'seo-content',
@@ -1082,13 +1082,13 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ VIDEO CONTENT â”€â”€
+  // ── VIDEO CONTENT ──
   {
     id: 'video-content',
     slug: 'video-content-creation',
     name: 'Video Content Creation',
     tagline: 'Professional videos that capture attention and drive engagement',
-    description: 'High-quality video production for social media, brand campaigns, product demos, and more. From concept to final delivery â€” optimized for all platforms.',
+    description: 'High-quality video production for social media, brand campaigns, product demos, and more. From concept to final delivery — optimized for all platforms.',
     category: 'content',
     icon: '🎬',
     startingPriceNGN: 50000,
@@ -1177,7 +1177,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ BRANDING â”€â”€
+  // ── BRANDING ──
   {
     id: 'branding',
     slug: 'branding-creative-design',
@@ -1273,7 +1273,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // â”€â”€ SAAS DEVELOPMENT â”€â”€
+  // ── SAAS DEVELOPMENT ──
   {
     id: 'saas-development',
     slug: 'saas-development',
@@ -1353,7 +1353,7 @@ export const SERVICES: Service[] = [
   },
 ]
 
-// â”€â”€ HELPER FUNCTIONS â”€â”€
+// ── HELPER FUNCTIONS ──
 
 export function getServiceBySlug(slug: string): Service | undefined {
   return SERVICES.find(s => s.slug === slug || s.id === slug)
@@ -1366,7 +1366,7 @@ export function getServicesByCategory(category: ServiceCategory): Service[] {
 export function formatPrice(amount: number, currency: 'NGN' | 'USD' = 'NGN'): string {
   if (amount === 0) return 'Custom'
   if (currency === 'NGN') {
-    return `â‚¦${amount.toLocaleString()}`
+    return `₦${amount.toLocaleString()}`
   }
   return `$${amount.toLocaleString()}`
 }
@@ -1384,5 +1384,5 @@ export function getServiceByPlanId(planId: string): Service | undefined {
 }
 
 export const EXCHANGE_RATE = 1400
-// â‚¦1,400 = $1 USD
+// ₦1,400 = $1 USD
 
