@@ -59,6 +59,21 @@ export default function ServicePricingCards({
 
   const plans = showAllPlans ? service.plans : service.plans.slice(0, previewCount)
   const hasMore = service.plans.length > previewCount
+  const getBillingLabel = (plan: ServicePlan) => {
+    if (plan.billingType === 'monthly' && plan.delivery.toLowerCase().includes('week')) {
+      return '· per week'
+    }
+
+    if (plan.billingType === 'monthly') {
+      return '· per month'
+    }
+
+    if (plan.billingType === 'yearly') {
+      return '· per year'
+    }
+
+    return '· one-time'
+  }
 
   return (
     <>
@@ -160,12 +175,7 @@ export default function ServicePricingCards({
                       margin: 0,
                     }}
                   >
-                    {formatPrice(plan.priceUSD, 'USD')}{' '}
-                    {plan.billingType === 'monthly'
-                      ? '· per month'
-                      : plan.billingType === 'yearly'
-                      ? '· per year'
-                      : '· one-time'}
+                    {formatPrice(plan.priceUSD, 'USD')} {getBillingLabel(plan)}
                   </p>
                 </>
               )}

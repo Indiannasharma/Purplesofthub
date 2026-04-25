@@ -1,4 +1,4 @@
-export interface ServiceProcess {
+﻿export interface ServiceProcess {
   step: string;
   title: string;
   desc: string;
@@ -39,7 +39,7 @@ const services: Service[] = [
     shortTitle: "Web Development",
     tagline: "Modern websites that convert visitors into clients",
     category: "Development",
-    icon: "🌐",
+    icon: "ðŸŒ",
     color: "#4f46e5",
     heroDescription:
       "We build blazing-fast, SEO-optimised websites and web applications that convert visitors into paying clients. From business sites to full SaaS platforms.",
@@ -71,7 +71,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "How long does a website take?",
-        a: "A standard business website takes 7–14 days. More complex projects like SaaS platforms take 4–8 weeks.",
+        a: "A standard business website takes 7â€“14 days. More complex projects like SaaS platforms take 4â€“8 weeks.",
       },
       {
         q: "What is the cost?",
@@ -79,11 +79,11 @@ const services: Service[] = [
       },
       {
         q: "Will my website be mobile friendly?",
-        a: "Yes — every website we build is fully responsive and tested across all devices and screen sizes.",
+        a: "Yes â€” every website we build is fully responsive and tested across all devices and screen sizes.",
       },
     ],
     relatedServices: ["ui-ux-design", "seo", "ecommerce-development"],
-    metaTitle: "Web Development — Africa | PurpleSoftHub",
+    metaTitle: "Web Development â€” Africa | PurpleSoftHub",
     metaDescription:
       "Professional web development services across Africa and globally. Business websites, SaaS platforms, e-commerce stores and custom dashboards built to convert.",
     keywords: [
@@ -101,7 +101,7 @@ const services: Service[] = [
     shortTitle: "Mobile Apps",
     tagline: "Cross-platform apps users actually love to use",
     category: "Development",
-    icon: "📱",
+    icon: "ðŸ“±",
     color: "#7c3aed",
     heroDescription:
       "We build high-performance cross-platform mobile apps for iOS and Android using Flutter and React Native.",
@@ -133,7 +133,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "Flutter or React Native?",
-        a: "We recommend Flutter for most projects — it delivers near-native performance and has a single codebase for both platforms.",
+        a: "We recommend Flutter for most projects â€” it delivers near-native performance and has a single codebase for both platforms.",
       },
       {
         q: "How much does an app cost?",
@@ -141,11 +141,11 @@ const services: Service[] = [
       },
       {
         q: "Do you handle App Store submission?",
-        a: "Yes — we handle the full submission process for both the Apple App Store and Google Play Store.",
+        a: "Yes â€” we handle the full submission process for both the Apple App Store and Google Play Store.",
       },
     ],
     relatedServices: ["web-development", "ui-ux-design", "saas-development"],
-    metaTitle: "Mobile App Development — Africa | PurpleSoftHub",
+    metaTitle: "Mobile App Development â€” Africa | PurpleSoftHub",
     metaDescription:
       "Cross-platform mobile app development across Africa. Flutter and React Native apps for iOS and Android.",
     keywords: [
@@ -163,10 +163,10 @@ const services: Service[] = [
     shortTitle: "Digital Marketing",
     tagline: "Data-driven campaigns that bring real customers",
     category: "Marketing",
-    icon: "📣",
+    icon: "ðŸ“£",
     color: "#6d28d9",
     heroDescription:
-      "We run high-ROI ad campaigns across Meta, Google, TikTok, and Snapchat — combined with organic strategies that grow your brand long-term.",
+      "We run high-ROI ad campaigns across Meta, Google, TikTok, and Snapchat â€” combined with organic strategies that grow your brand long-term.",
     overview:
       "Our digital marketing team builds full-funnel strategies that attract, convert, and retain customers. We combine paid advertising with SEO and content to deliver measurable, scalable growth.",
     features: [
@@ -203,11 +203,11 @@ const services: Service[] = [
       },
       {
         q: "How soon will I see results?",
-        a: "Most clients see initial data within the first week. Optimised results typically appear after 30–60 days of testing.",
+        a: "Most clients see initial data within the first week. Optimised results typically appear after 30â€“60 days of testing.",
       },
     ],
     relatedServices: ["seo", "social-media-management", "branding-design"],
-    metaTitle: "Digital Marketing Agency — Africa | PurpleSoftHub",
+    metaTitle: "Digital Marketing Agency â€” Africa | PurpleSoftHub",
     metaDescription:
       "Results-driven digital marketing across Africa. Facebook Ads, Google Ads, TikTok Ads, SEO and social media management for businesses worldwide.",
     keywords: [
@@ -225,12 +225,12 @@ const services: Service[] = [
     shortTitle: "UI/UX Design",
     tagline: "Interfaces designed to delight and convert",
     category: "Design",
-    icon: "🎨",
+    icon: "ðŸŽ¨",
     color: "#db2777",
     heroDescription:
       "We design pixel-perfect interfaces grounded in user psychology, research, and conversion principles.",
     overview:
-      "Great design is more than aesthetics — it drives business results. Our UI/UX design process combines user research, intuitive layouts, and visual excellence to create products people love to use.",
+      "Great design is more than aesthetics â€” it drives business results. Our UI/UX design process combines user research, intuitive layouts, and visual excellence to create products people love to use.",
     features: [
       "User Interface Design",
       "User Experience Design",
@@ -261,7 +261,7 @@ const services: Service[] = [
       },
       {
         q: "Do you do branding too?",
-        a: "Yes — we offer full branding services including logo design, brand guidelines, and visual identity systems.",
+        a: "Yes â€” we offer full branding services including logo design, brand guidelines, and visual identity systems.",
       },
       {
         q: "How long does UI/UX design take?",
@@ -269,7 +269,7 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["web-development", "mobile-app-development", "ecommerce-development"],
-    metaTitle: "UI/UX Design Services — PurpleSoftHub",
+    metaTitle: "UI/UX Design Services â€” PurpleSoftHub",
     metaDescription:
       "Professional UI/UX design services. We create beautiful, conversion-focused interfaces for web and mobile apps.",
     keywords: [
@@ -285,12 +285,12 @@ const services: Service[] = [
     slug: "saas-development",
     title: "SaaS Development",
     shortTitle: "SaaS Development",
-    tagline: "From MVP to enterprise — SaaS built to scale",
+    tagline: "From MVP to enterprise â€” SaaS built to scale",
     category: "Development",
-    icon: "⚙️",
+    icon: "âš™ï¸",
     color: "#6d28d9",
     heroDescription:
-      "We build end-to-end SaaS platforms — from early MVP validation to enterprise-grade infrastructure with subscriptions, multi-tenancy, and AI integrations.",
+      "We build end-to-end SaaS platforms â€” from early MVP validation to enterprise-grade infrastructure with subscriptions, multi-tenancy, and AI integrations.",
     overview:
       "We've built SaaS products from the ground up for founders and businesses. Our full-stack team handles everything from architecture and authentication to subscription billing and analytics dashboards.",
     features: [
@@ -319,19 +319,19 @@ const services: Service[] = [
     faqs: [
       {
         q: "How long does an MVP take?",
-        a: "A focused MVP with core features typically takes 6–10 weeks depending on complexity.",
+        a: "A focused MVP with core features typically takes 6â€“10 weeks depending on complexity.",
       },
       {
         q: "Can you integrate AI into my SaaS?",
-        a: "Yes — we integrate OpenAI, Anthropic Claude, and other AI APIs to power automation, chatbots, and AI-driven features.",
+        a: "Yes â€” we integrate OpenAI, Anthropic Claude, and other AI APIs to power automation, chatbots, and AI-driven features.",
       },
       {
         q: "Do you handle hosting and DevOps?",
-        a: "Yes — we set up cloud hosting, CI/CD pipelines, and monitoring so your product runs reliably.",
+        a: "Yes â€” we set up cloud hosting, CI/CD pipelines, and monitoring so your product runs reliably.",
       },
     ],
     relatedServices: ["web-development", "mobile-app-development", "ui-ux-design"],
-    metaTitle: "SaaS Development Services — PurpleSoftHub",
+    metaTitle: "SaaS Development Services â€” PurpleSoftHub",
     metaDescription:
       "End-to-end SaaS development. We build scalable SaaS platforms with subscription billing, AI integrations, and enterprise infrastructure.",
     keywords: [
@@ -349,12 +349,12 @@ const services: Service[] = [
     shortTitle: "Music Promotion",
     tagline: "Get your music heard by the world",
     category: "Music",
-    icon: "🎵",
+    icon: "ðŸŽµ",
     color: "#86198f",
     heroDescription:
       "We help artists distribute their music to 150+ platforms worldwide and run targeted promotion campaigns that build real fanbases and grow streams.",
     overview:
-      "Getting your music heard is just as important as creating it. We handle the full process — from global distribution to playlist pitching and social media promotion campaigns that put your music in front of the right audience.",
+      "Getting your music heard is just as important as creating it. We handle the full process â€” from global distribution to playlist pitching and social media promotion campaigns that put your music in front of the right audience.",
     features: [
       "Distribution to 150+ Platforms",
       "Spotify Playlist Pitching",
@@ -385,15 +385,15 @@ const services: Service[] = [
       },
       {
         q: "Do I keep my music rights?",
-        a: "Yes — you retain 100% of your music rights. We distribute on your behalf but you own your music.",
+        a: "Yes â€” you retain 100% of your music rights. We distribute on your behalf but you own your music.",
       },
       {
         q: "What promotion packages do you offer?",
         a: "We offer Starter ($10), Growth ($30), and Pro ($65) packages. Each includes distribution plus varying levels of active promotion and reporting.",
       },
     ],
-    relatedServices: ["content-creation", "social-media-management", "facebook-ads"],
-    metaTitle: "Music Distribution & Promotion — Africa | PurpleSoftHub",
+    relatedServices: ["content-creation", "social-media-management", "facebook-and-instagram-ads"],
+    metaTitle: "Music Distribution & Promotion â€” Africa | PurpleSoftHub",
     metaDescription:
       "Distribute your music to 150+ platforms globally. Professional music promotion and artist branding across Africa and worldwide.",
     keywords: [
@@ -411,10 +411,10 @@ const services: Service[] = [
     shortTitle: "Branding",
     tagline: "A brand identity that makes you unforgettable",
     category: "Design",
-    icon: "✨",
+    icon: "âœ¨",
     color: "#a855f7",
     heroDescription:
-      "We craft bold, memorable brand identities — from logo design and colour palettes to full brand guidelines that make your business stand out.",
+      "We craft bold, memorable brand identities â€” from logo design and colour palettes to full brand guidelines that make your business stand out.",
     overview:
       "Your brand is more than a logo. It's the first impression, the feeling, and the story. We help businesses and creators build a visual identity that communicates value, builds trust, and stays memorable.",
     features: [
@@ -431,7 +431,7 @@ const services: Service[] = [
       { step: "01", title: "Discovery", desc: "We learn your brand values, audience, competitors, and vision." },
       { step: "02", title: "Concepts", desc: "We present 3 initial concept directions for you to choose from." },
       { step: "03", title: "Refine", desc: "We refine your chosen direction until it's perfect." },
-      { step: "04", title: "Deliver", desc: "We deliver all files in every format — print-ready and digital." },
+      { step: "04", title: "Deliver", desc: "We deliver all files in every format â€” print-ready and digital." },
     ],
     technologies: ["Adobe Illustrator", "Figma", "Adobe Photoshop", "Canva Pro", "Adobe InDesign"],
     benefits: [
@@ -443,7 +443,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "What files will I receive?",
-        a: "You'll receive your logo and assets in AI, EPS, SVG, PNG, and PDF formats — ready for print and digital use.",
+        a: "You'll receive your logo and assets in AI, EPS, SVG, PNG, and PDF formats â€” ready for print and digital use.",
       },
       {
         q: "How many logo concepts do you provide?",
@@ -451,11 +451,11 @@ const services: Service[] = [
       },
       {
         q: "Can you rebrand an existing business?",
-        a: "Yes — we specialise in both new brands and rebrands. We'll analyse your existing identity and evolve it strategically.",
+        a: "Yes â€” we specialise in both new brands and rebrands. We'll analyse your existing identity and evolve it strategically.",
       },
     ],
     relatedServices: ["ui-ux-design", "social-media-management", "web-development"],
-    metaTitle: "Branding & Logo Design Services — PurpleSoftHub",
+    metaTitle: "Branding & Logo Design Services â€” PurpleSoftHub",
     metaDescription:
       "Professional branding and logo design. We create memorable brand identities with logos, colour palettes, and full brand guidelines.",
     keywords: [
@@ -473,12 +473,12 @@ const services: Service[] = [
     shortTitle: "Logo Design",
     tagline: "A memorable logo that makes your brand instantly recognisable",
     category: "Design",
-    icon: "🎨",
+    icon: "ðŸŽ¨",
     color: "#ec4899",
     heroDescription:
-      "Custom, original logo designs built around your brand story. From clean minimal marks to full wordmarks and icon suites — every design is 100% yours.",
+      "Custom, original logo designs built around your brand story. From clean minimal marks to full wordmarks and icon suites â€” every design is 100% yours.",
     overview:
-      "Your logo is the face of your business. We create professional, versatile logos that work everywhere — from business cards to billboards, app icons to social media. Every logo is 100% custom, original, and delivered in all formats you'll ever need.",
+      "Your logo is the face of your business. We create professional, versatile logos that work everywhere â€” from business cards to billboards, app icons to social media. Every logo is 100% custom, original, and delivered in all formats you'll ever need.",
     features: [
       "Custom Logo Concepts",
       "Wordmark & Lettermark Design",
@@ -497,7 +497,7 @@ const services: Service[] = [
     ],
     technologies: ["Adobe Illustrator", "Figma", "Adobe Photoshop", "Adobe InDesign", "Canva Pro"],
     benefits: [
-      "100% original — no stock or templates",
+      "100% original â€” no stock or templates",
       "Scalable vector files for any size",
       "Works on light and dark backgrounds",
       "Fast turnaround without compromising quality",
@@ -505,7 +505,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "What file formats will I receive?",
-        a: "You'll get AI, EPS, SVG, PNG (transparent), and PDF — every format for print and digital use.",
+        a: "You'll get AI, EPS, SVG, PNG (transparent), and PDF â€” every format for print and digital use.",
       },
       {
         q: "How many concepts do you provide?",
@@ -513,11 +513,11 @@ const services: Service[] = [
       },
       {
         q: "How long does a logo take?",
-        a: "Basic logos are delivered in 3–5 business days. Full brand identity packages take 7–14 days.",
+        a: "Basic logos are delivered in 3â€“5 business days. Full brand identity packages take 7â€“14 days.",
       },
       {
         q: "Can I use my logo commercially?",
-        a: "Yes — you receive full commercial ownership and copyright of your final logo design.",
+        a: "Yes â€” you receive full commercial ownership and copyright of your final logo design.",
       },
       {
         q: "Do you design logos for startups and small businesses?",
@@ -525,9 +525,9 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["branding-design", "ui-ux-design", "web-development"],
-    metaTitle: "Logo Design Services — PurpleSoftHub",
+    metaTitle: "Logo Design Services â€” PurpleSoftHub",
     metaDescription:
-      "Professional logo design for businesses, startups, and creators. Custom logos with unlimited revisions and all file formats. Starting from ₦25,000.",
+      "Professional logo design for businesses, startups, and creators. Custom logos with unlimited revisions and all file formats. Starting from â‚¦25,000.",
     keywords: [
       "logo design Nigeria",
       "logo designer Africa",
@@ -544,10 +544,10 @@ const services: Service[] = [
     shortTitle: "Social Media",
     tagline: "Grow your brand on social media consistently",
     category: "Marketing",
-    icon: "📲",
+    icon: "ðŸ“²",
     color: "#7c3aed",
     heroDescription:
-      "We manage your social media presence across all platforms — creating content, growing your audience, and building a brand that people love.",
+      "We manage your social media presence across all platforms â€” creating content, growing your audience, and building a brand that people love.",
     overview:
       "Consistent, high-quality social media presence is essential for any modern business. We handle your content creation, posting, community management, and growth strategy so you can focus on running your business.",
     features: [
@@ -584,11 +584,11 @@ const services: Service[] = [
       },
       {
         q: "Do I need to provide content?",
-        a: "No — we handle everything from concept to design to posting. We just need your brand guidelines and any product photos you want to use.",
+        a: "No â€” we handle everything from concept to design to posting. We just need your brand guidelines and any product photos you want to use.",
       },
     ],
-    relatedServices: ["facebook-ads", "content-creation", "google-ads", "account-recovery"],
-    metaTitle: "Social Media Management — PurpleSoftHub",
+    relatedServices: ["facebook-and-instagram-ads", "content-creation", "google-ads", "account-recovery"],
+    metaTitle: "Social Media Management â€” PurpleSoftHub",
     metaDescription:
       "Professional social media management for Instagram, Facebook, TikTok and more. Grow your brand consistently.",
     keywords: [
@@ -606,7 +606,7 @@ const services: Service[] = [
     shortTitle: "SEO",
     tagline: "Rank higher on Google and get found by your customers",
     category: "Marketing",
-    icon: "🔍",
+    icon: "ðŸ”",
     color: "#059669",
     heroDescription:
       "We help businesses rank higher on Google through technical SEO, content strategy, and link building that drives real organic traffic.",
@@ -642,7 +642,7 @@ const services: Service[] = [
       },
       {
         q: "Do you guarantee page 1 ranking?",
-        a: "No ethical SEO agency can guarantee rankings — but we use proven strategies that consistently move clients up the rankings.",
+        a: "No ethical SEO agency can guarantee rankings â€” but we use proven strategies that consistently move clients up the rankings.",
       },
       {
         q: "What's included in monthly SEO?",
@@ -650,7 +650,7 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["web-development", "social-media-management", "digital-marketing"],
-    metaTitle: "SEO Services — PurpleSoftHub",
+    metaTitle: "SEO Services â€” PurpleSoftHub",
     metaDescription:
       "Professional SEO services to help your business rank higher on Google and drive consistent organic traffic.",
     keywords: [
@@ -668,7 +668,7 @@ const services: Service[] = [
     shortTitle: "Content Creation",
     tagline: "Scroll-stopping content that builds your brand",
     category: "Creative",
-    icon: "🎬",
+    icon: "ðŸŽ¬",
     color: "#d97706",
     heroDescription:
       "We create high-quality video content, graphics, and creative assets that capture attention and tell your brand story across all platforms.",
@@ -704,15 +704,15 @@ const services: Service[] = [
       },
       {
         q: "Do you use AI for content?",
-        a: "Yes — we use the latest AI tools including RunwayML and OpenArt for AI video generation combined with professional editing in Premiere Pro.",
+        a: "Yes â€” we use the latest AI tools including RunwayML and OpenArt for AI video generation combined with professional editing in Premiere Pro.",
       },
       {
         q: "How many videos per month?",
         a: "Content packages range from 4 to 20 pieces of content per month depending on your chosen plan and content requirements.",
       },
     ],
-    relatedServices: ["social-media-management", "facebook-ads", "music-promotion"],
-    metaTitle: "Content Creation Services — PurpleSoftHub",
+    relatedServices: ["social-media-management", "facebook-and-instagram-ads", "music-promotion"],
+    metaTitle: "Content Creation Services â€” PurpleSoftHub",
     metaDescription:
       "Professional content creation including video production, graphic design, and AI-generated content for social media and advertising.",
     keywords: [
@@ -725,12 +725,12 @@ const services: Service[] = [
   },
 
   {
-    slug: "facebook-ads",
+    slug: "facebook-and-instagram-ads",
     title: "Facebook & Instagram Ads",
     shortTitle: "Facebook Ads",
     tagline: "Targeted social ads that reach your ideal customers",
     category: "Marketing",
-    icon: "📘",
+    icon: "ðŸ“˜",
     color: "#1877f2",
     heroDescription:
       "We create and manage high-converting Facebook and Instagram ad campaigns that reach your ideal customers and drive measurable results.",
@@ -766,15 +766,15 @@ const services: Service[] = [
       },
       {
         q: "Do you design the ad creatives?",
-        a: "Yes — our team handles ad creative design, copywriting, and all campaign setup as part of our management service.",
+        a: "Yes â€” our team handles ad creative design, copywriting, and all campaign setup as part of our management service.",
       },
       {
         q: "Can you run ads for my online store?",
-        a: "Absolutely — we specialise in e-commerce Facebook ads including catalogue campaigns, dynamic ads, and retargeting sequences.",
+        a: "Absolutely â€” we specialise in e-commerce Facebook ads including catalogue campaigns, dynamic ads, and retargeting sequences.",
       },
     ],
     relatedServices: ["google-ads", "social-media-management", "ecommerce-development"],
-    metaTitle: "Facebook & Instagram Ads — PurpleSoftHub",
+    metaTitle: "Facebook & Instagram Ads â€” PurpleSoftHub",
     metaDescription:
       "Professional Facebook and Instagram ad management. We create targeted campaigns that drive real results.",
     keywords: [
@@ -792,7 +792,7 @@ const services: Service[] = [
     shortTitle: "Google Ads",
     tagline: "Get in front of customers actively searching for you",
     category: "Marketing",
-    icon: "🎯",
+    icon: "ðŸŽ¯",
     color: "#dc2626",
     heroDescription:
       "We create and manage high-converting Google Ads campaigns that put your business in front of customers actively searching for your services.",
@@ -832,11 +832,11 @@ const services: Service[] = [
       },
       {
         q: "Do you manage the ad account?",
-        a: "Yes — we handle everything from campaign setup to daily optimization and monthly reporting.",
+        a: "Yes â€” we handle everything from campaign setup to daily optimization and monthly reporting.",
       },
     ],
-    relatedServices: ["facebook-ads", "seo", "social-media-management"],
-    metaTitle: "Google Ads Management — PurpleSoftHub",
+    relatedServices: ["facebook-and-instagram-ads", "seo", "social-media-management"],
+    metaTitle: "Google Ads Management â€” PurpleSoftHub",
     metaDescription:
       "Professional Google Ads management. We create and optimise campaigns that drive traffic and maximise your ROI.",
     keywords: [
@@ -854,7 +854,7 @@ const services: Service[] = [
     shortTitle: "E-commerce",
     tagline: "Online stores built to sell 24 hours a day",
     category: "Development",
-    icon: "🛍️",
+    icon: "ðŸ›ï¸",
     color: "#0891b2",
     heroDescription:
       "We build powerful e-commerce stores that are fast, secure, and optimised to convert browsers into buyers.",
@@ -886,7 +886,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "Shopify or custom built?",
-        a: "For most businesses we recommend Shopify — it's fast to launch and easy to manage. For unique requirements we build custom solutions.",
+        a: "For most businesses we recommend Shopify â€” it's fast to launch and easy to manage. For unique requirements we build custom solutions.",
       },
       {
         q: "Which payment methods are supported?",
@@ -894,11 +894,11 @@ const services: Service[] = [
       },
       {
         q: "Can I manage products myself?",
-        a: "Yes — we set up a simple dashboard so you can add, edit, and manage products without any technical knowledge.",
+        a: "Yes â€” we set up a simple dashboard so you can add, edit, and manage products without any technical knowledge.",
       },
     ],
     relatedServices: ["web-development", "digital-marketing", "seo"],
-    metaTitle: "E-commerce Development — PurpleSoftHub",
+    metaTitle: "E-commerce Development â€” PurpleSoftHub",
     metaDescription:
       "Professional e-commerce development. Custom online stores, Shopify development, and payment gateway integration.",
     keywords: [
@@ -916,7 +916,7 @@ const services: Service[] = [
     shortTitle: "Account Recovery",
     tagline: "Recover hacked or disabled social media accounts fast",
     category: "Digital Marketing",
-    icon: "🔐",
+    icon: "ðŸ”",
     color: "#7c3aed",
     heroDescription:
       "Professional account recovery service for hacked, disabled, or locked Facebook, Instagram, and TikTok accounts. Fast, secure, and reliable recovery.",
@@ -948,7 +948,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "How long does account recovery take?",
-        a: "Recovery takes 14–30 business days depending on the platform and account situation. We work with official support channels for the fastest recovery.",
+        a: "Recovery takes 14â€“30 business days depending on the platform and account situation. We work with official support channels for the fastest recovery.",
       },
       {
         q: "What information do I need to provide?",
@@ -959,10 +959,10 @@ const services: Service[] = [
         a: "We have a high success rate for hacked accounts and disabled accounts. Final recovery depends on platform policies and account verification.",
       },
     ],
-    relatedServices: ["social-media-management", "facebook-ads", "content-creation"],
-    cta: "Start Account Recovery 🔐",
+    relatedServices: ["social-media-management", "facebook-and-instagram-ads", "content-creation"],
+    cta: "Start Account Recovery ðŸ”",
     ctaLink: "/services/social-media-management/account-recovery",
-    metaTitle: "Facebook & Instagram Account Recovery — Africa | PurpleSoftHub",
+    metaTitle: "Facebook & Instagram Account Recovery â€” Africa | PurpleSoftHub",
     metaDescription:
       "Professional social media account recovery service across Africa. Recover hacked or disabled Facebook, Instagram and TikTok accounts. 14-30 business days.",
     keywords: [
@@ -985,3 +985,4 @@ export function getServiceBySlug(slug: string): Service | undefined {
 export function getRelatedServices(slugs: string[]): Service[] {
   return slugs.map((s) => services.find((svc) => svc.slug === s)).filter(Boolean) as Service[];
 }
+

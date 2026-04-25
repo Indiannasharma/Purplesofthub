@@ -1,4 +1,4 @@
-export type BillingType = 'one-time' | 'monthly' | 'yearly' | 'custom'
+﻿export type BillingType = 'one-time' | 'monthly' | 'yearly' | 'custom'
 
 export type ServiceCategory =
   | 'development'
@@ -38,7 +38,7 @@ export interface Service {
 }
 
 export const SERVICES: Service[] = [
-  // ── WEB DEVELOPMENT ──
+  // â”€â”€ WEB DEVELOPMENT â”€â”€
   {
     id: 'web-development',
     slug: 'web-development',
@@ -46,7 +46,7 @@ export const SERVICES: Service[] = [
     tagline: 'Professional websites that convert visitors into clients',
     description: 'We build fast, modern, and conversion-optimized websites for businesses, startups, and creators across Africa and worldwide. From simple landing pages to complex SaaS platforms.',
     category: 'development',
-    icon: '🌐',
+    icon: 'ðŸŒ',
     startingPriceNGN: 450000,
     startingPriceUSD: 300,
     billingType: 'one-time',
@@ -61,7 +61,7 @@ export const SERVICES: Service[] = [
         delivery: '2 weeks',
         description: 'Perfect for small businesses and personal brands',
         features: [
-          '1–3 pages',
+          '1â€“3 pages',
           'Mobile responsive design',
           'Contact form',
           'Basic SEO setup',
@@ -222,15 +222,15 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── FACEBOOK/INSTAGRAM ADS ──
+  // â”€â”€ FACEBOOK/INSTAGRAM ADS â”€â”€
   {
     id: 'facebook-ads',
-    slug: 'facebook-ads',
+    slug: 'facebook-and-instagram-ads',
     name: 'Facebook & Instagram Ads',
     tagline: 'Meta advertising that drives real results for your business',
     description: 'Professional Facebook and Instagram ad management. We build, test, and scale campaigns that consistently deliver results. Ad spend is paid directly to Meta.',
     category: 'marketing',
-    icon: '📘',
+    icon: 'ðŸ“˜',
     startingPriceNGN: 42000,
     startingPriceUSD: 30,
     billingType: 'monthly',
@@ -269,7 +269,7 @@ export const SERVICES: Service[] = [
           'Basic audience targeting',
           'Weekly optimization',
           'Monthly performance report',
-          'Recommended ad spend: ₦150K-₦300K',
+          'Recommended ad spend: â‚¦150K-â‚¦300K',
         ],
       },
       {
@@ -289,7 +289,7 @@ export const SERVICES: Service[] = [
           'A/B testing',
           'Bi-weekly strategy calls',
           'Bi-weekly performance report',
-          'Recommended ad spend: ₦300K-₦750K',
+          'Recommended ad spend: â‚¦300K-â‚¦750K',
         ],
         highlighted: true,
         badge: 'Most Popular',
@@ -311,7 +311,7 @@ export const SERVICES: Service[] = [
           'Competitor analysis',
           'Weekly strategy calls',
           'Weekly detailed report',
-          'Recommended ad spend: ₦750K+',
+          'Recommended ad spend: â‚¦750K+',
         ],
       },
       {
@@ -330,21 +330,21 @@ export const SERVICES: Service[] = [
           'Multi-account management',
           'Monthly in-depth audit',
           'Priority support 7 days/week',
-          'Recommended ad spend: ₦1.5M+',
+          'Recommended ad spend: â‚¦1.5M+',
         ],
       },
     ],
   },
 
-  // ── MOBILE APP DEVELOPMENT ──
+  // â”€â”€ MOBILE APP DEVELOPMENT â”€â”€
   {
     id: 'mobile-app-development',
     slug: 'mobile-app-development',
     name: 'Mobile App Development',
     tagline: 'Cross-platform mobile apps users love on iOS and Android',
-    description: 'We build beautiful, high-performance mobile apps using React Native and Flutter. From simple utility apps to complex marketplace platforms — delivered on time.',
+    description: 'We build beautiful, high-performance mobile apps using React Native and Flutter. From simple utility apps to complex marketplace platforms â€” delivered on time.',
     category: 'development',
-    icon: '📱',
+    icon: 'ðŸ“±',
     startingPriceNGN: 750000,
     startingPriceUSD: 500,
     billingType: 'one-time',
@@ -357,7 +357,7 @@ export const SERVICES: Service[] = [
         priceUSD: 500,
         billingType: 'one-time',
         delivery: '4-6 weeks',
-        description: 'Simple app for one platform — iOS or Android',
+        description: 'Simple app for one platform â€” iOS or Android',
         features: [
           'iOS OR Android',
           'Up to 5 screens',
@@ -435,7 +435,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── SOCIAL MEDIA MANAGEMENT ──
+  // â”€â”€ SOCIAL MEDIA MANAGEMENT â”€â”€
   {
     id: 'social-media-management',
     slug: 'social-media-management',
@@ -443,7 +443,7 @@ export const SERVICES: Service[] = [
     tagline: 'Consistent, engaging social media presence that grows your brand',
     description: 'We manage your social media accounts with strategic content, eye-catching graphics, and community engagement. Focus on your business while we grow your audience.',
     category: 'marketing',
-    icon: '📣',
+    icon: 'ðŸ“£',
     startingPriceNGN: 75000,
     startingPriceUSD: 53,
     billingType: 'monthly',
@@ -531,7 +531,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── MUSIC PROMOTION ──
+  // â”€â”€ MUSIC PROMOTION â”€â”€
   {
     id: 'music-promotion',
     slug: 'music-promotion',
@@ -539,7 +539,7 @@ export const SERVICES: Service[] = [
     tagline: 'Get your music heard by millions across Africa and beyond',
     description: 'Strategic music promotion campaigns across TikTok, Instagram, YouTube, and streaming platforms. We help artists build real fanbase and streaming numbers.',
     category: 'music',
-    icon: '🎵',
+    icon: 'ðŸŽµ',
     startingPriceNGN: 30000,
     startingPriceUSD: 21,
     billingType: 'one-time',
@@ -629,7 +629,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── MUSIC DISTRIBUTION ──
+  // â”€â”€ MUSIC DISTRIBUTION â”€â”€
   {
     id: 'music-distribution',
     slug: 'music-distribution',
@@ -637,7 +637,7 @@ export const SERVICES: Service[] = [
     tagline: 'Get your music on 150+ platforms including Spotify and Apple Music',
     description: 'Professional music distribution to all major streaming platforms worldwide. Keep most of your royalties and get paid monthly. ISRC and UPC codes included.',
     category: 'music',
-    icon: '🎧',
+    icon: 'ðŸŽ§',
     startingPriceNGN: 15000,
     startingPriceUSD: 10,
     billingType: 'one-time',
@@ -705,7 +705,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── ACCOUNT RECOVERY ──
+  // â”€â”€ ACCOUNT RECOVERY â”€â”€
   {
     id: 'account-recovery',
     slug: 'account-recovery',
@@ -713,7 +713,7 @@ export const SERVICES: Service[] = [
     tagline: 'Professional recovery for hacked or disabled social media accounts',
     description: 'Specialist recovery service for suspended, hacked, or disabled social media accounts. We use official appeal processes with high success rates. Full refund if unsuccessful.',
     category: 'support',
-    icon: '🔐',
+    icon: 'ðŸ”',
     startingPriceNGN: 42000,
     startingPriceUSD: 30,
     billingType: 'one-time',
@@ -814,15 +814,15 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── UI/UX DESIGN ──
+  // â”€â”€ UI/UX DESIGN â”€â”€
   {
     id: 'ui-ux-design',
     slug: 'ui-ux-design',
     name: 'UI/UX Design',
     tagline: 'Pixel-perfect designs that users love and convert',
-    description: 'We design beautiful, intuitive interfaces for web apps, mobile apps, and dashboards. From wireframes to interactive prototypes — with full Figma handoff.',
+    description: 'We design beautiful, intuitive interfaces for web apps, mobile apps, and dashboards. From wireframes to interactive prototypes â€” with full Figma handoff.',
     category: 'design',
-    icon: '🎨',
+    icon: 'ðŸŽ¨',
     startingPriceNGN: 150000,
     startingPriceUSD: 107,
     billingType: 'one-time',
@@ -909,15 +909,15 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── LOGO DESIGN ──
+  // â”€â”€ LOGO DESIGN â”€â”€
   {
     id: 'logo-design',
     slug: 'logo-design',
     name: 'Logo Design',
     tagline: 'Memorable logos that represent your brand perfectly',
-    description: 'Professional logo design that captures your brand identity. From simple clean logos to full brand identity packages — all delivered in print and digital ready formats.',
+    description: 'Professional logo design that captures your brand identity. From simple clean logos to full brand identity packages â€” all delivered in print and digital ready formats.',
     category: 'design',
-    icon: '✏️',
+    icon: 'âœï¸',
     startingPriceNGN: 25000,
     startingPriceUSD: 17,
     billingType: 'one-time',
@@ -1005,7 +1005,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── SEO & CONTENT ──
+  // â”€â”€ SEO & CONTENT â”€â”€
   {
     id: 'seo-content',
     slug: 'seo-content',
@@ -1013,7 +1013,7 @@ export const SERVICES: Service[] = [
     tagline: 'Rank higher on Google and drive organic traffic that converts',
     description: 'Strategic SEO and content marketing to grow your organic traffic. We handle keyword research, on-page optimization, backlink building, and content creation.',
     category: 'marketing',
-    icon: '🔍',
+    icon: 'ðŸ”',
     startingPriceNGN: 40000,
     startingPriceUSD: 28,
     billingType: 'monthly',
@@ -1082,15 +1082,15 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── VIDEO CONTENT ──
+  // â”€â”€ VIDEO CONTENT â”€â”€
   {
     id: 'video-content',
     slug: 'video-content-creation',
     name: 'Video Content Creation',
     tagline: 'Professional videos that capture attention and drive engagement',
-    description: 'High-quality video production for social media, brand campaigns, product demos, and more. From concept to final delivery — optimized for all platforms.',
+    description: 'High-quality video production for social media, brand campaigns, product demos, and more. From concept to final delivery â€” optimized for all platforms.',
     category: 'content',
-    icon: '🎬',
+    icon: 'ðŸŽ¬',
     startingPriceNGN: 50000,
     startingPriceUSD: 35,
     billingType: 'one-time',
@@ -1177,7 +1177,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── BRANDING ──
+  // â”€â”€ BRANDING â”€â”€
   {
     id: 'branding',
     slug: 'branding-creative-design',
@@ -1185,7 +1185,7 @@ export const SERVICES: Service[] = [
     tagline: 'Build a brand identity that commands attention and trust',
     description: 'Complete brand identity creation from strategy to execution. We craft visual identities that tell your story, differentiate you from competitors, and connect with your target audience.',
     category: 'design',
-    icon: '💎',
+    icon: 'ðŸ’Ž',
     startingPriceNGN: 150000,
     startingPriceUSD: 107,
     billingType: 'one-time',
@@ -1273,7 +1273,7 @@ export const SERVICES: Service[] = [
     ],
   },
 
-  // ── SAAS DEVELOPMENT ──
+  // â”€â”€ SAAS DEVELOPMENT â”€â”€
   {
     id: 'saas-development',
     slug: 'saas-development',
@@ -1281,7 +1281,7 @@ export const SERVICES: Service[] = [
     tagline: 'Build your software product with a team that delivers',
     description: 'End-to-end SaaS product development from idea to launch. We build scalable, secure, and maintainable software products. Subscription billing, user management, and admin dashboards included.',
     category: 'development',
-    icon: '⚡',
+    icon: 'âš¡',
     startingPriceNGN: 1500000,
     startingPriceUSD: 1071,
     billingType: 'one-time',
@@ -1353,7 +1353,7 @@ export const SERVICES: Service[] = [
   },
 ]
 
-// ── HELPER FUNCTIONS ──
+// â”€â”€ HELPER FUNCTIONS â”€â”€
 
 export function getServiceBySlug(slug: string): Service | undefined {
   return SERVICES.find(s => s.slug === slug || s.id === slug)
@@ -1366,7 +1366,7 @@ export function getServicesByCategory(category: ServiceCategory): Service[] {
 export function formatPrice(amount: number, currency: 'NGN' | 'USD' = 'NGN'): string {
   if (amount === 0) return 'Custom'
   if (currency === 'NGN') {
-    return `₦${amount.toLocaleString()}`
+    return `â‚¦${amount.toLocaleString()}`
   }
   return `$${amount.toLocaleString()}`
 }
@@ -1384,4 +1384,5 @@ export function getServiceByPlanId(planId: string): Service | undefined {
 }
 
 export const EXCHANGE_RATE = 1400
-// ₦1,400 = $1 USD
+// â‚¦1,400 = $1 USD
+
