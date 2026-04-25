@@ -66,8 +66,8 @@ export default function ServicePricingCards({
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '20px',
-          marginBottom: hasMore && !showAllPlans ? '24px' : '0',
+          gap: '28px',
+          marginBottom: hasMore && !showAllPlans ? '24px' : '32px',
         }}
       >
         {plans.map(plan => (
