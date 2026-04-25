@@ -12,7 +12,7 @@ const PLANS = [
     name: 'Flex Weekly',
     ngn: 42000,
     usd: 30,
-    adSpend: 'â‚¦42,000 minimum / week',
+    adSpend: '₦42,000 minimum / week',
     features: [
       'Weekly ad management',
       'Flexible budget',
@@ -27,10 +27,10 @@ const PLANS = [
     name: 'Starter',
     ngn: 150000,
     usd: 107,
-    adSpend: 'â‚¦150,000 â€“ â‚¦300,000 ($107 â€“ $214 USD)',
+    adSpend: '₦150,000 – ₦300,000 ($107 – $214 USD)',
     features: [
       'Campaign setup & strategy',
-      '3â€“5 ad creatives per month',
+      '3–5 ad creatives per month',
       'Basic audience targeting',
       'Weekly optimization & reports',
       '1 platform (Facebook or Instagram)',
@@ -42,10 +42,10 @@ const PLANS = [
     badge: 'Most Popular',
     ngn: 250000,
     usd: 179,
-    adSpend: 'â‚¦300,000 â€“ â‚¦750,000 ($214 â€“ $536 USD)',
+    adSpend: '₦300,000 – ₦750,000 ($214 – $536 USD)',
     features: [
       'Everything in Starter',
-      '8â€“10 ad creatives per month',
+      '8–10 ad creatives per month',
       'Advanced targeting, lookalikes & retargeting',
       'A/B testing',
       'Bi-weekly strategy calls',
@@ -57,11 +57,11 @@ const PLANS = [
     name: 'Scale',
     ngn: 400000,
     usd: 286,
-    adSpend: 'â‚¦750,000+ ($536+ USD)',
+    adSpend: '₦750,000+ ($536+ USD)',
     features: [
       'Everything in Growth',
       'Unlimited ad creatives & variations',
-      'Full-funnel strategy (Awareness â†’ Conversion)',
+      'Full-funnel strategy (Awareness → Conversion)',
       'Advanced pixel & tracking setup',
       'Weekly performance calls + detailed dashboard',
       'Competitor analysis',
@@ -72,9 +72,9 @@ const PLANS = [
     name: 'Enterprise',
     ngn: 600000,
     usd: 429,
-    ngnDisplay: 'â‚¦600,000+',
+    ngnDisplay: '₦600,000+',
     usdDisplay: '$429+ USD',
-    adSpend: 'â‚¦1,500,000+ ($1,071+ USD)',
+    adSpend: '₦1,500,000+ ($1,071+ USD)',
     customPricing: true,
     features: [
       'Everything in Scale',
@@ -146,7 +146,7 @@ export default function FacebookAdsPricingPage() {
                   One-time Setup Fee
                 </h4>
                 <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 4 }}>
-                  â‚¦100,000 (~$71 USD)
+                  ₦100,000 (~$71 USD)
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
                   Includes Meta Business Suite setup, pixel installation, conversion tracking & initial strategy session.
@@ -161,7 +161,7 @@ export default function FacebookAdsPricingPage() {
                   15% of ad spend
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  Minimum â‚¦200,000 / ~$143 USD per month
+                  Minimum ₦200,000 / ~$143 USD per month
                 </p>
               </div>
             </div>
@@ -180,9 +180,9 @@ export default function FacebookAdsPricingPage() {
             </h4>
             <div style={{ display: "grid", gap: 12 }}>
               {[
-                'Extra set of 5 ad creatives (static + video) â€” â‚¦80,000 (~$57 USD)',
-                'Custom landing page or lead form optimization â€” â‚¦150,000 (~$107 USD) one-time',
-                'Integration with PurpleSoftHub Academy or your SaaS platform â€” Special rate',
+                'Extra set of 5 ad creatives (static + video) — ₦80,000 (~$57 USD)',
+                'Custom landing page or lead form optimization — ₦150,000 (~$107 USD) one-time',
+                'Integration with PurpleSoftHub Academy or your SaaS platform — Special rate',
               ].map(item => (
                 <div key={item} style={{ display: "flex", gap: 8, fontSize: 14, color: "var(--text-secondary)" }}>
                   <span style={{ color: "#a855f7", fontWeight: 900, flexShrink: 0 }}>+</span>
@@ -207,10 +207,10 @@ export default function FacebookAdsPricingPage() {
               {[
                 'Minimum commitment: 1 month (3-month contracts receive 10% discount)',
                 'Results depend on your offer, creatives, and market conditions. We focus on delivering strong ROAS.',
-                'International clients are welcome â€” pay in USD or NGN.',
+                'International clients are welcome — pay in USD or NGN.',
               ].map(note => (
                 <li key={note} style={{ display: "flex", gap: 8, fontSize: 13, color: "var(--text-muted)" }}>
-                  <span style={{ color: "#a855f7", flexShrink: 0 }}>â€¢</span>
+                  <span style={{ color: "#a855f7", flexShrink: 0 }}>•</span>
                   {note}
                 </li>
               ))}
@@ -247,7 +247,7 @@ export default function FacebookAdsPricingPage() {
                   transition: "all 0.2s",
                 }}
               >
-                ðŸ’¬ Chat with us on WhatsApp
+                💬 Chat with us on WhatsApp
               </a>
               <style>{`
                 .whatsapp-cta-btn-pricing:hover {

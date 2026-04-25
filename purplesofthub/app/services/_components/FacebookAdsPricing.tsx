@@ -13,10 +13,10 @@ export default function FacebookAdsPricing() {
       name: 'Flex Weekly',
       ngn: 42000,
       usd: 30,
-      subtitle: 'Perfect for testing â€¢ Minimum 2 weeks',
+      subtitle: 'Perfect for testing • Minimum 2 weeks',
       features: [
         'Full campaign setup & strategy for the week',
-        '4â€“6 ad creatives',
+        '4–6 ad creatives',
         'Daily monitoring + optimization',
         'End-of-week performance report + recommendations',
         'Both Facebook & Instagram',
@@ -30,7 +30,7 @@ export default function FacebookAdsPricing() {
       usd: 107,
       features: [
         'Campaign setup & strategy',
-        '3â€“5 ad creatives per month',
+        '3–5 ad creatives per month',
         'Basic audience targeting',
         'Weekly optimization & reports',
         '1 platform (Facebook or Instagram)',
@@ -44,7 +44,7 @@ export default function FacebookAdsPricing() {
       usd: 179,
       features: [
         'Everything in Starter',
-        '8â€“10 ad creatives per month',
+        '8–10 ad creatives per month',
         'Advanced targeting, lookalikes & retargeting',
         'A/B testing',
         'Bi-weekly strategy calls',
@@ -91,7 +91,7 @@ export default function FacebookAdsPricing() {
           margin: '0 auto',
           lineHeight: 1.7,
         }}>
-          Starting from â‚¦42,000 / $30 per week.
+          Starting from ₦42,000 / $30 per week.
           No hidden fees. No surprises.
         </p>
       </div>
@@ -178,7 +178,7 @@ export default function FacebookAdsPricing() {
               margin: '0 0 4px',
               lineHeight: 1,
             }}>
-              â‚¦{tier.ngn.toLocaleString()}
+              ₦{tier.ngn.toLocaleString()}
             </p>
             <p style={{
               fontSize: '13px',
@@ -231,7 +231,7 @@ export default function FacebookAdsPricing() {
                     fontWeight: 900,
                     flexShrink: 0,
                   }}>
-                    âœ“
+                    ✓
                   </span>
                   {f}
                 </li>
@@ -273,7 +273,7 @@ export default function FacebookAdsPricing() {
                 background: 'transparent',
               }}
             >
-              Get Started â†’
+              Get Started →
             </Link>
             <style>{`
               .fb-pricing-btn-${i}:hover {
@@ -292,7 +292,7 @@ export default function FacebookAdsPricing() {
           color: textSecondary,
           marginBottom: '16px',
         }}>
-          We have 5 more plans â€” Scale to Enterprise
+          We have 5 more plans — Scale to Enterprise
         </p>
         <Link
           href="/services/facebook-and-instagram-ads/pricing"
@@ -311,7 +311,7 @@ export default function FacebookAdsPricing() {
             transition: 'all 0.2s',
           }}
         >
-          See All 5 Plans â†’
+          See All 5 Plans →
         </Link>
       </div>
     </section>

@@ -39,7 +39,7 @@ const services: Service[] = [
     shortTitle: "Web Development",
     tagline: "Modern websites that convert visitors into clients",
     category: "Development",
-    icon: "ðŸŒ",
+    icon: "🌐",
     color: "#4f46e5",
     heroDescription:
       "We build blazing-fast, SEO-optimised websites and web applications that convert visitors into paying clients. From business sites to full SaaS platforms.",
@@ -101,7 +101,7 @@ const services: Service[] = [
     shortTitle: "Mobile Apps",
     tagline: "Cross-platform apps users actually love to use",
     category: "Development",
-    icon: "ðŸ“±",
+    icon: "📱",
     color: "#7c3aed",
     heroDescription:
       "We build high-performance cross-platform mobile apps for iOS and Android using Flutter and React Native.",
@@ -163,7 +163,7 @@ const services: Service[] = [
     shortTitle: "Digital Marketing",
     tagline: "Data-driven campaigns that bring real customers",
     category: "Marketing",
-    icon: "ðŸ“£",
+    icon: "📣",
     color: "#6d28d9",
     heroDescription:
       "We run high-ROI ad campaigns across Meta, Google, TikTok, and Snapchat â€” combined with organic strategies that grow your brand long-term.",
@@ -225,7 +225,7 @@ const services: Service[] = [
     shortTitle: "UI/UX Design",
     tagline: "Interfaces designed to delight and convert",
     category: "Design",
-    icon: "ðŸŽ¨",
+    icon: "🎨",
     color: "#db2777",
     heroDescription:
       "We design pixel-perfect interfaces grounded in user psychology, research, and conversion principles.",
@@ -349,7 +349,7 @@ const services: Service[] = [
     shortTitle: "Music Promotion",
     tagline: "Get your music heard by the world",
     category: "Music",
-    icon: "ðŸŽµ",
+    icon: "🎵",
     color: "#86198f",
     heroDescription:
       "We help artists distribute their music to 150+ platforms worldwide and run targeted promotion campaigns that build real fanbases and grow streams.",
@@ -473,7 +473,7 @@ const services: Service[] = [
     shortTitle: "Logo Design",
     tagline: "A memorable logo that makes your brand instantly recognisable",
     category: "Design",
-    icon: "ðŸŽ¨",
+    icon: "✏️",
     color: "#ec4899",
     heroDescription:
       "Custom, original logo designs built around your brand story. From clean minimal marks to full wordmarks and icon suites â€” every design is 100% yours.",
@@ -544,7 +544,7 @@ const services: Service[] = [
     shortTitle: "Social Media",
     tagline: "Grow your brand on social media consistently",
     category: "Marketing",
-    icon: "ðŸ“²",
+    icon: "📲",
     color: "#7c3aed",
     heroDescription:
       "We manage your social media presence across all platforms â€” creating content, growing your audience, and building a brand that people love.",
@@ -606,7 +606,7 @@ const services: Service[] = [
     shortTitle: "SEO",
     tagline: "Rank higher on Google and get found by your customers",
     category: "Marketing",
-    icon: "ðŸ”",
+    icon: "🔍",
     color: "#059669",
     heroDescription:
       "We help businesses rank higher on Google through technical SEO, content strategy, and link building that drives real organic traffic.",
@@ -668,7 +668,7 @@ const services: Service[] = [
     shortTitle: "Content Creation",
     tagline: "Scroll-stopping content that builds your brand",
     category: "Creative",
-    icon: "ðŸŽ¬",
+    icon: "🎬",
     color: "#d97706",
     heroDescription:
       "We create high-quality video content, graphics, and creative assets that capture attention and tell your brand story across all platforms.",
@@ -730,7 +730,7 @@ const services: Service[] = [
     shortTitle: "Facebook Ads",
     tagline: "Targeted social ads that reach your ideal customers",
     category: "Marketing",
-    icon: "ðŸ“˜",
+    icon: "📘",
     color: "#1877f2",
     heroDescription:
       "We create and manage high-converting Facebook and Instagram ad campaigns that reach your ideal customers and drive measurable results.",
@@ -792,7 +792,7 @@ const services: Service[] = [
     shortTitle: "Google Ads",
     tagline: "Get in front of customers actively searching for you",
     category: "Marketing",
-    icon: "ðŸŽ¯",
+    icon: "🎯",
     color: "#dc2626",
     heroDescription:
       "We create and manage high-converting Google Ads campaigns that put your business in front of customers actively searching for your services.",
@@ -854,7 +854,7 @@ const services: Service[] = [
     shortTitle: "E-commerce",
     tagline: "Online stores built to sell 24 hours a day",
     category: "Development",
-    icon: "ðŸ›ï¸",
+    icon: "🛍️",
     color: "#0891b2",
     heroDescription:
       "We build powerful e-commerce stores that are fast, secure, and optimised to convert browsers into buyers.",
@@ -916,7 +916,7 @@ const services: Service[] = [
     shortTitle: "Account Recovery",
     tagline: "Recover hacked or disabled social media accounts fast",
     category: "Digital Marketing",
-    icon: "ðŸ”",
+    icon: "🔐",
     color: "#7c3aed",
     heroDescription:
       "Professional account recovery service for hacked, disabled, or locked Facebook, Instagram, and TikTok accounts. Fast, secure, and reliable recovery.",
@@ -960,7 +960,7 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["social-media-management", "facebook-and-instagram-ads", "content-creation"],
-    cta: "Start Account Recovery ðŸ”",
+    cta: "Start Account Recovery 🔐",
     ctaLink: "/services/social-media-management/account-recovery",
     metaTitle: "Facebook & Instagram Account Recovery â€” Africa | PurpleSoftHub",
     metaDescription:

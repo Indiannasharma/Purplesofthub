@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import ServiceCards from "@/components/ServiceCards";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import PersistentTypewriter from "@/components/common/PersistentTypewriter";
 import {
   FadeInUp,
   StaggerContainer,
@@ -689,13 +690,17 @@ export default async function Home() {
           justifyContent: 'center',
           gap: '0',
         }}>
-          <span id="typewriter-text" style={{
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7, #22d3ee)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            minWidth: '10px',
-          }} />
+          <PersistentTypewriter
+            words={TYPEWRITER_WORDS}
+            className="typewriter-text"
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed, #a855f7, #22d3ee)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              minWidth: '10px',
+            }}
+          />
           <span style={{
             display: 'inline-block',
             width: '3px',
@@ -1099,45 +1104,6 @@ export default async function Home() {
 
       <NewsletterSignup />
       <Footer />
-
-      {/* Typewriter Script - Client Side */}
-      <script dangerouslySetInnerHTML={{__html: `(function() {
-        var words = ${JSON.stringify(TYPEWRITER_WORDS)};
-        var wordIndex = 0, charIndex = 0, isDeleting = false;
-        
-        function type() {
-          var el = document.getElementById('typewriter-text');
-          if (!el) { setTimeout(type, 100); return; }
-          var currentWord = words[wordIndex];
-          
-          if (isDeleting) {
-            charIndex--;
-            el.textContent = currentWord.substring(0, charIndex);
-          } else {
-            charIndex++;
-            el.textContent = currentWord.substring(0, charIndex);
-          }
-          
-          var speed = isDeleting ? 40 : 80;
-          
-          if (!isDeleting && charIndex === currentWord.length) {
-            speed = 2000;
-            isDeleting = true;
-          } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            wordIndex = (wordIndex + 1) % words.length;
-            speed = 300;
-          }
-          
-          setTimeout(type, speed);
-        }
-        
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() { setTimeout(type, 500); });
-        } else {
-          setTimeout(type, 500);
-        }
-      })();`}} />
     </main>
   );
 }
