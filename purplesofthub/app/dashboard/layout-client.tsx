@@ -176,12 +176,14 @@ export default function DashboardLayoutClient({
   return (
     <div style={{
       display: 'flex',
-      height: '100dvh',
-      width: '100%',
+      position: 'fixed',
+      inset: 0,
+      height: '100vh',
+      width: '100vw',
       overflow: 'hidden',
       background: theme === 'dark' ? '#0f0f1a' : '#f4f6f9',
       fontFamily: 'inherit',
-      position: 'relative',
+      overscrollBehavior: 'none',
     }}>
 
       {/* Mobile overlay */}
