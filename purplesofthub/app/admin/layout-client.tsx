@@ -286,11 +286,14 @@ export default function AdminLayoutClient({
   return (
     <div style={{
       display: 'flex',
+      position: 'fixed',
+      inset: 0,
       height: '100vh',
       width: '100vw',
       overflow: 'hidden',
       background: theme === 'dark' ? '#0f0f1a' : '#f4f6f9',
       fontFamily: 'inherit',
+      overscrollBehavior: 'none',
     }}>
 
       {/* Mobile overlay */}
