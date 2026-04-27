@@ -296,8 +296,12 @@ export default function UserNotificationBell({ userId, theme = 'dark' }: Props) 
       {/* ── Dropdown ── */}
       {open && (
         <div style={{
-          position: 'absolute', top: '44px', right: 0,
-          width: '320px', maxHeight: '460px',
+          position: 'absolute',
+          top: 'calc(100% + 8px)',
+          right: 0,
+          width: 'min(320px, calc(100vw - 24px))',
+          maxWidth: 'calc(100vw - 24px)',
+          maxHeight: 'min(460px, calc(100vh - 120px))',
           background: isDark ? 'rgba(13,11,24,0.97)' : 'rgba(255,255,255,0.98)',
           border: `1px solid ${isDark ? 'rgba(124,58,237,0.22)' : 'rgba(124,58,237,0.15)'}`,
           borderRadius: '16px',
@@ -309,6 +313,7 @@ export default function UserNotificationBell({ userId, theme = 'dark' }: Props) 
           display: 'flex', flexDirection: 'column',
           overflow: 'hidden',
           animation: 'unotif-in 0.18s ease',
+          transformOrigin: 'top right',
         }}>
           {/* Top accent */}
           <div style={{

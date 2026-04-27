@@ -210,10 +210,11 @@ export default function NotificationBell({ adminId }: Props) {
         <div
           style={{
             position: 'absolute',
-            top: '44px',
+            top: 'calc(100% + 8px)',
             right: 0,
-            width: '340px',
-            maxHeight: '500px',
+            width: 'min(340px, calc(100vw - 24px))',
+            maxWidth: 'calc(100vw - 24px)',
+            maxHeight: 'min(500px, calc(100vh - 120px))',
             background: 'rgba(11,9,22,0.97)',
             border: '1px solid rgba(124,58,237,0.22)',
             borderRadius: '16px',
@@ -224,6 +225,7 @@ export default function NotificationBell({ adminId }: Props) {
             flexDirection: 'column',
             overflow: 'hidden',
             animation: 'notif-panel-in 0.18s ease',
+            transformOrigin: 'top right',
           }}
         >
           {/* Top accent line */}
