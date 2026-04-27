@@ -490,7 +490,7 @@ export default function DashboardLayoutClient({
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           boxSizing: 'border-box',
-          overflow: 'hidden',
+          overflow: 'visible',
         }}>
 
           {/* Left — Mobile menu + Search */}
