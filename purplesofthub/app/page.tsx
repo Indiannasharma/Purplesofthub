@@ -600,7 +600,7 @@ export default async function Home() {
       </section>
 
       {/* ── SERVICES ── */}
-      <section id="services" style={{ padding: "90px 5%", background: "var(--cyber-bg2)", borderTop: "1px solid var(--cyber-border)", borderBottom: "1px solid var(--cyber-border)", position: "relative", zIndex: 2 }}>
+      <section id="services" style={{ padding: "90px 5% 78px", background: "var(--cyber-bg2)", borderTop: "1px solid var(--cyber-border)", position: "relative", zIndex: 2 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -624,6 +624,32 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── PREMIUM DIAGONAL DIVIDER ── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'relative',
+          height: '28px',
+          overflow: 'hidden',
+          zIndex: 9,
+          background: 'transparent',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: '-6%',
+            right: '-6%',
+            top: '50%',
+            height: '2px',
+            transform: 'translateY(-50%) rotate(-2deg)',
+            transformOrigin: 'center',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.55) 18%, rgba(168,85,247,0.95) 50%, rgba(34,211,238,0.65) 82%, transparent 100%)',
+            boxShadow: '0 0 18px rgba(124,58,237,0.22)',
+          }}
+        />
+      </div>
+
       {/* ── SCROLLING SERVICES TICKER (Tilted) ── */}
       <div style={{
         width: '100%',
@@ -633,7 +659,7 @@ export default async function Home() {
         position: 'relative',
         zIndex: 10,
         transform: 'rotate(-2deg) scale(1.05)',
-        marginTop: '40px',
+        marginTop: '8px',
         marginBottom: '40px',
       }}>
         <div style={{
