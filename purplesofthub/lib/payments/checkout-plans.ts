@@ -58,6 +58,15 @@ const SERVICE_PLAN_CATALOG: ServicePlanCatalog = {
       Premium: { amount: 100000, deliveryTime: '4 weeks' },
     },
   },
+  'logo-design': {
+    serviceName: 'Logo Design',
+    plans: {
+      Basic: { amount: 25000, deliveryTime: '3-5 business days' },
+      Standard: { amount: 60000, deliveryTime: '5-7 business days' },
+      Premium: { amount: 120000, deliveryTime: '7-10 business days' },
+      'Brand Identity': { amount: 250000, deliveryTime: '2-3 weeks' },
+    },
+  },
   'music-distribution': {
     serviceName: 'Music Distribution',
     plans: {

@@ -43,6 +43,15 @@ const SERVICES: Service[] = [
     icon: '📣',
   },
   {
+    id: 'logo-design',
+    name: 'Logo Design',
+    description: 'Memorable, original logo designs that make your brand instantly recognizable.',
+    category: 'Design',
+    delivery_time: '3-10 business days',
+    starting_price: 25000,
+    icon: '✏️',
+  },
+  {
     id: 'music-promotion',
     name: 'Music Promotion',
     description: 'Promote your music on TikTok, Instagram Reels, and YouTube.',
