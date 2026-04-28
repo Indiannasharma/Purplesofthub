@@ -1,5 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
-import { resolveCheckoutPlan } from '@/lib/payments/checkout-plans'
+import {
+  getPaymentProvider,
+  getPlanFromVerifiedPayment,
+  readVerifiedPlanFields,
+  verifyFlutterwavePayment,
+  verifyPaystackPayment,
+} from '@/lib/payments/checkout-verification'
 
 export async function POST(request: Request) {
   try {
@@ -14,40 +20,81 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const {
-      serviceId,
-      serviceName,
-      planName,
-      amount,
-      deliveryTime,
-      paymentReference,
-      paymentMethod,
-    } = body
+    const paymentProvider = getPaymentProvider(
+      body.paymentMethod ?? body.provider
+    )
+    const paymentReference = String(
+      body.paymentReference ?? body.reference ?? ''
+    ).trim()
 
-    const planInfo = resolveCheckoutPlan({
-      serviceId,
-      planName,
-      amount: Number(amount),
-    })
-
-    if (serviceId && !planInfo) {
-      return new Response(JSON.stringify({ error: 'Invalid service plan or amount mismatch' }), {
+    if (!paymentProvider || !paymentReference) {
+      return new Response(JSON.stringify({ error: 'Missing payment verification details' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    const resolvedAmount = planInfo?.amount ?? Number(amount)
-    const resolvedServiceName = planInfo?.serviceName || serviceName
-    const resolvedDeliveryTime = planInfo?.deliveryTime || deliveryTime
+    const verifiedPayment =
+      paymentProvider === 'paystack'
+        ? await verifyPaystackPayment(paymentReference)
+        : await verifyFlutterwavePayment(paymentReference)
 
-    // Create project
+    if (verifiedPayment.currency.toUpperCase() !== 'NGN') {
+      return new Response(JSON.stringify({ error: 'Unsupported payment currency' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const verifiedPlan = getPlanFromVerifiedPayment({
+      amount: verifiedPayment.amount,
+      metadata: verifiedPayment.metadata,
+    })
+
+    if (!verifiedPlan) {
+      return new Response(JSON.stringify({ error: 'Unable to resolve the purchased plan' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const planMeta = readVerifiedPlanFields(verifiedPayment.metadata)
+    const verifiedUserId = String(verifiedPayment.metadata.user_id ?? '').trim()
+    if (verifiedUserId && verifiedUserId !== user.id) {
+      return new Response(JSON.stringify({ error: 'Payment does not belong to the signed-in account' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (
+      planMeta.serviceName &&
+      planMeta.serviceName !== verifiedPlan.serviceName
+    ) {
+      return new Response(JSON.stringify({ error: 'Payment metadata mismatch' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const verifiedEmail = verifiedPayment.customerEmail?.trim().toLowerCase() || ''
+    if (verifiedEmail && user.email && verifiedEmail !== user.email.toLowerCase()) {
+      return new Response(JSON.stringify({ error: 'Payment email does not match the signed-in account' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const resolvedAmount = verifiedPlan.amount
+    const resolvedServiceName = verifiedPlan.serviceName
+    const resolvedDeliveryTime = verifiedPlan.deliveryTime
+
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .insert({
         client_id: user.id,
-        title: `${resolvedServiceName} - ${planName}`,
-        description: `Service: ${resolvedServiceName}\nPlan: ${planName}\nDelivery: ${resolvedDeliveryTime}`,
+        title: `${resolvedServiceName} - ${verifiedPlan.planName}`,
+        description: `Service: ${resolvedServiceName}\nPlan: ${verifiedPlan.planName}\nDelivery: ${resolvedDeliveryTime}`,
         service_type: resolvedServiceName,
         status: 'in_progress',
         progress: 0,
@@ -67,16 +114,15 @@ export async function POST(request: Request) {
       })
     }
 
-    // Create invoice
     const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
       .insert({
         project_id: project.id,
         client_id: user.id,
-        amount: amount,
-        currency: 'NGN',
+        amount: resolvedAmount,
+        currency: verifiedPayment.currency.toUpperCase(),
         status: 'paid',
-        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         paid_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
       })
@@ -85,18 +131,16 @@ export async function POST(request: Request) {
 
     if (invoiceError) {
       console.error('Invoice creation error:', invoiceError)
-      // Don't return error, project was created successfully
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    return new Response(JSON.stringify({
+      success: true,
       projectId: project.id,
-      invoiceId: invoice?.id 
+      invoiceId: invoice?.id,
     }), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
     })
-
   } catch (error) {
     console.error('Create project error:', error)
     return new Response(JSON.stringify({ error: 'Internal server error' }), {

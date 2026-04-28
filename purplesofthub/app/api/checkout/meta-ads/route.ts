@@ -1,11 +1,19 @@
 import { createClient } from '@supabase/supabase-js'
-import { resolveCheckoutPlan } from '@/lib/payments/checkout-plans'
+import {
+  getPaymentProvider,
+  getPlanFromVerifiedPayment,
+  readVerifiedPlanFields,
+  verifyFlutterwavePayment,
+  verifyPaystackPayment,
+} from '@/lib/payments/checkout-verification'
+import { createClient as createServerClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  // Guard against missing env vars
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
     return NextResponse.json(
       { error: 'Server not configured' },
       { status: 503 }
@@ -19,159 +27,182 @@ export async function POST(req: NextRequest) {
   )
 
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      phone,
-      businessName,
-      password,
-      serviceId,
-      serviceName,
-      plan,
-      amount,
-      deliveryTime,
-      paymentReference,
-      paymentMethod,
-    } = await req.json()
+    const body = await req.json()
 
-    // Validate required fields
-    if (!email || !password || !plan) {
+    const paymentProvider = getPaymentProvider(
+      body.paymentMethod ?? body.provider
+    )
+    const paymentReference = String(
+      body.paymentReference ?? body.reference ?? ''
+    ).trim()
+
+    if (!paymentProvider || !paymentReference) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing payment verification details' },
         { status: 400 }
       )
     }
 
-    const planInfo = resolveCheckoutPlan({
-      serviceId,
-      planName: plan,
-      amount: Number(amount),
+    const verifiedPayment =
+      paymentProvider === 'paystack'
+        ? await verifyPaystackPayment(paymentReference)
+        : await verifyFlutterwavePayment(paymentReference)
+
+    if (verifiedPayment.currency.toUpperCase() !== 'NGN') {
+      return NextResponse.json(
+        { error: 'Unsupported payment currency' },
+        { status: 400 }
+      )
+    }
+
+    const verifiedPlan = getPlanFromVerifiedPayment({
+      amount: verifiedPayment.amount,
+      metadata: verifiedPayment.metadata,
     })
 
-    if (serviceId && !planInfo) {
+    if (!verifiedPlan) {
       return NextResponse.json(
-        { error: 'Invalid service plan or amount mismatch' },
+        { error: 'Unable to resolve the purchased plan' },
         { status: 400 }
       )
     }
 
-    const resolvedAmount = planInfo?.amount ?? Number(amount)
-    const resolvedServiceName = planInfo?.serviceName || serviceName || 'Service'
-    const resolvedDeliveryTime = planInfo?.deliveryTime || deliveryTime || 'Standard'
-
-    // Check if user already exists
-    const { data: existingUser, error: listError } = await supabaseAdmin.auth.admin.listUsers()
-
-    if (listError) {
-      console.error('Error listing users:', listError)
+    const planMeta = readVerifiedPlanFields(verifiedPayment.metadata)
+    if (
+      planMeta.serviceName &&
+      planMeta.serviceName !== verifiedPlan.serviceName
+    ) {
+      return NextResponse.json(
+        { error: 'Payment metadata mismatch' },
+        { status: 400 }
+      )
     }
 
-    const userExists = existingUser?.users?.some(u => u.email === email)
+    const authClient = await createServerClient()
+    const {
+      data: { user: sessionUser },
+    } = await authClient.auth.getUser()
 
-    let userId: string
+    const verifiedEmail = verifiedPayment.customerEmail?.trim().toLowerCase() || ''
+    const requestEmail = String(body.email ?? '').trim().toLowerCase()
 
-    if (userExists) {
-      // Get existing user
-      const existing = existingUser?.users?.find(u => u.email === email)
-      if (!existing) {
-        return NextResponse.json(
-          { error: 'User not found' },
-          { status: 404 }
-        )
+    if (sessionUser?.email && verifiedEmail && sessionUser.email.toLowerCase() !== verifiedEmail) {
+      return NextResponse.json(
+        { error: 'Payment email does not match the signed-in account' },
+        { status: 403 }
+      )
+    }
+
+    if (requestEmail && verifiedEmail && requestEmail !== verifiedEmail) {
+      return NextResponse.json(
+        { error: 'Payment email mismatch' },
+        { status: 400 }
+      )
+    }
+
+    const email = sessionUser?.email || verifiedEmail || requestEmail
+    if (!email) {
+      return NextResponse.json(
+        { error: 'Verified customer email is required' },
+        { status: 400 }
+      )
+    }
+
+    const firstName = String(body.firstName ?? '').trim()
+    const lastName = String(body.lastName ?? '').trim()
+    const fullName =
+      [firstName, lastName].filter(Boolean).join(' ') ||
+      verifiedPayment.customerName ||
+      email.split('@')[0]
+    const phone = String(body.phone ?? verifiedPayment.customerPhone ?? '').trim()
+    const businessName = String(body.businessName ?? '').trim()
+    const password = String(body.password ?? '').trim()
+
+    let userId = sessionUser?.id || ''
+
+    if (!userId) {
+      const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
+      const existingUser = existingUsers?.users?.find(
+        (candidate) => candidate.email?.toLowerCase() === email.toLowerCase()
+      )
+
+      if (existingUser) {
+        userId = existingUser.id
+      } else {
+        const { data: newUser, error: authError } =
+          await supabaseAdmin.auth.admin.createUser({
+            email,
+            password: password || Math.random().toString(36).slice(-10),
+            email_confirm: true,
+            user_metadata: {
+              full_name: fullName,
+              role: 'client',
+            },
+          })
+
+        if (authError || !newUser.user) {
+          return NextResponse.json(
+            { error: authError?.message || 'Failed to create account' },
+            { status: 500 }
+          )
+        }
+
+        userId = newUser.user.id
       }
-      userId = existing.id
+    }
 
-      // Update existing profile
-      await supabaseAdmin
-        .from('profiles')
-        .update({
-          full_name: `${firstName} ${lastName}`.trim(),
-          phone,
-          business_name: businessName,
-          active_plan: plan,
-          plan_status: 'active',
-        })
-        .eq('id', userId)
-    } else {
-      // Create new Supabase auth user
-      const { data: newUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: {
-          full_name: `${firstName} ${lastName}`.trim(),
-          role: 'client',
-          business_name: businessName,
-        },
+    await supabaseAdmin.from('profiles').upsert({
+      id: userId,
+      full_name: fullName,
+      email,
+      phone: phone || null,
+      business_name: businessName || null,
+      active_plan: verifiedPlan.planName,
+      plan_status: 'active',
+      role: 'client',
+    })
+
+    const { data: existingSubscription } = await supabaseAdmin
+      .from('subscriptions')
+      .select('id')
+      .eq('payment_reference', verifiedPayment.reference)
+      .maybeSingle()
+
+    if (!existingSubscription) {
+      const { error: subError } = await supabaseAdmin.from('subscriptions').insert({
+        client_id: userId,
+        plan_name: verifiedPlan.planName,
+        plan_amount: verifiedPlan.amount,
+        currency: verifiedPayment.currency.toUpperCase(),
+        status: 'active',
+        payment_method: paymentProvider,
+        payment_reference: verifiedPayment.reference,
+        service_id: verifiedPlan.serviceId,
+        service_name: verifiedPlan.serviceName,
+        plan_id: verifiedPlan.planName,
+        started_at: new Date().toISOString(),
       })
 
-      if (authError || !newUser.user) {
-        console.error('Auth error:', authError)
+      if (subError) {
         return NextResponse.json(
-          { error: authError?.message || 'Failed to create account' },
+          { error: 'Failed to create subscription' },
           { status: 500 }
         )
       }
-      userId = newUser.user.id
-
-      // Create profile
-      const { error: profileError } = await supabaseAdmin
-        .from('profiles')
-        .upsert({
-          id: userId,
-          full_name: `${firstName} ${lastName}`.trim(),
-          email,
-          phone,
-          business_name: businessName,
-          active_plan: plan,
-          plan_status: 'active',
-        })
-
-      if (profileError) {
-        console.error('Profile creation error:', profileError)
-      }
     }
 
-    // Create subscription record
-    const expiresAt = new Date()
-    expiresAt.setMonth(expiresAt.getMonth() + 1)
-
-    const { error: subError } = await supabaseAdmin
-      .from('subscriptions')
-      .insert({
-        client_id: userId,
-        plan_name: plan,
-        plan_amount: resolvedAmount,
-        currency: 'NGN',
-        status: 'active',
-        payment_method: paymentMethod,
-        payment_reference: paymentReference,
-        platforms: plan === 'Starter' ? ['facebook'] : ['facebook', 'instagram'],
-        started_at: new Date().toISOString(),
-        expires_at: expiresAt.toISOString(),
-      })
-
-    if (subError) {
-      console.error('Subscription error:', subError)
-    }
-
-    // Update profile plan status
     await supabaseAdmin
       .from('profiles')
       .update({
-        active_plan: plan,
+        active_plan: verifiedPlan.planName,
         plan_status: 'active',
       })
       .eq('id', userId)
 
-    // Log the successful checkout (for debugging)
-    console.log(`Checkout successful: ${email} - ${plan} plan - ${paymentReference}`)
-
     return NextResponse.json({
       success: true,
       userId,
-      message: 'Account created and plan activated',
+      message: 'Payment verified and plan activated',
     })
   } catch (error: any) {
     console.error('Checkout error:', error)
