@@ -18,7 +18,7 @@ export default function FacebookAdsPricing() {
       subtitle: 'Perfect for testing • Minimum 2 weeks',
       features: [
         'Full campaign setup & strategy for the week',
-        '4–6 ad creatives',
+        '2-3 ad creatives/week',
         'Daily monitoring + optimization',
         'End-of-week performance report + recommendations',
         'Both Facebook & Instagram',

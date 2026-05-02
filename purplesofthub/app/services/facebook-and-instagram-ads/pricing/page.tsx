@@ -146,7 +146,7 @@ export default function FacebookAdsPricingPage() {
                   One-time Setup Fee
                 </h4>
                 <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 4 }}>
-                  ₦100,000 (~$71 USD)
+                  ₦70,000 (~$50 USD)
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
                   Includes Meta Business Suite setup, pixel installation, conversion tracking & initial strategy session.
