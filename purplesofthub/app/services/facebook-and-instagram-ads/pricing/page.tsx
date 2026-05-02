@@ -223,9 +223,9 @@ export default function FacebookAdsPricingPage() {
               Not sure which plan is right for you?
             </p>
             <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/contact">
+              <Link href="/sign-up?service=facebook-and-instagram-ads">
                 <button className="btn-main animate-glow" style={{ padding: "14px 32px", fontSize: 15 }}>
-                  Book a Free Consultation Call
+                  Create Account to Pay
                 </button>
               </Link>
               <a

@@ -8,6 +8,8 @@ export default function FacebookAdsPricing() {
   const textColor = 'var(--text-primary, var(--cyber-heading, #1a1a1a))'
   const textSecondary = 'var(--text-secondary, var(--cyber-body, #6b5fa0))'
   const textMuted = 'var(--text-muted, #9d8fd4)'
+  const getStartedHref = (planName: string) =>
+    `/sign-up?service=facebook-and-instagram-ads&plan=${encodeURIComponent(planName)}`
   const plans = [
     {
       name: 'Flex Weekly',
@@ -256,7 +258,7 @@ export default function FacebookAdsPricing() {
 
             {/* Button */}
             <Link
-              href={`/contact?plan=${tier.name}&service=facebook-and-instagram-ads`}
+              href={getStartedHref(tier.name)}
               className={`fb-pricing-btn-${i}`}
               style={{
                 display: 'flex',

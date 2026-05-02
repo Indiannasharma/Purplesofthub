@@ -34,6 +34,8 @@ export default function FacebookAdsPage() {
   if (!service) return null;
 
   const related = getRelatedServices(service.relatedServices);
+  const signUpHref = "/sign-up?service=facebook-and-instagram-ads";
+  const pricingHref = "/services/facebook-and-instagram-ads/pricing";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -142,14 +144,14 @@ export default function FacebookAdsPage() {
             </Reveal>
             <Reveal delay={0.25}>
               <div className="svc-hero-btns" style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Link href="/contact">
+                <Link href={signUpHref}>
                   <button className="btn-main animate-glow" style={{ padding: "14px 30px", fontSize: 15 }}>
-                    Start a Campaign
+                    Create Account to Pay
                   </button>
                 </Link>
-                <Link href="/contact">
+                <Link href={pricingHref}>
                   <button className="btn-outline" style={{ padding: "14px 30px", fontSize: 15 }}>
-                    Book a Free Call →
+                    View Pricing Plans →
                   </button>
                 </Link>
               </div>
@@ -407,14 +409,14 @@ export default function FacebookAdsPage() {
               Book a free discovery call and let's talk about your {service.shortTitle.toLowerCase()} strategy.
             </p>
             <div className="svc-cta-btns" style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/contact">
+              <Link href={signUpHref}>
                 <button className="btn-main animate-glow" style={{ padding: "16px 38px", fontSize: 16 }}>
-                  Start a Campaign
+                  Create Account to Pay
                 </button>
               </Link>
-              <Link href="/services">
+              <Link href={pricingHref}>
                 <button className="btn-outline" style={{ padding: "16px 38px", fontSize: 16 }}>
-                  All Services →
+                  View Pricing Plans →
                 </button>
               </Link>
             </div>
