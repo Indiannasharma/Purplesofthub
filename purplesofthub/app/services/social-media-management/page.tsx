@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import { getServiceBySlug } from "@/lib/payments/service-plans";
 import ServicePricingCards from "@/components/services/ServicePricingCards";
+import FaqAccordion from "@/app/services/_components/FaqAccordion";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -27,6 +28,45 @@ export const metadata: Metadata = {
     description: "Professional social media management from ₦75,000/month",
   },
 };
+
+const socialFaqs = [
+  {
+    q: "How many posts do I get monthly?",
+    a: "It depends on your selected package. Starter includes 8 posts monthly, Growth includes 15 posts, and Scale includes 25 posts.",
+  },
+  {
+    q: "Do you create the designs and captions?",
+    a: "Yes. We handle content planning, caption writing, basic design support, scheduling, and monthly reporting based on your package.",
+  },
+  {
+    q: "Can you manage multiple platforms?",
+    a: "Yes. We can manage Facebook, Instagram, TikTok, X, and other social platforms depending on your brand needs.",
+  },
+];
+
+const socialRelatedServices = [
+  {
+    title: "Facebook Ads",
+    description: "Run targeted campaigns to generate leads and sales.",
+    href: "/services/facebook-ads",
+    icon: "📈",
+    accent: "#3b82f6",
+  },
+  {
+    title: "Video Content Creation",
+    description: "Create engaging videos for Reels, Shorts, and TikTok.",
+    href: "/services/video-content-creation",
+    icon: "🎬",
+    accent: "#f59e0b",
+  },
+  {
+    title: "Branding & Creative Design",
+    description: "Build a strong visual identity across all platforms.",
+    href: "/services/branding-creative-design",
+    icon: "🎨",
+    accent: "#ec4899",
+  },
+];
 
 export default function SocialMediaManagementPage() {
   const service = getServiceBySlug("social-media-management");
@@ -279,6 +319,53 @@ export default function SocialMediaManagementPage() {
             >
               See Full Pricing
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>FAQ</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,42px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>
+                Common <span className="grad-text">Questions</span>
+              </h2>
+            </div>
+          </Reveal>
+          <FaqAccordion faqs={socialFaqs} />
+        </div>
+      </section>
+
+      <section style={{ padding: "80px 5%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>EXPLORE MORE</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3vw,38px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1px" }}>
+                Related <span className="grad-text">Services</span>
+              </h2>
+            </div>
+          </Reveal>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 20 }}>
+            {socialRelatedServices.map((item, i) => (
+              <Reveal key={item.href} delay={i * 0.08}>
+                <Link href={item.href} style={{ textDecoration: "none" }}>
+                  <div className="glass-card" style={{ padding: "28px 24px", cursor: "pointer" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: 14, background: `linear-gradient(135deg,${item.accent},#a855f7)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
+                        {item.icon}
+                      </div>
+                      <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 16, color: "var(--text-primary)" }}>
+                        {item.title}
+                      </div>
+                    </div>
+                    <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.7, marginBottom: 14 }}>{item.description}</p>
+                    <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 600 }}>Learn more -&gt;</span>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
