@@ -273,6 +273,67 @@ export default function LogoDesignPage() {
         </div>
       </section>
 
+      <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>WHAT&apos;S INCLUDED</p>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,46px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px" }}>
+                Everything You <span className="grad-text">Get</span>
+              </h2>
+            </div>
+          </Reveal>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 16 }}>
+            {[
+              "Custom Logo Concepts",
+              "Brand Identity Direction",
+              "High-Resolution Files",
+              "Transparent Background",
+              "Social Media Logo Versions",
+              "Editable Source Files",
+              "Favicon Package",
+              "Revision Support",
+            ].map((item, i) => (
+              <Reveal key={item} delay={i * 0.05}>
+                <div className="glass-card" style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg,#7c3aed,#a855f7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>✓</div>
+                  <span style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.5 }}>{item}</span>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "80px 5%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
+          <Reveal>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "var(--accent)", textTransform: "uppercase", marginBottom: 12 }}>TOOLS & TECH</p>
+            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(24px,3vw,40px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", marginBottom: 40 }}>
+              What We <span className="grad-text">Use</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
+              {[
+                "Adobe Illustrator",
+                "Adobe Photoshop",
+                "Figma",
+                "Canva Pro",
+                "SVG",
+                "PNG",
+                "EPS",
+                "PDF",
+              ].map((tool) => (
+                <span key={tool} className="glass-card" style={{ padding: "10px 20px", fontSize: 14, fontWeight: 600, color: "var(--accent)", borderRadius: 100 }}>
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       <section style={{ padding: "100px 5%", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.16) 0%,transparent 65%)", pointerEvents: "none" }} />
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
