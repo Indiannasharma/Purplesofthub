@@ -9,12 +9,18 @@ interface Props {
   service: Service
   showAll?: boolean
   previewCount?: number
+  showMoreButton?: boolean
+  showMoreLabel?: string
+  showMoreHref?: string
 }
 
 export default function ServicePricingCards({
   service,
   showAll = true,
   previewCount = 3,
+  showMoreButton = true,
+  showMoreLabel,
+  showMoreHref,
 }: Props) {
   const [selectedPlan, setSelectedPlan] = useState<ServicePlan | null>(null)
   const [showAllPlans, setShowAllPlans] = useState(showAll)
@@ -322,25 +328,49 @@ export default function ServicePricingCards({
       </div>
 
       {/* Show all plans button */}
-      {hasMore && !showAllPlans && (
+      {showMoreButton && hasMore && !showAllPlans && (
         <div style={{ textAlign: 'center' }}>
-          <button
-            onClick={() => setShowAllPlans(true)}
-            style={{
-              padding: '12px 32px',
-              borderRadius: '12px',
-              border: '1px solid rgba(124,58,237,0.3)',
-              background: 'rgba(124,58,237,0.06)',
-              color: '#7c3aed',
-              fontSize: '14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              transition: 'all 0.2s',
-            }}
-          >
-            See All {service.plans.length} Plans ↓
-          </button>
+          {showMoreHref ? (
+            <a
+              href={showMoreHref}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                padding: '12px 32px',
+                borderRadius: '12px',
+                border: '1px solid rgba(124,58,237,0.3)',
+                background: 'rgba(124,58,237,0.06)',
+                color: '#7c3aed',
+                fontSize: '14px',
+                fontWeight: 700,
+                textDecoration: 'none',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s',
+              }}
+            >
+              {showMoreLabel || `See All ${service.plans.length} Plans ↓`}
+            </a>
+          ) : (
+            <button
+              onClick={() => setShowAllPlans(true)}
+              style={{
+                padding: '12px 32px',
+                borderRadius: '12px',
+                border: '1px solid rgba(124,58,237,0.3)',
+                background: 'rgba(124,58,237,0.06)',
+                color: '#7c3aed',
+                fontSize: '14px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s',
+              }}
+            >
+              {showMoreLabel || `See All ${service.plans.length} Plans ↓`}
+            </button>
+          )}
         </div>
       )}
 

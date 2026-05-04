@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import { getServiceBySlug } from "@/lib/payments/service-plans";
+import ServicePricingCards from "@/components/services/ServicePricingCards";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -26,40 +27,6 @@ export const metadata: Metadata = {
     description: "Professional logo design from ₦25,000",
   },
 };
-
-const previewPlans = [
-  {
-    name: "Starter",
-    price: "₦25,000",
-    features: ["1 Logo Concept", "2 Revisions", "PNG + JPEG files", "Basic design"],
-    accent: "#6b7280",
-  },
-  {
-    name: "Standard",
-    price: "₦60,000",
-    features: [
-      "3 Logo Concepts",
-      "5 Revisions",
-      "PNG + JPEG + Vector files",
-      "Transparent background",
-      "Social media versions",
-    ],
-    accent: "#3b82f6",
-  },
-  {
-    name: "Premium",
-    price: "₦120,000",
-    features: [
-      "5 Logo Concepts",
-      "Unlimited revisions",
-      "AI, EPS, SVG files",
-      "Brand guidelines",
-      "Favicon + brand assets",
-    ],
-    accent: "#8b5cf6",
-    popular: true,
-  },
-];
 
 export default function LogoDesignPage() {
   const service = getServiceBySlug("logo-design");
@@ -223,32 +190,12 @@ export default function LogoDesignPage() {
               </h2>
             </div>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 24, marginBottom: 40 }}>
-            {previewPlans.map((plan, i) => (
-              <Reveal key={plan.name} delay={i * 0.08}>
-                <div className="glass-card" style={{ padding: "28px", position: "relative", overflow: "hidden", border: plan.popular ? "1px solid rgba(124,58,237,0.35)" : undefined }}>
-                  {plan.popular && (
-                    <div style={{ position: "absolute", top: 16, right: 16, background: "linear-gradient(135deg, #7c3aed, #a855f7)", color: "#fff", borderRadius: 999, padding: "5px 10px", fontSize: 10, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                      Most Popular
-                    </div>
-                  )}
-                  <span style={{ fontSize: "11px", fontWeight: 700, color: plan.accent, background: `${plan.accent}12`, padding: "3px 10px", borderRadius: "100px", letterSpacing: "0.06em", textTransform: "uppercase", display: "inline-block", marginBottom: "16px" }}>
-                    Plan 0{i + 1}
-                  </span>
-                  <h3 style={{ fontSize: 20, fontWeight: 900, color: "var(--text-primary)", margin: "0 0 10px" }}>{plan.name}</h3>
-                  <p style={{ fontSize: 32, fontWeight: 900, color: plan.accent, margin: "0 0 16px", lineHeight: 1 }}>{plan.price}</p>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-                    {plan.features.map((feature) => (
-                      <li key={feature} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.4 }}>
-                        <span style={{ color: plan.accent, fontWeight: 900, flexShrink: 0 }}>✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <ServicePricingCards
+            service={service}
+            showAll={false}
+            previewCount={3}
+            showMoreButton={false}
+          />
           <div style={{ textAlign: "center" }}>
             <Link
               href="/services/logo-design/pricing"
