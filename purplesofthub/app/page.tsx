@@ -135,7 +135,7 @@ export default async function Home() {
       {/* ── HERO ── */}
       <section
         id="home"
-        className="hero-section relative isolate flex min-h-[100dvh] flex-col overflow-hidden scroll-mt-[72px] pb-14 pt-[5.5rem] sm:pb-20 sm:pt-[5.75rem] lg:min-h-screen lg:pb-24 lg:pt-24"
+        className="hero-section relative isolate flex min-h-[85vh] flex-col overflow-hidden scroll-mt-[72px] pb-14 pt-[5.5rem] sm:pb-20 sm:pt-[5.75rem] lg:min-h-[85vh] lg:pb-24 lg:pt-24"
       >
         <HeroCosmosScene variant="backdrop" />
 
