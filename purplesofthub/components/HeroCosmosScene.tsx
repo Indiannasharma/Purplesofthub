@@ -10,99 +10,82 @@ type HeroCosmosSceneProps = {
 
 type Accent = "purple" | "cyan" | "pink";
 
-type ParticleConfig = {
-  left: number;
-  top: number;
-  size: number;
-  accent: Accent;
-  duration: number;
-  delay: number;
-  drift: number;
-  blink?: number;
-};
-
 type StarConfig = {
   left: number;
   top: number;
   size: number;
   duration: number;
   delay: number;
-  opacityDark: number;
-  opacityLight: number;
+  darkOpacity: number;
+  lightOpacity: number;
 };
 
-type TechStrokeConfig = {
+type SparkConfig = {
+  left: number;
+  top: number;
+  size: number;
+  accent: Accent;
+  delay: number;
+  duration: number;
+};
+
+type TechLineConfig = {
   left: number;
   top: number;
   width: number;
   angle: number;
   accent: Accent;
-  opacityDark: number;
-  opacityLight: number;
   duration: number;
   delay: number;
-  thickness: number;
+  darkOpacity: number;
+  lightOpacity: number;
 };
 
-const ACCENT_COLORS: Record<Accent, string> = {
+const PLANET_ART = "/images/hero/purplesofthub-reference-planet.png";
+
+const ACCENTS: Record<Accent, string> = {
   purple: "#A855F7",
   cyan: "#22D3EE",
   pink: "#EC4899",
 };
 
-const STAR_SEED: StarConfig[] = Array.from({ length: 90 }, (_, index) => ({
-  left: (index * 17) % 100,
-  top: (index * 31) % 100,
-  size: index % 6 === 0 ? 2 : 1,
-  duration: 3 + (index % 6) * 0.9,
-  delay: (index % 8) * 0.35,
-  opacityDark: 0.2 + (index % 5) * 0.05,
-  opacityLight: 0.15 + (index % 4) * 0.03,
+const STARS: StarConfig[] = Array.from({ length: 88 }, (_, index) => ({
+  left: (index * 19) % 100,
+  top: (index * 37) % 100,
+  size: index % 7 === 0 ? 2 : 1,
+  duration: 3.2 + (index % 6) * 0.8,
+  delay: (index % 9) * 0.35,
+  darkOpacity: 0.18 + (index % 5) * 0.045,
+  lightOpacity: 0.1 + (index % 4) * 0.03,
 }));
 
-const PLANET_PARTICLES: ParticleConfig[] = [
-  { left: 6, top: 48, size: 4, accent: "purple", duration: 8, delay: 0.2, drift: 18, blink: 3.2 },
-  { left: 14, top: 24, size: 7, accent: "cyan", duration: 10.5, delay: 1.4, drift: 26, blink: 4.8 },
-  { left: 18, top: 76, size: 3, accent: "pink", duration: 9.1, delay: 2.1, drift: 16 },
-  { left: 26, top: 16, size: 5, accent: "purple", duration: 7.6, delay: 0.9, drift: 20, blink: 2.9 },
-  { left: 28, top: 58, size: 4, accent: "cyan", duration: 11.2, delay: 2.6, drift: 30, blink: 5.2 },
-  { left: 34, top: 82, size: 2, accent: "pink", duration: 8.4, delay: 1.1, drift: 12 },
-  { left: 42, top: 12, size: 6, accent: "purple", duration: 9.7, delay: 0.6, drift: 22, blink: 4.4 },
-  { left: 48, top: 66, size: 3, accent: "cyan", duration: 6.8, delay: 1.8, drift: 14 },
-  { left: 54, top: 20, size: 8, accent: "pink", duration: 10.8, delay: 2.2, drift: 26, blink: 5.5 },
-  { left: 58, top: 48, size: 5, accent: "purple", duration: 8.7, delay: 1.5, drift: 18 },
-  { left: 62, top: 78, size: 4, accent: "cyan", duration: 11.6, delay: 0.4, drift: 28, blink: 4.6 },
-  { left: 68, top: 14, size: 3, accent: "pink", duration: 7.1, delay: 2.4, drift: 16, blink: 3.7 },
-  { left: 74, top: 58, size: 6, accent: "purple", duration: 9.4, delay: 0.8, drift: 20 },
-  { left: 78, top: 30, size: 2, accent: "cyan", duration: 6.4, delay: 1.7, drift: 12 },
-  { left: 84, top: 68, size: 5, accent: "pink", duration: 10.1, delay: 2.8, drift: 24, blink: 4.9 },
-  { left: 90, top: 42, size: 3, accent: "purple", duration: 8.2, delay: 1.2, drift: 18 },
-  { left: 22, top: 42, size: 2, accent: "cyan", duration: 7.2, delay: 2.5, drift: 12 },
-  { left: 38, top: 38, size: 4, accent: "pink", duration: 9.8, delay: 0.5, drift: 22, blink: 4.1 },
-  { left: 66, top: 40, size: 3, accent: "purple", duration: 7.8, delay: 1.9, drift: 16 },
-  { left: 82, top: 12, size: 4, accent: "cyan", duration: 8.9, delay: 0.7, drift: 20, blink: 3.8 },
+const SPARKS: SparkConfig[] = [
+  { left: 24, top: 62, size: 4, accent: "purple", delay: 0.2, duration: 7.5 },
+  { left: 32, top: 38, size: 6, accent: "cyan", delay: 1.1, duration: 8.8 },
+  { left: 41, top: 68, size: 3, accent: "pink", delay: 2.2, duration: 6.9 },
+  { left: 52, top: 34, size: 5, accent: "purple", delay: 0.8, duration: 9.5 },
+  { left: 61, top: 58, size: 7, accent: "cyan", delay: 1.7, duration: 10.2 },
+  { left: 70, top: 42, size: 4, accent: "pink", delay: 2.7, duration: 7.7 },
+  { left: 78, top: 72, size: 3, accent: "purple", delay: 1.4, duration: 8.4 },
+  { left: 86, top: 28, size: 5, accent: "cyan", delay: 0.4, duration: 9.2 },
+  { left: 91, top: 52, size: 2, accent: "pink", delay: 2.1, duration: 6.8 },
+  { left: 66, top: 20, size: 3, accent: "cyan", delay: 1, duration: 7.3 },
+  { left: 56, top: 78, size: 4, accent: "purple", delay: 2.8, duration: 8.9 },
+  { left: 36, top: 82, size: 3, accent: "pink", delay: 1.9, duration: 7.1 },
 ];
 
-const TECH_STROKES: TechStrokeConfig[] = [
-  { left: 58, top: 18, width: 150, angle: -14, accent: "cyan", opacityDark: 0.42, opacityLight: 0.44, duration: 5.4, delay: 0.2, thickness: 2 },
-  { left: 74, top: 14, width: 220, angle: -24, accent: "pink", opacityDark: 0.32, opacityLight: 0.38, duration: 6.1, delay: 1.1, thickness: 2 },
-  { left: 63, top: 34, width: 320, angle: 10, accent: "purple", opacityDark: 0.24, opacityLight: 0.34, duration: 7.5, delay: 2.4, thickness: 1 },
-  { left: 80, top: 38, width: 120, angle: 6, accent: "cyan", opacityDark: 0.36, opacityLight: 0.46, duration: 4.2, delay: 0.9, thickness: 2 },
-  { left: 60, top: 54, width: 360, angle: -10, accent: "cyan", opacityDark: 0.28, opacityLight: 0.4, duration: 6.8, delay: 1.7, thickness: 1 },
-  { left: 75, top: 60, width: 260, angle: 28, accent: "pink", opacityDark: 0.24, opacityLight: 0.35, duration: 5.5, delay: 2.3, thickness: 1 },
-  { left: 68, top: 72, width: 180, angle: -18, accent: "purple", opacityDark: 0.22, opacityLight: 0.34, duration: 4.8, delay: 0.5, thickness: 1 },
-  { left: 53, top: 76, width: 300, angle: -30, accent: "cyan", opacityDark: 0.38, opacityLight: 0.48, duration: 7.2, delay: 1.4, thickness: 2 },
-  { left: 72, top: 82, width: 140, angle: 8, accent: "purple", opacityDark: 0.24, opacityLight: 0.34, duration: 5.1, delay: 2.8, thickness: 1 },
+const TECH_LINES: TechLineConfig[] = [
+  { left: 58, top: 18, width: 260, angle: -13, accent: "cyan", duration: 5.5, delay: 0.2, darkOpacity: 0.38, lightOpacity: 0.34 },
+  { left: 72, top: 14, width: 230, angle: -24, accent: "pink", duration: 7.2, delay: 1.1, darkOpacity: 0.28, lightOpacity: 0.28 },
+  { left: 61, top: 35, width: 360, angle: 10, accent: "purple", duration: 6.8, delay: 2, darkOpacity: 0.22, lightOpacity: 0.28 },
+  { left: 76, top: 45, width: 260, angle: 6, accent: "cyan", duration: 4.8, delay: 0.8, darkOpacity: 0.32, lightOpacity: 0.35 },
+  { left: 63, top: 62, width: 420, angle: -9, accent: "cyan", duration: 7.4, delay: 1.6, darkOpacity: 0.28, lightOpacity: 0.34 },
+  { left: 74, top: 73, width: 280, angle: 27, accent: "pink", duration: 5.8, delay: 2.5, darkOpacity: 0.22, lightOpacity: 0.28 },
+  { left: 55, top: 82, width: 320, angle: -28, accent: "purple", duration: 6.2, delay: 0.7, darkOpacity: 0.24, lightOpacity: 0.3 },
 ];
 
 function clampOpacity(value: number) {
   return Math.max(0, Math.min(1, value));
-}
-
-function getParticleOpacity(index: number, isDark: boolean) {
-  const base = isDark ? 0.62 : 0.42;
-  const spread = isDark ? 0.32 : 0.2;
-  return clampOpacity(base + ((index * 7) % 5) * (spread / 5));
 }
 
 export default function HeroCosmosScene({
@@ -111,77 +94,71 @@ export default function HeroCosmosScene({
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const stars = useMemo(
-    () => (isDark ? STAR_SEED : STAR_SEED.slice(0, 34)),
-    [isDark],
-  );
+  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 36)), [isDark]);
 
   if (variant === "backdrop") {
     return (
-      <div className="psh-shell psh-shell--backdrop" aria-hidden="true">
+      <div className="hero-cosmos hero-cosmos--backdrop" aria-hidden="true">
         <div
-          className="psh-nebula"
-          style={{ opacity: isDark ? 0.6 : 0.3 }}
+          className="hero-nebula"
+          style={{ opacity: isDark ? 0.62 : 0.28 }}
         />
-        <div className="psh-grid-field" />
+        <div
+          className="hero-circuit-grid"
+          style={{ opacity: isDark ? 0.72 : 0.42 }}
+        />
 
-        <div className="psh-stars">
-          {stars.map((star, index) => (
+        {stars.map((star, index) => (
+          <span
+            key={index}
+            className="hero-star"
+            style={
+              {
+                left: `${star.left}%`,
+                top: `${star.top}%`,
+                width: `${star.size}px`,
+                height: `${star.size}px`,
+                background: isDark ? "#ffffff" : "#5f5578",
+                ["--star-min" as string]: isDark ? star.darkOpacity : star.lightOpacity,
+                ["--star-max" as string]: isDark
+                  ? clampOpacity(star.darkOpacity + 0.22)
+                  : clampOpacity(star.lightOpacity + 0.1),
+                animationDuration: `${star.duration}s`,
+                animationDelay: `${star.delay}s`,
+              } as CSSProperties
+            }
+          />
+        ))}
+
+        {TECH_LINES.map((line, index) => {
+          const color = ACCENTS[line.accent];
+          return (
             <span
               key={index}
-              className="psh-star"
-              style={
-                {
-                  left: `${star.left}%`,
-                  top: `${star.top}%`,
-                  width: `${star.size}px`,
-                  height: `${star.size}px`,
-                  background: isDark ? "#FFFFFF" : "#666666",
-                  ["--star-min" as string]: isDark ? star.opacityDark : star.opacityLight,
-                  ["--star-max" as string]: isDark
-                    ? clampOpacity(star.opacityDark + 0.22)
-                    : clampOpacity(star.opacityLight + 0.1),
-                  animationDuration: `${star.duration}s`,
-                  animationDelay: `${star.delay}s`,
-                } as CSSProperties
-              }
-            />
-          ))}
-        </div>
-
-        <div className="psh-tech-strokes">
-          {TECH_STROKES.map((line, index) => (
-            <span
-              key={index}
-              className="psh-tech-stroke"
+              className="hero-tech-line"
               style={
                 {
                   left: `${line.left}%`,
                   top: `${line.top}%`,
                   width: `${line.width}px`,
-                  height: `${line.thickness}px`,
-                  background: ACCENT_COLORS[line.accent],
+                  background: color,
                   transform: `rotate(${line.angle}deg)`,
-                  ["--line-min" as string]: isDark ? line.opacityDark : line.opacityLight,
+                  filter: isDark ? `drop-shadow(0 0 10px ${color}99)` : "none",
+                  ["--line-min" as string]: isDark ? line.darkOpacity : line.lightOpacity,
                   ["--line-max" as string]: isDark
-                    ? clampOpacity(line.opacityDark + 0.16)
-                    : clampOpacity(line.opacityLight + 0.08),
-                  filter: isDark
-                    ? `drop-shadow(0 0 10px ${ACCENT_COLORS[line.accent]}99)`
-                    : "none",
+                    ? clampOpacity(line.darkOpacity + 0.16)
+                    : clampOpacity(line.lightOpacity + 0.08),
                   animationDuration: `${line.duration}s`,
                   animationDelay: `${line.delay}s`,
                 } as CSSProperties
               }
             />
-          ))}
-        </div>
+          );
+        })}
 
-        <div className="psh-hud-arcs">
-          <span className="psh-hud-arc psh-hud-arc--a" />
-          <span className="psh-hud-arc psh-hud-arc--b" />
-          <span className="psh-hud-arc psh-hud-arc--c" />
-        </div>
+        <span className="hero-hud-arc hero-hud-arc--one" />
+        <span className="hero-hud-arc hero-hud-arc--two" />
+        <span className="hero-hud-arc hero-hud-arc--three" />
 
         <style jsx>{styles}</style>
       </div>
@@ -189,155 +166,58 @@ export default function HeroCosmosScene({
   }
 
   return (
-    <div className="psh-shell psh-shell--planet" aria-hidden="true">
+    <div className="hero-cosmos hero-cosmos--planet" aria-hidden="true">
       <div
-        className="psh-planet-glow"
-        style={{ opacity: isDark ? 0.5 : 0.3 }}
+        className="planet-asset-glow"
+        style={{ opacity: isDark ? 0.68 : 0.36 }}
       />
 
-      <div className="psh-planet-wrap">
-        <svg className="psh-orbit-layer psh-orbit-layer--back" viewBox="0 0 1000 1000">
-          <defs>
-            <linearGradient id="psh-main-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#7C3AED" />
-              <stop offset="42%" stopColor="#A855F7" />
-              <stop offset="100%" stopColor="#22D3EE" />
-            </linearGradient>
-            <linearGradient id="psh-accent-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#EC4899" />
-              <stop offset="100%" stopColor="#A855F7" />
-            </linearGradient>
-          </defs>
+      <div className="planet-art-wrap">
+        <img
+          className="planet-art"
+          src={PLANET_ART}
+          alt=""
+          draggable={false}
+        />
 
-          <ellipse
-            className="psh-back-ring psh-back-ring--main"
-            cx="500"
-            cy="500"
-            rx="360"
-            ry="110"
-            style={{
-              filter: isDark
-                ? "drop-shadow(0 0 30px rgba(34,211,238,0.6))"
-                : "drop-shadow(0 0 30px rgba(34,211,238,0.4))",
-            }}
-          />
-          <ellipse
-            className="psh-back-ring psh-back-ring--accent"
-            cx="500"
-            cy="500"
-            rx="332"
-            ry="98"
-            style={{
-              filter: isDark
-                ? "drop-shadow(0 0 20px rgba(236,72,153,0.5))"
-                : "drop-shadow(0 0 20px rgba(236,72,153,0.3))",
-            }}
-          />
-          <ellipse
-            className="psh-back-ring psh-back-ring--subtle"
-            cx="500"
-            cy="500"
-            rx="388"
-            ry="120"
-            style={{ opacity: isDark ? 0.4 : 0.25 }}
-          />
-        </svg>
-
-        <div
-          className="psh-planet"
-          style={{
-            boxShadow: isDark
-              ? "0 0 80px rgba(168,85,247,0.4), inset -24px -30px 72px rgba(0,0,0,0.35)"
-              : "0 0 80px rgba(168,85,247,0.2), inset -18px -22px 50px rgba(0,0,0,0.12)",
-            filter: isDark
-              ? "drop-shadow(0 0 80px rgba(168,85,247,0.4))"
-              : "drop-shadow(0 0 80px rgba(168,85,247,0.2))",
-          }}
-        >
-          <div className="psh-planet-highlight" />
-          <div className="psh-planet-rim" />
-          <div className="psh-planet-texture" />
-          <div className="psh-planet-specks" />
+        <div className="ring-spin ring-spin--main">
+          <span />
+        </div>
+        <div className="ring-spin ring-spin--accent">
+          <span />
+        </div>
+        <div className="ring-spin ring-spin--dotted">
+          <span />
         </div>
 
-        <svg className="psh-orbit-layer psh-orbit-layer--front" viewBox="0 0 1000 1000">
-          <ellipse
-            className="psh-front-ring psh-front-ring--main"
-            cx="500"
-            cy="500"
-            rx="360"
-            ry="110"
-            style={{
-              filter: isDark
-                ? "drop-shadow(0 0 30px rgba(34,211,238,0.6))"
-                : "drop-shadow(0 0 30px rgba(34,211,238,0.4))",
-            }}
-          />
-          <ellipse
-            className="psh-front-ring psh-front-ring--accent"
-            cx="500"
-            cy="500"
-            rx="332"
-            ry="98"
-            style={{
-              filter: isDark
-                ? "drop-shadow(0 0 20px rgba(236,72,153,0.5))"
-                : "drop-shadow(0 0 20px rgba(236,72,153,0.3))",
-            }}
-          />
-          <ellipse
-            className="psh-front-ring psh-front-ring--subtle"
-            cx="500"
-            cy="500"
-            rx="388"
-            ry="120"
-            style={{ opacity: isDark ? 0.4 : 0.25 }}
-          />
-        </svg>
+        {SPARKS.map((spark, index) => {
+          const color = ACCENTS[spark.accent];
+          const opacity = isDark ? 0.72 + (index % 3) * 0.09 : 0.44 + (index % 3) * 0.07;
 
-        <div className="psh-planet-particles">
-          {PLANET_PARTICLES.map((particle, index) => {
-            const color = ACCENT_COLORS[particle.accent];
-            const opacity = getParticleOpacity(index, isDark);
-
-            return (
-              <span
-                key={index}
-                className={`psh-particle${particle.blink ? " psh-particle--blink" : ""}`}
-                style={
-                  {
-                    left: `${particle.left}%`,
-                    top: `${particle.top}%`,
-                    width: `${particle.size}px`,
-                    height: `${particle.size}px`,
-                    background: color,
-                    boxShadow: isDark
-                      ? `0 0 ${particle.size * 3}px ${color}`
-                      : `0 0 ${particle.size * 2}px ${color}88`,
-                    ["--particle-drift" as string]: `${particle.drift}px`,
-                    ["--particle-min" as string]: opacity,
-                    ["--particle-max" as string]: isDark
-                      ? clampOpacity(opacity + 0.18)
-                      : clampOpacity(opacity + 0.08),
-                    animationDuration: particle.blink
-                      ? `${particle.duration}s, ${particle.blink}s`
-                      : `${particle.duration}s`,
-                    animationDelay: particle.blink
-                      ? `${particle.delay}s, ${particle.delay / 2}s`
-                      : `${particle.delay}s`,
-                  } as CSSProperties
-                }
-              />
-            );
-          })}
-        </div>
-
-        <div className="psh-ring-sparkles">
-          <span className="psh-ring-spark psh-ring-spark--a" />
-          <span className="psh-ring-spark psh-ring-spark--b" />
-          <span className="psh-ring-spark psh-ring-spark--c" />
-          <span className="psh-ring-spark psh-ring-spark--d" />
-        </div>
+          return (
+            <span
+              key={index}
+              className="planet-spark"
+              style={
+                {
+                  left: `${spark.left}%`,
+                  top: `${spark.top}%`,
+                  width: `${spark.size}px`,
+                  height: `${spark.size}px`,
+                  background: color,
+                  boxShadow: isDark
+                    ? `0 0 ${spark.size * 4}px ${color}`
+                    : `0 0 ${spark.size * 3}px ${color}88`,
+                  ["--spark-min" as string]: opacity,
+                  ["--spark-max" as string]: clampOpacity(opacity + (isDark ? 0.18 : 0.08)),
+                  ["--spark-drift" as string]: `${14 + (index % 4) * 5}px`,
+                  animationDuration: `${spark.duration}s, ${3.2 + (index % 4) * 0.6}s`,
+                  animationDelay: `${spark.delay}s, ${spark.delay / 2}s`,
+                } as CSSProperties
+              }
+            />
+          );
+        })}
       </div>
 
       <style jsx>{styles}</style>
@@ -346,386 +226,279 @@ export default function HeroCosmosScene({
 }
 
 const styles = `
-  .psh-shell {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
+  .hero-cosmos {
     pointer-events: none;
   }
 
-  .psh-shell--planet {
+  .hero-cosmos--backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-cosmos--planet {
     position: relative;
-    inset: auto;
     width: 100%;
     height: 100%;
     min-height: 560px;
     overflow: visible;
   }
 
-  .psh-nebula {
+  .hero-nebula {
     position: absolute;
-    top: 50%;
-    right: -2%;
-    width: min(92vw, 1380px);
-    height: min(92vw, 1380px);
+    top: 46%;
+    right: -4%;
+    width: min(96vw, 1380px);
+    height: min(86vw, 1220px);
     transform: translateY(-50%);
     background:
-      radial-gradient(circle at 50% 44%, rgba(168,85,247,0.15) 0%, rgba(34,211,238,0.08) 34%, transparent 72%);
-    filter: blur(220px);
-    animation: pshNebulaDrift 18s ease-in-out infinite alternate;
+      radial-gradient(circle at 56% 38%, rgba(34,211,238,0.16) 0%, transparent 28%),
+      radial-gradient(circle at 42% 54%, rgba(168,85,247,0.2) 0%, rgba(168,85,247,0.08) 32%, transparent 70%);
+    filter: blur(110px);
+    animation: nebulaDrift 18s ease-in-out infinite alternate;
   }
 
-  .psh-grid-field {
+  .hero-circuit-grid {
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(110, 72, 196, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(110, 72, 196, 0.08) 1px, transparent 1px);
-    background-size: 72px 72px;
-    mask-image: radial-gradient(circle at 70% 50%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.65) 55%, transparent 96%);
-    opacity: 0.7;
+      linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px),
+      linear-gradient(135deg, transparent 0 47%, rgba(34,211,238,0.08) 48% 49%, transparent 50%),
+      linear-gradient(45deg, transparent 0 47%, rgba(124,58,237,0.07) 48% 49%, transparent 50%);
+    background-size: 72px 72px, 72px 72px, 340px 220px, 420px 280px;
+    mask-image: radial-gradient(circle at 74% 52%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.68) 58%, transparent 100%);
   }
 
-  .psh-stars,
-  .psh-tech-strokes,
-  .psh-hud-arcs,
-  .psh-planet-particles,
-  .psh-ring-sparkles {
+  .hero-star,
+  .hero-tech-line,
+  .hero-hud-arc {
     position: absolute;
-    inset: 0;
   }
 
-  .psh-star {
-    position: absolute;
+  .hero-star {
     border-radius: 999px;
-    animation: pshStarTwinkle 5s ease-in-out infinite;
+    opacity: var(--star-min, 0.2);
+    animation: starTwinkle 5s ease-in-out infinite;
   }
 
-  .psh-tech-stroke {
-    position: absolute;
+  .hero-tech-line {
+    height: 2px;
     transform-origin: left center;
-    animation: pshTechPulse 5.8s ease-in-out infinite;
+    opacity: var(--line-min, 0.3);
+    animation: techPulse 5s ease-in-out infinite;
   }
 
-  .psh-hud-arc {
-    position: absolute;
-    border-radius: 999px;
-    border: 1px solid rgba(125, 211, 252, 0.22);
-    filter: blur(0.1px);
+  .hero-hud-arc {
+    right: 5%;
+    border-radius: 50%;
+    border: 1px solid rgba(125,211,252,0.22);
+    filter: drop-shadow(0 0 10px rgba(34,211,238,0.12));
   }
 
-  .psh-hud-arc--a {
-    right: 8%;
-    top: 28%;
-    width: 380px;
-    height: 200px;
-    border-left: none;
-    border-bottom: none;
+  .hero-hud-arc--one {
+    top: 24%;
+    width: 420px;
+    height: 210px;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
     transform: rotate(18deg);
-    opacity: 0.6;
   }
 
-  .psh-hud-arc--b {
-    right: 13%;
-    top: 52%;
-    width: 460px;
-    height: 240px;
-    border-right: none;
-    border-top: none;
-    transform: rotate(-16deg);
-    opacity: 0.42;
+  .hero-hud-arc--two {
+    top: 47%;
+    right: 10%;
+    width: 500px;
+    height: 260px;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    transform: rotate(-13deg);
+    opacity: 0.72;
   }
 
-  .psh-hud-arc--c {
-    right: 22%;
-    top: 16%;
-    width: 220px;
+  .hero-hud-arc--three {
+    top: 14%;
+    right: 20%;
+    width: 240px;
     height: 120px;
-    border-right: none;
-    border-bottom: none;
-    transform: rotate(-14deg);
-    opacity: 0.35;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    transform: rotate(-16deg);
+    opacity: 0.55;
   }
 
-  .psh-planet-glow {
+  .planet-asset-glow {
     position: absolute;
-    right: 4%;
+    right: 0;
     top: 50%;
-    width: min(54vw, 820px);
-    height: min(54vw, 820px);
+    width: min(52vw, 720px);
+    height: min(52vw, 720px);
     transform: translateY(-50%);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(168,85,247,0.48) 0%, rgba(168,85,247,0.18) 32%, transparent 68%);
-    filter: blur(60px);
+    background:
+      radial-gradient(circle, rgba(34,211,238,0.18) 0%, transparent 28%),
+      radial-gradient(circle, rgba(168,85,247,0.48) 0%, rgba(168,85,247,0.15) 38%, transparent 68%);
+    filter: blur(54px);
   }
 
-  .psh-planet-wrap {
+  .planet-art-wrap {
     position: absolute;
-    right: -6%;
+    right: -4%;
     top: 50%;
+    width: clamp(480px, 46vw, 710px);
+    aspect-ratio: 499 / 464;
     transform: translateY(-50%);
-    width: clamp(430px, 46vw, 760px);
-    height: clamp(430px, 46vw, 760px);
   }
 
-  .psh-planet {
-    position: absolute;
-    left: 22%;
-    top: 19%;
-    width: 58%;
-    height: 58%;
-    border-radius: 50%;
-    overflow: hidden;
-    background:
-      radial-gradient(circle at 34% 28%, rgba(255,255,255,0.16) 0%, transparent 18%),
-      radial-gradient(circle at 32% 24%, #EC4899 0%, #A855F7 42%, #7C3AED 100%);
-  }
-
-  .psh-planet-highlight {
-    position: absolute;
-    top: 8%;
-    left: 10%;
-    width: 34%;
-    height: 24%;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.32) 0%, transparent 74%);
-    filter: blur(10px);
-  }
-
-  .psh-planet-rim {
+  .planet-art {
     position: absolute;
     inset: 0;
-    border-radius: 50%;
-    box-shadow:
-      inset 22px 0 50px rgba(255,255,255,0.08),
-      inset -34px -26px 72px rgba(18, 5, 40, 0.52);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    filter: saturate(1.12) contrast(1.06) drop-shadow(0 0 38px rgba(34,211,238,0.16));
   }
 
-  .psh-planet-texture {
+  .ring-spin {
     position: absolute;
-    inset: -6%;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 22% 22%, rgba(255,255,255,0.14) 0%, transparent 24%),
-      radial-gradient(circle at 64% 18%, rgba(255,255,255,0.07) 0%, transparent 18%),
-      radial-gradient(circle at 66% 54%, rgba(111, 53, 214, 0.28) 0%, transparent 22%),
-      radial-gradient(circle at 44% 72%, rgba(66, 31, 142, 0.24) 0%, transparent 28%),
-      conic-gradient(from 20deg, transparent 0%, rgba(255,255,255,0.04) 20%, transparent 38%, rgba(34,211,238,0.08) 58%, transparent 78%, rgba(255,255,255,0.03) 100%);
-    animation: pshPlanetTexture 24s linear infinite;
-  }
-
-  .psh-planet-specks {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 62% 48%, rgba(255,255,255,0.9) 0 1px, transparent 2px),
-      radial-gradient(circle at 56% 56%, rgba(255,255,255,0.72) 0 1px, transparent 2px),
-      radial-gradient(circle at 68% 58%, rgba(255,255,255,0.84) 0 1px, transparent 2px),
-      radial-gradient(circle at 74% 52%, rgba(255,255,255,0.78) 0 1px, transparent 2px),
-      radial-gradient(circle at 60% 62%, rgba(216,180,254,0.94) 0 1.4px, transparent 2.4px),
-      radial-gradient(circle at 71% 46%, rgba(103,232,249,0.9) 0 1px, transparent 2px);
-    opacity: 0.86;
-  }
-
-  .psh-orbit-layer {
-    position: absolute;
-    inset: 0;
-    overflow: visible;
-  }
-
-  .psh-orbit-layer--back {
-    animation: pshOrbitMain 20s linear infinite;
-  }
-
-  .psh-orbit-layer--front {
-    animation: pshOrbitMain 20s linear infinite;
-  }
-
-  .psh-back-ring,
-  .psh-front-ring {
-    fill: none;
+    left: 8%;
+    top: 20%;
+    width: 92%;
+    height: 67%;
     transform-origin: center;
+    mix-blend-mode: screen;
   }
 
-  .psh-back-ring--main,
-  .psh-front-ring--main {
-    stroke: url(#psh-main-ring);
-    stroke-width: 8;
+  .ring-spin span {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    transform: rotate(-12deg);
   }
 
-  .psh-back-ring--accent,
-  .psh-front-ring--accent {
-    stroke: url(#psh-accent-ring);
-    stroke-width: 4;
+  .ring-spin--main {
+    animation: ringRotateMain 20s linear infinite;
   }
 
-  .psh-back-ring--subtle,
-  .psh-front-ring--subtle {
-    stroke: #22D3EE;
-    stroke-width: 2;
+  .ring-spin--main span {
+    border-top: 5px solid rgba(34,211,238,0.72);
+    border-bottom: 5px solid rgba(168,85,247,0.62);
+    box-shadow: 0 0 24px rgba(34,211,238,0.42), inset 0 0 18px rgba(168,85,247,0.22);
   }
 
-  .psh-back-ring {
-    transform: rotate(16deg);
+  .ring-spin--accent {
+    left: 12%;
+    top: 24%;
+    width: 84%;
+    height: 58%;
+    animation: ringRotateAccent 26s linear infinite;
   }
 
-  .psh-front-ring {
-    transform: rotate(16deg);
+  .ring-spin--accent span {
+    border-top: 3px solid rgba(236,72,153,0.58);
+    border-bottom: 3px solid rgba(168,85,247,0.44);
+    box-shadow: 0 0 18px rgba(236,72,153,0.28);
   }
 
-  .psh-back-ring--accent,
-  .psh-front-ring--accent {
-    transform: rotate(42deg);
+  .ring-spin--dotted {
+    left: 2%;
+    top: 13%;
+    width: 104%;
+    height: 78%;
+    animation: ringRotateDotted 34s linear infinite;
   }
 
-  .psh-back-ring--subtle,
-  .psh-front-ring--subtle {
-    transform: rotate(-24deg);
+  .ring-spin--dotted span {
+    border: 2px dashed rgba(125,211,252,0.34);
+    box-shadow: 0 0 12px rgba(34,211,238,0.16);
   }
 
-  .psh-front-ring--main,
-  .psh-front-ring--accent,
-  .psh-front-ring--subtle {
-    clip-path: inset(49% 0 0 0);
-  }
-
-  .psh-back-ring--main,
-  .psh-back-ring--accent,
-  .psh-back-ring--subtle {
-    opacity: 0.7;
-  }
-
-  .psh-particle {
+  .planet-spark {
     position: absolute;
     border-radius: 50%;
-    opacity: var(--particle-min, 0.7);
-    animation: pshParticleFloat 8s ease-in-out infinite;
+    opacity: var(--spark-min, 0.6);
+    animation: sparkFloat 8s ease-in-out infinite, sparkBlink 4s ease-in-out infinite;
   }
 
-  .psh-particle--blink {
-    animation: pshParticleFloat 8s ease-in-out infinite, pshParticleBlink 4s ease-in-out infinite;
-  }
-
-  .psh-ring-spark {
-    position: absolute;
-    border-radius: 50%;
-  }
-
-  .psh-ring-spark--a {
-    left: 70%;
-    top: 48%;
-    width: 10px;
-    height: 10px;
-    background: #22D3EE;
-    box-shadow: 0 0 20px #22D3EE;
-  }
-
-  .psh-ring-spark--b {
-    left: 31%;
-    top: 66%;
-    width: 8px;
-    height: 8px;
-    background: #A855F7;
-    box-shadow: 0 0 18px #A855F7;
-  }
-
-  .psh-ring-spark--c {
-    left: 79%;
-    top: 78%;
-    width: 7px;
-    height: 7px;
-    background: #EC4899;
-    box-shadow: 0 0 18px #EC4899;
-  }
-
-  .psh-ring-spark--d {
-    left: 53%;
-    top: 22%;
-    width: 12px;
-    height: 12px;
-    background: rgba(236,72,153,0.9);
-    box-shadow: 0 0 22px rgba(236,72,153,0.9);
-  }
-
-  @keyframes pshOrbitMain {
+  @keyframes ringRotateMain {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
 
-  @keyframes pshPlanetTexture {
+  @keyframes ringRotateAccent {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  @keyframes ringRotateDotted {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
 
-  @keyframes pshParticleFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(calc(-1 * var(--particle-drift, 20px))); }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: var(--star-min, 0.2); transform: scale(0.85); }
+    50% { opacity: var(--star-max, 0.45); transform: scale(1.25); }
   }
 
-  @keyframes pshParticleBlink {
-    0%, 100% { opacity: var(--particle-min, 0.7); }
-    50% { opacity: var(--particle-max, 0.88); }
-  }
-
-  @keyframes pshStarTwinkle {
-    0%, 100% { opacity: var(--star-min, 0.2); transform: scale(0.9); }
-    50% { opacity: var(--star-max, 0.4); transform: scale(1.2); }
-  }
-
-  @keyframes pshTechPulse {
+  @keyframes techPulse {
     0%, 100% { opacity: var(--line-min, 0.24); }
     50% { opacity: var(--line-max, 0.42); }
   }
 
-  @keyframes pshNebulaDrift {
-    from { transform: translateY(-50%) translateX(0px) scale(1); }
-    to { transform: translateY(-50%) translateX(-34px) scale(1.05); }
+  @keyframes sparkFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(calc(-1 * var(--spark-drift, 18px))); }
+  }
+
+  @keyframes sparkBlink {
+    0%, 100% { opacity: var(--spark-min, 0.6); }
+    50% { opacity: var(--spark-max, 0.8); }
+  }
+
+  @keyframes nebulaDrift {
+    from { transform: translateY(-50%) translateX(0) scale(1); }
+    to { transform: translateY(-50%) translateX(-30px) scale(1.04); }
   }
 
   @media (max-width: 1023px) {
-    .psh-shell--planet {
+    .hero-cosmos--planet {
       display: none;
     }
 
-    .psh-nebula {
+    .hero-nebula {
       right: -28%;
-      width: 980px;
-      height: 980px;
-      filter: blur(180px);
+      width: 900px;
+      height: 760px;
+      filter: blur(130px);
     }
 
-    .psh-grid-field {
-      background-size: 54px 54px;
-      opacity: 0.45;
-    }
-
-    .psh-tech-stroke:nth-child(n + 7),
-    .psh-hud-arc--c {
+    .hero-tech-line:nth-of-type(n + 5),
+    .hero-hud-arc--three {
       display: none;
     }
   }
 
   @media (max-width: 640px) {
-    .psh-nebula {
-      right: -44%;
-      width: 760px;
-      height: 760px;
-      filter: blur(150px);
+    .hero-nebula {
+      right: -48%;
+      width: 720px;
+      height: 620px;
+      filter: blur(115px);
     }
 
-    .psh-tech-stroke:nth-child(n + 5),
-    .psh-hud-arcs {
+    .hero-hud-arc,
+    .hero-tech-line:nth-of-type(n + 4) {
       display: none;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .psh-nebula,
-    .psh-star,
-    .psh-tech-stroke,
-    .psh-orbit-layer,
-    .psh-particle,
-    .psh-planet-texture {
+    .hero-nebula,
+    .hero-star,
+    .hero-tech-line,
+    .ring-spin,
+    .planet-spark {
       animation: none !important;
     }
   }
