@@ -144,8 +144,8 @@ export default async function Home() {
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-10 xl:gap-14">
-          <div className="mx-auto flex w-full max-w-xl flex-col justify-center text-center lg:mx-0 lg:max-w-[min(100%,560px)] lg:flex-[0_0_48%] lg:text-left">
+        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-8 xl:gap-12">
+          <div className="mx-auto flex w-full max-w-xl flex-col justify-center text-center lg:mx-0 lg:max-w-[min(100%,520px)] lg:flex-[0_0_42%] lg:text-left">
             <Reveal>
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/[0.08] px-4 py-2 shadow-[0_0_28px_rgba(168,85,247,0.14)] backdrop-blur-md dark:border-violet-400/25 dark:bg-violet-500/[0.06] lg:mx-0 mx-auto">
                 <span
@@ -209,7 +209,7 @@ export default async function Home() {
             </Reveal>
           </div>
 
-          <div className="hero-planet-shell w-full shrink-0 lg:flex-[1_1_52%] lg:max-w-[min(58vw,820px)] lg:translate-x-4 xl:max-w-[min(56vw,900px)] xl:translate-x-8">
+          <div className="hero-planet-shell w-full shrink-0 lg:flex-[1_1_58%] lg:max-w-[min(62vw,880px)] xl:max-w-[min(60vw,960px)]">
             <Reveal delay={0.15}>
               <HeroCosmosScene />
             </Reveal>

@@ -102,7 +102,6 @@ const HUD_SNIPPETS: SnippetConfig[] = [
   { text: "<Ring phase=\"slow\" />", left: 75, top: 40, rotate: -4, delay: 1.4, width: 158 },
   { text: "grid.mask('circuit')", left: 84, top: 53, rotate: 8, delay: 0.5, width: 170 },
   { text: "motion.float(0.7)", left: 70, top: 66, rotate: 4, delay: 1.9, width: 154 },
-  { text: "rgba(168, 85, 247, .56)", left: 57, top: 31, rotate: -12, delay: 1.2, width: 178 },
 ];
 
 function clampOpacity(value: number) {
@@ -646,10 +645,10 @@ const styles = `
 
   .planet-glow {
     position: absolute;
-    right: 1%;
+    right: 2%;
     top: 50%;
-    width: min(54vw, 820px);
-    height: min(54vw, 820px);
+    width: min(44vw, 660px);
+    height: min(44vw, 660px);
     transform: translateY(-50%);
     border-radius: 50%;
     background:
@@ -660,10 +659,10 @@ const styles = `
 
   .planet-code-cloud {
     position: absolute;
-    right: 8%;
+    right: 11%;
     top: 18%;
-    width: min(32vw, 410px);
-    height: min(32vw, 410px);
+    width: min(24vw, 290px);
+    height: min(24vw, 290px);
     background:
       radial-gradient(circle at 52% 48%, rgba(34,211,238,0.14) 0%, transparent 24%),
       radial-gradient(circle at 42% 30%, rgba(168,85,247,0.14) 0%, transparent 18%),
@@ -673,9 +672,9 @@ const styles = `
 
   .planet-canvas-shell {
     position: absolute;
-    right: -10%;
+    right: 1%;
     top: 50%;
-    width: clamp(360px, 50vw, 860px);
+    width: clamp(300px, 38vw, 640px);
     aspect-ratio: 1 / 1;
     transform: translateY(-50%);
   }
@@ -694,29 +693,29 @@ const styles = `
 
   .hero-cosmos-aura {
     inset: 50% auto auto 54%;
-    width: 138%;
-    height: 138%;
+    width: 124%;
+    height: 124%;
   }
 
   .hero-cosmos-halo {
     inset: 50% auto auto 54%;
-    width: 118%;
-    height: 118%;
+    width: 106%;
+    height: 106%;
   }
 
   .hero-cosmos-ring-a {
     inset: 50% auto auto 56%;
-    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(16deg);
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(16deg) scale(0.92);
   }
 
   .hero-cosmos-ring-b {
     inset: 50% auto auto 56%;
-    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(-14deg);
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(-14deg) scale(0.92);
   }
 
   .hero-cosmos-ring-c {
     inset: 50% auto auto 56%;
-    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(4deg);
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(4deg) scale(0.92);
   }
 
   .hero-cosmos-orbit-trail-a {
@@ -753,7 +752,7 @@ const styles = `
     align-items: center;
     justify-content: center;
     min-height: 20px;
-    padding: 4px 10px;
+    padding: 3px 9px;
     border-radius: 999px;
     border: 1px solid rgba(125, 211, 252, 0.24);
     background:
@@ -764,11 +763,11 @@ const styles = `
       0 0 22px rgba(34, 211, 238, 0.08);
     color: rgba(230, 221, 255, 0.84);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-    font-size: 9px;
-    letter-spacing: 0.12em;
+    font-size: 8px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     white-space: nowrap;
-    opacity: 0.84;
+    opacity: 0.78;
     backdrop-filter: blur(8px);
     animation: snippetFloat 6.8s ease-in-out infinite;
     pointer-events: none;
