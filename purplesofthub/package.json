@@ -24,6 +24,8 @@
     "@next/third-parties": "^16.2.3",
     "@react-jvectormap/core": "^1.0.4",
     "@react-jvectormap/world": "^1.1.2",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.3",
@@ -68,7 +70,8 @@
     "sharp": "^0.34.5",
     "svix": "^1.88.0",
     "swiper": "^12.1.2",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
