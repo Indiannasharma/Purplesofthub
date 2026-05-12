@@ -1651,8 +1651,8 @@ html.dark {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 560px;
+  align-items: flex-start;
+  min-height: clamp(280px, 32vw, 420px);
 }
 
 .hero-cosmos-shell {
@@ -2003,13 +2003,13 @@ html.dark {
 
   .hero-planet-shell {
     display: flex !important;
-    min-height: clamp(260px, 56vw, 440px) !important;
-    align-items: center;
+    min-height: clamp(240px, 46vw, 360px) !important;
+    align-items: flex-start;
     justify-content: center;
   }
 
   .hero-cosmos-shell {
-    width: min(100%, 440px) !important;
+    width: min(100%, 360px) !important;
   }
 }
 
