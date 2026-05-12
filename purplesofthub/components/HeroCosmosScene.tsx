@@ -101,7 +101,6 @@ const HUD_SNIPPETS: SnippetConfig[] = [
   { text: "const glow = 0.86", left: 80, top: 29, rotate: 6, delay: 0.8, width: 150 },
   { text: "<Ring phase=\"slow\" />", left: 75, top: 40, rotate: -4, delay: 1.4, width: 158 },
   { text: "grid.mask('circuit')", left: 84, top: 53, rotate: 8, delay: 0.5, width: 170 },
-  { text: "motion.float(0.7)", left: 70, top: 66, rotate: 4, delay: 1.9, width: 154 },
 ];
 
 function clampOpacity(value: number) {
@@ -513,7 +512,7 @@ const styles = `
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: clamp(340px, 46vw, 720px);
+    min-height: clamp(240px, 32vw, 440px);
     overflow: visible;
   }
 
@@ -521,8 +520,8 @@ const styles = `
     position: absolute;
     top: 46%;
     right: -4%;
-    width: min(96vw, 1380px);
-    height: min(86vw, 1220px);
+    width: min(72vw, 980px);
+    height: min(66vw, 860px);
     transform: translateY(-50%);
     background:
       radial-gradient(circle at 56% 38%, rgba(34,211,238,0.16) 0%, transparent 28%),
@@ -645,10 +644,10 @@ const styles = `
 
   .planet-glow {
     position: absolute;
-    right: 2%;
+    right: 8%;
     top: 50%;
-    width: min(44vw, 660px);
-    height: min(44vw, 660px);
+    width: min(28vw, 360px);
+    height: min(28vw, 360px);
     transform: translateY(-50%);
     border-radius: 50%;
     background:
@@ -658,25 +657,17 @@ const styles = `
   }
 
   .planet-code-cloud {
-    position: absolute;
-    right: 11%;
-    top: 18%;
-    width: min(24vw, 290px);
-    height: min(24vw, 290px);
-    background:
-      radial-gradient(circle at 52% 48%, rgba(34,211,238,0.14) 0%, transparent 24%),
-      radial-gradient(circle at 42% 30%, rgba(168,85,247,0.14) 0%, transparent 18%),
-      radial-gradient(circle at 64% 68%, rgba(236,72,153,0.08) 0%, transparent 16%);
-    filter: blur(34px);
+    display: none;
   }
 
   .planet-canvas-shell {
     position: absolute;
-    right: 1%;
+    right: 7%;
     top: 50%;
-    width: clamp(300px, 38vw, 640px);
+    width: clamp(220px, 28vw, 420px);
     aspect-ratio: 1 / 1;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(0.88);
+    transform-origin: center center;
   }
 
   .planet-canvas-shell canvas {
@@ -687,35 +678,37 @@ const styles = `
 
   .planet-orbit-stage {
     position: absolute;
-    inset: 0;
+    inset: 4% 0 0 0;
     overflow: visible;
+    transform: scale(0.84);
+    transform-origin: center center;
   }
 
   .hero-cosmos-aura {
     inset: 50% auto auto 54%;
-    width: 124%;
-    height: 124%;
+    width: 112%;
+    height: 112%;
   }
 
   .hero-cosmos-halo {
     inset: 50% auto auto 54%;
-    width: 106%;
-    height: 106%;
+    width: 96%;
+    height: 96%;
   }
 
   .hero-cosmos-ring-a {
     inset: 50% auto auto 56%;
-    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(16deg) scale(0.92);
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(16deg) scale(0.76);
   }
 
   .hero-cosmos-ring-b {
     inset: 50% auto auto 56%;
-    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(-14deg) scale(0.92);
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(-14deg) scale(0.76);
   }
 
   .hero-cosmos-ring-c {
     inset: 50% auto auto 56%;
-    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(4deg) scale(0.92);
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(4deg) scale(0.76);
   }
 
   .hero-cosmos-orbit-trail-a {
@@ -742,8 +735,7 @@ const styles = `
   }
 
   .planet-code-snippets {
-    position: absolute;
-    inset: 0;
+    display: none;
   }
 
   .planet-code-snippet {
@@ -812,23 +804,20 @@ const styles = `
 
   @media (max-width: 1023px) {
     .hero-cosmos--planet {
-      min-height: clamp(300px, 62vw, 470px);
+      min-height: clamp(260px, 50vw, 380px);
     }
 
     .planet-glow {
       right: 50%;
       top: 42%;
-      width: min(96vw, 560px);
-      height: min(96vw, 560px);
+      width: min(78vw, 420px);
+      height: min(78vw, 420px);
       transform: translate(50%, -50%);
       filter: blur(48px);
     }
 
     .planet-code-cloud {
-      right: 22%;
-      top: 14%;
-      width: min(56vw, 420px);
-      height: min(56vw, 420px);
+      display: none;
     }
 
     .planet-canvas-shell {
@@ -836,7 +825,7 @@ const styles = `
       right: auto;
       top: auto;
       transform: none;
-      width: min(100%, 520px);
+      width: min(100%, 360px);
       margin-left: auto;
       margin-right: auto;
     }
@@ -853,9 +842,7 @@ const styles = `
       display: none;
     }
 
-    .planet-code-snippet:nth-of-type(n + 5) {
-      display: none;
-    }
+    .planet-code-snippet:nth-of-type(n + 5) { display: none; }
   }
 
   @media (max-width: 640px) {
@@ -873,10 +860,6 @@ const styles = `
 
     .planet-canvas-shell {
       width: min(100%, 360px);
-    }
-
-    .planet-code-snippet:nth-of-type(n + 4) {
-      display: none;
     }
   }
 
