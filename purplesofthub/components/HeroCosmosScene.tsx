@@ -44,6 +44,15 @@ type CircuitTraceConfig = {
   lightOpacity: number;
 };
 
+type SnippetConfig = {
+  text: string;
+  left: number;
+  top: number;
+  rotate: number;
+  delay: number;
+  width: number;
+};
+
 const ACCENTS: Record<Accent, string> = {
   purple: "#A855F7",
   cyan: "#22D3EE",
@@ -85,6 +94,15 @@ const CIRCUIT_TRACES: CircuitTraceConfig[] = [
   { left: 63, top: 61, width: 420, angle: -9, accent: "cyan", duration: 7.4, delay: 1.6, darkOpacity: 0.3, lightOpacity: 0.36 },
   { left: 73, top: 73, width: 280, angle: 27, accent: "pink", duration: 5.8, delay: 2.5, darkOpacity: 0.24, lightOpacity: 0.3 },
   { left: 55, top: 82, width: 320, angle: -28, accent: "purple", duration: 6.2, delay: 0.7, darkOpacity: 0.26, lightOpacity: 0.32 },
+];
+
+const HUD_SNIPPETS: SnippetConfig[] = [
+  { text: "renderOrbit()", left: 71, top: 20, rotate: -8, delay: 0.1, width: 132 },
+  { text: "const glow = 0.86", left: 80, top: 29, rotate: 6, delay: 0.8, width: 150 },
+  { text: "<Ring phase=\"slow\" />", left: 75, top: 40, rotate: -4, delay: 1.4, width: 158 },
+  { text: "grid.mask('circuit')", left: 84, top: 53, rotate: 8, delay: 0.5, width: 170 },
+  { text: "motion.float(0.7)", left: 70, top: 66, rotate: 4, delay: 1.9, width: 154 },
+  { text: "rgba(168, 85, 247, .56)", left: 57, top: 31, rotate: -12, delay: 1.2, width: 178 },
 ];
 
 function clampOpacity(value: number) {
@@ -298,40 +316,19 @@ function PlanetScene({ isDark }: { isDark: boolean }) {
 
   useFrame((_, delta) => {
     if (!planet.current) return;
-    planet.current.rotation.y += delta * 0.1;
-    planet.current.rotation.x = -0.07;
+    planet.current.rotation.y += delta * 0.09;
+    planet.current.rotation.x = -0.12;
   });
 
   return (
     <>
-      <ambientLight intensity={isDark ? 1.35 : 1} />
-      <pointLight position={[-2.8, 2.6, 3.2]} color="#EC4899" intensity={isDark ? 5.8 : 3.5} />
-      <pointLight position={[3, 1.2, 2.6]} color="#22D3EE" intensity={isDark ? 5.2 : 3.4} />
-      <pointLight position={[0, -2.6, 2]} color="#7C3AED" intensity={isDark ? 3.6 : 2.3} />
-      <pointLight position={[-1.2, -0.5, 3.8]} color="#A855F7" intensity={isDark ? 2.4 : 1.5} />
+      <ambientLight intensity={isDark ? 1.4 : 1.1} />
+      <pointLight position={[-2.8, 2.6, 3.2]} color="#EC4899" intensity={isDark ? 5.5 : 3.4} />
+      <pointLight position={[3, 1.2, 2.6]} color="#22D3EE" intensity={isDark ? 5 : 3.2} />
+      <pointLight position={[0, -2.6, 2]} color="#7C3AED" intensity={isDark ? 3.8 : 2.4} />
+      <pointLight position={[-1.2, -0.5, 3.8]} color="#A855F7" intensity={isDark ? 2.6 : 1.6} />
 
-      <group position={[0.22, -0.05, 0]} scale={1.05}>
-        <SaturnRing color="#06B6D4" radius={1.92} tube={0.014} speed={0.14} opacity={isDark ? 0.42 : 0.28} />
-        <SaturnRing color="#22D3EE" radius={1.82} tube={0.016} speed={0.17} opacity={isDark ? 0.88 : 0.58} />
-        <SaturnRing color="#A855F7" radius={1.7} tube={0.024} speed={0.14} reverse opacity={isDark ? 0.76 : 0.48} />
-        <SaturnRing color="#C084FC" radius={1.58} tube={0.01} speed={0.1} opacity={isDark ? 0.5 : 0.32} />
-        <DataPacketRing
-          isDark={isDark}
-          radius={2.06}
-          colorHex="#22D3EE"
-          speed={0.12}
-          tilt={RING_TILT}
-        />
-        <DataPacketRing
-          isDark={isDark}
-          radius={1.98}
-          colorHex="#A855F7"
-          speed={0.09}
-          reverse
-          tilt={[RING_TILT[0] + 0.02, RING_TILT[1], RING_TILT[2]]}
-        />
-        <DottedRing isDark={isDark} />
-
+      <group position={[0.18, -0.08, 0]} scale={1.16}>
         <mesh ref={planet}>
           <sphereGeometry args={[1.1, 128, 128]} />
           <PlanetMaterial isDark={isDark} />
@@ -416,15 +413,34 @@ export default function HeroCosmosScene({
   return (
     <div className="hero-cosmos hero-cosmos--planet" aria-hidden="true">
       <div className="planet-glow" style={{ opacity: isDark ? 0.68 : 0.36 }} />
+      <div className="planet-code-cloud" style={{ opacity: isDark ? 0.66 : 0.4 }} />
 
       <div className="planet-canvas-shell">
         <Canvas
-          camera={{ position: [0, 0.1, 4.2], fov: 40 }}
-          dpr={[1, 1.8]}
+          camera={{ position: [0, 0.08, 3.7], fov: 38 }}
+          dpr={[1, 2]}
           gl={{ alpha: true, antialias: true }}
         >
           <PlanetScene isDark={isDark} />
         </Canvas>
+
+        <div className="planet-orbit-stage">
+          <span className="hero-cosmos-aura" />
+          <span className="hero-cosmos-halo" />
+          <span className="hero-cosmos-ring hero-cosmos-ring-a" />
+          <span className="hero-cosmos-ring hero-cosmos-ring-b" />
+          <span className="hero-cosmos-ring hero-cosmos-ring-c" />
+          <span className="hero-cosmos-orbit-trail hero-cosmos-orbit-trail-a" />
+          <span className="hero-cosmos-orbit-trail hero-cosmos-orbit-trail-b" />
+          <span className="hero-cosmos-data-arc hero-cosmos-data-arc-a" />
+          <span className="hero-cosmos-data-arc hero-cosmos-data-arc-b" />
+          <span className="hero-cosmos-data-arc hero-cosmos-data-arc-c" />
+          <span className="hero-cosmos-node hero-orbit-1" style={{ width: 7, height: 7, color: "#22D3EE", marginLeft: -3.5, marginTop: -3.5, animationDuration: "11s" }} />
+          <span className="hero-cosmos-node hero-orbit-2" style={{ width: 5, height: 5, color: "#A855F7", marginLeft: -2.5, marginTop: -2.5, animationDuration: "14s" }} />
+          <span className="hero-cosmos-node hero-orbit-3" style={{ width: 6, height: 6, color: "#D8B4FE", marginLeft: -3, marginTop: -3, animationDuration: "16s" }} />
+          <span className="hero-cosmos-node hero-orbit-4" style={{ width: 5, height: 5, color: "#67E8F9", marginLeft: -2.5, marginTop: -2.5, animationDuration: "18s" }} />
+          <span className="hero-cosmos-node hero-orbit-5" style={{ width: 8, height: 8, color: "#EC4899", marginLeft: -4, marginTop: -4, animationDuration: "20s" }} />
+        </div>
 
         <div className="planet-overlay-sparks">
           {PARTICLES.map((spark, index) => {
@@ -456,6 +472,26 @@ export default function HeroCosmosScene({
             );
           })}
         </div>
+
+        <div className="planet-code-snippets">
+          {HUD_SNIPPETS.map((chip, index) => (
+            <span
+              key={index}
+              className="planet-code-snippet"
+              style={
+                {
+                  left: `${chip.left}%`,
+                  top: `${chip.top}%`,
+                  width: `${chip.width}px`,
+                  ["--snippet-rotate" as string]: `${chip.rotate}deg`,
+                  animationDelay: `${chip.delay}s`,
+                } as CSSProperties
+              }
+            >
+              {chip.text}
+            </span>
+          ))}
+        </div>
       </div>
 
       <style jsx>{styles}</style>
@@ -478,7 +514,7 @@ const styles = `
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: clamp(280px, 42vw, 560px);
+    min-height: clamp(340px, 46vw, 720px);
     overflow: visible;
   }
 
@@ -610,10 +646,10 @@ const styles = `
 
   .planet-glow {
     position: absolute;
-    right: 3%;
+    right: 1%;
     top: 50%;
-    width: min(48vw, 680px);
-    height: min(48vw, 680px);
+    width: min(54vw, 820px);
+    height: min(54vw, 820px);
     transform: translateY(-50%);
     border-radius: 50%;
     background:
@@ -622,11 +658,24 @@ const styles = `
     filter: blur(54px);
   }
 
+  .planet-code-cloud {
+    position: absolute;
+    right: 8%;
+    top: 18%;
+    width: min(32vw, 410px);
+    height: min(32vw, 410px);
+    background:
+      radial-gradient(circle at 52% 48%, rgba(34,211,238,0.14) 0%, transparent 24%),
+      radial-gradient(circle at 42% 30%, rgba(168,85,247,0.14) 0%, transparent 18%),
+      radial-gradient(circle at 64% 68%, rgba(236,72,153,0.08) 0%, transparent 16%);
+    filter: blur(34px);
+  }
+
   .planet-canvas-shell {
     position: absolute;
-    right: -4%;
+    right: -10%;
     top: 50%;
-    width: clamp(300px, 44vw, 700px);
+    width: clamp(360px, 50vw, 860px);
     aspect-ratio: 1 / 1;
     transform: translateY(-50%);
   }
@@ -637,9 +686,92 @@ const styles = `
     filter: drop-shadow(0 0 42px rgba(168,85,247,0.22)) drop-shadow(0 0 28px rgba(34,211,238,0.18));
   }
 
+  .planet-orbit-stage {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  .hero-cosmos-aura {
+    inset: 50% auto auto 54%;
+    width: 138%;
+    height: 138%;
+  }
+
+  .hero-cosmos-halo {
+    inset: 50% auto auto 54%;
+    width: 118%;
+    height: 118%;
+  }
+
+  .hero-cosmos-ring-a {
+    inset: 50% auto auto 56%;
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(16deg);
+  }
+
+  .hero-cosmos-ring-b {
+    inset: 50% auto auto 56%;
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(-14deg);
+  }
+
+  .hero-cosmos-ring-c {
+    inset: 50% auto auto 56%;
+    transform: translate(-50%, -50%) rotateX(70deg) rotateZ(4deg);
+  }
+
+  .hero-cosmos-orbit-trail-a {
+    inset: 50% auto auto 56%;
+  }
+
+  .hero-cosmos-orbit-trail-b {
+    inset: 50% auto auto 56%;
+  }
+
+  .hero-cosmos-data-arc-a,
+  .hero-cosmos-data-arc-b,
+  .hero-cosmos-data-arc-c {
+    inset: 50% auto auto 56%;
+  }
+
+  .hero-cosmos-node {
+    inset: 50% auto auto 56%;
+  }
+
   .planet-overlay-sparks {
     position: absolute;
     inset: 0;
+  }
+
+  .planet-code-snippets {
+    position: absolute;
+    inset: 0;
+  }
+
+  .planet-code-snippet {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(125, 211, 252, 0.24);
+    background:
+      linear-gradient(135deg, rgba(12, 8, 30, 0.52), rgba(44, 16, 82, 0.28)),
+      linear-gradient(90deg, rgba(168, 85, 247, 0.14), rgba(34, 211, 238, 0.12));
+    box-shadow:
+      0 0 0 1px rgba(168, 85, 247, 0.08) inset,
+      0 0 22px rgba(34, 211, 238, 0.08);
+    color: rgba(230, 221, 255, 0.84);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0.84;
+    backdrop-filter: blur(8px);
+    animation: snippetFloat 6.8s ease-in-out infinite;
+    pointer-events: none;
   }
 
   .planet-spark {
@@ -669,6 +801,11 @@ const styles = `
     50% { opacity: var(--spark-max, 0.8); }
   }
 
+  @keyframes snippetFloat {
+    0%, 100% { transform: translate(-50%, -50%) rotate(var(--snippet-rotate, 0deg)) translateY(0); }
+    50% { transform: translate(-50%, -50%) rotate(var(--snippet-rotate, 0deg)) translateY(-8px); }
+  }
+
   @keyframes nebulaDrift {
     from { transform: translateY(-50%) translateX(0) scale(1); }
     to { transform: translateY(-50%) translateX(-30px) scale(1.04); }
@@ -676,16 +813,23 @@ const styles = `
 
   @media (max-width: 1023px) {
     .hero-cosmos--planet {
-      min-height: clamp(260px, 58vw, 400px);
+      min-height: clamp(300px, 62vw, 470px);
     }
 
     .planet-glow {
       right: 50%;
       top: 42%;
-      width: min(90vw, 520px);
-      height: min(90vw, 520px);
+      width: min(96vw, 560px);
+      height: min(96vw, 560px);
       transform: translate(50%, -50%);
       filter: blur(48px);
+    }
+
+    .planet-code-cloud {
+      right: 22%;
+      top: 14%;
+      width: min(56vw, 420px);
+      height: min(56vw, 420px);
     }
 
     .planet-canvas-shell {
@@ -693,7 +837,7 @@ const styles = `
       right: auto;
       top: auto;
       transform: none;
-      width: min(100%, 440px);
+      width: min(100%, 520px);
       margin-left: auto;
       margin-right: auto;
     }
@@ -707,6 +851,10 @@ const styles = `
 
     .hero-circuit-trace:nth-of-type(n + 5),
     .hero-hud-arc--three {
+      display: none;
+    }
+
+    .planet-code-snippet:nth-of-type(n + 5) {
       display: none;
     }
   }
@@ -726,6 +874,10 @@ const styles = `
 
     .planet-canvas-shell {
       width: min(100%, 360px);
+    }
+
+    .planet-code-snippet:nth-of-type(n + 4) {
+      display: none;
     }
   }
 

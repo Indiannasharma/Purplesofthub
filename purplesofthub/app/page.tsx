@@ -137,43 +137,15 @@ export default async function Home() {
         id="home"
         className="hero-section relative isolate flex min-h-[100dvh] flex-col overflow-hidden scroll-mt-[72px] pb-14 pt-[5.5rem] sm:pb-20 sm:pt-[5.75rem] lg:min-h-screen lg:pb-24 lg:pt-24"
       >
-        {/* Enhanced cosmic background with grid and glowing lines */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Deep space gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-950/40 via-purple-900/20 to-slate-950/60 dark:from-violet-950/60 dark:via-purple-900/30 dark:to-slate-950/80" />
-          
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06]" 
-            style={{
-              backgroundImage: `linear-gradient(rgba(124, 58, 237, 0.3) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(124, 58, 237, 0.3) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
-            }} 
-          />
-          
-          {/* Glowing horizontal lines */}
-          <div className="absolute top-[20%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-violet-500/30 to-transparent blur-[2px]" />
-          <div className="absolute top-[40%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-purple-500/20 to-transparent blur-[1px]" />
-          <div className="absolute top-[60%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/25 to-transparent blur-[1px]" />
-          
-          {/* Ambient nebula glows */}
-          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-violet-600/20 to-purple-600/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-600/15 to-blue-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-        </div>
-
         <HeroCosmosScene variant="backdrop" />
 
         <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-violet-100/40 via-transparent to-[var(--cyber-bg)] dark:from-[#05020c]/90 dark:via-transparent dark:to-transparent"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_75%_at_85%_40%,rgba(124,58,237,0.14)_0%,rgba(6,182,212,0.05)_42%,transparent_58%)] opacity-90 dark:bg-[radial-gradient(ellipse_95%_72%_at_82%_36%,rgba(168,85,247,0.22)_0%,rgba(6,182,212,0.08)_48%,transparent_60%)]"
+          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_72%_58%_at_80%_38%,rgba(168,85,247,0.12)_0%,rgba(168,85,247,0.04)_28%,transparent_62%),radial-gradient(ellipse_48%_34%_at_72%_56%,rgba(34,211,238,0.08)_0%,transparent_56%),linear-gradient(180deg,rgba(7,4,18,0.18)_0%,rgba(7,4,18,0.12)_48%,rgba(7,4,18,0.34)_100%)]"
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-12 xl:gap-16">
-          <div className="mx-auto flex w-full max-w-xl flex-col justify-center text-center lg:mx-0 lg:max-w-[min(100%,560px)] lg:flex-1 lg:text-left">
+        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-10 xl:gap-14">
+          <div className="mx-auto flex w-full max-w-xl flex-col justify-center text-center lg:mx-0 lg:max-w-[min(100%,560px)] lg:flex-[0_0_48%] lg:text-left">
             <Reveal>
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/[0.08] px-4 py-2 shadow-[0_0_28px_rgba(168,85,247,0.14)] backdrop-blur-md dark:border-violet-400/25 dark:bg-violet-500/[0.06] lg:mx-0 mx-auto">
                 <span
@@ -189,22 +161,28 @@ export default async function Home() {
 
             <Reveal delay={0.1}>
               <h1
-                className="text-[clamp(2rem,6.5vw,3.9rem)] font-black leading-[1.06] tracking-[-0.03em] text-[var(--cyber-heading)] [text-shadow:0_0_48px_rgba(168,85,247,0.12)] sm:text-[clamp(2.35rem,5.2vw,3.5rem)] lg:text-[clamp(2.5rem,4.1vw,3.85rem)] xl:text-[clamp(2.85rem,4.4vw,4.15rem)]"
+                className="text-[clamp(2rem,6.4vw,4rem)] font-black leading-[0.98] tracking-[-0.045em] text-[var(--cyber-heading)] [text-shadow:0_0_48px_rgba(168,85,247,0.12)] sm:text-[clamp(2.35rem,5vw,3.7rem)] lg:text-[clamp(2.5rem,4.2vw,4.1rem)] xl:text-[clamp(2.9rem,4.4vw,4.45rem)]"
                 style={{ fontFamily: "Outfit, system-ui, sans-serif" }}
               >
-                Building Technology
-                <br />
-                for the{" "}
-                <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
-                  Next Generation
+                <span className="block">Building Technology</span>
+                <span className="block">
+                  for the{" "}
+                  <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
+                    Next
+                  </span>
                 </span>
-                {" "}
-                of Businesses
+                <span className="block">
+                  <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
+                    Generation
+                  </span>{" "}
+                  of
+                </span>
+                <span className="block">Businesses</span>
               </h1>
             </Reveal>
 
             <Reveal delay={0.2}>
-              <p className="mx-auto mt-6 max-w-lg text-[15px] leading-relaxed text-[var(--cyber-body)] sm:text-base lg:mx-0">
+              <p className="mx-auto mt-6 max-w-[31rem] text-[15px] leading-relaxed text-[var(--cyber-body)] sm:text-base lg:mx-0">
                 Web Development • Mobile Apps • Digital Marketing • Music
               </p>
             </Reveal>
@@ -231,7 +209,7 @@ export default async function Home() {
             </Reveal>
           </div>
 
-          <div className="hero-planet-shell w-full flex-1 shrink-0 lg:max-w-[min(52vw,640px)] xl:max-w-[min(48vw,700px)]">
+          <div className="hero-planet-shell w-full shrink-0 lg:flex-[1_1_52%] lg:max-w-[min(58vw,820px)] lg:translate-x-4 xl:max-w-[min(56vw,900px)] xl:translate-x-8">
             <Reveal delay={0.15}>
               <HeroCosmosScene />
             </Reveal>
