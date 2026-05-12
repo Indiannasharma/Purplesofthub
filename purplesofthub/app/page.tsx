@@ -14,7 +14,6 @@ import {
   AnimatedCard,
   FadeIn
 } from "@/components/motion";
-import { CountUp } from "@/components/motion/CountUp";
 import { createClient } from "@/lib/supabase/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
@@ -62,7 +61,7 @@ const SUCCESS = [
   {
     icon: "📈", tag: "E-Commerce", category: "Digital Marketing",
     challenge: "Low sales, high CPA", solution: "Shopify + Facebook Ads",
-    result: "3.5Ã—", resultLabel: "Revenue Increase",
+    result: "3.5×", resultLabel: "Revenue Increase",
     accent: "#7c3aed", accentLight: "rgba(124,58,237,0.12)", accentBorder: "rgba(124,58,237,0.35)",
   },
   {
@@ -134,129 +133,81 @@ export default async function Home() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section id="home" className="hero-section" style={{ minHeight: "100vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", padding: "100px 5% 60px" }}>
+      <section
+        id="home"
+        className="hero-section relative isolate flex min-h-[100dvh] flex-col overflow-hidden scroll-mt-[72px] pb-14 pt-[5.5rem] sm:pb-20 sm:pt-[5.75rem] lg:min-h-screen lg:pb-24 lg:pt-24"
+      >
         <HeroCosmosScene variant="backdrop" />
 
-        <div className="hero-grid" style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center", position: "relative", zIndex: 2 }}>
-          <div>
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-violet-100/40 via-transparent to-[var(--cyber-bg)] dark:from-[#05020c]/90 dark:via-transparent dark:to-transparent"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_75%_at_85%_40%,rgba(124,58,237,0.14)_0%,rgba(6,182,212,0.05)_42%,transparent_58%)] opacity-90 dark:bg-[radial-gradient(ellipse_95%_72%_at_82%_36%,rgba(168,85,247,0.22)_0%,rgba(6,182,212,0.08)_48%,transparent_60%)]"
+          aria-hidden
+        />
+
+        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-12 xl:gap-16">
+          <div className="mx-auto flex w-full max-w-xl flex-col justify-center text-center lg:mx-0 lg:max-w-[min(100%,560px)] lg:flex-1 lg:text-left">
             <Reveal>
-              {/* Premium Badge */}
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'rgba(124,58,237,0.1)',
-                border: '1px solid rgba(124,58,237,0.3)',
-                borderRadius: '100px',
-                padding: '7px 18px',
-                marginBottom: '28px',
-                boxShadow: '0 0 20px rgba(124,58,237,0.15)',
-              }}>
-                <span style={{
-                  width: '7px',
-                  height: '7px',
-                  borderRadius: '50%',
-                  background: '#a855f7',
-                  display: 'inline-block',
-                  boxShadow: '0 0 10px #a855f7',
-                  animation: 'cyberPulse 1.8s ease-in-out infinite',
-                  flexShrink: 0,
-                }}/>
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: '#7c3aed',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                }}>
-                  DIGITAL INNOVATION STUDIO
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/[0.08] px-4 py-2 shadow-[0_0_28px_rgba(168,85,247,0.14)] backdrop-blur-md dark:border-violet-400/25 dark:bg-violet-500/[0.06] lg:mx-0 mx-auto">
+                <span
+                  className="inline-block size-1.5 shrink-0 rounded-full bg-fuchsia-400 shadow-[0_0_12px_#c084fc]"
+                  style={{ animation: "cyberPulse 1.8s ease-in-out infinite" }}
+                  aria-hidden
+                />
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700 sm:text-xs dark:text-violet-300">
+                  Digital Innovation Studio
                 </span>
               </div>
             </Reveal>
+
             <Reveal delay={0.1}>
-              <h1 style={{ 
-                fontFamily: "Outfit", 
-                fontSize: "clamp(36px,4.5vw,62px)", 
-                fontWeight: 900, 
-                lineHeight: 1.1, 
-                color: "var(--cyber-heading)", 
-                letterSpacing: "-2px", 
-                marginBottom: 22,
-                textShadow: "0 0 40px rgba(168,85,247,0.2)"
-              }}>
-                Building Technology<br />for the{' '}
-                <span style={{
-                  background: 'linear-gradient(135deg, #7c3aed, #a855f7, #22d3ee)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  filter: 'drop-shadow(0 0 20px rgba(124,58,237,0.3))',
-                }}>
+              <h1
+                className="text-[clamp(2rem,6.5vw,3.9rem)] font-black leading-[1.06] tracking-[-0.03em] text-[var(--cyber-heading)] [text-shadow:0_0_48px_rgba(168,85,247,0.12)] sm:text-[clamp(2.35rem,5.2vw,3.5rem)] lg:text-[clamp(2.5rem,4.1vw,3.85rem)] xl:text-[clamp(2.85rem,4.4vw,4.15rem)]"
+                style={{ fontFamily: "Outfit, system-ui, sans-serif" }}
+              >
+                Building Technology
+                <br />
+                for the{" "}
+                <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
                   Next Generation
-                </span>
-                {' '}of Businesses
+                </span>{" "}
+                of Businesses
               </h1>
             </Reveal>
+
             <Reveal delay={0.2}>
-              <p style={{ color: "var(--cyber-body)", fontSize: 16, lineHeight: 1.8, marginBottom: 32 }}>
-                Web Development · Mobile Apps · Digital Marketing · Music Distribution
+              <p className="mx-auto mt-6 max-w-lg text-[15px] leading-relaxed text-[var(--cyber-body)] sm:text-base lg:mx-0">
+                Web Development • Mobile Apps • Digital Marketing • Music
               </p>
             </Reveal>
+
             <Reveal delay={0.3}>
-              <div className="cta-row hero-cta-row" style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 48 }}>
-                <Link href="/contact">
-                  <button className="cyber-btn-primary" style={{ padding: "14px 32px", fontSize: 16 }}>Start a Project</button>
+              <div className="cta-row hero-cta-row mt-9 flex flex-wrap justify-center gap-3.5 sm:gap-4 lg:justify-start">
+                <Link href="/contact" className="inline-flex w-full min-[480px]:w-auto">
+                  <button
+                    type="button"
+                    className="cyber-btn-primary w-full min-w-[200px] justify-center rounded-xl px-8 py-3.5 text-[15px] font-semibold shadow-[0_8px_32px_rgba(124,58,237,0.35)] transition duration-300 hover:shadow-[0_12px_40px_rgba(124,58,237,0.45)] min-[480px]:w-auto"
+                  >
+                    Start a Project
+                  </button>
                 </Link>
-                <Link href="/contact">
-                  <button className="cyber-btn-outline" style={{ padding: "14px 32px", fontSize: 16 }}>
+                <Link href="/contact" className="inline-flex w-full min-[480px]:w-auto">
+                  <button
+                    type="button"
+                    className="cyber-btn-outline w-full min-w-[200px] justify-center rounded-xl px-8 py-3.5 text-[15px] font-semibold min-[480px]:w-auto"
+                  >
                     Book a Discovery Call
                   </button>
                 </Link>
               </div>
             </Reveal>
-            <Reveal delay={0.4}>
-              <div className="hero-stats" style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-                {[
-                  [50, "Projects Shipped", "+"],
-                  [10, "Core Services", ""],
-                  [98, "Client Satisfaction", "%"]
-                ].map(([n, l, suffix]) => (
-                  <div key={l} className="hero-stat-card" style={{
-                    background: 'var(--cyber-card, rgba(255,255,255,0.7))',
-                    border: '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
-                    borderRadius: '16px',
-                    padding: '20px 24px',
-                    boxShadow: '0 4px 20px var(--cyber-glow, rgba(124,58,237,0.08))',
-                    transition: 'all 0.3s',
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}>
-                    <div style={{
-                      position: 'absolute',
-                      top: 0, left: 0, right: 0,
-                      height: '2px',
-                      background: 'linear-gradient(90deg, #7c3aed, #22d3ee)',
-                    }}/>
-                    <div style={{ 
-                      fontFamily: "Outfit", 
-                      fontSize: "clamp(28px,4vw,40px)", 
-                      fontWeight: 900, 
-                      color: "var(--cyber-accent, #a855f7)", 
-                      letterSpacing: "-1px",
-                      textShadow: "0 0 20px rgba(124,58,237,0.3)",
-                      marginTop: 4,
-                    }}>
-                      <CountUp end={n as number} duration={2} suffix={suffix as string} />
-                    </div>
-                    <div style={{ fontSize: 13, color: "var(--cyber-body)", fontWeight: 500, marginTop: 4 }}>{l}</div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
           </div>
 
-          <div className="hero-planet-shell">
-            <Reveal delay={0.2}>
+          <div className="hero-planet-shell w-full flex-1 shrink-0 lg:max-w-[min(52vw,640px)] xl:max-w-[min(48vw,700px)]">
+            <Reveal delay={0.15}>
               <HeroCosmosScene />
             </Reveal>
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import type { CSSProperties } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -121,21 +121,24 @@ function PlanetMaterial({ isDark }: { isDark: boolean }) {
 
           void main() {
             vec3 normal = normalize(vNormal);
-            float fresnel = pow(1.0 - max(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0), 2.2);
+            float fresnel = pow(1.0 - max(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0), 1.85);
+            float rim = pow(1.0 - max(dot(normal, vec3(-0.85, 0.15, 0.52)), 0.0), 2.4);
             float topLight = smoothstep(-0.45, 0.75, vPosition.y);
             float sideShade = smoothstep(-0.75, 0.55, normal.x);
-            float surface = noise(vPosition * 1.4) * 0.08;
+            float surface = noise(vPosition * 2.1) * 0.11 + noise(vPosition * 4.2 + uTime * 0.15) * 0.04;
 
-            vec3 deepPurple = vec3(0.10, 0.04, 0.26);
-            vec3 royalPurple = vec3(0.42, 0.14, 0.82);
-            vec3 violet = vec3(0.66, 0.33, 0.97);
-            vec3 magenta = vec3(0.93, 0.28, 0.60);
+            vec3 deepPurple = vec3(0.08, 0.03, 0.22);
+            vec3 royalPurple = vec3(0.38, 0.12, 0.78);
+            vec3 violet = vec3(0.62, 0.28, 0.95);
+            vec3 magenta = vec3(0.88, 0.22, 0.58);
             vec3 cyan = vec3(0.13, 0.83, 0.93);
+            vec3 rimPurple = vec3(0.75, 0.35, 1.0);
 
             vec3 color = mix(deepPurple, royalPurple, sideShade);
             color = mix(color, violet, topLight * 0.55);
-            color = mix(color, magenta, topLight * 0.42);
-            color += cyan * fresnel * (uDark > 0.5 ? 0.72 : 0.48);
+            color = mix(color, magenta, topLight * 0.38);
+            color += cyan * fresnel * (uDark > 0.5 ? 0.88 : 0.52);
+            color += rimPurple * rim * (uDark > 0.5 ? 0.55 : 0.32);
             color += surface;
 
             float alpha = 1.0;
@@ -153,6 +156,8 @@ function PlanetMaterial({ isDark }: { isDark: boolean }) {
 
   return <primitive object={material} attach="material" />;
 }
+
+const RING_TILT: [number, number, number] = [1.22, 0.15, -0.18];
 
 function SaturnRing({
   color,
@@ -177,7 +182,7 @@ function SaturnRing({
   });
 
   return (
-    <mesh ref={ref} rotation={[1.2, 0.16, -0.17]}>
+    <mesh ref={ref} rotation={RING_TILT}>
       <torusGeometry args={[radius, tube, 24, 192]} />
       <meshBasicMaterial
         color={color}
@@ -187,6 +192,67 @@ function SaturnRing({
         depthWrite={false}
       />
     </mesh>
+  );
+}
+
+function DataPacketRing({
+  isDark,
+  radius,
+  colorHex,
+  speed,
+  reverse,
+  tilt,
+}: {
+  isDark: boolean;
+  radius: number;
+  colorHex: string;
+  speed: number;
+  reverse?: boolean;
+  tilt: [number, number, number];
+}) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const count = 48;
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const geo = useMemo(() => new THREE.BoxGeometry(1, 1, 1), []);
+  const mat = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: new THREE.Color(colorHex),
+        transparent: true,
+        opacity: isDark ? 0.78 : 0.48,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    [colorHex, isDark],
+  );
+
+  useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const r = radius + (i % 4) * 0.014;
+      dummy.position.set(Math.cos(angle) * r, Math.sin(angle) * r, 0);
+      dummy.rotation.set(0, 0, angle + Math.PI / 2);
+      const w = 0.05 + (i % 5) * 0.012;
+      const h = 0.011 + (i % 3) * 0.003;
+      dummy.scale.set(w, h, 0.026);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  }, [count, dummy, radius]);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    groupRef.current.rotation.z += delta * speed * (reverse ? -1 : 1);
+  });
+
+  return (
+    <group ref={groupRef} rotation={tilt}>
+      <instancedMesh ref={meshRef} args={[geo, mat, count]} />
+    </group>
   );
 }
 
@@ -208,7 +274,7 @@ function DottedRing({ isDark }: { isDark: boolean }) {
   });
 
   return (
-    <group ref={group} rotation={[1.2, 0.16, -0.17]}>
+    <group ref={group} rotation={RING_TILT}>
       {dots.map((dot, index) => (
         <mesh
           key={index}
@@ -232,25 +298,42 @@ function PlanetScene({ isDark }: { isDark: boolean }) {
 
   useFrame((_, delta) => {
     if (!planet.current) return;
-    planet.current.rotation.y += delta * 0.12;
-    planet.current.rotation.x = -0.08;
+    planet.current.rotation.y += delta * 0.1;
+    planet.current.rotation.x = -0.07;
   });
 
   return (
     <>
-      <ambientLight intensity={isDark ? 1.3 : 1} />
-      <pointLight position={[-2.6, 2.8, 3]} color="#EC4899" intensity={isDark ? 5.4 : 3.4} />
-      <pointLight position={[2.8, 1.4, 2.4]} color="#22D3EE" intensity={isDark ? 4.8 : 3.2} />
-      <pointLight position={[0, -2.8, 1.8]} color="#7C3AED" intensity={isDark ? 3.2 : 2.2} />
+      <ambientLight intensity={isDark ? 1.35 : 1} />
+      <pointLight position={[-2.8, 2.6, 3.2]} color="#EC4899" intensity={isDark ? 5.8 : 3.5} />
+      <pointLight position={[3, 1.2, 2.6]} color="#22D3EE" intensity={isDark ? 5.2 : 3.4} />
+      <pointLight position={[0, -2.6, 2]} color="#7C3AED" intensity={isDark ? 3.6 : 2.3} />
+      <pointLight position={[-1.2, -0.5, 3.8]} color="#A855F7" intensity={isDark ? 2.4 : 1.5} />
 
-      <group position={[0.24, -0.06, 0]} scale={1.04}>
-        <SaturnRing color="#22D3EE" radius={1.78} tube={0.018} speed={0.19} opacity={isDark ? 0.9 : 0.62} />
-        <SaturnRing color="#A855F7" radius={1.68} tube={0.026} speed={0.16} reverse opacity={isDark ? 0.72 : 0.5} />
-        <SaturnRing color="#EC4899" radius={1.54} tube={0.012} speed={0.12} reverse opacity={isDark ? 0.58 : 0.38} />
+      <group position={[0.22, -0.05, 0]} scale={1.05}>
+        <SaturnRing color="#06B6D4" radius={1.92} tube={0.014} speed={0.14} opacity={isDark ? 0.42 : 0.28} />
+        <SaturnRing color="#22D3EE" radius={1.82} tube={0.016} speed={0.17} opacity={isDark ? 0.88 : 0.58} />
+        <SaturnRing color="#A855F7" radius={1.7} tube={0.024} speed={0.14} reverse opacity={isDark ? 0.76 : 0.48} />
+        <SaturnRing color="#C084FC" radius={1.58} tube={0.01} speed={0.1} opacity={isDark ? 0.5 : 0.32} />
+        <DataPacketRing
+          isDark={isDark}
+          radius={2.06}
+          colorHex="#22D3EE"
+          speed={0.12}
+          tilt={RING_TILT}
+        />
+        <DataPacketRing
+          isDark={isDark}
+          radius={1.98}
+          colorHex="#A855F7"
+          speed={0.09}
+          reverse
+          tilt={[RING_TILT[0] + 0.02, RING_TILT[1], RING_TILT[2]]}
+        />
         <DottedRing isDark={isDark} />
 
         <mesh ref={planet}>
-          <sphereGeometry args={[1.1, 96, 96]} />
+          <sphereGeometry args={[1.1, 128, 128]} />
           <PlanetMaterial isDark={isDark} />
         </mesh>
       </group>
@@ -395,7 +478,7 @@ const styles = `
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: 560px;
+    min-height: clamp(280px, 42vw, 560px);
     overflow: visible;
   }
 
@@ -417,12 +500,14 @@ const styles = `
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px),
-      linear-gradient(135deg, transparent 0 47%, rgba(34,211,238,0.08) 48% 49%, transparent 50%),
-      linear-gradient(45deg, transparent 0 47%, rgba(124,58,237,0.07) 48% 49%, transparent 50%);
-    background-size: 72px 72px, 72px 72px, 340px 220px, 420px 280px;
-    mask-image: radial-gradient(circle at 74% 52%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.68) 58%, transparent 100%);
+      linear-gradient(rgba(6,182,212,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,0.07) 1px, transparent 1px),
+      linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px),
+      linear-gradient(135deg, transparent 0 46%, rgba(34,211,238,0.09) 48% 50%, transparent 52%),
+      linear-gradient(45deg, transparent 0 46%, rgba(168,85,247,0.07) 48% 50%, transparent 52%);
+    background-size: 56px 56px, 56px 56px, 72px 72px, 72px 72px, 380px 240px, 440px 300px;
+    mask-image: radial-gradient(circle at 72% 48%, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.72) 55%, transparent 100%);
   }
 
   .hero-star,
@@ -541,7 +626,7 @@ const styles = `
     position: absolute;
     right: -4%;
     top: 50%;
-    width: clamp(430px, 44vw, 700px);
+    width: clamp(300px, 44vw, 700px);
     aspect-ratio: 1 / 1;
     transform: translateY(-50%);
   }
@@ -549,7 +634,7 @@ const styles = `
   .planet-canvas-shell canvas {
     width: 100% !important;
     height: 100% !important;
-    filter: drop-shadow(0 0 34px rgba(34,211,238,0.16));
+    filter: drop-shadow(0 0 42px rgba(168,85,247,0.22)) drop-shadow(0 0 28px rgba(34,211,238,0.18));
   }
 
   .planet-overlay-sparks {
@@ -591,11 +676,30 @@ const styles = `
 
   @media (max-width: 1023px) {
     .hero-cosmos--planet {
-      display: none;
+      min-height: clamp(260px, 58vw, 400px);
+    }
+
+    .planet-glow {
+      right: 50%;
+      top: 42%;
+      width: min(90vw, 520px);
+      height: min(90vw, 520px);
+      transform: translate(50%, -50%);
+      filter: blur(48px);
+    }
+
+    .planet-canvas-shell {
+      position: relative;
+      right: auto;
+      top: auto;
+      transform: none;
+      width: min(100%, 440px);
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .hero-nebula {
-      right: -28%;
+      right: -18%;
       width: 900px;
       height: 760px;
       filter: blur(130px);
@@ -609,7 +713,7 @@ const styles = `
 
   @media (max-width: 640px) {
     .hero-nebula {
-      right: -48%;
+      right: -38%;
       width: 720px;
       height: 620px;
       filter: blur(115px);
@@ -618,6 +722,10 @@ const styles = `
     .hero-hud-arc,
     .hero-circuit-trace:nth-of-type(n + 4) {
       display: none;
+    }
+
+    .planet-canvas-shell {
+      width: min(100%, 360px);
     }
   }
 
