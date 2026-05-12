@@ -137,6 +137,30 @@ export default async function Home() {
         id="home"
         className="hero-section relative isolate flex min-h-[100dvh] flex-col overflow-hidden scroll-mt-[72px] pb-14 pt-[5.5rem] sm:pb-20 sm:pt-[5.75rem] lg:min-h-screen lg:pb-24 lg:pt-24"
       >
+        {/* Enhanced cosmic background with grid and glowing lines */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Deep space gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-950/40 via-purple-900/20 to-slate-950/60 dark:from-violet-950/60 dark:via-purple-900/30 dark:to-slate-950/80" />
+          
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06]" 
+            style={{
+              backgroundImage: `linear-gradient(rgba(124, 58, 237, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.3) 1px, transparent 1px)`,
+              backgroundSize: '60px 60px'
+            }} 
+          />
+          
+          {/* Glowing horizontal lines */}
+          <div className="absolute top-[20%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-violet-500/30 to-transparent blur-[2px]" />
+          <div className="absolute top-[40%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-purple-500/20 to-transparent blur-[1px]" />
+          <div className="absolute top-[60%] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/25 to-transparent blur-[1px]" />
+          
+          {/* Ambient nebula glows */}
+          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-violet-600/20 to-purple-600/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-600/15 to-blue-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        </div>
+
         <HeroCosmosScene variant="backdrop" />
 
         <div
@@ -173,7 +197,8 @@ export default async function Home() {
                 for the{" "}
                 <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
                   Next Generation
-                </span>{" "}
+                </span>
+                {" "}
                 of Businesses
               </h1>
             </Reveal>
