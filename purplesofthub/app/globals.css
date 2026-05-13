@@ -380,6 +380,7 @@ html:not(.dark) [style*="color:#a855f7"] { color: #6d28d9 !important; }
 html:not(.dark) [style*="color: #7c3aed"],
 html:not(.dark) [style*="color:#7c3aed"] { color: #5b21b6 !important; }
 html:not(.dark) section { background: transparent !important; }
+html:not(.dark) .hero-section { background: #06030f !important; }
 html:not(.dark) main { background: var(--bg-primary) !important; color: var(--text-primary) !important; }
 html.dark main { background: var(--bg-primary) !important; }
 html.dark [style*="background: #06030f"],
@@ -1542,6 +1543,7 @@ html.dark {
 
 .hero-section {
   isolation: isolate;
+  background: #06030f;
 }
 
 .hero-cosmos-backdrop {

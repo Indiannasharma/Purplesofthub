@@ -135,7 +135,7 @@ export default async function Home() {
       {/* ── HERO ── */}
       <section
         id="home"
-        className="hero-section relative isolate flex min-h-[calc(100dvh-68px)] flex-col overflow-hidden scroll-mt-[72px] pb-14 pt-[4rem] sm:pb-20 sm:pt-[4.25rem] lg:min-h-[calc(100dvh-68px)] lg:pb-24 lg:pt-16"
+        className="hero-section relative isolate flex min-h-[calc(100dvh-80px)] flex-col overflow-hidden scroll-mt-[72px] pb-12 pt-6 sm:pb-16 sm:pt-8 lg:min-h-[calc(100dvh-80px)] lg:items-center lg:pb-20 lg:pt-10"
       >
         <HeroCosmosScene variant="backdrop" />
 
@@ -144,7 +144,7 @@ export default async function Home() {
           aria-hidden
         />
 
-        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-start lg:gap-8 xl:gap-12">
+        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-8 xl:gap-12">
           <div className="mx-auto flex w-full max-w-[620px] flex-col justify-center text-center lg:mx-0 lg:flex-[0_0_46%] lg:text-left">
             <Reveal>
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/[0.08] px-4 py-2 shadow-[0_0_28px_rgba(168,85,247,0.14)] backdrop-blur-md dark:border-violet-400/25 dark:bg-violet-500/[0.06] lg:mx-0 mx-auto">
@@ -209,7 +209,7 @@ export default async function Home() {
             </Reveal>
           </div>
 
-          <div className="hero-planet-shell w-full shrink-0 lg:mt-6 lg:flex-[1_1_54%] lg:max-w-[min(50vw,640px)] xl:max-w-[min(48vw,700px)]">
+          <div className="hero-planet-shell w-full shrink-0 lg:mt-0 lg:flex-[1_1_54%] lg:max-w-[min(50vw,640px)] xl:max-w-[min(48vw,700px)]">
             <Reveal delay={0.15}>
               <HeroCosmosScene />
             </Reveal>

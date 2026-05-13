@@ -1,8 +1,6 @@
 'use client'
 
-import { useMemo } from "react";
 import type { CSSProperties } from "react";
-import { useTheme } from "@/context/ThemeContext";
 
 type HeroCosmosSceneProps = {
   variant?: "planet" | "backdrop";
@@ -85,17 +83,15 @@ function clampOpacity(value: number) {
 export default function HeroCosmosScene({
   variant = "planet",
 }: HeroCosmosSceneProps) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 18)), [isDark]);
+  const stars = STARS;
 
   if (variant === "backdrop") {
     return (
       <div className="hero-cosmos hero-cosmos--backdrop" aria-hidden="true">
         <div className="hero-cosmos-grid" />
-        <div className="hero-cosmos-nebula hero-cosmos-nebula--a" style={{ opacity: isDark ? 0.7 : 0.28 }} />
-        <div className="hero-cosmos-nebula hero-cosmos-nebula--b" style={{ opacity: isDark ? 0.55 : 0.22 }} />
-        <div className="hero-cosmos-nebula hero-cosmos-nebula--c" style={{ opacity: isDark ? 0.45 : 0.18 }} />
+        <div className="hero-cosmos-nebula hero-cosmos-nebula--a" style={{ opacity: 0.72 }} />
+        <div className="hero-cosmos-nebula hero-cosmos-nebula--b" style={{ opacity: 0.58 }} />
+        <div className="hero-cosmos-nebula hero-cosmos-nebula--c" style={{ opacity: 0.46 }} />
 
         {stars.map((star, index) => (
           <span
@@ -107,11 +103,9 @@ export default function HeroCosmosScene({
                 top: `${star.top}%`,
                 width: `${star.size}px`,
                 height: `${star.size}px`,
-                background: isDark ? "#ffffff" : "#5f5578",
-                ["--star-min" as string]: isDark ? star.darkOpacity : star.lightOpacity,
-                ["--star-max" as string]: isDark
-                  ? clampOpacity(star.darkOpacity + 0.22)
-                  : clampOpacity(star.lightOpacity + 0.1),
+                background: "#ffffff",
+                ["--star-min" as string]: star.darkOpacity,
+                ["--star-max" as string]: clampOpacity(star.darkOpacity + 0.22),
                 animationDuration: `${star.duration}s`,
                 animationDelay: `${star.delay}s`,
               } as CSSProperties
@@ -189,9 +183,7 @@ export default function HeroCosmosScene({
 
         {PARTICLES.map((particle, index) => {
           const color = ACCENTS[particle.accent];
-          const opacity = isDark
-            ? 0.7 + (index % 3) * 0.08
-            : 0.42 + (index % 3) * 0.06;
+          const opacity = 0.72 + (index % 3) * 0.06;
 
           return (
             <span
@@ -205,11 +197,9 @@ export default function HeroCosmosScene({
                   height: `${particle.size}px`,
                   color,
                   background: color,
-                  boxShadow: isDark
-                    ? `0 0 ${particle.size * 4}px ${color}`
-                    : `0 0 ${particle.size * 3}px ${color}88`,
+                  boxShadow: `0 0 ${particle.size * 4}px ${color}`,
                   ["--particle-min" as string]: opacity,
-                  ["--particle-max" as string]: clampOpacity(opacity + (isDark ? 0.18 : 0.08)),
+                  ["--particle-max" as string]: clampOpacity(opacity + 0.16),
                   ["--particle-drift" as string]: `${particle.drift}px`,
                   animationDuration: `${particle.duration}s, ${3.4 + (index % 4) * 0.55}s`,
                   animationDelay: `${particle.delay}s, ${particle.delay / 2}s`,
@@ -357,7 +347,7 @@ const styles = `
 
   .hero-planet-scene__halo {
     position: absolute;
-    right: 10%;
+    right: 8%;
     top: 50%;
     width: min(34vw, 430px);
     height: min(34vw, 430px);
@@ -371,8 +361,8 @@ const styles = `
 
   .hero-planet-scene__orbit {
     position: absolute;
-    left: 50%;
-    top: 54%;
+    left: 59%;
+    top: 53%;
     border-radius: 50%;
     border: 1px solid rgba(125, 211, 252, 0.2);
     transform-style: preserve-3d;
@@ -411,8 +401,8 @@ const styles = `
 
   .hero-planet-scene__orbit-dots {
     position: absolute;
-    left: 50%;
-    top: 54%;
+    left: 59%;
+    top: 53%;
     width: 0;
     height: 0;
     pointer-events: none;
@@ -444,8 +434,8 @@ const styles = `
 
   .hero-planet-scene__ring {
     position: absolute;
-    left: 56%;
-    top: 54%;
+    left: 59%;
+    top: 53%;
     border-radius: 50%;
     border: 2px solid transparent;
     transform-style: preserve-3d;
