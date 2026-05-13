@@ -140,7 +140,7 @@ export default async function Home() {
         <HeroCosmosScene variant="backdrop" />
 
         <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_72%_58%_at_80%_38%,rgba(168,85,247,0.12)_0%,rgba(168,85,247,0.04)_28%,transparent_62%),radial-gradient(ellipse_48%_34%_at_72%_56%,rgba(34,211,238,0.08)_0%,transparent_56%),linear-gradient(180deg,rgba(7,4,18,0.18)_0%,rgba(7,4,18,0.12)_48%,rgba(7,4,18,0.34)_100%)]"
+          className="hero-cosmos-overlay"
           aria-hidden
         />
 

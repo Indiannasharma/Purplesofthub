@@ -380,7 +380,8 @@ html:not(.dark) [style*="color:#a855f7"] { color: #6d28d9 !important; }
 html:not(.dark) [style*="color: #7c3aed"],
 html:not(.dark) [style*="color:#7c3aed"] { color: #5b21b6 !important; }
 html:not(.dark) section { background: transparent !important; }
-html:not(.dark) .hero-section { background: #06030f !important; }
+html.dark .hero-section,
+html:not(.dark) .hero-section { background: var(--hero-section-bg, transparent) !important; }
 html:not(.dark) main { background: var(--bg-primary) !important; color: var(--text-primary) !important; }
 html.dark main { background: var(--bg-primary) !important; }
 html.dark [style*="background: #06030f"],
@@ -1543,7 +1544,25 @@ html.dark {
 
 .hero-section {
   isolation: isolate;
-  background: #06030f;
+  background: var(--hero-section-bg, transparent);
+}
+
+.hero-cosmos-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--hero-overlay-bg, transparent);
+}
+
+html.dark .hero-section {
+  --hero-section-bg: radial-gradient(ellipse 120% 88% at 72% 18%, rgba(34,211,238,0.08) 0%, rgba(34,211,238,0) 40%), radial-gradient(ellipse 72% 58% at 80% 36%, rgba(168,85,247,0.16) 0%, rgba(168,85,247,0.06) 28%, transparent 64%), linear-gradient(180deg, #05020c 0%, #06040f 50%, #040209 100%);
+  --hero-overlay-bg: radial-gradient(ellipse 72% 58% at 80% 38%, rgba(168,85,247,0.12) 0%, rgba(168,85,247,0.04) 28%, transparent 62%), radial-gradient(ellipse 48% 34% at 72% 56%, rgba(34,211,238,0.08) 0%, transparent 56%), linear-gradient(180deg, rgba(7,4,18,0.18) 0%, rgba(7,4,18,0.12) 48%, rgba(7,4,18,0.34) 100%);
+}
+
+html:not(.dark) .hero-section {
+  --hero-section-bg: radial-gradient(ellipse 120% 88% at 74% 16%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 40%), radial-gradient(ellipse 72% 58% at 82% 38%, rgba(196,181,253,0.22) 0%, rgba(196,181,253,0.08) 26%, transparent 64%), linear-gradient(180deg, #fbf8ff 0%, #f3ecff 42%, #e9ddfb 100%);
+  --hero-overlay-bg: radial-gradient(ellipse 72% 58% at 80% 36%, rgba(168,85,247,0.08) 0%, rgba(168,85,247,0.02) 28%, transparent 62%), radial-gradient(ellipse 48% 34% at 72% 56%, rgba(34,211,238,0.05) 0%, transparent 56%), linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(248,245,255,0.16) 52%, rgba(237,229,250,0.26) 100%);
 }
 
 .hero-cosmos-backdrop {

@@ -1,6 +1,8 @@
 'use client'
 
+import { useMemo } from "react";
 import type { CSSProperties } from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 type HeroCosmosSceneProps = {
   variant?: "planet" | "backdrop";
@@ -83,11 +85,13 @@ function clampOpacity(value: number) {
 export default function HeroCosmosScene({
   variant = "planet",
 }: HeroCosmosSceneProps) {
-  const stars = STARS;
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 28)), [isDark]);
 
   if (variant === "backdrop") {
     return (
-      <div className="hero-cosmos hero-cosmos--backdrop" aria-hidden="true">
+      <div className="hero-cosmos hero-cosmos--backdrop" data-theme={theme} aria-hidden="true">
         <div className="hero-cosmos-grid" />
         <div className="hero-cosmos-nebula hero-cosmos-nebula--a" style={{ opacity: 0.72 }} />
         <div className="hero-cosmos-nebula hero-cosmos-nebula--b" style={{ opacity: 0.58 }} />
@@ -103,9 +107,11 @@ export default function HeroCosmosScene({
                 top: `${star.top}%`,
                 width: `${star.size}px`,
                 height: `${star.size}px`,
-                background: "#ffffff",
-                ["--star-min" as string]: star.darkOpacity,
-                ["--star-max" as string]: clampOpacity(star.darkOpacity + 0.22),
+                background: isDark ? "#ffffff" : "#74618e",
+                ["--star-min" as string]: isDark ? star.darkOpacity : star.lightOpacity * 0.9,
+                ["--star-max" as string]: isDark
+                  ? clampOpacity(star.darkOpacity + 0.22)
+                  : clampOpacity(star.lightOpacity + 0.09),
                 animationDuration: `${star.duration}s`,
                 animationDelay: `${star.delay}s`,
               } as CSSProperties
@@ -119,7 +125,7 @@ export default function HeroCosmosScene({
   }
 
   return (
-    <div className="hero-cosmos hero-cosmos--planet" aria-hidden="true">
+    <div className="hero-cosmos hero-cosmos--planet" data-theme={theme} aria-hidden="true">
       <div className="hero-planet-scene">
         <div className="hero-planet-scene__grid" />
         <div className="hero-planet-scene__nebula hero-planet-scene__nebula--a" />
@@ -140,7 +146,7 @@ export default function HeroCosmosScene({
                 {
                   ["--dot-angle" as string]: `${dot.angle}deg`,
                   ["--dot-radius" as string]: `${dot.radius}px`,
-                  ["--dot-opacity" as string]: dot.opacity,
+                  ["--dot-opacity" as string]: isDark ? dot.opacity : dot.opacity * 0.72,
                   ["--dot-scale" as string]: `${dot.size / 4}`,
                   color: ACCENTS[dot.accent],
                   animationDelay: `${index * 0.16}s`,
@@ -171,7 +177,7 @@ export default function HeroCosmosScene({
                 {
                   ["--dot-angle" as string]: `${dot.angle}deg`,
                   ["--dot-radius" as string]: `${dot.radius}px`,
-                  ["--dot-opacity" as string]: dot.opacity,
+                  ["--dot-opacity" as string]: isDark ? dot.opacity : dot.opacity * 0.72,
                   ["--dot-scale" as string]: `${dot.size / 4}`,
                   color: ACCENTS[dot.accent],
                   animationDelay: `${index * 0.18}s`,
@@ -183,7 +189,9 @@ export default function HeroCosmosScene({
 
         {PARTICLES.map((particle, index) => {
           const color = ACCENTS[particle.accent];
-          const opacity = 0.72 + (index % 3) * 0.06;
+          const opacity = isDark
+            ? 0.72 + (index % 3) * 0.06
+            : 0.44 + (index % 3) * 0.05;
 
           return (
             <span
@@ -197,9 +205,11 @@ export default function HeroCosmosScene({
                   height: `${particle.size}px`,
                   color,
                   background: color,
-                  boxShadow: `0 0 ${particle.size * 4}px ${color}`,
+                  boxShadow: isDark
+                    ? `0 0 ${particle.size * 4}px ${color}`
+                    : `0 0 ${particle.size * 3}px ${color}88`,
                   ["--particle-min" as string]: opacity,
-                  ["--particle-max" as string]: clampOpacity(opacity + 0.16),
+                  ["--particle-max" as string]: clampOpacity(opacity + (isDark ? 0.16 : 0.08)),
                   ["--particle-drift" as string]: `${particle.drift}px`,
                   animationDuration: `${particle.duration}s, ${3.4 + (index % 4) * 0.55}s`,
                   animationDelay: `${particle.delay}s, ${particle.delay / 2}s`,
@@ -218,29 +228,93 @@ export default function HeroCosmosScene({
 const styles = `
   .hero-cosmos {
     pointer-events: none;
+    --hero-bg: linear-gradient(180deg, #05020c 0%, #06040f 48%, #040209 100%);
+    --hero-grid-line-a: rgba(168, 85, 247, 0.08);
+    --hero-grid-line-b: rgba(34, 211, 238, 0.05);
+    --hero-grid-opacity: 0.32;
+    --hero-grid-mask-mid: 0.68;
+    --hero-halo-opacity: 1;
+    --hero-nebula-a: radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.08) 24%, rgba(34, 211, 238, 0) 70%);
+    --hero-nebula-b: radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(168, 85, 247, 0) 66%);
+    --hero-nebula-c: radial-gradient(circle, rgba(236, 72, 153, 0.16) 0%, rgba(236, 72, 153, 0) 72%);
+    --hero-halo-a: radial-gradient(circle, rgba(34, 211, 238, 0.42) 0%, rgba(34, 211, 238, 0.2) 30%, transparent 66%);
+    --hero-halo-b: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0.18) 40%, transparent 74%);
+    --hero-orbit-back-opacity: 0.72;
+    --hero-orbit-mid-opacity: 0.94;
+    --hero-orbit-front-opacity: 0.74;
+    --hero-orbit-back: linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.28) 24%, rgba(34, 211, 238, 0.72) 50%, rgba(168, 85, 247, 0.28) 76%, transparent 100%);
+    --hero-orbit-mid: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.24) 22%, rgba(216, 180, 254, 0.68) 50%, rgba(34, 211, 238, 0.24) 78%, transparent 100%);
+    --hero-orbit-front: linear-gradient(90deg, transparent 0%, rgba(216, 180, 254, 0.24) 20%, rgba(34, 211, 238, 0.56) 50%, rgba(216, 180, 254, 0.24) 80%, transparent 100%);
+    --hero-ring-back-opacity: 0.72;
+    --hero-ring-front-opacity: 0.74;
+    --hero-ring-back: linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.18) 18%, rgba(34, 211, 238, 0.56) 50%, rgba(168, 85, 247, 0.18) 82%, transparent 100%);
+    --hero-ring-front: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.18) 20%, rgba(216, 180, 254, 0.52) 50%, rgba(34, 211, 238, 0.18) 80%, transparent 100%);
+    --hero-ring-back-shadow: 0 0 30px rgba(34, 211, 238, 0.16), 0 0 18px rgba(168, 85, 247, 0.1);
+    --hero-ring-front-shadow: 0 0 28px rgba(34, 211, 238, 0.16);
+    --hero-planet-base: linear-gradient(135deg, #090311 0%, #22074e 26%, #6d28d9 52%, #b455ff 78%, #f4b3ff 100%);
+    --hero-planet-shadow: 0 0 88px rgba(168, 85, 247, 0.44), 0 0 164px rgba(34, 211, 238, 0.26), inset -62px -58px 96px rgba(3, 2, 12, 0.84), inset 18px 18px 36px rgba(255, 255, 255, 0.12);
+    --hero-planet-shine: radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 22%), radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 18%);
+    --hero-planet-shade: radial-gradient(circle at 72% 76%, rgba(2, 1, 10, 0.92) 0%, rgba(2, 1, 10, 0) 36%), radial-gradient(circle at 64% 62%, rgba(15, 8, 34, 0.42) 0%, rgba(15, 8, 34, 0) 24%), radial-gradient(circle at 60% 82%, rgba(6, 4, 18, 0.7) 0%, rgba(6, 4, 18, 0) 24%);
+    --hero-planet-texture-a: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 12%), radial-gradient(circle at 24% 42%, rgba(89, 27, 178, 0.42) 0%, rgba(89, 27, 178, 0) 18%), radial-gradient(circle at 42% 28%, rgba(236, 72, 153, 0.28) 0%, rgba(236, 72, 153, 0) 12%), radial-gradient(circle at 58% 74%, rgba(34, 211, 238, 0.24) 0%, rgba(34, 211, 238, 0) 14%), radial-gradient(circle at 76% 64%, rgba(4, 6, 18, 0.55) 0%, rgba(4, 6, 18, 0) 18%);
+    --hero-planet-texture-b: radial-gradient(circle at 64% 30%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 10%), radial-gradient(circle at 70% 50%, rgba(168, 85, 247, 0.34) 0%, rgba(168, 85, 247, 0) 16%), radial-gradient(circle at 74% 68%, rgba(15, 8, 34, 0.3) 0%, rgba(15, 8, 34, 0) 18%), radial-gradient(circle at 58% 82%, rgba(34, 211, 238, 0.12) 0%, rgba(34, 211, 238, 0) 12%);
+    --hero-planet-texture-c: radial-gradient(circle at 32% 66%, rgba(1, 1, 8, 0.62) 0%, rgba(1, 1, 8, 0) 18%), radial-gradient(circle at 48% 56%, rgba(123, 58, 237, 0.3) 0%, rgba(123, 58, 237, 0) 16%), radial-gradient(circle at 72% 82%, rgba(2, 2, 12, 0.76) 0%, rgba(2, 2, 12, 0) 22%), radial-gradient(circle at 70% 74%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 12%);
+    --hero-star-glow: 0 0 10px rgba(255, 255, 255, 0.55);
+    --hero-particle-glow: 0 0 16px rgba(34, 211, 238, 0.32);
+  }
+
+  .hero-cosmos[data-theme="light"] {
+    --hero-bg: linear-gradient(180deg, #fbf8ff 0%, #f2ebff 48%, #e9ddfb 100%);
+    --hero-grid-line-a: rgba(109, 40, 217, 0.06);
+    --hero-grid-line-b: rgba(34, 211, 238, 0.035);
+    --hero-grid-opacity: 0.18;
+    --hero-grid-mask-mid: 0.46;
+    --hero-halo-opacity: 0.78;
+    --hero-nebula-a: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(191, 219, 254, 0.24) 26%, rgba(191, 219, 254, 0) 68%);
+    --hero-nebula-b: radial-gradient(circle, rgba(168, 85, 247, 0.14) 0%, rgba(168, 85, 247, 0) 66%);
+    --hero-nebula-c: radial-gradient(circle, rgba(34, 211, 238, 0.12) 0%, rgba(34, 211, 238, 0) 72%);
+    --hero-halo-a: radial-gradient(circle, rgba(196, 181, 253, 0.46) 0%, rgba(196, 181, 253, 0.18) 32%, transparent 68%);
+    --hero-halo-b: radial-gradient(circle, rgba(34, 211, 238, 0.24) 0%, rgba(34, 211, 238, 0.08) 42%, transparent 76%);
+    --hero-orbit-back-opacity: 0.5;
+    --hero-orbit-mid-opacity: 0.72;
+    --hero-orbit-front-opacity: 0.56;
+    --hero-orbit-back: linear-gradient(90deg, transparent 0%, rgba(124, 58, 237, 0.2) 24%, rgba(34, 211, 238, 0.34) 50%, rgba(124, 58, 237, 0.2) 76%, transparent 100%);
+    --hero-orbit-mid: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.14) 22%, rgba(196, 181, 253, 0.42) 50%, rgba(34, 211, 238, 0.14) 78%, transparent 100%);
+    --hero-orbit-front: linear-gradient(90deg, transparent 0%, rgba(196, 181, 253, 0.16) 20%, rgba(34, 211, 238, 0.3) 50%, rgba(196, 181, 253, 0.16) 80%, transparent 100%);
+    --hero-ring-back-opacity: 0.58;
+    --hero-ring-front-opacity: 0.62;
+    --hero-ring-back: linear-gradient(90deg, transparent 0%, rgba(124, 58, 237, 0.12) 18%, rgba(34, 211, 238, 0.34) 50%, rgba(124, 58, 237, 0.12) 82%, transparent 100%);
+    --hero-ring-front: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.12) 20%, rgba(196, 181, 253, 0.38) 50%, rgba(34, 211, 238, 0.12) 80%, transparent 100%);
+    --hero-ring-back-shadow: 0 0 24px rgba(34, 211, 238, 0.14), 0 0 10px rgba(124, 58, 237, 0.08);
+    --hero-ring-front-shadow: 0 0 22px rgba(34, 211, 238, 0.14);
+    --hero-planet-base: linear-gradient(135deg, #130928 0%, #311161 26%, #7c3aed 52%, #b86cff 76%, #f0ccff 100%);
+    --hero-planet-shadow: 0 0 72px rgba(124, 58, 237, 0.22), 0 0 122px rgba(34, 211, 238, 0.14), inset -56px -52px 92px rgba(11, 7, 24, 0.7), inset 18px 18px 32px rgba(255, 255, 255, 0.16);
+    --hero-planet-shine: radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 22%), radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 18%);
+    --hero-planet-shade: radial-gradient(circle at 72% 76%, rgba(9, 5, 20, 0.84) 0%, rgba(9, 5, 20, 0) 36%), radial-gradient(circle at 64% 62%, rgba(28, 12, 58, 0.42) 0%, rgba(28, 12, 58, 0) 24%), radial-gradient(circle at 60% 82%, rgba(11, 7, 24, 0.62) 0%, rgba(11, 7, 24, 0) 24%);
+    --hero-planet-texture-a: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 12%), radial-gradient(circle at 24% 42%, rgba(109, 40, 217, 0.34) 0%, rgba(109, 40, 217, 0) 18%), radial-gradient(circle at 42% 28%, rgba(236, 72, 153, 0.24) 0%, rgba(236, 72, 153, 0) 12%), radial-gradient(circle at 58% 74%, rgba(34, 211, 238, 0.18) 0%, rgba(34, 211, 238, 0) 14%), radial-gradient(circle at 76% 64%, rgba(10, 7, 26, 0.44) 0%, rgba(10, 7, 26, 0) 18%);
+    --hero-planet-texture-b: radial-gradient(circle at 64% 30%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 10%), radial-gradient(circle at 70% 50%, rgba(168, 85, 247, 0.28) 0%, rgba(168, 85, 247, 0) 16%), radial-gradient(circle at 74% 68%, rgba(15, 8, 34, 0.24) 0%, rgba(15, 8, 34, 0) 18%), radial-gradient(circle at 58% 82%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 12%);
+    --hero-planet-texture-c: radial-gradient(circle at 32% 66%, rgba(11, 6, 25, 0.5) 0%, rgba(11, 6, 25, 0) 18%), radial-gradient(circle at 48% 56%, rgba(123, 58, 237, 0.24) 0%, rgba(123, 58, 237, 0) 16%), radial-gradient(circle at 72% 82%, rgba(2, 2, 12, 0.7) 0%, rgba(2, 2, 12, 0) 22%), radial-gradient(circle at 70% 74%, rgba(34, 211, 238, 0.08) 0%, rgba(34, 211, 238, 0) 12%);
+    --hero-star-glow: 0 0 8px rgba(91, 33, 182, 0.22);
+    --hero-particle-glow: 0 0 12px rgba(124, 58, 237, 0.2);
   }
 
   .hero-cosmos--backdrop {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    background:
-      radial-gradient(circle at 72% 36%, rgba(168, 85, 247, 0.18) 0%, rgba(168, 85, 247, 0) 32%),
-      radial-gradient(circle at 86% 20%, rgba(34, 211, 238, 0.11) 0%, rgba(34, 211, 238, 0) 26%),
-      radial-gradient(circle at 18% 74%, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0) 28%);
+    background: var(--hero-bg);
   }
 
   .hero-cosmos-grid {
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(168, 85, 247, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(168, 85, 247, 0.08) 1px, transparent 1px),
-      linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+      linear-gradient(var(--hero-grid-line-a) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hero-grid-line-a) 1px, transparent 1px),
+      linear-gradient(var(--hero-grid-line-b) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hero-grid-line-b) 1px, transparent 1px);
     background-size: 72px 72px, 72px 72px, 144px 144px, 144px 144px;
-    opacity: 0.34;
-    mask-image: radial-gradient(circle at 70% 42%, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.68) 52%, transparent 100%);
+    opacity: var(--hero-grid-opacity);
+    mask-image: radial-gradient(circle at 70% 42%, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, var(--hero-grid-mask-mid)) 52%, transparent 100%);
   }
 
   .hero-cosmos-nebula {
@@ -255,7 +329,7 @@ const styles = `
     right: 6%;
     width: min(40vw, 560px);
     height: min(30vw, 400px);
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0) 70%);
+    background: var(--hero-nebula-a);
   }
 
   .hero-cosmos-nebula--b {
@@ -263,7 +337,7 @@ const styles = `
     left: 18%;
     width: min(34vw, 440px);
     height: min(26vw, 340px);
-    background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, rgba(124, 58, 237, 0) 70%);
+    background: var(--hero-nebula-b);
     animation-delay: 2.2s;
   }
 
@@ -272,7 +346,7 @@ const styles = `
     left: 34%;
     width: min(22vw, 300px);
     height: min(20vw, 260px);
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.16) 0%, rgba(236, 72, 153, 0) 72%);
+    background: var(--hero-nebula-c);
     animation-delay: 4.2s;
   }
 
@@ -281,7 +355,7 @@ const styles = `
     border-radius: 999px;
     opacity: var(--star-min, 0.2);
     animation: starTwinkle 5.5s ease-in-out infinite;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
+    box-shadow: var(--hero-star-glow);
   }
 
   .hero-cosmos--planet {
@@ -302,13 +376,13 @@ const styles = `
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(168, 85, 247, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(168, 85, 247, 0.08) 1px, transparent 1px),
-      linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+      linear-gradient(var(--hero-grid-line-a) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hero-grid-line-a) 1px, transparent 1px),
+      linear-gradient(var(--hero-grid-line-b) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hero-grid-line-b) 1px, transparent 1px);
     background-size: 64px 64px, 64px 64px, 128px 128px, 128px 128px;
-    opacity: 0.28;
-    mask-image: radial-gradient(circle at 72% 42%, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.68) 52%, transparent 100%);
+    opacity: var(--hero-grid-opacity);
+    mask-image: radial-gradient(circle at 72% 42%, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, var(--hero-grid-mask-mid)) 52%, transparent 100%);
   }
 
   .hero-planet-scene__nebula {
@@ -323,7 +397,7 @@ const styles = `
     top: 34%;
     width: min(32vw, 380px);
     height: min(30vw, 360px);
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.08) 24%, rgba(34, 211, 238, 0) 70%);
+    background: var(--hero-nebula-a);
   }
 
   .hero-planet-scene__nebula--b {
@@ -331,7 +405,7 @@ const styles = `
     top: 10%;
     width: min(24vw, 280px);
     height: min(24vw, 280px);
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(168, 85, 247, 0) 66%);
+    background: var(--hero-nebula-b);
     animation: glowPulse 8s ease-in-out infinite alternate;
   }
 
@@ -340,7 +414,7 @@ const styles = `
     top: 42%;
     width: min(24vw, 280px);
     height: min(22vw, 260px);
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.22) 0%, rgba(34, 211, 238, 0.06) 28%, rgba(34, 211, 238, 0) 72%);
+    background: var(--hero-nebula-c);
     filter: blur(54px);
     animation-delay: 3.4s;
   }
@@ -354,9 +428,10 @@ const styles = `
     transform: translateY(-50%);
     border-radius: 50%;
     background:
-      radial-gradient(circle, rgba(34, 211, 238, 0.42) 0%, rgba(34, 211, 238, 0.2) 30%, transparent 66%),
-      radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0.18) 40%, transparent 74%);
+      var(--hero-halo-a),
+      var(--hero-halo-b);
     filter: blur(66px);
+    opacity: var(--hero-halo-opacity);
   }
 
   .hero-planet-scene__orbit {
@@ -374,9 +449,9 @@ const styles = `
     height: min(22vw, 170px);
     transform: translate(-50%, -50%) rotateX(72deg) rotateZ(-18deg);
     border: 4px solid transparent;
-    background: linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.28) 24%, rgba(34, 211, 238, 0.72) 50%, rgba(168, 85, 247, 0.28) 76%, transparent 100%) border-box;
+    background: var(--hero-orbit-back) border-box;
     box-shadow: 0 0 44px rgba(34, 211, 238, 0.22), 0 0 18px rgba(168, 85, 247, 0.14);
-    opacity: 0.72;
+    opacity: var(--hero-orbit-back-opacity);
   }
 
   .hero-planet-scene__orbit--mid {
@@ -384,9 +459,9 @@ const styles = `
     height: min(20vw, 150px);
     transform: translate(-50%, -50%) rotateX(72deg) rotateZ(10deg);
     border: 2px solid transparent;
-    background: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.24) 22%, rgba(216, 180, 254, 0.68) 50%, rgba(34, 211, 238, 0.24) 78%, transparent 100%) border-box;
+    background: var(--hero-orbit-mid) border-box;
     box-shadow: 0 0 36px rgba(34, 211, 238, 0.24), 0 0 14px rgba(216, 180, 254, 0.1);
-    opacity: 0.94;
+    opacity: var(--hero-orbit-mid-opacity);
   }
 
   .hero-planet-scene__orbit--front {
@@ -394,9 +469,9 @@ const styles = `
     height: min(18vw, 132px);
     transform: translate(-50%, -50%) rotateX(72deg) rotateZ(28deg);
     border: 2px solid transparent;
-    background: linear-gradient(90deg, transparent 0%, rgba(216, 180, 254, 0.24) 20%, rgba(34, 211, 238, 0.56) 50%, rgba(216, 180, 254, 0.24) 80%, transparent 100%) border-box;
+    background: var(--hero-orbit-front) border-box;
     box-shadow: 0 0 28px rgba(216, 180, 254, 0.18), 0 0 12px rgba(34, 211, 238, 0.16);
-    opacity: 0.74;
+    opacity: var(--hero-orbit-front-opacity);
   }
 
   .hero-planet-scene__orbit-dots {
@@ -447,10 +522,11 @@ const styles = `
     height: min(24vw, 180px);
     transform: translate(-50%, -50%) rotateX(72deg) rotateZ(-22deg);
     border: 4px solid transparent;
-    background: linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.18) 18%, rgba(34, 211, 238, 0.56) 50%, rgba(168, 85, 247, 0.18) 82%, transparent 100%) border-box;
-    box-shadow: 0 0 30px rgba(34, 211, 238, 0.16), 0 0 18px rgba(168, 85, 247, 0.1);
+    background: var(--hero-ring-back) border-box;
+    box-shadow: var(--hero-ring-back-shadow);
     animation: ringSpinA 28s linear infinite;
     clip-path: inset(52% 0 0 0);
+    opacity: var(--hero-ring-back-opacity);
   }
 
   .hero-planet-scene__ring--front {
@@ -458,10 +534,11 @@ const styles = `
     height: min(22vw, 162px);
     transform: translate(-50%, -50%) rotateX(72deg) rotateZ(14deg);
     border: 3px solid transparent;
-    background: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.18) 20%, rgba(216, 180, 254, 0.52) 50%, rgba(34, 211, 238, 0.18) 80%, transparent 100%) border-box;
-    box-shadow: 0 0 28px rgba(34, 211, 238, 0.16);
+    background: var(--hero-ring-front) border-box;
+    box-shadow: var(--hero-ring-front-shadow);
     animation: ringSpinB 34s linear infinite;
     clip-path: inset(0 0 48% 0);
+    opacity: var(--hero-ring-front-opacity);
   }
 
   .hero-planet-scene__planet {
@@ -473,17 +550,8 @@ const styles = `
     transform: translateY(-50%);
     border-radius: 50%;
     overflow: hidden;
-    background:
-      radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 18%),
-      radial-gradient(circle at 30% 26%, rgba(244, 114, 182, 0.24) 0%, rgba(244, 114, 182, 0) 24%),
-      radial-gradient(circle at 68% 20%, rgba(196, 181, 253, 0.92) 0%, rgba(196, 181, 253, 0) 18%),
-      radial-gradient(circle at 64% 70%, rgba(34, 211, 238, 0.16) 0%, rgba(34, 211, 238, 0) 26%),
-      linear-gradient(135deg, #090311 0%, #22074e 26%, #6d28d9 52%, #b455ff 78%, #f4b3ff 100%);
-    box-shadow:
-      0 0 88px rgba(168, 85, 247, 0.44),
-      0 0 164px rgba(34, 211, 238, 0.26),
-      inset -62px -58px 96px rgba(3, 2, 12, 0.84),
-      inset 18px 18px 36px rgba(255, 255, 255, 0.12);
+    background: var(--hero-planet-base);
+    box-shadow: var(--hero-planet-shadow);
     animation: planetFloat 8s ease-in-out infinite;
   }
 
@@ -526,17 +594,12 @@ const styles = `
   }
 
   .hero-planet-scene__planet-shine {
-    background:
-      radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 22%),
-      radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 18%);
+    background: var(--hero-planet-shine);
     opacity: 0.82;
   }
 
   .hero-planet-scene__planet-shade {
-    background:
-      radial-gradient(circle at 72% 76%, rgba(2, 1, 10, 0.92) 0%, rgba(2, 1, 10, 0) 36%),
-      radial-gradient(circle at 64% 62%, rgba(15, 8, 34, 0.42) 0%, rgba(15, 8, 34, 0) 24%),
-      radial-gradient(circle at 60% 82%, rgba(6, 4, 18, 0.7) 0%, rgba(6, 4, 18, 0) 24%);
+    background: var(--hero-planet-shade);
     opacity: 0.9;
   }
 
@@ -558,32 +621,19 @@ const styles = `
   }
 
   .hero-planet-scene__planet-texture--a {
-    background:
-      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 12%),
-      radial-gradient(circle at 24% 42%, rgba(89, 27, 178, 0.42) 0%, rgba(89, 27, 178, 0) 18%),
-      radial-gradient(circle at 42% 28%, rgba(236, 72, 153, 0.28) 0%, rgba(236, 72, 153, 0) 12%),
-      radial-gradient(circle at 58% 74%, rgba(34, 211, 238, 0.24) 0%, rgba(34, 211, 238, 0) 14%),
-      radial-gradient(circle at 76% 64%, rgba(4, 6, 18, 0.55) 0%, rgba(4, 6, 18, 0) 18%);
+    background: var(--hero-planet-texture-a);
     opacity: 0.96;
     filter: blur(6px);
   }
 
   .hero-planet-scene__planet-texture--b {
-    background:
-      radial-gradient(circle at 64% 30%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 10%),
-      radial-gradient(circle at 70% 50%, rgba(168, 85, 247, 0.34) 0%, rgba(168, 85, 247, 0) 16%),
-      radial-gradient(circle at 74% 68%, rgba(15, 8, 34, 0.3) 0%, rgba(15, 8, 34, 0) 18%),
-      radial-gradient(circle at 58% 82%, rgba(34, 211, 238, 0.12) 0%, rgba(34, 211, 238, 0) 12%);
+    background: var(--hero-planet-texture-b);
     opacity: 0.84;
     filter: blur(8px);
   }
 
   .hero-planet-scene__planet-texture--c {
-    background:
-      radial-gradient(circle at 32% 66%, rgba(1, 1, 8, 0.62) 0%, rgba(1, 1, 8, 0) 18%),
-      radial-gradient(circle at 48% 56%, rgba(123, 58, 237, 0.3) 0%, rgba(123, 58, 237, 0) 16%),
-      radial-gradient(circle at 72% 82%, rgba(2, 2, 12, 0.76) 0%, rgba(2, 2, 12, 0) 22%),
-      radial-gradient(circle at 70% 74%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 12%);
+    background: var(--hero-planet-texture-c);
     opacity: 0.84;
     filter: blur(9px);
   }
