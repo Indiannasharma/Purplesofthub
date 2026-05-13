@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import ServiceCards from "@/components/ServiceCards";
 import NewsletterSignup from "@/components/NewsletterSignup";
-import HeroCosmosScene from "@/components/HeroCosmosScene";
+import HomeHero from "@/components/HomeHero";
 import PersistentTypewriter from "@/components/common/PersistentTypewriter";
 import {
   FadeInUp,
@@ -133,89 +133,7 @@ export default async function Home() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section
-        id="home"
-        className="hero-section relative isolate flex min-h-[calc(100dvh-80px)] flex-col overflow-hidden scroll-mt-[72px] pb-12 pt-6 sm:pb-16 sm:pt-8 lg:min-h-[calc(100dvh-80px)] lg:items-center lg:pb-20 lg:pt-10"
-      >
-        <HeroCosmosScene variant="backdrop" />
-
-        <div
-          className="hero-cosmos-overlay"
-          aria-hidden
-        />
-
-        <div className="relative z-[2] mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-center lg:gap-8 xl:gap-12">
-          <div className="mx-auto flex w-full max-w-[620px] flex-col justify-center text-center lg:mx-0 lg:flex-[0_0_46%] lg:text-left">
-            <Reveal>
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/[0.08] px-4 py-2 shadow-[0_0_28px_rgba(168,85,247,0.14)] backdrop-blur-md dark:border-violet-400/25 dark:bg-violet-500/[0.06] lg:mx-0 mx-auto">
-                <span
-                  className="inline-block size-1.5 shrink-0 rounded-full bg-fuchsia-400 shadow-[0_0_12px_#c084fc]"
-                  style={{ animation: "cyberPulse 1.8s ease-in-out infinite" }}
-                  aria-hidden
-                />
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700 sm:text-xs dark:text-violet-300">
-                  Digital Innovation Studio
-                </span>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <h1
-                className="text-[clamp(2rem,6.4vw,4rem)] font-black leading-[0.98] tracking-[-0.045em] text-[var(--cyber-heading)] [text-shadow:0_0_48px_rgba(168,85,247,0.12)] sm:text-[clamp(2.35rem,5vw,3.7rem)] lg:text-[clamp(2.5rem,4.2vw,4.1rem)] xl:text-[clamp(2.9rem,4.4vw,4.45rem)]"
-                style={{ fontFamily: "Outfit, system-ui, sans-serif" }}
-              >
-                <span className="block">Building Technology</span>
-                <span className="block">
-                  for the{" "}
-                  <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
-                    Next
-                  </span>
-                </span>
-                <span className="block">
-                  <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(124,58,237,0.35)] dark:from-violet-400 dark:via-fuchsia-400 dark:to-cyan-300">
-                    Generation
-                  </span>{" "}
-                  of
-                </span>
-                <span className="block">Businesses</span>
-              </h1>
-            </Reveal>
-
-            <Reveal delay={0.2}>
-              <p className="mx-auto mt-6 max-w-[31rem] text-[15px] leading-relaxed text-[var(--cyber-body)] sm:text-base lg:mx-0">
-                Web Development • Mobile Apps • Digital Marketing • Music
-              </p>
-            </Reveal>
-
-            <Reveal delay={0.3}>
-              <div className="cta-row hero-cta-row mt-9 flex flex-wrap justify-center gap-3.5 sm:gap-4 lg:justify-start">
-                <Link href="/contact" className="inline-flex w-full min-[480px]:w-auto">
-                  <button
-                    type="button"
-                    className="cyber-btn-primary w-full min-w-[200px] justify-center rounded-xl px-8 py-3.5 text-[15px] font-semibold shadow-[0_8px_32px_rgba(124,58,237,0.35)] transition duration-300 hover:shadow-[0_12px_40px_rgba(124,58,237,0.45)] min-[480px]:w-auto"
-                  >
-                    Start a Project
-                  </button>
-                </Link>
-                <Link href="/contact" className="inline-flex w-full min-[480px]:w-auto">
-                  <button
-                    type="button"
-                    className="cyber-btn-outline w-full min-w-[200px] justify-center rounded-xl px-8 py-3.5 text-[15px] font-semibold min-[480px]:w-auto"
-                  >
-                    Book a Discovery Call
-                  </button>
-                </Link>
-              </div>
-            </Reveal>
-          </div>
-
-          <div className="hero-planet-shell w-full shrink-0 lg:mt-0 lg:flex-[1_1_54%] lg:max-w-[min(50vw,640px)] xl:max-w-[min(48vw,700px)]">
-            <Reveal delay={0.15}>
-              <HeroCosmosScene />
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      <HomeHero />
 
 
       {/* ── FEATURE CARDS ── */}
