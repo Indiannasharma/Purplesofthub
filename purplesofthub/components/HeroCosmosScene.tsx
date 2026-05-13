@@ -462,9 +462,9 @@ const styles = `
   }
 
   .psh-planet-scene__aura {
-    right: 3%;
+    right: 0%;
     top: 50%;
-    width: 74%;
+    width: 78%;
     aspect-ratio: 1;
     transform: translateY(-50%);
     border-radius: 999px;
@@ -481,7 +481,7 @@ const styles = `
   }
 
   .psh-planet-scene__scan {
-    right: 2%;
+    right: 0%;
     width: 40%;
     height: 18%;
     border-top: 1px solid var(--cosmos-circuit);
@@ -500,9 +500,9 @@ const styles = `
   }
 
   .psh-planet {
-    right: 10%;
+    right: 6%;
     top: 50%;
-    width: min(34vw, 390px);
+    width: min(29vw, 360px);
     aspect-ratio: 1;
     transform: translateY(-50%);
     overflow: hidden;
@@ -610,7 +610,7 @@ const styles = `
   }
 
   .psh-planet-orbit {
-    left: 60%;
+    left: 63%;
     top: 51%;
     border-radius: 999px;
     z-index: 2;
@@ -632,7 +632,7 @@ const styles = `
   }
 
   .psh-planet-orbit--wide {
-    width: min(72vw, 680px);
+    width: min(74vw, 700px);
     height: min(25vw, 220px);
     transform: translate(-50%, -50%) rotate(-13deg);
     opacity: 0.34;
@@ -640,7 +640,7 @@ const styles = `
   }
 
   .psh-planet-orbit--back {
-    width: min(68vw, 610px);
+    width: min(70vw, 640px);
     height: min(23vw, 190px);
     transform: translate(-50%, -50%) rotate(-13deg);
     opacity: 0.72;
@@ -648,7 +648,7 @@ const styles = `
   }
 
   .psh-planet-orbit--front {
-    width: min(64vw, 570px);
+    width: min(66vw, 600px);
     height: min(21vw, 172px);
     transform: translate(-50%, -50%) rotate(-13deg);
     z-index: 7;
@@ -658,7 +658,7 @@ const styles = `
   }
 
   .psh-planet-orbit--foreground {
-    width: min(58vw, 520px);
+    width: min(60vw, 545px);
     height: min(19vw, 152px);
     transform: translate(-50%, -50%) rotate(-13deg);
     z-index: 8;
@@ -668,7 +668,7 @@ const styles = `
   }
 
   .psh-planet-dots {
-    left: 60%;
+    left: 63%;
     top: 51%;
     width: 0;
     height: 0;

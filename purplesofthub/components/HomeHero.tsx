@@ -31,8 +31,8 @@ export default function HomeHero() {
           </Reveal>
 
           <Reveal delay={0.2}>
-            <p className="psh-home-hero__subtext">
-              Web Development &bull; Mobile Apps &bull; Digital Marketing &bull; Music Distribution
+            <p className="psh-home-hero__subtext whitespace-nowrap">
+              Web Development • Mobile Apps • Digital Marketing • Music Distribution
             </p>
           </Reveal>
 
