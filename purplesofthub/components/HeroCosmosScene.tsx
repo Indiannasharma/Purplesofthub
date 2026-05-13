@@ -84,13 +84,6 @@ const ORBIT_DOTS_FRONT: OrbitDotConfig[] = Array.from({ length: 16 }, (_, index)
   opacity: 0.34 + (index % 4) * 0.06,
 }));
 
-const CIRCUIT_SEGMENTS = [
-  "psh-cosmos-circuit--one",
-  "psh-cosmos-circuit--two",
-  "psh-cosmos-circuit--three",
-  "psh-cosmos-circuit--four",
-];
-
 function twinkleOpacity(value: number, isDark: boolean) {
   return isDark ? value : Math.max(0.08, value * 0.52);
 }
@@ -108,10 +101,6 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
         <div className="psh-cosmos-nebula psh-cosmos-nebula--cyan" />
         <div className="psh-cosmos-nebula psh-cosmos-nebula--violet" />
         <div className="psh-cosmos-nebula psh-cosmos-nebula--magenta" />
-
-        {CIRCUIT_SEGMENTS.map((segment) => (
-          <span key={segment} className={`psh-cosmos-circuit ${segment}`} />
-        ))}
 
         {stars.map((star, index) => (
           <span
@@ -313,12 +302,7 @@ const styles = `
   }
 
   .psh-cosmos-grid::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(115deg, transparent 0 18%, var(--cosmos-texture) 18.2% 18.6%, transparent 18.8% 100%),
-      linear-gradient(155deg, transparent 0 44%, var(--cosmos-texture) 44.2% 44.5%, transparent 44.7% 100%);
+    content: none;
   }
 
   .psh-cosmos-vignette {
@@ -366,62 +350,6 @@ const styles = `
     animation-delay: 4.8s;
   }
 
-  .psh-cosmos-circuit {
-    width: 260px;
-    height: 120px;
-    opacity: 0.72;
-    background:
-      linear-gradient(90deg, transparent 0 12%, var(--cosmos-circuit) 12% 13%, transparent 13% 100%),
-      linear-gradient(180deg, transparent 0 44%, var(--cosmos-circuit-soft) 44% 45%, transparent 45% 100%);
-  }
-
-  .psh-cosmos-circuit::before,
-  .psh-cosmos-circuit::after {
-    content: "";
-    position: absolute;
-    border: 1px solid var(--cosmos-circuit);
-    border-left: 0;
-    border-bottom: 0;
-  }
-
-  .psh-cosmos-circuit::before {
-    right: 18px;
-    top: 18px;
-    width: 96px;
-    height: 54px;
-  }
-
-  .psh-cosmos-circuit::after {
-    right: 112px;
-    top: 70px;
-    width: 42px;
-    height: 28px;
-    border-radius: 0 10px 0 0;
-  }
-
-  .psh-cosmos-circuit--one {
-    top: 9%;
-    left: 2%;
-  }
-
-  .psh-cosmos-circuit--two {
-    right: 2%;
-    top: 20%;
-    transform: rotate(8deg);
-  }
-
-  .psh-cosmos-circuit--three {
-    right: 8%;
-    bottom: 10%;
-    transform: rotate(-12deg) scale(1.2);
-  }
-
-  .psh-cosmos-circuit--four {
-    left: 4%;
-    bottom: 12%;
-    transform: rotate(180deg) scale(1.1);
-  }
-
   .psh-cosmos-star {
     border-radius: 999px;
     background: var(--cosmos-star);
@@ -449,8 +377,8 @@ const styles = `
     position: absolute;
     inset: 0;
     overflow: visible;
-    perspective: 1300px;
-    perspective-origin: 64% 50%;
+    perspective: 1100px;
+    perspective-origin: 67% 46%;
     transform: translateZ(0);
   }
 
@@ -612,8 +540,8 @@ const styles = `
   }
 
   .psh-planet-orbit {
-    left: 63%;
-    top: 51%;
+    left: 64%;
+    top: 50%;
     border-radius: 999px;
     z-index: 2;
     transform-style: preserve-3d;
@@ -637,45 +565,45 @@ const styles = `
   .psh-planet-orbit--wide {
     width: min(74vw, 700px);
     height: min(25vw, 220px);
-    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg);
-    opacity: 0.46;
-    --ring-width: 1px;
+    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg);
+    opacity: 0.44;
+    --ring-width: 1.5px;
   }
 
   .psh-planet-orbit--back {
     width: min(70vw, 640px);
     height: min(23vw, 190px);
-    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg);
-    opacity: 0.84;
+    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg);
+    opacity: 0.94;
     --ring-width: 3px;
   }
 
   .psh-planet-orbit--front {
     width: min(66vw, 600px);
     height: min(21vw, 172px);
-    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(18deg);
+    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(16deg);
     z-index: 7;
     opacity: 0.9;
-    clip-path: polygon(0 44%, 100% 34%, 100% 74%, 0 88%);
+    clip-path: polygon(0 42%, 100% 30%, 100% 72%, 0 88%);
     --ring-width: 4px;
   }
 
   .psh-planet-orbit--foreground {
     width: min(60vw, 545px);
     height: min(19vw, 152px);
-    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(18deg);
+    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(16deg);
     z-index: 8;
-    opacity: 0.7;
-    clip-path: polygon(6% 50%, 96% 40%, 95% 72%, 8% 82%);
+    opacity: 0.76;
+    clip-path: polygon(4% 48%, 96% 36%, 96% 74%, 8% 84%);
     --ring-width: 1px;
   }
 
   .psh-planet-dots {
-    left: 63%;
-    top: 51%;
+    left: 64%;
+    top: 50%;
     width: 0;
     height: 0;
-    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg);
+    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg);
   }
 
   .psh-planet-dots--back {
@@ -686,7 +614,7 @@ const styles = `
   .psh-planet-dots--front {
     z-index: 9;
     animation: pshOrbitShimmer 36s linear infinite reverse;
-    clip-path: polygon(-340px 12px, 440px -80px, 450px 180px, -340px 260px);
+    clip-path: polygon(-340px 18px, 460px -92px, 464px 178px, -340px 268px);
   }
 
   .psh-planet-dot {
@@ -740,8 +668,8 @@ const styles = `
   }
 
   @keyframes pshOrbitShimmer {
-    from { transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg); }
-    to { transform: translate(-50%, -50%) rotateX(73deg) rotateZ(342deg); }
+    from { transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg); }
+    to { transform: translate(-50%, -50%) rotateX(80deg) rotateZ(336deg); }
   }
 
   @keyframes pshDotPulse {
