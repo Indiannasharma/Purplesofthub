@@ -2207,9 +2207,11 @@ html.dark .psh-home-hero {
 
 .psh-home-hero__actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
+  flex-wrap: nowrap;
+  gap: 16px;
   margin-top: 32px;
+  width: 100%;
+  max-width: 680px;
 }
 
 .psh-home-hero__button {
@@ -2217,8 +2219,9 @@ html.dark .psh-home-hero {
   align-items: center;
   justify-content: center;
   min-height: 64px;
-  min-width: 218px;
-  padding: 0 34px;
+  min-width: 0;
+  flex: 1 1 0;
+  padding: 0 28px;
   border-radius: 12px;
   font-family: Outfit, system-ui, sans-serif;
   font-size: 18px;
@@ -2227,6 +2230,7 @@ html.dark .psh-home-hero {
   line-height: 1.1;
   text-align: center;
   text-decoration: none;
+  white-space: nowrap;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
@@ -2281,13 +2285,13 @@ html.dark .psh-home-hero {
 
   .psh-home-hero__button {
     min-height: 62px;
-    min-width: 205px;
+    min-width: 0;
     font-size: 16px;
   }
 }
 
 @media (max-width: 1023px) {
-.psh-home-hero {
+  .psh-home-hero {
     min-height: auto;
   }
 
@@ -2326,6 +2330,7 @@ html.dark .psh-home-hero {
 
   .psh-home-hero__actions {
     justify-content: center;
+    flex-wrap: nowrap;
     margin-top: 32px;
   }
 
@@ -2373,6 +2378,7 @@ html.dark .psh-home-hero {
     width: min(100%, 280px);
     max-width: calc(100vw - 48px);
     min-width: 0;
+    flex: 0 0 auto;
     min-height: 56px;
     padding: 0 20px;
     font-size: 15px;

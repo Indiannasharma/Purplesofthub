@@ -449,6 +449,8 @@ const styles = `
     position: absolute;
     inset: 0;
     overflow: visible;
+    perspective: 1300px;
+    perspective-origin: 64% 50%;
     transform: translateZ(0);
   }
 
@@ -615,6 +617,7 @@ const styles = `
     border-radius: 999px;
     z-index: 2;
     transform-style: preserve-3d;
+    transform-origin: 50% 50%;
     mix-blend-mode: screen;
   }
 
@@ -634,36 +637,36 @@ const styles = `
   .psh-planet-orbit--wide {
     width: min(74vw, 700px);
     height: min(25vw, 220px);
-    transform: translate(-50%, -50%) rotate(-13deg);
-    opacity: 0.34;
+    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg);
+    opacity: 0.46;
     --ring-width: 1px;
   }
 
   .psh-planet-orbit--back {
     width: min(70vw, 640px);
     height: min(23vw, 190px);
-    transform: translate(-50%, -50%) rotate(-13deg);
-    opacity: 0.72;
+    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg);
+    opacity: 0.84;
     --ring-width: 3px;
   }
 
   .psh-planet-orbit--front {
     width: min(66vw, 600px);
     height: min(21vw, 172px);
-    transform: translate(-50%, -50%) rotate(-13deg);
+    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(18deg);
     z-index: 7;
-    opacity: 0.82;
-    clip-path: polygon(0 48%, 100% 38%, 100% 75%, 0 88%);
+    opacity: 0.9;
+    clip-path: polygon(0 44%, 100% 34%, 100% 74%, 0 88%);
     --ring-width: 4px;
   }
 
   .psh-planet-orbit--foreground {
     width: min(60vw, 545px);
     height: min(19vw, 152px);
-    transform: translate(-50%, -50%) rotate(-13deg);
+    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(18deg);
     z-index: 8;
-    opacity: 0.58;
-    clip-path: polygon(7% 51%, 96% 42%, 94% 70%, 8% 80%);
+    opacity: 0.7;
+    clip-path: polygon(6% 50%, 96% 40%, 95% 72%, 8% 82%);
     --ring-width: 1px;
   }
 
@@ -672,7 +675,7 @@ const styles = `
     top: 51%;
     width: 0;
     height: 0;
-    transform: translate(-50%, -50%) rotate(-13deg);
+    transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg);
   }
 
   .psh-planet-dots--back {
@@ -683,7 +686,7 @@ const styles = `
   .psh-planet-dots--front {
     z-index: 9;
     animation: pshOrbitShimmer 36s linear infinite reverse;
-    clip-path: polygon(-300px 10px, 420px -80px, 430px 170px, -300px 250px);
+    clip-path: polygon(-340px 12px, 440px -80px, 450px 180px, -340px 260px);
   }
 
   .psh-planet-dot {
@@ -737,8 +740,8 @@ const styles = `
   }
 
   @keyframes pshOrbitShimmer {
-    from { transform: translate(-50%, -50%) rotate(-13deg); }
-    to { transform: translate(-50%, -50%) rotate(347deg); }
+    from { transform: translate(-50%, -50%) rotateX(73deg) rotateZ(-18deg); }
+    to { transform: translate(-50%, -50%) rotateX(73deg) rotateZ(342deg); }
   }
 
   @keyframes pshDotPulse {
