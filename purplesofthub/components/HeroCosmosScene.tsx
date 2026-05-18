@@ -27,6 +27,17 @@ type ParticleConfig = {
   drift: number;
 };
 
+type RingLayer = "back" | "front";
+
+type RingStrokeConfig = {
+  rx: number;
+  ry: number;
+  width: number;
+  opacity: number;
+  dasharray?: string;
+  gradient: "ring" | "dash" | "violet" | "pink";
+};
+
 const ACCENT = {
   violet: "#a855f7",
   cyan: "#22d3ee",
@@ -60,8 +71,78 @@ const PLANET_PARTICLES: ParticleConfig[] = [
   { left: 83, top: 59, size: 3, color: "pink", duration: 8.2, delay: 2.5, drift: 14 },
 ];
 
+const RING_STROKES: RingStrokeConfig[] = [
+  { rx: 392, ry: 91, width: 2.2, opacity: 0.92, gradient: "ring" },
+  { rx: 334, ry: 75, width: 5.5, opacity: 0.74, gradient: "ring" },
+  { rx: 285, ry: 60, width: 1.4, opacity: 0.58, gradient: "violet" },
+  { rx: 424, ry: 102, width: 1, opacity: 0.48, dasharray: "12 16", gradient: "dash" },
+  { rx: 372, ry: 86, width: 1.1, opacity: 0.84, dasharray: "3 10", gradient: "dash" },
+  { rx: 238, ry: 49, width: 2.5, opacity: 0.34, gradient: "pink" },
+];
+
 function twinkleOpacity(value: number, isDark: boolean) {
   return isDark ? value : Math.max(0.08, value * 0.52);
+}
+
+function PlanetRingLayer({ layer, isDark }: { layer: RingLayer; isDark: boolean }) {
+  const id = `psh-${layer}-ring`;
+  const clipId = `psh-${layer}-ring-clip`;
+  const glowId = `psh-${layer}-ring-glow`;
+  const strokeOpacity = layer === "front" ? (isDark ? 0.98 : 0.9) : (isDark ? 0.62 : 0.46);
+
+  return (
+    <div className={`psh-planet-rings psh-planet-rings--${layer}`} aria-hidden="true">
+      <svg className="psh-planet-rings__svg" viewBox="0 0 920 660" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id={id} x1="111" y1="495" x2="807" y2="183" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#B44CFF" stopOpacity=".04" />
+            <stop offset=".17" stopColor="#C557FF" stopOpacity={isDark ? ".9" : ".7"} />
+            <stop offset=".43" stopColor="#F07DFF" stopOpacity={isDark ? ".62" : ".44"} />
+            <stop offset=".67" stopColor="#2AE8FF" stopOpacity={isDark ? ".86" : ".62"} />
+            <stop offset="1" stopColor="#76F4FF" stopOpacity=".05" />
+          </linearGradient>
+          <linearGradient id={`${id}-dash`} x1="168" y1="471" x2="832" y2="211" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#8E4DFF" />
+            <stop offset=".55" stopColor="#2BEEFF" />
+            <stop offset="1" stopColor="#DA7BFF" />
+          </linearGradient>
+          <filter id={glowId} x="-20%" y="-35%" width="140%" height="170%" colorInterpolationFilters="sRGB">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feColorMatrix in="blur" values="0 0 0 0 0.55 0 0 0 0 0.12 0 0 0 0 1 0 0 0 .9 0" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <clipPath id={clipId}>
+            {layer === "back" ? (
+              <rect x="0" y="0" width="920" height="330" />
+            ) : (
+              <rect x="0" y="330" width="920" height="330" />
+            )}
+          </clipPath>
+        </defs>
+
+        <g filter={`url(#${glowId})`} opacity={strokeOpacity} clipPath={`url(#${clipId})`}>
+          {RING_STROKES.map((stroke, index) => (
+            <ellipse
+              key={`${layer}-${index}`}
+              cx="460"
+              cy="330"
+              rx={stroke.rx}
+              ry={stroke.ry}
+              stroke={stroke.gradient === "dash" ? `url(#${id}-dash)` : `url(#${id})`}
+              strokeWidth={stroke.width}
+              strokeDasharray={stroke.dasharray}
+              strokeLinecap="round"
+              opacity={stroke.opacity}
+              className={stroke.dasharray ? "psh-ring-stroke psh-ring-stroke--dash" : "psh-ring-stroke"}
+            />
+          ))}
+        </g>
+      </svg>
+    </div>
+  );
 }
 
 export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneProps) {
@@ -129,6 +210,8 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
         <div className="psh-planet-scene__scan psh-planet-scene__scan--top" />
         <div className="psh-planet-scene__scan psh-planet-scene__scan--bottom" />
 
+        <PlanetRingLayer layer="back" isDark={isDark} />
+
         <div className="psh-planet">
           <span className="psh-planet__rim" />
           <span className="psh-planet__shine" />
@@ -158,6 +241,8 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
             }
           />
         ))}
+
+        <PlanetRingLayer layer="front" isDark={isDark} />
       </div>
 
       <style jsx>{styles}</style>
@@ -318,6 +403,7 @@ const styles = `
 
   .psh-planet-scene__aura,
   .psh-planet-scene__scan,
+  .psh-planet-rings,
   .psh-planet,
   .psh-planet-particle {
     position: absolute;
@@ -359,6 +445,43 @@ const styles = `
   .psh-planet-scene__scan--bottom {
     bottom: 12%;
     transform: skewX(-18deg);
+  }
+
+  .psh-planet-rings {
+    left: 73%;
+    top: 50%;
+    width: min(76vw, 860px);
+    aspect-ratio: 920 / 660;
+    transform: translate(-50%, -50%) rotate(-14deg);
+    z-index: 4;
+    pointer-events: none;
+    overflow: visible;
+    mix-blend-mode: screen;
+    filter: saturate(1.08);
+  }
+
+  .psh-planet-rings--back {
+    opacity: 0.9;
+  }
+
+  .psh-planet-rings--front {
+    z-index: 8;
+    opacity: 0.98;
+  }
+
+  .psh-planet-rings__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .psh-ring-stroke {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .psh-ring-stroke--dash {
+    animation: pshRingDash 34s linear infinite;
+    transform-origin: center;
   }
 
   .psh-planet {
@@ -506,6 +629,11 @@ const styles = `
     to { transform: rotate(360deg); }
   }
 
+  @keyframes pshRingDash {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -260; }
+  }
+
   @media (max-width: 1023px) {
     .psh-cosmos-grid {
       background-size: 48px 48px, 48px 48px, 96px 96px, 96px 96px;
@@ -531,6 +659,11 @@ const styles = `
       right: 50%;
       width: min(84vw, 410px);
       transform: translate(50%, -50%);
+    }
+
+    .psh-planet-rings {
+      left: 50%;
+      width: min(108vw, 620px);
     }
 
     .psh-planet-scene__scan {
