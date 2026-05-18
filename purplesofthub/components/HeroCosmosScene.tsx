@@ -27,6 +27,19 @@ type ParticleConfig = {
   drift: number;
 };
 
+type FloatParticleConfig = {
+  left: number;
+  top: number;
+  size: number;
+  color: "violet" | "cyan" | "pink";
+  duration: number;
+  delay: number;
+  driftX: number;
+  driftY: number;
+  blur: number;
+  opacity: number;
+};
+
 type RingLayer = "back" | "front";
 
 type RingStrokeConfig = {
@@ -62,6 +75,18 @@ const BACKDROP_PARTICLES: ParticleConfig[] = [
   { left: 22, top: 62, size: 4, color: "pink", duration: 9.8, delay: 1.6, drift: 16 },
 ];
 
+const HERO_FLOATS: FloatParticleConfig[] = [
+  { left: 9, top: 18, size: 8, color: "violet", duration: 16, delay: 0.2, driftX: 20, driftY: 6, blur: 1.5, opacity: 0.48 },
+  { left: 17, top: 36, size: 5, color: "cyan", duration: 13.4, delay: 1.1, driftX: 14, driftY: -4, blur: 0.9, opacity: 0.42 },
+  { left: 23, top: 16, size: 4, color: "pink", duration: 15.2, delay: 2.4, driftX: 18, driftY: 8, blur: 1.2, opacity: 0.34 },
+  { left: 47, top: 24, size: 6, color: "violet", duration: 17.8, delay: 0.8, driftX: 24, driftY: 10, blur: 1.4, opacity: 0.4 },
+  { left: 56, top: 58, size: 7, color: "cyan", duration: 15.6, delay: 1.9, driftX: 16, driftY: -10, blur: 1.6, opacity: 0.44 },
+  { left: 66, top: 18, size: 5, color: "pink", duration: 18.2, delay: 0.5, driftX: 20, driftY: 12, blur: 1.1, opacity: 0.3 },
+  { left: 74, top: 50, size: 4, color: "cyan", duration: 14.8, delay: 2.1, driftX: 12, driftY: -8, blur: 0.8, opacity: 0.46 },
+  { left: 83, top: 30, size: 6, color: "violet", duration: 16.8, delay: 1.3, driftX: 18, driftY: 6, blur: 1.5, opacity: 0.38 },
+  { left: 88, top: 64, size: 4, color: "pink", duration: 15.8, delay: 2.7, driftX: 16, driftY: 4, blur: 1, opacity: 0.32 },
+];
+
 const PLANET_PARTICLES: ParticleConfig[] = [
   { left: 34, top: 38, size: 3, color: "cyan", duration: 8.4, delay: 0.3, drift: 12 },
   { left: 40, top: 58, size: 4, color: "pink", duration: 9.6, delay: 1.4, drift: 15 },
@@ -88,23 +113,23 @@ function PlanetRingLayer({ layer, isDark }: { layer: RingLayer; isDark: boolean 
   const id = `psh-${layer}-ring`;
   const clipId = `psh-${layer}-ring-clip`;
   const glowId = `psh-${layer}-ring-glow`;
-  const strokeOpacity = layer === "front" ? (isDark ? 0.98 : 0.9) : (isDark ? 0.62 : 0.46);
+  const strokeOpacity = layer === "front" ? (isDark ? 0.98 : 0.84) : (isDark ? 0.62 : 0.4);
 
   return (
     <div className={`psh-planet-rings psh-planet-rings--${layer}`} aria-hidden="true">
       <svg className="psh-planet-rings__svg" viewBox="0 0 920 660" preserveAspectRatio="xMidYMid meet">
         <defs>
           <linearGradient id={id} x1="111" y1="495" x2="807" y2="183" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#B44CFF" stopOpacity=".04" />
-            <stop offset=".17" stopColor="#C557FF" stopOpacity={isDark ? ".9" : ".7"} />
-            <stop offset=".43" stopColor="#F07DFF" stopOpacity={isDark ? ".62" : ".44"} />
-            <stop offset=".67" stopColor="#2AE8FF" stopOpacity={isDark ? ".86" : ".62"} />
-            <stop offset="1" stopColor="#76F4FF" stopOpacity=".05" />
+            <stop stopColor={isDark ? "#B44CFF" : "#F7EEFF"} stopOpacity={isDark ? ".04" : ".02"} />
+            <stop offset=".17" stopColor={isDark ? "#C557FF" : "#C69BFF"} stopOpacity={isDark ? ".9" : ".78"} />
+            <stop offset=".43" stopColor={isDark ? "#F07DFF" : "#F2D6FF"} stopOpacity={isDark ? ".62" : ".48"} />
+            <stop offset=".67" stopColor={isDark ? "#2AE8FF" : "#6EDCF8"} stopOpacity={isDark ? ".86" : ".66"} />
+            <stop offset="1" stopColor={isDark ? "#76F4FF" : "#FFFFFF"} stopOpacity={isDark ? ".05" : ".02"} />
           </linearGradient>
           <linearGradient id={`${id}-dash`} x1="168" y1="471" x2="832" y2="211" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#8E4DFF" />
-            <stop offset=".55" stopColor="#2BEEFF" />
-            <stop offset="1" stopColor="#DA7BFF" />
+            <stop stopColor={isDark ? "#8E4DFF" : "#C795FF"} />
+            <stop offset=".55" stopColor={isDark ? "#2BEEFF" : "#59D8F7"} />
+            <stop offset="1" stopColor={isDark ? "#DA7BFF" : "#E9C8FF"} />
           </linearGradient>
           <filter id={glowId} x="-20%" y="-35%" width="140%" height="170%" colorInterpolationFilters="sRGB">
             <feGaussianBlur stdDeviation="4" result="blur" />
@@ -148,7 +173,7 @@ function PlanetRingLayer({ layer, isDark }: { layer: RingLayer; isDark: boolean 
 export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 46)), [isDark]);
+  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 58)), [isDark]);
 
   if (variant === "backdrop") {
     return (
@@ -173,6 +198,29 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
                 ["--star-max" as string]: Math.min(1, twinkleOpacity(star.opacity + 0.3, isDark)),
                 animationDuration: `${star.duration}s`,
                 animationDelay: `${star.delay}s`,
+              } as CSSProperties
+            }
+          />
+        ))}
+
+        {!isDark && HERO_FLOATS.map((float, index) => (
+          <span
+            key={`float-${index}`}
+            className="psh-cosmos-float"
+            style={
+              {
+                left: `${float.left}%`,
+                top: `${float.top}%`,
+                width: `${float.size}px`,
+                height: `${float.size}px`,
+                color: ACCENT[float.color],
+                background: ACCENT[float.color],
+                opacity: float.opacity,
+                filter: `blur(${float.blur}px)`,
+                ["--float-drift-x" as string]: `${float.driftX}px`,
+                ["--float-drift-y" as string]: `${float.driftY}px`,
+                animationDuration: `${float.duration}s`,
+                animationDelay: `${float.delay}s`,
               } as CSSProperties
             }
           />
@@ -274,22 +322,22 @@ const styles = `
 
   .psh-cosmos[data-theme="light"] {
     --cosmos-bg: linear-gradient(180deg, #fbf8ff 0%, #f1eaff 50%, #e8dcfb 100%);
-    --cosmos-texture: rgba(124, 58, 237, 0.06);
-    --cosmos-grid-a: rgba(109, 40, 217, 0.08);
-    --cosmos-grid-b: rgba(14, 165, 233, 0.05);
-    --cosmos-circuit: rgba(14, 116, 144, 0.15);
-    --cosmos-circuit-soft: rgba(124, 58, 237, 0.14);
-    --cosmos-star: rgba(83, 52, 128, 0.64);
-    --cosmos-nebula-cyan: radial-gradient(circle, rgba(34, 211, 238, 0.18) 0%, rgba(34, 211, 238, 0.07) 28%, transparent 70%);
-    --cosmos-nebula-violet: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.07) 36%, transparent 72%);
-    --cosmos-nebula-magenta: radial-gradient(circle, rgba(236, 72, 153, 0.13) 0%, transparent 70%);
-    --planet-base: radial-gradient(circle at 27% 18%, #fff3ff 0%, #e1adff 11%, #9f58ff 30%, #5e24aa 58%, #1d0d38 79%, #070213 100%);
-    --planet-rim: radial-gradient(circle at 72% 33%, rgba(34, 211, 238, 0.36), transparent 38%);
-    --planet-shadow: 0 0 70px rgba(124, 58, 237, 0.24), 0 0 138px rgba(34, 211, 238, 0.16), inset -68px -60px 94px rgba(7, 3, 18, 0.78), inset 18px 18px 34px rgba(255, 255, 255, 0.18);
+    --cosmos-texture: rgba(124, 58, 237, 0.05);
+    --cosmos-grid-a: rgba(109, 40, 217, 0.07);
+    --cosmos-grid-b: rgba(14, 165, 233, 0.045);
+    --cosmos-circuit: rgba(14, 116, 144, 0.13);
+    --cosmos-circuit-soft: rgba(124, 58, 237, 0.12);
+    --cosmos-star: rgba(83, 52, 128, 0.54);
+    --cosmos-nebula-cyan: radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.07) 28%, transparent 70%);
+    --cosmos-nebula-violet: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(168, 85, 247, 0.06) 36%, transparent 72%);
+    --cosmos-nebula-magenta: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+    --planet-base: radial-gradient(circle at 27% 18%, #fffdfd 0%, #f2d8ff 11%, #c476ff 30%, #6f39c9 58%, #22113d 80%, #090416 100%);
+    --planet-rim: radial-gradient(circle at 72% 33%, rgba(124, 58, 237, 0.32), transparent 38%);
+    --planet-shadow: 0 0 82px rgba(124, 58, 237, 0.2), 0 0 150px rgba(34, 211, 238, 0.12), inset -68px -60px 94px rgba(7, 3, 18, 0.72), inset 18px 18px 34px rgba(255, 255, 255, 0.2);
     --ring-core: rgba(8, 145, 178, 0.52);
-    --ring-violet: rgba(124, 58, 237, 0.48);
-    --ring-faint: rgba(76, 29, 149, 0.12);
-    --ring-shadow: 0 0 22px rgba(34, 211, 238, 0.16), 0 0 34px rgba(124, 58, 237, 0.12);
+    --ring-violet: rgba(124, 58, 237, 0.44);
+    --ring-faint: rgba(76, 29, 149, 0.1);
+    --ring-shadow: 0 0 20px rgba(34, 211, 238, 0.12), 0 0 30px rgba(124, 58, 237, 0.1);
   }
 
   .psh-cosmos--backdrop {
@@ -304,6 +352,7 @@ const styles = `
   .psh-cosmos-nebula,
   .psh-cosmos-circuit,
   .psh-cosmos-star,
+  .psh-cosmos-float,
   .psh-cosmos-particle {
     position: absolute;
   }
@@ -375,6 +424,14 @@ const styles = `
     box-shadow: 0 0 12px currentColor;
     opacity: var(--star-min);
     animation: pshStarTwinkle ease-in-out infinite;
+  }
+
+  .psh-cosmos-float {
+    border-radius: 999px;
+    box-shadow: 0 0 12px currentColor, 0 0 22px currentColor;
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    animation: pshFloatDrift ease-in-out infinite;
   }
 
   .psh-cosmos-particle,
@@ -469,6 +526,11 @@ const styles = `
     opacity: 0.92;
   }
 
+  .psh-cosmos[data-theme="light"] .psh-planet-rings {
+    mix-blend-mode: multiply;
+    filter: saturate(1.08) contrast(1.02);
+  }
+
   .psh-planet-rings__svg {
     display: block;
     width: 100%;
@@ -526,6 +588,14 @@ const styles = `
     mix-blend-mode: multiply;
   }
 
+  .psh-cosmos[data-theme="light"] .psh-planet::after {
+    background:
+      radial-gradient(circle at 88% 38%, rgba(34, 211, 238, 0.2) 0%, transparent 30%),
+      radial-gradient(circle at 72% 76%, rgba(9, 5, 20, 0.68) 0%, transparent 42%),
+      linear-gradient(142deg, transparent 0 44%, rgba(70, 35, 131, 0.2) 76%, rgba(8, 4, 20, 0.78) 100%);
+    opacity: 0.86;
+  }
+
   .psh-planet__rim,
   .psh-planet__shine,
   .psh-planet__storm,
@@ -544,11 +614,23 @@ const styles = `
     opacity: 0.78;
   }
 
+  .psh-cosmos[data-theme="light"] .psh-planet__rim {
+    background: radial-gradient(circle at 72% 33%, rgba(124, 58, 237, 0.24), transparent 38%);
+    box-shadow: inset -10px 0 22px rgba(124, 58, 237, 0.2), inset 8px -10px 28px rgba(34, 211, 238, 0.12);
+    opacity: 0.72;
+  }
+
   .psh-planet__shine {
     background:
       radial-gradient(circle at 26% 17%, rgba(255, 255, 255, 0.42) 0%, transparent 18%),
       radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.16) 0%, transparent 20%);
     filter: blur(1px);
+  }
+
+  .psh-cosmos[data-theme="light"] .psh-planet__shine {
+    background:
+      radial-gradient(circle at 26% 17%, rgba(255, 255, 255, 0.64) 0%, transparent 18%),
+      radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.22) 0%, transparent 20%);
   }
 
   .psh-planet__storm--one {
@@ -568,6 +650,19 @@ const styles = `
       radial-gradient(ellipse at 72% 62%, rgba(0, 0, 0, 0.55) 0%, transparent 30%);
     filter: blur(13px);
     transform: rotate(18deg);
+  }
+
+  .psh-cosmos[data-theme="light"] .psh-planet__storm--one {
+    background:
+      radial-gradient(ellipse at 28% 52%, rgba(255, 241, 255, 0.44) 0%, transparent 32%),
+      radial-gradient(ellipse at 62% 48%, rgba(34, 211, 238, 0.12) 0%, transparent 30%);
+  }
+
+  .psh-cosmos[data-theme="light"] .psh-planet__storm--two {
+    background:
+      radial-gradient(ellipse at 48% 42%, rgba(124, 58, 237, 0.22) 0%, transparent 40%),
+      radial-gradient(ellipse at 72% 62%, rgba(255, 255, 255, 0.42) 0%, transparent 30%);
+    opacity: 0.66;
   }
 
   .psh-planet__texture--one {
@@ -599,6 +694,10 @@ const styles = `
     opacity: 0.72;
   }
 
+  .psh-cosmos-float {
+    z-index: 2;
+  }
+
   @keyframes pshStarTwinkle {
     0%, 100% { opacity: var(--star-min); transform: scale(0.88); }
     48% { opacity: var(--star-max); transform: scale(1.28); }
@@ -612,6 +711,11 @@ const styles = `
   @keyframes pshParticleDrift {
     0%, 100% { opacity: 0.48; transform: translate3d(0, 0, 0) scale(0.92); }
     48% { opacity: 1; transform: translate3d(10px, calc(-1 * var(--particle-drift)), 0) scale(1.16); }
+  }
+
+  @keyframes pshFloatDrift {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(0.92); }
+    50% { transform: translate3d(var(--float-drift-x), calc(-1 * var(--float-drift-y)), 0) scale(1.08); }
   }
 
   @keyframes pshAuraPulse {
@@ -697,6 +801,7 @@ const styles = `
   @media (prefers-reduced-motion: reduce) {
     .psh-cosmos-nebula,
     .psh-cosmos-star,
+    .psh-cosmos-float,
     .psh-cosmos-particle,
     .psh-planet-scene__aura,
     .psh-planet,
