@@ -27,14 +27,6 @@ type ParticleConfig = {
   drift: number;
 };
 
-type OrbitDotConfig = {
-  angle: number;
-  radius: number;
-  size: number;
-  color: "violet" | "cyan";
-  opacity: number;
-};
-
 const ACCENT = {
   violet: "#a855f7",
   cyan: "#22d3ee",
@@ -67,22 +59,6 @@ const PLANET_PARTICLES: ParticleConfig[] = [
   { left: 74, top: 45, size: 4, color: "cyan", duration: 9.4, delay: 1.9, drift: 17 },
   { left: 83, top: 59, size: 3, color: "pink", duration: 8.2, delay: 2.5, drift: 14 },
 ];
-
-const ORBIT_DOTS_BACK: OrbitDotConfig[] = Array.from({ length: 20 }, (_, index) => ({
-  angle: index * 18 + 4,
-  radius: 250 + (index % 4) * 8,
-  size: index % 5 === 0 ? 5 : 3,
-  color: index % 2 === 0 ? "cyan" : "violet",
-  opacity: 0.28 + (index % 5) * 0.05,
-}));
-
-const ORBIT_DOTS_FRONT: OrbitDotConfig[] = Array.from({ length: 16 }, (_, index) => ({
-  angle: index * 22.5 + 12,
-  radius: 232 + (index % 3) * 7,
-  size: index % 4 === 0 ? 5 : 3.5,
-  color: index % 2 === 0 ? "violet" : "cyan",
-  opacity: 0.34 + (index % 4) * 0.06,
-}));
 
 function twinkleOpacity(value: number, isDark: boolean) {
   return isDark ? value : Math.max(0.08, value * 0.52);
@@ -153,27 +129,6 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
         <div className="psh-planet-scene__scan psh-planet-scene__scan--top" />
         <div className="psh-planet-scene__scan psh-planet-scene__scan--bottom" />
 
-        <div className="psh-planet-orbit psh-planet-orbit--wide" />
-        <div className="psh-planet-orbit psh-planet-orbit--back" />
-        <div className="psh-planet-dots psh-planet-dots--back">
-          {ORBIT_DOTS_BACK.map((dot, index) => (
-            <span
-              key={index}
-              className="psh-planet-dot"
-              style={
-                {
-                  ["--dot-angle" as string]: `${dot.angle}deg`,
-                  ["--dot-radius" as string]: `${dot.radius}px`,
-                  ["--dot-scale" as string]: `${dot.size / 4}`,
-                  ["--dot-opacity" as string]: isDark ? dot.opacity : dot.opacity * 0.7,
-                  color: ACCENT[dot.color],
-                  animationDelay: `${index * 0.13}s`,
-                } as CSSProperties
-              }
-            />
-          ))}
-        </div>
-
         <div className="psh-planet">
           <span className="psh-planet__rim" />
           <span className="psh-planet__shine" />
@@ -182,27 +137,6 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
           <span className="psh-planet__texture psh-planet__texture--one" />
           <span className="psh-planet__texture psh-planet__texture--two" />
           <span className="psh-planet__shadow" />
-        </div>
-
-        <div className="psh-planet-orbit psh-planet-orbit--front" />
-        <div className="psh-planet-orbit psh-planet-orbit--foreground" />
-        <div className="psh-planet-dots psh-planet-dots--front">
-          {ORBIT_DOTS_FRONT.map((dot, index) => (
-            <span
-              key={index}
-              className="psh-planet-dot"
-              style={
-                {
-                  ["--dot-angle" as string]: `${dot.angle}deg`,
-                  ["--dot-radius" as string]: `${dot.radius}px`,
-                  ["--dot-scale" as string]: `${dot.size / 4}`,
-                  ["--dot-opacity" as string]: isDark ? dot.opacity : dot.opacity * 0.72,
-                  color: ACCENT[dot.color],
-                  animationDelay: `${index * 0.15}s`,
-                } as CSSProperties
-              }
-            />
-          ))}
         </div>
 
         {PLANET_PARTICLES.map((particle, index) => (
@@ -384,8 +318,6 @@ const styles = `
 
   .psh-planet-scene__aura,
   .psh-planet-scene__scan,
-  .psh-planet-orbit,
-  .psh-planet-dots,
   .psh-planet,
   .psh-planet-particle {
     position: absolute;
@@ -539,99 +471,6 @@ const styles = `
     background: radial-gradient(circle at 54% 88%, rgba(1, 1, 7, 0.9) 0%, transparent 42%);
   }
 
-  .psh-planet-orbit {
-    left: 64%;
-    top: 50%;
-    border-radius: 999px;
-    z-index: 2;
-    transform-style: preserve-3d;
-    transform-origin: 50% 50%;
-    mix-blend-mode: screen;
-  }
-
-  .psh-planet-orbit::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: var(--ring-width, 2px);
-    background: linear-gradient(90deg, transparent 0%, var(--ring-violet) 20%, var(--ring-core) 48%, var(--ring-violet) 72%, transparent 100%);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    box-shadow: var(--ring-shadow);
-  }
-
-  .psh-planet-orbit--wide {
-    width: min(74vw, 700px);
-    height: min(25vw, 220px);
-    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg);
-    opacity: 0.44;
-    --ring-width: 1.5px;
-  }
-
-  .psh-planet-orbit--back {
-    width: min(70vw, 640px);
-    height: min(23vw, 190px);
-    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg);
-    opacity: 0.94;
-    --ring-width: 3px;
-  }
-
-  .psh-planet-orbit--front {
-    width: min(66vw, 600px);
-    height: min(21vw, 172px);
-    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(16deg);
-    z-index: 7;
-    opacity: 0.9;
-    clip-path: polygon(0 42%, 100% 30%, 100% 72%, 0 88%);
-    --ring-width: 4px;
-  }
-
-  .psh-planet-orbit--foreground {
-    width: min(60vw, 545px);
-    height: min(19vw, 152px);
-    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(16deg);
-    z-index: 8;
-    opacity: 0.76;
-    clip-path: polygon(4% 48%, 96% 36%, 96% 74%, 8% 84%);
-    --ring-width: 1px;
-  }
-
-  .psh-planet-dots {
-    left: 64%;
-    top: 50%;
-    width: 0;
-    height: 0;
-    transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg);
-  }
-
-  .psh-planet-dots--back {
-    z-index: 3;
-    animation: pshOrbitShimmer 30s linear infinite;
-  }
-
-  .psh-planet-dots--front {
-    z-index: 9;
-    animation: pshOrbitShimmer 36s linear infinite reverse;
-    clip-path: polygon(-340px 18px, 460px -92px, 464px 178px, -340px 268px);
-  }
-
-  .psh-planet-dot {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 5px;
-    height: 5px;
-    border-radius: 999px;
-    background: currentColor;
-    opacity: var(--dot-opacity);
-    box-shadow: 0 0 12px currentColor, 0 0 26px currentColor;
-    transform: rotate(var(--dot-angle)) translateX(var(--dot-radius)) translateY(-50%) scale(var(--dot-scale));
-    transform-origin: 0 0;
-    animation: pshDotPulse 4.8s ease-in-out infinite;
-  }
-
   .psh-planet-particle {
     z-index: 10;
     opacity: 0.72;
@@ -667,22 +506,6 @@ const styles = `
     to { transform: rotate(360deg); }
   }
 
-  @keyframes pshOrbitShimmer {
-    from { transform: translate(-50%, -50%) rotateX(80deg) rotateZ(-24deg); }
-    to { transform: translate(-50%, -50%) rotateX(80deg) rotateZ(336deg); }
-  }
-
-  @keyframes pshDotPulse {
-    0%, 100% {
-      opacity: var(--dot-opacity);
-      transform: rotate(var(--dot-angle)) translateX(var(--dot-radius)) translateY(-50%) scale(calc(var(--dot-scale) * 0.88));
-    }
-    50% {
-      opacity: calc(var(--dot-opacity) + 0.18);
-      transform: rotate(var(--dot-angle)) translateX(var(--dot-radius)) translateY(-50%) scale(calc(var(--dot-scale) * 1.08));
-    }
-  }
-
   @media (max-width: 1023px) {
     .psh-cosmos-grid {
       background-size: 48px 48px, 48px 48px, 96px 96px, 96px 96px;
@@ -710,27 +533,6 @@ const styles = `
       transform: translate(50%, -50%);
     }
 
-    .psh-planet-orbit,
-    .psh-planet-dots {
-      left: 50%;
-    }
-
-    .psh-planet-orbit--wide,
-    .psh-planet-orbit--back {
-      width: min(102vw, 520px);
-      height: min(32vw, 150px);
-    }
-
-    .psh-planet-orbit--front {
-      width: min(94vw, 480px);
-      height: min(30vw, 136px);
-    }
-
-    .psh-planet-orbit--foreground {
-      width: min(84vw, 420px);
-      height: min(26vw, 118px);
-    }
-
     .psh-planet-scene__scan {
       display: none;
     }
@@ -753,8 +555,6 @@ const styles = `
     .psh-planet-scene__aura,
     .psh-planet,
     .psh-planet__texture--two,
-    .psh-planet-dots,
-    .psh-planet-dot,
     .psh-planet-particle {
       animation: none !important;
     }
