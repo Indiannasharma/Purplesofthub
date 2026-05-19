@@ -451,9 +451,9 @@ const styles = `
 
   .psh-cosmos--planet {
     position: relative;
-    width: min(55vw, 720px);
+    width: min(63vw, 860px);
     max-width: 100%;
-    aspect-ratio: 1.38 / 1;
+    aspect-ratio: 1.52 / 1;
     overflow: visible;
   }
 
@@ -475,9 +475,9 @@ const styles = `
   }
 
   .psh-planet-scene__aura {
-    right: 0%;
+    right: -2%;
     top: 50%;
-    width: 78%;
+    width: 84%;
     aspect-ratio: 1;
     transform: translateY(-50%);
     border-radius: 999px;
@@ -494,8 +494,8 @@ const styles = `
   }
 
   .psh-planet-scene__scan {
-    right: 0%;
-    width: 40%;
+    right: -4%;
+    width: 48%;
     height: 18%;
     border-top: 1px solid var(--cosmos-circuit);
     border-right: 1px solid var(--cosmos-circuit);
@@ -809,6 +809,10 @@ const styles = `
       left: 69.5%;
       top: 52%;
       width: min(62vw, 700px);
+    }
+
+    .psh-cosmos--planet {
+      width: min(67vw, 920px);
     }
   }
 

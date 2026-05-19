@@ -2121,11 +2121,11 @@ html.dark .psh-home-hero {
   position: relative;
   z-index: 2;
   display: grid;
-  width: min(100%, 1500px);
+  width: min(100%, 1680px);
   margin: 0 auto;
-  padding: 8px clamp(24px, 4.2vw, 64px) 24px;
-  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
-  gap: clamp(22px, 2.8vw, 48px);
+  padding: 8px clamp(20px, 3vw, 52px) 24px;
+  grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
+  gap: clamp(18px, 2.4vw, 44px);
   align-items: center;
 }
 
@@ -2263,7 +2263,7 @@ html.dark .psh-home-hero {
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
-  transform: translate(8px, -10px);
+  transform: translate(10px, -10px);
 }
 
 @keyframes pshHeroBadgePulse {
