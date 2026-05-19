@@ -50,7 +50,9 @@ export default function HomeHero() {
 
         <div className="psh-home-hero__visual">
           <Reveal delay={0.15}>
-            <HeroCosmosScene />
+            <div className="psh-home-hero__visual-stage">
+              <HeroCosmosScene />
+            </div>
           </Reveal>
         </div>
       </div>
