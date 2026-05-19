@@ -2080,7 +2080,7 @@ html:not(.dark) .hero-section {
   display: flex;
   min-height: calc(100vh - 80px);
   min-height: calc(100dvh - 80px);
-  overflow: hidden;
+  overflow: visible;
   scroll-margin-top: 72px;
   color: var(--psh-hero-heading);
 }
@@ -2121,11 +2121,11 @@ html.dark .psh-home-hero {
   position: relative;
   z-index: 2;
   display: grid;
-  width: min(100%, 1680px);
+  width: min(100%, 1760px);
   margin: 0 auto;
-  padding: 8px clamp(20px, 3vw, 52px) 24px;
-  grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
-  gap: clamp(18px, 2.4vw, 44px);
+  padding: 8px clamp(18px, 2.4vw, 44px) 24px;
+  grid-template-columns: minmax(0, 0.34fr) minmax(0, 0.66fr);
+  gap: clamp(14px, 2vw, 36px);
   align-items: center;
 }
 
@@ -2264,6 +2264,7 @@ html.dark .psh-home-hero {
   justify-content: flex-end;
   min-width: 0;
   transform: translate(10px, -10px);
+  overflow: visible;
 }
 
 @keyframes pshHeroBadgePulse {
@@ -2293,6 +2294,7 @@ html.dark .psh-home-hero {
 @media (max-width: 1023px) {
   .psh-home-hero {
     min-height: auto;
+    overflow: hidden;
   }
 
   .psh-home-hero__inner {
