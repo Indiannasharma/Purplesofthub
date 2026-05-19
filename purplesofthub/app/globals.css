@@ -2263,7 +2263,7 @@ html.dark .psh-home-hero {
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
-  transform: translate(12px, -10px);
+  transform: translate(0, -10px);
 }
 
 @keyframes pshHeroBadgePulse {
