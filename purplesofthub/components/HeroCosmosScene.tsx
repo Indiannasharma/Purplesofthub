@@ -97,12 +97,12 @@ const PLANET_PARTICLES: ParticleConfig[] = [
 ];
 
 const RING_STROKES: RingStrokeConfig[] = [
-  { rx: 346, ry: 80, width: 2.2, opacity: 0.92, gradient: "ring" },
-  { rx: 294, ry: 66, width: 5.4, opacity: 0.74, gradient: "ring" },
-  { rx: 252, ry: 53, width: 1.4, opacity: 0.58, gradient: "violet" },
-  { rx: 372, ry: 89, width: 1, opacity: 0.48, dasharray: "12 16", gradient: "dash" },
-  { rx: 326, ry: 76, width: 1.1, opacity: 0.84, dasharray: "3 10", gradient: "dash" },
-  { rx: 206, ry: 43, width: 2.5, opacity: 0.34, gradient: "pink" },
+  { rx: 392, ry: 91, width: 2.2, opacity: 0.92, gradient: "ring" },
+  { rx: 334, ry: 75, width: 5.5, opacity: 0.74, gradient: "ring" },
+  { rx: 285, ry: 60, width: 1.4, opacity: 0.58, gradient: "violet" },
+  { rx: 424, ry: 102, width: 1, opacity: 0.48, dasharray: "12 16", gradient: "dash" },
+  { rx: 372, ry: 86, width: 1.1, opacity: 0.84, dasharray: "3 10", gradient: "dash" },
+  { rx: 238, ry: 49, width: 2.5, opacity: 0.34, gradient: "pink" },
 ];
 
 function twinkleOpacity(value: number, isDark: boolean) {
@@ -475,9 +475,9 @@ const styles = `
   }
 
   .psh-planet-scene__aura {
-    right: 10%;
+    right: 0%;
     top: 50%;
-    width: 70%;
+    width: 78%;
     aspect-ratio: 1;
     transform: translateY(-50%);
     border-radius: 999px;
@@ -513,9 +513,9 @@ const styles = `
   }
 
   .psh-planet-rings {
-    left: 59%;
+    left: 71%;
     top: 52%;
-    width: min(54vw, 620px);
+    width: min(68vw, 760px);
     aspect-ratio: 920 / 660;
     transform: translate(-50%, -50%) rotate(-14deg);
     z-index: 4;
@@ -556,9 +556,9 @@ const styles = `
   }
 
   .psh-planet {
-    right: 14%;
+    right: 6%;
     top: 50%;
-    width: min(25vw, 312px);
+    width: min(29vw, 360px);
     aspect-ratio: 1;
     transform: translateY(-50%);
     overflow: hidden;
@@ -806,9 +806,9 @@ const styles = `
 
   @media (min-width: 1440px) {
     .psh-planet-rings {
-      left: 58%;
+      left: 69.5%;
       top: 52%;
-      width: min(52vw, 600px);
+      width: min(62vw, 700px);
     }
   }
 
