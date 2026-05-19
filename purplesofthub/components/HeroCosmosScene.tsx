@@ -475,9 +475,9 @@ const styles = `
   }
 
   .psh-planet-scene__aura {
-    right: 0%;
+    right: 6%;
     top: 50%;
-    width: 78%;
+    width: 74%;
     aspect-ratio: 1;
     transform: translateY(-50%);
     border-radius: 999px;
@@ -513,9 +513,9 @@ const styles = `
   }
 
   .psh-planet-rings {
-    left: 71%;
-    top: 51%;
-    width: min(68vw, 760px);
+    left: 64%;
+    top: 52%;
+    width: min(60vw, 680px);
     aspect-ratio: 920 / 660;
     transform: translate(-50%, -50%) rotate(-14deg);
     z-index: 4;
@@ -556,9 +556,9 @@ const styles = `
   }
 
   .psh-planet {
-    right: 6%;
+    right: 10%;
     top: 50%;
-    width: min(29vw, 360px);
+    width: min(27vw, 336px);
     aspect-ratio: 1;
     transform: translateY(-50%);
     overflow: hidden;
@@ -806,9 +806,9 @@ const styles = `
 
   @media (min-width: 1440px) {
     .psh-planet-rings {
-      left: 69.5%;
+      left: 63%;
       top: 52%;
-      width: min(62vw, 700px);
+      width: min(57vw, 660px);
     }
   }
 
