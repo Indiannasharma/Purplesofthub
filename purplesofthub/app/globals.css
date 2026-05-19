@@ -2342,6 +2342,29 @@ html.dark .psh-home-hero {
   }
 }
 
+@media (min-width: 1024px) {
+  .psh-home-hero__copy {
+    position: relative;
+    z-index: 3;
+  }
+
+  .psh-home-hero__visual {
+    position: absolute;
+    right: clamp(-8px, 0vw, 0px);
+    top: 50%;
+    width: clamp(860px, 72vw, 1180px);
+    min-width: clamp(860px, 72vw, 1180px);
+    transform: translateY(-50%);
+    z-index: 2;
+    overflow: visible;
+  }
+
+  .psh-home-hero__inner {
+    min-height: clamp(760px, 68vw, 960px);
+    padding-right: clamp(320px, 24vw, 520px);
+  }
+}
+
 @media (max-width: 640px) {
   .psh-home-hero__inner {
     padding: 24px 16px 42px;
