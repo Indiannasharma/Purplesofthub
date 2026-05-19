@@ -308,7 +308,7 @@ const styles = `
   .psh-cosmos {
     pointer-events: none;
     isolation: isolate;
-    contain: layout paint;
+    contain: layout;
     --cosmos-bg: linear-gradient(180deg, #05020d 0%, #070416 48%, #030108 100%);
     --cosmos-texture: rgba(168, 85, 247, 0.09);
     --cosmos-grid-a: rgba(168, 85, 247, 0.13);
@@ -352,6 +352,7 @@ const styles = `
     position: absolute;
     inset: 0;
     overflow: hidden;
+    contain: layout paint;
     background: var(--cosmos-bg);
   }
 
@@ -455,6 +456,7 @@ const styles = `
     max-width: 100%;
     aspect-ratio: 1.52 / 1;
     overflow: visible;
+    contain: none;
   }
 
   .psh-planet-scene {
@@ -813,6 +815,13 @@ const styles = `
 
     .psh-cosmos--planet {
       width: min(67vw, 920px);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .psh-planet-rings {
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.42) 10%, #000 24%, #000 92%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.42) 10%, #000 24%, #000 92%, transparent 100%);
     }
   }
 

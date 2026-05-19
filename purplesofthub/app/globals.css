@@ -2377,8 +2377,9 @@ html.dark .psh-home-hero {
   }
 
   .psh-home-hero__visual-stage {
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 8%, #000 28%, #000 100%);
-    mask-image: linear-gradient(to right, transparent 0%, transparent 8%, #000 28%, #000 100%);
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   .psh-home-hero__inner {
