@@ -2349,19 +2349,18 @@ html.dark .psh-home-hero {
   }
 
   .psh-home-hero__visual {
-    position: absolute;
-    right: clamp(-8px, 0vw, 0px);
-    top: 50%;
+    justify-self: end;
+    align-self: center;
     width: clamp(860px, 72vw, 1180px);
     min-width: clamp(860px, 72vw, 1180px);
-    transform: translateY(-50%);
+    margin-right: clamp(-120px, -4vw, 0px);
     z-index: 2;
     overflow: visible;
   }
 
   .psh-home-hero__inner {
-    min-height: clamp(760px, 68vw, 960px);
-    padding-right: clamp(320px, 24vw, 520px);
+    min-height: clamp(700px, 60vw, 900px);
+    padding-right: clamp(140px, 10vw, 260px);
   }
 }
 
