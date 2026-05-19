@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties, ReactNode } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
@@ -9,6 +10,43 @@ export const metadata: Metadata = {
   description: "Get in touch with PurpleSoftHub. Tell us about your project and we'll get back to you within 24 hours.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"}/contact` },
   openGraph: { title: "Contact PurpleSoftHub — Start Your Project", description: "Tell us about your project and we'll get back to you within 24 hours." },
+};
+
+type ContactInfoItem = {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  href?: string;
+};
+
+function TelegramIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M21.7 4.3 18.5 19.4c-.2 1.1-.9 1.3-1.8.8l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L5.9 12.8l-5-1.6c-1.1-.3-1.1-1.1.2-1.6L20.5 2.1c.9-.3 1.7.2 1.2 2.2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+const contactInfoItems: ContactInfoItem[] = [
+  { icon: "📧", label: "Email Us", value: "hello@purplesofthub.com" },
+  { icon: "🌐", label: "Website", value: "purplesofthub.com" },
+  { icon: "📱", label: "Social", value: "@purplesofthub" },
+  {
+    icon: <TelegramIcon />,
+    label: "Telegram Support",
+    value: "@PurpleSofthubsupport",
+    href: "https://t.me/PurpleSofthubsupport",
+  },
+  { icon: "⏰", label: "Response Time", value: "Within 24 hours" },
+];
+
+const contactRowStyle: CSSProperties = {
+  display: "flex",
+  gap: 16,
+  alignItems: "center",
 };
 
 export default function ContactPage() {
@@ -28,20 +66,31 @@ export default function ContactPage() {
               Whether you need a website, an app, a full SaaS platform, or help growing your music — we&apos;re ready to make it happen. Fill in the form and we&apos;ll be in touch within 24 hours.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              {[
-                ["📧", "Email Us", "hello@purplesofthub.com"],
-                ["🌐", "Website", "purplesofthub.com"],
-                ["📱", "Social", "@purplesofthub"],
-                ["⏰", "Response Time", "Within 24 hours"],
-              ].map(([ic, label, val]) => (
-                <div key={label} style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,.15)", border: "1px solid rgba(124,58,237,.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{ic}</div>
-                  <div>
-                    <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                    <div style={{ fontSize: 15, color: "#c084fc", fontWeight: 500 }}>{val}</div>
+              {contactInfoItems.map(({ icon, label, value, href }) => {
+                const content = (
+                  <>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(124,58,237,.15)", border: "1px solid rgba(124,58,237,.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, color: "#c084fc" }}>{icon}</div>
+                    <div>
+                      <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                      <div style={{ fontSize: 15, color: "#c084fc", fontWeight: 500 }}>{value}</div>
+                    </div>
+                  </>
+                );
+
+                if (href) {
+                  return (
+                    <a key={label} href={href} target="_blank" rel="noopener noreferrer" style={{ ...contactRowStyle, textDecoration: "none" }}>
+                      {content}
+                    </a>
+                  );
+                }
+
+                return (
+                  <div key={label} style={contactRowStyle}>
+                    {content}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </Reveal>
 
