@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -173,7 +173,13 @@ function PlanetRingLayer({ layer, isDark }: { layer: RingLayer; isDark: boolean 
 export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 58)), [isDark]);
+  const [sceneReady, setSceneReady] = useState(false);
+  const stars = useMemo(() => (isDark ? STARS : STARS.slice(0, 42)), [isDark]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setSceneReady(true), 180);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   if (variant === "backdrop") {
     return (
@@ -203,7 +209,7 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
           />
         ))}
 
-        {!isDark && HERO_FLOATS.map((float, index) => (
+        {sceneReady && !isDark && HERO_FLOATS.map((float, index) => (
           <span
             key={`float-${index}`}
             className="psh-cosmos-float"
@@ -226,7 +232,7 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
           />
         ))}
 
-        {BACKDROP_PARTICLES.map((particle, index) => (
+        {sceneReady && BACKDROP_PARTICLES.slice(0, isDark ? BACKDROP_PARTICLES.length : 4).map((particle, index) => (
           <span
             key={index}
             className="psh-cosmos-particle"
@@ -270,7 +276,7 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
           <span className="psh-planet__shadow" />
         </div>
 
-        {PLANET_PARTICLES.map((particle, index) => (
+        {sceneReady && PLANET_PARTICLES.map((particle, index) => (
           <span
             key={index}
             className="psh-planet-particle"
@@ -301,6 +307,8 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
 const styles = `
   .psh-cosmos {
     pointer-events: none;
+    isolation: isolate;
+    contain: layout paint;
     --cosmos-bg: linear-gradient(180deg, #05020d 0%, #070416 48%, #030108 100%);
     --cosmos-texture: rgba(168, 85, 247, 0.09);
     --cosmos-grid-a: rgba(168, 85, 247, 0.13);
@@ -527,8 +535,9 @@ const styles = `
   }
 
   .psh-cosmos[data-theme="light"] .psh-planet-rings {
-    mix-blend-mode: multiply;
-    filter: saturate(1.08) contrast(1.02);
+    mix-blend-mode: screen;
+    filter: saturate(0.98) contrast(0.95);
+    opacity: 0.84;
   }
 
   .psh-planet-rings__svg {
@@ -590,10 +599,10 @@ const styles = `
 
   .psh-cosmos[data-theme="light"] .psh-planet::after {
     background:
-      radial-gradient(circle at 88% 38%, rgba(34, 211, 238, 0.2) 0%, transparent 30%),
-      radial-gradient(circle at 72% 76%, rgba(9, 5, 20, 0.68) 0%, transparent 42%),
-      linear-gradient(142deg, transparent 0 44%, rgba(70, 35, 131, 0.2) 76%, rgba(8, 4, 20, 0.78) 100%);
-    opacity: 0.86;
+      radial-gradient(circle at 88% 38%, rgba(34, 211, 238, 0.16) 0%, transparent 30%),
+      radial-gradient(circle at 72% 76%, rgba(20, 11, 44, 0.3) 0%, transparent 42%),
+      radial-gradient(circle at 56% 86%, rgba(16, 8, 34, 0.26) 0%, transparent 34%);
+    opacity: 0.78;
   }
 
   .psh-planet__rim,
@@ -660,9 +669,9 @@ const styles = `
 
   .psh-cosmos[data-theme="light"] .psh-planet__storm--two {
     background:
-      radial-gradient(ellipse at 48% 42%, rgba(124, 58, 237, 0.22) 0%, transparent 40%),
-      radial-gradient(ellipse at 72% 62%, rgba(255, 255, 255, 0.42) 0%, transparent 30%);
-    opacity: 0.66;
+      radial-gradient(ellipse at 48% 42%, rgba(124, 58, 237, 0.14) 0%, transparent 40%),
+      radial-gradient(ellipse at 72% 62%, rgba(255, 255, 255, 0.18) 0%, transparent 30%);
+    opacity: 0.44;
   }
 
   .psh-planet__texture--one {
@@ -687,6 +696,11 @@ const styles = `
 
   .psh-planet__shadow {
     background: radial-gradient(circle at 54% 88%, rgba(1, 1, 7, 0.9) 0%, transparent 42%);
+  }
+
+  .psh-cosmos[data-theme="light"] .psh-planet__shadow {
+    background: radial-gradient(circle at 54% 88%, rgba(16, 8, 34, 0.34) 0%, transparent 42%);
+    opacity: 0.7;
   }
 
   .psh-planet-particle {
