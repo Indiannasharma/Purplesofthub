@@ -27,7 +27,7 @@ export default function ScrollToTop() {
       className="fade-in-up"
       style={{
         position: 'fixed',
-        bottom: '96px',
+        bottom: '168px',
         right: '24px',
         zIndex: 9998,
         width: '44px',

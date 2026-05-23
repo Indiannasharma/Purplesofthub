@@ -65,6 +65,9 @@ export default function ContactPage() {
             <p style={{ color: "var(--text-muted)", fontSize: 16, lineHeight: 1.85, marginBottom: 40 }}>
               Whether you need a website, an app, a full SaaS platform, or help growing your music — we&apos;re ready to make it happen. Fill in the form and we&apos;ll be in touch within 24 hours.
             </p>
+            <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 28, padding: "14px 16px", border: "1px solid rgba(34,158,217,.24)", borderRadius: 12, background: "rgba(34,158,217,.08)" }}>
+              Having trouble reaching us on WhatsApp? Chat with us on Telegram for faster support.
+            </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               {contactInfoItems.map(({ icon, label, value, href }) => {
                 const content = (
