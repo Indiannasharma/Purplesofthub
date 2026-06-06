@@ -13,17 +13,18 @@ export default function CurrencySwitcher({ compact = false, onChange }: Props) {
 
   return (
     <label
+      className={`currency-switcher ${compact ? 'currency-switcher-compact' : ''}`}
       title="Select display currency"
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: compact ? 6 : 8,
+        gap: compact ? 4 : 8,
         border: '1px solid rgba(168,85,247,0.28)',
         borderRadius: 10,
         background: 'rgba(124,58,237,0.08)',
         color: 'var(--text-secondary, #9d8fd4)',
-        padding: compact ? '7px 9px' : '8px 11px',
-        minHeight: compact ? 38 : 40,
+        padding: compact ? '5px 7px' : '8px 11px',
+        minHeight: compact ? 34 : 40,
         boxSizing: 'border-box',
         flexShrink: 0,
       }}
@@ -67,10 +68,10 @@ export default function CurrencySwitcher({ compact = false, onChange }: Props) {
           background: 'transparent',
           color: 'inherit',
           fontFamily: 'Outfit, sans-serif',
-          fontSize: compact ? 12 : 13,
+          fontSize: compact ? 11.5 : 13,
           fontWeight: 800,
           cursor: 'pointer',
-          maxWidth: compact ? 74 : 88,
+          maxWidth: compact ? 54 : 88,
         }}
       >
         {SUPPORTED_CURRENCIES.map(code => (

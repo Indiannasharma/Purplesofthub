@@ -179,9 +179,9 @@ export default function Navbar() {
     fontFamily: "Outfit, sans-serif",
     fontWeight: 600,
     cursor: "pointer" as const,
-    padding: "0 18px",
-    fontSize: 13.5,
-    height: 40,
+    padding: "0 12px",
+    fontSize: 12.5,
+    height: 36,
     display: "inline-flex" as const,
     alignItems: "center" as const,
     gap: 6,
@@ -199,9 +199,9 @@ export default function Navbar() {
     fontFamily: "Outfit, sans-serif",
     fontWeight: 700,
     cursor: "pointer" as const,
-    padding: "0 24px",
-    fontSize: 14,
-    height: 40,
+    padding: "0 16px",
+    fontSize: 13,
+    height: 36,
     display: "inline-flex" as const,
     alignItems: "center" as const,
     justifyContent: "center" as const,
@@ -250,7 +250,7 @@ export default function Navbar() {
         }}
       />
 
-      <div className="mx-auto flex h-[72px] w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:gap-4">
+      <div className="navbar-inner mx-auto flex h-[72px] w-full max-w-7xl items-center justify-between gap-2 px-3 sm:px-4 lg:gap-2 lg:px-4 xl:gap-3 xl:px-6">
         {/* Logo */}
         <Link
           href="/"
@@ -261,7 +261,7 @@ export default function Navbar() {
             alt="PurpleSoftHub"
             width={170}
             height={52}
-            className="cyber-logo h-9 w-auto max-w-[140px] sm:h-10 sm:max-w-[170px] lg:h-[52px]"
+            className="cyber-logo h-9 w-auto max-w-[118px] sm:h-10 sm:max-w-[150px] lg:h-10 lg:max-w-[132px] xl:h-[46px] xl:max-w-[160px]"
             priority
             style={{
               filter: dark
@@ -341,7 +341,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Actions */}
-        <div className="nav-desktop shrink-0 gap-2">
+        <div className="nav-desktop nav-desktop-actions shrink-0 gap-1.5 xl:gap-2">
           <CurrencySwitcher compact />
 
           <button
@@ -354,9 +354,9 @@ export default function Navbar() {
               border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.15)"}`,
               borderRadius: 10,
               color: dark ? "#c084fc" : "#7c3aed",
-              fontSize: 16,
-              width: 40,
-              height: 40,
+              fontSize: 15,
+              width: 36,
+              height: 36,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -486,9 +486,9 @@ export default function Navbar() {
               border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.15)"}`,
               borderRadius: 10,
               color: dark ? "#c084fc" : "#7c3aed",
-              fontSize: 16,
-              width: 40,
-              height: 40,
+              fontSize: 14,
+              width: 34,
+              height: 34,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -510,13 +510,16 @@ export default function Navbar() {
               border: `1px solid ${dark ? "rgba(168, 85, 247, 0.3)" : "rgba(124, 58, 237, 0.2)"}`,
               borderRadius: 10,
               color: dark ? "#e2d9f3" : "#1a0533",
-              fontSize: 18,
-              padding: "9px 12px",
+              fontSize: 16,
+              width: 36,
+              height: 36,
+              padding: 0,
               cursor: "pointer",
               transition: "all 0.25s ease",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              flexShrink: 0,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = dark
