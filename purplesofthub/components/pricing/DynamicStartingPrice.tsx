@@ -1,6 +1,7 @@
 'use client'
 
-import { useExchangeRate, convertNGNtoUSD } from '@/lib/hooks/useExchangeRate'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 interface Props {
   ngnPrice: number
@@ -9,19 +10,14 @@ interface Props {
 }
 
 /**
- * Displays a price with dynamic USD conversion using current exchange rate
- *
- * Shows: From ₦450,000 (~$321 USD)
- *
- * The USD price is calculated dynamically from the NGN price using
- * the current exchange rate fetched from /api/exchange-rate
+ * Displays a starting price using the current regional display currency.
  */
 export default function DynamicStartingPrice({
   ngnPrice,
   showLabel = true,
   size = 'medium',
 }: Props) {
-  const { rate, loading } = useExchangeRate()
+  const { currency } = useCurrency()
 
   const sizeStyles = {
     small: { priceSize: '14px', labelSize: '12px', gap: '8px' },
@@ -60,24 +56,7 @@ export default function DynamicStartingPrice({
           color: '#7c3aed',
         }}
       >
-        ₦{ngnPrice.toLocaleString()}
-      </span>
-
-      <span
-        style={{
-          fontSize: labelSize,
-          color: 'var(--cyber-body, #4a3f6b)',
-          minWidth: '120px',
-          textAlign: 'left',
-        }}
-      >
-        {loading ? (
-          <span style={{ opacity: 0.6 }}>calculating...</span>
-        ) : (
-          <>
-            (~${convertNGNtoUSD(ngnPrice, rate).toLocaleString()} USD)
-          </>
-        )}
+        {formatRegionalPrice(ngnPrice, undefined, currency)}
       </span>
     </div>
   )

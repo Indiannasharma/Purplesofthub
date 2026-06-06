@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Service, ServicePlan } from '@/lib/payments/service-plans'
 import { formatPrice } from '@/lib/payments/service-plans'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 interface Props {
   service: Service
@@ -54,6 +56,7 @@ export default function UniversalCheckoutModal({
   const [step, setStep] = useState<Step>(isLoggedIn ? 'payment' : 'details')
   const [error, setError] = useState('')
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(isLoggedIn)
+  const { currency } = useCurrency()
   const [form, setForm] = useState({
     firstName: userName.split(' ')[0] || '',
     lastName: userName.split(' ').slice(1).join(' ') || '',
@@ -107,6 +110,7 @@ export default function UniversalCheckoutModal({
   const update = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
+  const displayPrice = formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)
 
   const validate = () => {
     if (!form.firstName.trim()) { setError('First name required'); return false }
@@ -266,7 +270,7 @@ export default function UniversalCheckoutModal({
               display: 'inline-block', animation: 'ucm-pulse 1.8s infinite',
             }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
-              {service.name} — {plan.name} — {formatPrice(plan.priceNGN)}
+              {service.name} — {plan.name} — {displayPrice}
               {plan.billingType === 'monthly' ? '/mo' : plan.billingType === 'yearly' ? '/yr' : ''}
             </span>
           </div>
@@ -476,8 +480,11 @@ export default function UniversalCheckoutModal({
                     {plan.name} · {plan.billingType === 'monthly' ? 'Monthly' : plan.billingType === 'yearly' ? 'Yearly' : 'One-time'}
                   </p>
                 </div>
-                <p style={{ fontSize: 17, fontWeight: 900, color: '#7c3aed', margin: 0 }}>{formatPrice(plan.priceNGN)}</p>
+                <p style={{ fontSize: 17, fontWeight: 900, color: '#7c3aed', margin: 0 }}>{displayPrice}</p>
               </div>
+              <p style={{ fontSize: 11, color: 'var(--cyber-body,#4a3f6b)', textAlign: 'center', margin: '-6px 0 12px', opacity: 0.72 }}>
+                Checkout is processed in NGN ({formatPrice(plan.priceNGN)}).
+              </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {/* Paystack */}

@@ -6,6 +6,7 @@ import Reveal from "@/components/Reveal";
 import { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
 import FaqAccordion from "@/app/services/_components/FaqAccordion";
 import PricingPreview from "@/app/services/_components/PricingPreview";
+import RegionalPrice from "@/components/pricing/RegionalPrice";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -156,7 +157,7 @@ export default function WebDevelopmentPage() {
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
-                From ₦450,000
+                <RegionalPrice amountNGN={450000} amountUSD={300} prefix="From " />
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
                 We offer 9 transparent pricing plans from starter websites to enterprise platforms. All include mobile design, SSL, and professional delivery.

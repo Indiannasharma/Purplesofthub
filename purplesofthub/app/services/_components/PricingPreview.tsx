@@ -1,8 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 export default function PricingPreview() {
+  const { currency } = useCurrency()
+
   return (
     <section style={{
       maxWidth: '1100px',
@@ -40,7 +44,7 @@ export default function PricingPreview() {
           margin: '0 auto',
           lineHeight: 1.7,
         }}>
-          Starting from ₦450,000 / $300.
+          Starting from {formatRegionalPrice(450000, 300, currency)}.
           No hidden fees. No surprises.
         </p>
       </div>
@@ -55,8 +59,8 @@ export default function PricingPreview() {
         {[
           {
             name: 'Starter',
-            ngn: '₦450,000',
-            usd: '$300',
+            ngn: 450000,
+            usd: 300,
             color: '#6b7280',
             bg: 'rgba(107,114,128,0.08)',
             border: 'rgba(107,114,128,0.2)',
@@ -75,8 +79,8 @@ export default function PricingPreview() {
           },
           {
             name: 'Essential',
-            ngn: '₦750,000',
-            usd: '$500',
+            ngn: 750000,
+            usd: 500,
             color: '#3b82f6',
             bg: 'rgba(59,130,246,0.08)',
             border: 'rgba(59,130,246,0.2)',
@@ -96,8 +100,8 @@ export default function PricingPreview() {
           },
           {
             name: 'Professional',
-            ngn: '₦975,000',
-            usd: '$650',
+            ngn: 975000,
+            usd: 650,
             color: '#8b5cf6',
             bg: 'rgba(139,92,246,0.08)',
             border: 'rgba(139,92,246,0.2)',
@@ -172,14 +176,14 @@ export default function PricingPreview() {
               margin: '0 0 4px',
               lineHeight: 1,
             }}>
-              {tier.ngn}
+              {formatRegionalPrice(tier.ngn, tier.usd, currency)}
             </p>
             <p style={{
               fontSize: '13px',
               color: 'var(--text-secondary, var(--cyber-body, #9d8fd4))',
               margin: '0 0 20px',
             }}>
-              {tier.usd} USD · {tier.delivery} delivery
+              {tier.delivery} delivery
             </p>
 
             {/* Divider */}

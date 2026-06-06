@@ -6,6 +6,7 @@ import Reveal from "@/components/Reveal";
 import { getServiceBySlug } from "@/lib/payments/service-plans";
 import ServicePricingCards from "@/components/services/ServicePricingCards";
 import FaqAccordion from "@/app/services/_components/FaqAccordion";
+import RegionalPrice from "@/components/pricing/RegionalPrice";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -141,7 +142,7 @@ export default function SocialMediaManagementPage() {
                 Pricing
               </div>
               <div style={{ fontFamily: "Outfit", fontSize: 22, fontWeight: 900, color: "var(--text-primary)", marginBottom: 10 }}>
-                From ₦75,000/month
+                <RegionalPrice amountNGN={75000} amountUSD={53} prefix="From " suffix="/month" />
               </div>
               <div style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 28, lineHeight: 1.6 }}>
                 Flexible monthly social media management packages for startups, small businesses, and growing brands. Choose a plan that matches your content needs and growth goals.
@@ -199,7 +200,7 @@ export default function SocialMediaManagementPage() {
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${accent},#22d3ee)` }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#22d3ee)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
-                From ₦75,000/month
+                <RegionalPrice amountNGN={75000} amountUSD={53} prefix="From " suffix="/month" />
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
                 Flexible monthly social media management packages for startups, small businesses, and growing brands. Choose a plan that matches your content needs and growth goals.

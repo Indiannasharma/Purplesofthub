@@ -5,6 +5,8 @@ import Link from 'next/link'
 import Checkbox from '@/components/form/input/Checkbox'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 const PLATFORMS = [
   {
@@ -142,6 +144,8 @@ function RecoveryForm({
 }: RecoveryFormProps) {
   const config = PLATFORM_CONFIG[platform]
   const consentId = useId()
+  const { currency } = useCurrency()
+  const displayPrice = formatRegionalPrice(priceNGN, priceUSD, currency)
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -522,7 +526,7 @@ function RecoveryForm({
               {!paymentMethod && '🔐'}
               {' '}
               {paymentMethod
-                ? `Pay ₦${priceNGN.toLocaleString()} / $${priceUSD} via ${paymentMethod === 'paystack' ? 'Paystack' : 'Flutterwave'}`
+                ? `Pay ${displayPrice} via ${paymentMethod === 'paystack' ? 'Paystack' : 'Flutterwave'}`
                 : 'Select Payment Method Above'
               }
             </>
@@ -530,7 +534,7 @@ function RecoveryForm({
         </button>
 
         <p style={{ textAlign: 'center', fontSize: '12px', color: '#9d8fd4', margin: '-8px 0 0' }}>
-          🔒 Secured payment · Non-refundable · 14–30 business days
+          🔒 Secured payment · Processed in NGN · Non-refundable · 14–30 business days
         </p>
 
       </div>
@@ -549,6 +553,7 @@ export default function AccountRecoveryPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const screenshotRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
+  const { currency } = useCurrency()
 
   const update = (field: string, value: string | File | null) =>
     setForm(p => ({ ...p, [field]: value }))
@@ -712,7 +717,7 @@ export default function AccountRecoveryPage() {
                 color: activeTab === p.id ? p.color : '#9d8fd4',
                 padding: '2px 8px', borderRadius: '100px',
               }}>
-                ${p.price_usd}
+                {formatRegionalPrice(p.price_ngn, p.price_usd, currency)}
               </span>
             </button>
           ))}
@@ -770,8 +775,10 @@ export default function AccountRecoveryPage() {
             {/* Price card */}
             <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(168,85,247,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '20px', padding: '24px' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
               <p style={{ fontSize: '12px', fontWeight: 700, color: '#9d8fd4', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px' }}>Service Fee</p>
-              <p style={{ fontSize: '36px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1 }}>₦{activePlatform.price_ngn.toLocaleString()}</p>
-              <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 20px' }}>${activePlatform.price_usd} USD one-time payment</p>
+              <p style={{ fontSize: '36px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1 }}>
+                {formatRegionalPrice(activePlatform.price_ngn, activePlatform.price_usd, currency)}
+              </p>
+              <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 20px' }}>One-time payment. Checkout is processed in NGN.</p>
               <div style={{ display: 'grid', gap: '10px' }}>
                 {[
                   { icon: '⏱', text: '14–30 business days' },
@@ -805,7 +812,9 @@ export default function AccountRecoveryPage() {
                     <span style={{ fontSize: '18px' }}>{p.icon}</span>
                     <span style={{ fontSize: '13px', fontWeight: 600, color: activeTab === p.id ? p.color : '#6b5fa0' }} className="dark:text-gray-400">{p.name}</span>
                   </div>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: activeTab === p.id ? p.color : '#9d8fd4' }}>${p.price_usd}</span>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: activeTab === p.id ? p.color : '#9d8fd4' }}>
+                    {formatRegionalPrice(p.price_ngn, p.price_usd, currency)}
+                  </span>
                 </button>
               ))}
             </div>

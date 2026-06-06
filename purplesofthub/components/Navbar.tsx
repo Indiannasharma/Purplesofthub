@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import purpleLogo from "@/Assets/images/Purplesoft-logo-main.png";
 import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/context/ThemeContext";
+import CurrencySwitcher from "@/components/pricing/CurrencySwitcher";
 
 function SunIcon({ className = "" }: { className?: string }) {
   return (
@@ -341,6 +342,8 @@ export default function Navbar() {
 
         {/* Desktop Actions */}
         <div className="nav-desktop shrink-0 gap-2">
+          <CurrencySwitcher compact />
+
           <button
             type="button"
             onClick={toggleTheme}
@@ -472,6 +475,8 @@ export default function Navbar() {
 
         {/* Mobile Controls — single theme toggle + menu; visibility from globals only */}
         <div className="nav-mobile relative z-[2] shrink-0">
+          <CurrencySwitcher compact />
+
           <button
             type="button"
             onClick={toggleTheme}
@@ -558,6 +563,10 @@ export default function Navbar() {
                   >{l.label}</Link>
                 </motion.div>
               ))}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 18 }}>
+              <CurrencySwitcher onChange={() => setMobileOpen(false)} />
             </div>
 
             <div style={{ display: "flex", gap: 10, marginTop: 24 }}>

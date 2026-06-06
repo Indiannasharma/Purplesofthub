@@ -6,90 +6,12 @@ import Footer from "@/components/Footer"
 import Reveal from "@/components/Reveal"
 import { getServiceBySlug } from "@/lib/payments/service-plans"
 import ServicePricingCards from "@/components/services/ServicePricingCards"
-
-const PLANS = [
-  {
-    name: 'Flex Weekly',
-    ngn: 42000,
-    usd: 30,
-    adSpend: '₦42,000 minimum / week',
-    features: [
-      'Weekly ad management',
-      'Flexible budget',
-      'Creative updates',
-      'Basic analytics',
-      '1 ad campaign',
-      'No long term commitment'
-    ],
-    color: '#14b8a6',
-  },
-  {
-    name: 'Starter',
-    ngn: 150000,
-    usd: 107,
-    adSpend: '₦150,000 – ₦300,000 ($107 – $214 USD)',
-    features: [
-      'Campaign setup & strategy',
-      '3–5 ad creatives per month',
-      'Basic audience targeting',
-      'Weekly optimization & reports',
-      '1 platform (Facebook or Instagram)',
-    ],
-    color: '#6b7280',
-  },
-  {
-    name: 'Growth',
-    badge: 'Most Popular',
-    ngn: 250000,
-    usd: 179,
-    adSpend: '₦300,000 – ₦750,000 ($214 – $536 USD)',
-    features: [
-      'Everything in Starter',
-      '8–10 ad creatives per month',
-      'Advanced targeting, lookalikes & retargeting',
-      'A/B testing',
-      'Bi-weekly strategy calls',
-      'Both Facebook & Instagram',
-    ],
-    color: '#3b82f6',
-  },
-  {
-    name: 'Scale',
-    ngn: 400000,
-    usd: 286,
-    adSpend: '₦750,000+ ($536+ USD)',
-    features: [
-      'Everything in Growth',
-      'Unlimited ad creatives & variations',
-      'Full-funnel strategy (Awareness → Conversion)',
-      'Advanced pixel & tracking setup',
-      'Weekly performance calls + detailed dashboard',
-      'Competitor analysis',
-    ],
-    color: '#8b5cf6',
-  },
-  {
-    name: 'Enterprise',
-    ngn: 600000,
-    usd: 429,
-    ngnDisplay: '₦600,000+',
-    usdDisplay: '$429+ USD',
-    adSpend: '₦1,500,000+ ($1,071+ USD)',
-    customPricing: true,
-    features: [
-      'Everything in Scale',
-      'Dedicated account manager',
-      'Custom automation & funnels',
-      'Creative production support',
-      'Multi-account management',
-      'Monthly in-depth audit',
-    ],
-    color: '#a855f7',
-  },
-]
+import { useCurrency } from "@/context/CurrencyContext"
+import { formatRegionalPrice } from "@/lib/pricing/currency"
 
 export default function FacebookAdsPricingPage() {
   const service = getServiceBySlug('facebook-and-instagram-ads')
+  const { currency } = useCurrency()
 
   return (
     <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
@@ -146,7 +68,7 @@ export default function FacebookAdsPricingPage() {
                   One-time Setup Fee
                 </h4>
                 <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 4 }}>
-                  ₦70,000 (~$50 USD)
+                  {formatRegionalPrice(70000, 50, currency)}
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
                   Includes Meta Business Suite setup, pixel installation, conversion tracking & initial strategy session.
@@ -161,7 +83,7 @@ export default function FacebookAdsPricingPage() {
                   15% of ad spend
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  Minimum ₦200,000 / ~$143 USD per month
+                  Minimum {formatRegionalPrice(200000, 143, currency)} per month
                 </p>
               </div>
             </div>
@@ -180,8 +102,8 @@ export default function FacebookAdsPricingPage() {
             </h4>
             <div style={{ display: "grid", gap: 12 }}>
               {[
-                'Extra set of 5 ad creatives (static + video) — ₦80,000 (~$57 USD)',
-                'Custom landing page or lead form optimization — ₦150,000 (~$107 USD) one-time',
+                `Extra set of 5 ad creatives (static + video) — ${formatRegionalPrice(80000, 57, currency)}`,
+                `Custom landing page or lead form optimization — ${formatRegionalPrice(150000, 107, currency)} one-time`,
                 'Integration with PurpleSoftHub Academy or your SaaS platform — Special rate',
               ].map(item => (
                 <div key={item} style={{ display: "flex", gap: 8, fontSize: 14, color: "var(--text-secondary)" }}>

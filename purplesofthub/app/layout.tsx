@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Providers } from "@/app/Providers";
@@ -128,13 +129,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const requestHeaders = await headers();
+  const initialCountry = requestHeaders.get("x-vercel-ip-country");
+
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
         <Preloader />
         <ThemeProvider>
-          <Providers>
+          <Providers initialCountry={initialCountry}>
             {children}
             <ChatBot />
             <TelegramButton />

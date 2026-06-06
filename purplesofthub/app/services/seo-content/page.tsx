@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { getServiceBySlug } from '@/lib/payments/service-plans'
 import ServicePricingCards from '@/components/services/ServicePricingCards'
+import RegionalPrice from '@/components/pricing/RegionalPrice'
 
 export const metadata: Metadata = {
   title: 'SEO & Content Marketing | PurpleSoftHub',
@@ -28,8 +29,7 @@ export default function SEOContentPage() {
             <h1 style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 900, color: 'var(--cyber-heading, #1a1a2e)', margin: '0 0 20px', lineHeight: 1.1 }}>Drive Organic Traffic with Data-Driven SEO</h1>
             <p style={{ fontSize: 'clamp(15px, 2vw, 18px)', color: 'var(--cyber-body, #4a3f6b)', maxWidth: '640px', margin: '0 auto 32px', lineHeight: 1.7 }}>Strategic SEO and content marketing that ranks your site, engages your audience, and converts visitors into customers.</p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '18px', fontWeight: 900, color: '#7c3aed' }}>From ₦{service.startingPriceNGN ? service.startingPriceNGN.toLocaleString() : '150000'}</span>
-              <span style={{ fontSize: '14px', color: 'var(--cyber-body, #4a3f6b)' }}>/ ${service.startingPriceUSD || '100'} USD</span>
+              <RegionalPrice amountNGN={service.startingPriceNGN || 40000} amountUSD={service.startingPriceUSD || 28} prefix="From " style={{ fontSize: '18px', fontWeight: 900, color: '#7c3aed' }} />
             </div>
           </div>
           <div style={{ marginBottom: '64px' }}>

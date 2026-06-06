@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import type { Service, ServicePlan } from '@/lib/payments/service-plans'
-import { formatPrice } from '@/lib/payments/service-plans'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
+import CurrencySwitcher from '@/components/pricing/CurrencySwitcher'
 import UniversalCheckoutModal from '@/components/checkout/UniversalCheckoutModal'
 
 interface Props {
@@ -28,6 +30,7 @@ export default function ServicePricingCards({
   const [userEmail, setUserEmail] = useState('')
   const [userName, setUserName] = useState('')
   const [userPhone, setUserPhone] = useState('')
+  const { currency } = useCurrency()
 
   // Check if user is logged in using the SSR-aware browser client
   useEffect(() => {
@@ -67,22 +70,32 @@ export default function ServicePricingCards({
   const hasMore = service.plans.length > previewCount
   const getBillingLabel = (plan: ServicePlan) => {
     if (plan.billingType === 'monthly' && plan.delivery.toLowerCase().includes('week')) {
-      return '· per week'
+      return 'per week'
     }
 
     if (plan.billingType === 'monthly') {
-      return '· per month'
+      return 'per month'
     }
 
     if (plan.billingType === 'yearly') {
-      return '· per year'
+      return 'per year'
     }
 
-    return '· one-time'
+    return 'one-time'
   }
 
   return (
     <>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginBottom: '18px',
+        }}
+      >
+        <CurrencySwitcher />
+      </div>
+
       <div
         style={{
           display: 'grid',
@@ -172,7 +185,7 @@ export default function ServicePricingCards({
                       lineHeight: 1,
                     }}
                   >
-                    {formatPrice(plan.priceNGN)}
+                    {formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)}
                   </p>
                   <p
                     style={{
@@ -181,7 +194,7 @@ export default function ServicePricingCards({
                       margin: 0,
                     }}
                   >
-                    {formatPrice(plan.priceUSD, 'USD')} {getBillingLabel(plan)}
+                    {getBillingLabel(plan)}
                   </p>
                 </>
               )}

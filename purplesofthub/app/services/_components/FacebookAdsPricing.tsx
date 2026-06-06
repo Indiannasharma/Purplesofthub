@@ -1,8 +1,11 @@
 ﻿'use client'
 
 import Link from 'next/link'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 export default function FacebookAdsPricing() {
+  const { currency } = useCurrency()
   // Use CSS variables for proper light/dark mode support
   const cardBg = 'var(--bg-card, var(--cyber-card, #ffffff))'
   const textColor = 'var(--text-primary, var(--cyber-heading, #1a1a1a))'
@@ -93,7 +96,7 @@ export default function FacebookAdsPricing() {
           margin: '0 auto',
           lineHeight: 1.7,
         }}>
-          Starting from ₦42,000 / $30 per week.
+          Starting from {formatRegionalPrice(42000, 30, currency)} per week.
           No hidden fees. No surprises.
         </p>
       </div>
@@ -180,14 +183,14 @@ export default function FacebookAdsPricing() {
               margin: '0 0 4px',
               lineHeight: 1,
             }}>
-              ₦{tier.ngn.toLocaleString()}
+              {formatRegionalPrice(tier.ngn, tier.usd, currency)}
             </p>
             <p style={{
               fontSize: '13px',
               color: textMuted,
               margin: '0 0 8px',
             }}>
-              ~${tier.usd} USD{tier.name === 'Flex Weekly' ? ' / week' : ''}
+              {tier.name === 'Flex Weekly' ? 'per week' : 'per month'}
             </p>
             {tier.subtitle && (
               <p style={{
