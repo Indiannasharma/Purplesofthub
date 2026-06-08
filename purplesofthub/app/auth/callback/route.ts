@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient as createAdminSupabase } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendAuthNotificationEmail } from '@/lib/email/auth-notifications'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -92,6 +93,16 @@ export async function GET(request: NextRequest) {
             role: isAdminEmail ? 'admin' : 'client',
             insertError: insertError?.message,
           })
+
+          if (!insertError && user.email && user.app_metadata?.provider !== 'email') {
+            await sendAuthNotificationEmail({
+              type: 'welcome',
+              email: user.email,
+              fullName: user.user_metadata?.full_name || user.user_metadata?.name || '',
+            }).catch((emailError) => {
+              console.error('[OAuth Callback] Welcome email failed:', emailError)
+            })
+          }
         } else if (isAdminEmail && existingProfile.role !== 'admin') {
           // Promote to admin if needed
           const { error: updateError } = await adminClient
@@ -101,6 +112,19 @@ export async function GET(request: NextRequest) {
           console.log('[OAuth Callback] Profile promoted:', {
             userId: user.id,
             updateError: updateError?.message,
+          })
+        } else if (user.email) {
+          await sendAuthNotificationEmail({
+            type: 'login',
+            email: user.email,
+            fullName: user.user_metadata?.full_name || user.user_metadata?.name || '',
+            ipAddress:
+              request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+              request.headers.get('x-real-ip') ||
+              request.headers.get('cf-connecting-ip'),
+            userAgent: request.headers.get('user-agent'),
+          }).catch((emailError) => {
+            console.error('[OAuth Callback] Login email failed:', emailError)
           })
         }
       }

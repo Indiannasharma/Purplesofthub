@@ -30,6 +30,17 @@ export default function SignUpPage() {
         },
       })
       if (error) { setError(error.message); setLoading(false); return }
+      await fetch('/api/auth/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'welcome',
+          email,
+          fullName,
+        }),
+      }).catch((emailError) => {
+        console.error('Welcome email notification failed:', emailError)
+      })
       setSuccess(true)
       setLoading(false)
     } catch (err: any) {

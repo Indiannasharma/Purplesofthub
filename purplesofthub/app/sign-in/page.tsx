@@ -42,6 +42,13 @@ export default function SignInPage() {
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) { setError(error.message); setLoading(false); return }
+      await fetch('/api/auth/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'login' }),
+      }).catch((emailError) => {
+        console.error('Login email notification failed:', emailError)
+      })
       await new Promise(r => setTimeout(r, 300))
       const roleResponse = await fetch('/api/auth/role')
       const roleData = await roleResponse.json().catch(() => null)

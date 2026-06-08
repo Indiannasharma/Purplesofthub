@@ -7,6 +7,7 @@ type RateLimiters = {
   chat?: Ratelimit
   chatLead?: Ratelimit
   newsletter?: Ratelimit
+  authNotifications?: Ratelimit
 }
 
 const rateLimiters: RateLimiters = {}
@@ -31,6 +32,11 @@ if (redis) {
     redis,
     limiter: Ratelimit.slidingWindow(5, '10 m'),
     prefix: 'rl:newsletter',
+  })
+  rateLimiters.authNotifications = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '10 m'),
+    prefix: 'rl:authNotifications',
   })
 }
 
