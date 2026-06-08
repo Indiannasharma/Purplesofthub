@@ -5,8 +5,9 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
 import FaqAccordion from "@/app/services/_components/FaqAccordion";
-import PricingPreview from "@/app/services/_components/PricingPreview";
+import ServicePricingCards from "@/components/services/ServicePricingCards";
 import RegionalPrice from "@/components/pricing/RegionalPrice";
+import { getServiceBySlug as getPaymentServiceBySlug } from "@/lib/payments/service-plans";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -33,6 +34,7 @@ export default function WebDevelopmentPage() {
   const service = getServiceBySlug("web-development");
   if (!service) return null;
 
+  const paymentService = getPaymentServiceBySlug("web-development");
   const related = getRelatedServices(service.relatedServices);
 
   const jsonLd = {
@@ -250,7 +252,28 @@ export default function WebDevelopmentPage() {
       </section>
 
       {/* ── PRICING PREVIEW ── */}
-      <PricingPreview />
+      {paymentService && (
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(40px, 5vw, 80px) 16px" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+              Pricing Plans
+            </p>
+            <h2 style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 900, color: "var(--text-primary, var(--cyber-heading, #1a1a1a))", margin: "0 0 16px", letterSpacing: "-0.5px" }}>
+              Simple Transparent Pricing
+            </h2>
+            <p style={{ fontSize: 16, color: "var(--text-secondary, var(--cyber-body, #6b5fa0))", maxWidth: 460, margin: "0 auto", lineHeight: 1.7 }}>
+              Choose a starter plan here or view the full web development price list.
+            </p>
+          </div>
+          <ServicePricingCards
+            service={paymentService}
+            showAll={false}
+            previewCount={3}
+            showMoreLabel="See All 9 Plans →"
+            showMoreHref="/services/web-development/pricing"
+          />
+        </section>
+      )}
 
       {/* ── FAQs (ACCORDION) ── */}
       <section style={{ padding: "90px 5%", background: "rgba(124,58,237,.04)", borderTop: "1px solid rgba(124,58,237,.12)", borderBottom: "1px solid rgba(124,58,237,.12)" }}>
