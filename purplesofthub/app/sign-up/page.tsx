@@ -1,10 +1,50 @@
 'use client'
 
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import purpleLogo from '@/Assets/images/Purplesoft-logo-main.png'
+
+function PageWrapper({ children }: { children: ReactNode }) {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--cyber-bg)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '16px',
+      position: 'relative',
+      overflow: 'hidden',
+      marginTop: '-68px',
+    }}>
+      <div className="cyber-glow-top-left" />
+      <div className="cyber-glow-bottom-right" />
+      <div className="cyber-grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ width: '100%', maxWidth: '380px', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          height: '2px',
+          background: 'linear-gradient(90deg, transparent, #7c3aed, #a855f7, #7c3aed, transparent)',
+          borderRadius: '2px 2px 0 0',
+          opacity: 0.8,
+        }} />
+        <div style={{
+          background: 'var(--cyber-card)',
+          backdropFilter: 'blur(24px)',
+          border: '1px solid var(--cyber-border)',
+          borderTop: 'none',
+          borderRadius: '0 0 20px 20px',
+          padding: '28px 28px 24px',
+          boxShadow: '0 8px 40px rgba(124,58,237,0.15), 0 0 0 1px rgba(124,58,237,0.06)',
+        }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function SignUpPage() {
   const [fullName, setFullName] = useState('')
@@ -67,43 +107,6 @@ export default function SignUpPage() {
       setGoogleLoading(false)
     }
   }
-
-  const PageWrapper = ({ children }: { children: React.ReactNode }) => (
-    <div style={{
-      minHeight: '100vh',
-      background: 'var(--cyber-bg)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '16px',
-      position: 'relative',
-      overflow: 'hidden',
-      marginTop: '-68px',
-    }}>
-      <div className="cyber-glow-top-left" />
-      <div className="cyber-glow-bottom-right" />
-      <div className="cyber-grid-bg" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ width: '100%', maxWidth: '380px', position: 'relative', zIndex: 1 }}>
-        <div style={{
-          height: '2px',
-          background: 'linear-gradient(90deg, transparent, #7c3aed, #a855f7, #7c3aed, transparent)',
-          borderRadius: '2px 2px 0 0',
-          opacity: 0.8,
-        }} />
-        <div style={{
-          background: 'var(--cyber-card)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid var(--cyber-border)',
-          borderTop: 'none',
-          borderRadius: '0 0 20px 20px',
-          padding: '28px 28px 24px',
-          boxShadow: '0 8px 40px rgba(124,58,237,0.15), 0 0 0 1px rgba(124,58,237,0.06)',
-        }}>
-          {children}
-        </div>
-      </div>
-    </div>
-  )
 
   if (success) {
     return (
