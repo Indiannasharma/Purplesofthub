@@ -1,102 +1,36 @@
+import { getServiceBySlug, SERVICES, type BillingType } from '@/lib/payments/service-plans'
+
 export type CheckoutPlanDefinition = {
   serviceId: string
   serviceName: string
+  planId: string
   planName: string
   amount: number
   deliveryTime: string
+  billingType: BillingType
 }
 
-type ServicePlanCatalog = Record<
-  string,
-  {
-    serviceName: string
-    plans: Record<string, { amount: number; deliveryTime: string }>
-  }
->
+const SERVICE_ID_ALIASES: Record<string, string> = {
+  'meta-ads': 'facebook-ads',
+  'web-dev': 'web-development',
+  'mobile-app': 'mobile-app-development',
+  'social-media-mgmt': 'social-media-management',
+  seo: 'seo-content',
+}
 
-const SERVICE_PLAN_CATALOG: ServicePlanCatalog = {
-  'meta-ads': {
-    serviceName: 'Facebook Ads Management',
-    plans: {
-      'Flex Weekly': { amount: 42000, deliveryTime: 'Per Week' },
-      'Flex Weekly (Testing)': { amount: 42000, deliveryTime: 'Per Week' },
-      Starter: { amount: 150000, deliveryTime: 'Per Month' },
-      Growth: { amount: 250000, deliveryTime: 'Per Month' },
-      Scale: { amount: 400000, deliveryTime: 'Per Month' },
-      Enterprise: { amount: 600000, deliveryTime: 'Per Month' },
-    },
-  },
-  'web-dev': {
-    serviceName: 'Website Development',
-    plans: {
-      'Starter - Basic Website': { amount: 450000, deliveryTime: '2 weeks' },
-      'Essential - Business Site': { amount: 750000, deliveryTime: '3 weeks' },
-      'Professional - E-commerce': { amount: 975000, deliveryTime: '4 weeks' },
-    },
-  },
-  'mobile-app': {
-    serviceName: 'Mobile App Development',
-    plans: {
-      'Basic App': { amount: 250000, deliveryTime: '4-5 weeks' },
-      'Standard App': { amount: 400000, deliveryTime: '6-7 weeks' },
-      'Advanced App': { amount: 600000, deliveryTime: '8-10 weeks' },
-    },
-  },
-  'social-media-mgmt': {
-    serviceName: 'Social Media Management',
-    plans: {
-      Starter: { amount: 75000, deliveryTime: 'Monthly' },
-      Growth: { amount: 150000, deliveryTime: 'Monthly' },
-      Premium: { amount: 250000, deliveryTime: 'Monthly' },
-    },
-  },
-  'music-promotion': {
-    serviceName: 'Music Promotion',
-    plans: {
-      Basic: { amount: 30000, deliveryTime: '2 weeks' },
-      Standard: { amount: 60000, deliveryTime: '3 weeks' },
-      Premium: { amount: 100000, deliveryTime: '4 weeks' },
-    },
-  },
-  'logo-design': {
-    serviceName: 'Logo Design',
-    plans: {
-      Basic: { amount: 25000, deliveryTime: '3-5 business days' },
-      Standard: { amount: 60000, deliveryTime: '5-7 business days' },
-      Premium: { amount: 120000, deliveryTime: '7-10 business days' },
-      'Brand Identity': { amount: 250000, deliveryTime: '2-3 weeks' },
-    },
-  },
-  'music-distribution': {
-    serviceName: 'Music Distribution',
-    plans: {
-      Single: { amount: 15000, deliveryTime: '1 week' },
-      'EP (3-6 tracks)': { amount: 40000, deliveryTime: '1-2 weeks' },
-      'Album (7+ tracks)': { amount: 75000, deliveryTime: '2 weeks' },
-    },
-  },
-  'account-recovery': {
-    serviceName: 'Account Recovery',
-    plans: {
-      'Basic Recovery': { amount: 42000, deliveryTime: '1-4 weeks' },
-    },
-  },
-  'ui-ux-design': {
-    serviceName: 'UI/UX Design',
-    plans: {
-      'Landing Page': { amount: 100000, deliveryTime: '1-2 weeks' },
-      'Web App Design': { amount: 200000, deliveryTime: '2-3 weeks' },
-      'Complete Product': { amount: 350000, deliveryTime: '4-6 weeks' },
-    },
-  },
-  seo: {
-    serviceName: 'SEO',
-    plans: {
-      'Basic SEO': { amount: 40000, deliveryTime: 'Monthly' },
-      'Growth SEO': { amount: 80000, deliveryTime: 'Monthly' },
-      'Enterprise SEO': { amount: 150000, deliveryTime: 'Monthly' },
-    },
-  },
+function normalizeKey(value?: string) {
+  return value?.trim().toLowerCase() || ''
+}
+
+function resolveService(serviceId?: string) {
+  const key = normalizeKey(serviceId)
+  if (!key) return null
+
+  return (
+    getServiceBySlug(SERVICE_ID_ALIASES[key] || key) ||
+    SERVICES.find(service => normalizeKey(service.name) === key) ||
+    null
+  )
 }
 
 export function resolveCheckoutPlan(input: {
@@ -104,36 +38,37 @@ export function resolveCheckoutPlan(input: {
   planName?: string
   amount?: number
 }) {
-  const serviceId = input.serviceId?.trim()
-  const planName = input.planName?.trim()
+  const service = resolveService(input.serviceId)
+  const planKey = normalizeKey(input.planName)
   const amount = Number.isFinite(input.amount as number)
     ? Math.round(Number(input.amount))
     : undefined
 
-  if (!serviceId || !planName) {
+  if (!service || !planKey) {
     return null
   }
 
-  const service = SERVICE_PLAN_CATALOG[serviceId]
-  if (!service) {
+  const plan = service.plans.find(candidate =>
+    normalizeKey(candidate.name) === planKey ||
+    normalizeKey(candidate.id) === planKey
+  )
+
+  if (!plan || plan.isCustom || plan.priceNGN <= 0) {
     return null
   }
 
-  const plan = service.plans[planName]
-  if (!plan) {
-    return null
-  }
-
-  if (typeof amount === 'number' && amount !== Math.round(plan.amount)) {
+  if (typeof amount === 'number' && amount !== Math.round(plan.priceNGN)) {
     return null
   }
 
   return {
-    serviceId,
-    serviceName: service.serviceName,
-    planName,
-    amount: plan.amount,
-    deliveryTime: plan.deliveryTime,
+    serviceId: service.id,
+    serviceName: service.name,
+    planId: plan.id,
+    planName: plan.name,
+    amount: plan.priceNGN,
+    deliveryTime: plan.delivery,
+    billingType: plan.billingType,
   } satisfies CheckoutPlanDefinition
 }
 

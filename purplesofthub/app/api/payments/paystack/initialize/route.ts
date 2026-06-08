@@ -73,15 +73,7 @@ export async function POST(request: Request) {
   let paymentReference = `txn_${Date.now()}`
   let paymentCallbackUrl = new URL('/api/payments/paystack/verify', request.url).toString()
   let paymentMetadata: Record<string, unknown> | undefined
-  let resolvedPlan:
-    | {
-        serviceId: string
-        serviceName: string
-        planName: string
-        amount: number
-        deliveryTime: string
-      }
-    | null = null
+  let resolvedPlan: ReturnType<typeof resolveCheckoutPlan> = null
 
   try {
     if (isInvoicePayment) {
@@ -180,8 +172,10 @@ export async function POST(request: Request) {
           ...(body.metadata || {}),
           service_id: resolvedPlan.serviceId,
           service_name: resolvedPlan.serviceName,
+          plan_id: resolvedPlan.planId,
           plan_name: resolvedPlan.planName,
           delivery_time: resolvedPlan.deliveryTime,
+          billing_type: resolvedPlan.billingType,
           user_id: user?.id,
         }
       } else {

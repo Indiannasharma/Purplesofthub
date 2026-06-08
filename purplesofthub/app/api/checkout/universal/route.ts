@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const billingType = planMeta.billingType ?? 'one-time'
+    const billingType = planMeta.billingType ?? verifiedPlan.billingType ?? 'one-time'
 
     const authClient = await createServerClient()
     const {
@@ -217,7 +217,7 @@ export async function POST(req: NextRequest) {
       payment_reference: verifiedPayment.reference,
       service_id: verifiedPlan.serviceId,
       service_name: verifiedPlan.serviceName,
-      plan_id: verifiedPlan.planName,
+      plan_id: verifiedPlan.planId,
       billing_type: billingType,
       started_at: new Date().toISOString(),
       expires_at: expiresAt.toISOString(),

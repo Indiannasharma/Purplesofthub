@@ -179,7 +179,8 @@ export async function POST(req: NextRequest) {
         payment_reference: verifiedPayment.reference,
         service_id: verifiedPlan.serviceId,
         service_name: verifiedPlan.serviceName,
-        plan_id: verifiedPlan.planName,
+        plan_id: verifiedPlan.planId,
+        billing_type: verifiedPlan.billingType,
         started_at: new Date().toISOString(),
       })
 

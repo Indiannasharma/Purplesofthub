@@ -13,4 +13,10 @@
 - [x] Inspect public signup and Supabase invite failure screenshots
 - [x] Trace auth signup to Supabase database triggers
 - [x] Add production SQL repair for auth user profile creation triggers
-- [ ] Apply repair migration to Supabase production and verify signup/invite
+- [x] Apply repair migration to Supabase production and verify signup/invite
+
+## 2026-06-08 Task: Service pricing catalog cleanup
+- [x] Inspect public service plan source and checkout validation catalog
+- [x] Replace stale checkout plan validation with official `service-plans.ts`
+- [x] Align client dashboard services and plan modal with official service plans
+- [x] Run type checks and verify working tree

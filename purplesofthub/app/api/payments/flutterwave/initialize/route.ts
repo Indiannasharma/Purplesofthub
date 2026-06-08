@@ -110,8 +110,10 @@ export async function POST(request: NextRequest) {
             ...(planInfo ? {
               service_id: planInfo.serviceId,
               service_name: planInfo.serviceName,
+              plan_id: planInfo.planId,
               plan_name: planInfo.planName,
               delivery_time: planInfo.deliveryTime,
+              billing_type: planInfo.billingType,
               user_id: user?.id,
             } : {}),
           },
@@ -148,8 +150,10 @@ export async function POST(request: NextRequest) {
             ...(planInfo ? {
               service_id: planInfo.serviceId,
               service_name: planInfo.serviceName,
+              plan_id: planInfo.planId,
               plan_name: planInfo.planName,
               delivery_time: planInfo.deliveryTime,
+              billing_type: planInfo.billingType,
               user_id: user?.id,
             } : {}),
           },
