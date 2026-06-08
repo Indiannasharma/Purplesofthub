@@ -37,14 +37,19 @@ export default function SignInPage() {
   const handleEmailSignIn = async () => {
     if (!email || !password) return
     setLoading(true)
-    setError('')
+      setError('')
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) { setError(error.message); setLoading(false); return }
       await fetch('/api/auth/notifications', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(data.session?.access_token
+            ? { Authorization: `Bearer ${data.session.access_token}` }
+            : {}),
+        },
         body: JSON.stringify({ type: 'login' }),
       }).catch((emailError) => {
         console.error('Login email notification failed:', emailError)

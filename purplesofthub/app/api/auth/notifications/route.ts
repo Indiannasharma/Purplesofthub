@@ -19,7 +19,7 @@ function getClientIp(request: NextRequest): string | null {
   )
 }
 
-async function getAuthenticatedUser() {
+async function getAuthenticatedUser(request: NextRequest) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,7 +40,15 @@ async function getAuthenticatedUser() {
     }
   )
 
-  const { data, error } = await supabase.auth.getUser()
+  const bearerToken = request.headers
+    .get('authorization')
+    ?.replace(/^Bearer\s+/i, '')
+    .trim()
+
+  const { data, error } = bearerToken
+    ? await supabase.auth.getUser(bearerToken)
+    : await supabase.auth.getUser()
+
   if (error || !data.user) return null
 
   return data.user
@@ -65,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (type === 'login') {
-      const user = await getAuthenticatedUser()
+      const user = await getAuthenticatedUser(request)
 
       if (!user?.email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
