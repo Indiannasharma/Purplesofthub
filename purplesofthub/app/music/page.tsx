@@ -413,6 +413,7 @@ export default function MusicPage() {
           overflow-x: hidden;
           background: var(--cyber-bg);
           color: var(--cyber-heading);
+          overflow-wrap: break-word;
         }
 
         .music-hero {
@@ -479,6 +480,7 @@ export default function MusicPage() {
           font-size: 12px;
           font-weight: 900;
           letter-spacing: 0.04em;
+          line-height: 1.35;
           text-transform: uppercase;
         }
 
@@ -534,6 +536,7 @@ export default function MusicPage() {
           padding: 13px 19px;
           text-decoration: none;
           font-weight: 900;
+          text-align: center;
           transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
         }
 
@@ -598,6 +601,7 @@ export default function MusicPage() {
           color: var(--text-muted);
           font-size: 12px;
           font-weight: 800;
+          line-height: 1.35;
         }
 
         .hero-highlight-row {
@@ -614,6 +618,7 @@ export default function MusicPage() {
           color: var(--cyber-heading);
           font-size: 12px;
           font-weight: 850;
+          line-height: 1.35;
           padding: 7px 11px;
         }
 
@@ -663,6 +668,7 @@ export default function MusicPage() {
           font-weight: 850;
           text-transform: uppercase;
           letter-spacing: 0.04em;
+          line-height: 1.35;
         }
 
         .console-topline strong {
@@ -832,6 +838,7 @@ export default function MusicPage() {
           padding: 10px 12px;
           font-size: 12px;
           font-weight: 900;
+          line-height: 1.35;
           box-shadow: 0 18px 48px rgba(0,0,0,0.18);
           z-index: 2;
           animation: signal-float 4s ease-in-out infinite alternate;
@@ -944,6 +951,7 @@ export default function MusicPage() {
           font-size: 12px;
           font-weight: 850;
           padding: 7px 11px;
+          line-height: 1.35;
         }
 
         .plan-grid,
@@ -1041,6 +1049,7 @@ export default function MusicPage() {
           text-decoration: none;
           font-size: 13px;
           font-weight: 900;
+          text-align: center;
         }
 
         .promo-icon {
@@ -1165,6 +1174,7 @@ export default function MusicPage() {
         @media (max-width: 860px) {
           .music-hero {
             padding-top: 112px;
+            padding-bottom: 62px;
           }
 
           .music-hero-inner,
@@ -1189,7 +1199,32 @@ export default function MusicPage() {
 
         @media (max-width: 560px) {
           .music-hero {
-            padding-bottom: 64px;
+            padding: 104px 4.5% 56px;
+          }
+
+          .music-hero h1 {
+            font-size: clamp(34px, 13vw, 44px);
+            line-height: 1.04;
+          }
+
+          .music-section-head h2,
+          .music-final-cta h2 {
+            font-size: clamp(27px, 9vw, 36px);
+            line-height: 1.1;
+          }
+
+          .music-hero p,
+          .music-section-head p,
+          .music-final-cta p {
+            font-size: 16px;
+            line-height: 1.68;
+          }
+
+          .music-kicker,
+          .music-label {
+            align-items: flex-start;
+            width: 100%;
+            border-radius: 8px;
           }
 
           .hero-stat-grid,
@@ -1197,18 +1232,61 @@ export default function MusicPage() {
             grid-template-columns: 1fr;
           }
 
+          .hero-stat-grid {
+            gap: 8px;
+          }
+
+          .hero-stat-grid div {
+            padding: 12px;
+          }
+
+          .hero-stat-grid strong {
+            font-size: 26px;
+          }
+
+          .music-visual {
+            min-height: auto;
+            padding: 14px 0;
+          }
+
           .album-art {
-            min-height: 190px;
+            min-height: 150px;
+            gap: 14px;
+          }
+
+          .album-art svg {
+            width: 52px;
+            height: 52px;
+          }
+
+          .campaign-panel {
+            padding: 16px;
+          }
+
+          .campaign-panel h2 {
+            font-size: 22px;
           }
 
           .launch-console {
+            width: min(100%, calc(100vw - 9%));
             min-height: auto;
             padding: 14px;
+          }
+
+          .console-topline {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 6px;
           }
 
           .music-wave {
             height: 74px;
             margin: 20px 0 14px;
+            gap: 5px;
+          }
+
+          .music-wave i {
+            width: 5px;
           }
 
           .distribution-grid,
@@ -1219,11 +1297,47 @@ export default function MusicPage() {
 
           .music-actions a {
             width: 100%;
+            min-width: 0;
           }
 
           .music-final-cta {
             margin-left: 5%;
             margin-right: 5%;
+            margin-bottom: 70px;
+            padding: 28px 18px;
+          }
+
+          .music-pillars article,
+          .music-plan,
+          .promo-card,
+          .goal-grid article,
+          .process-grid article {
+            padding: 19px;
+          }
+
+          .music-plan strong,
+          .promo-card strong {
+            font-size: 25px;
+            line-height: 1.08;
+          }
+
+          .platform-strip {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+          }
+
+          .platform-strip span {
+            text-align: center;
+          }
+
+          .promo-card div span {
+            max-width: 100%;
+          }
+
+          .music-plan a,
+          .promo-card a {
+            min-height: 46px;
           }
         }
       `}</style>

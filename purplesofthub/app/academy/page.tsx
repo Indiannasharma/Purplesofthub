@@ -444,6 +444,7 @@ export default function AcademyPage() {
           background: var(--cyber-bg);
           color: var(--cyber-heading);
           overflow-x: hidden;
+          overflow-wrap: break-word;
         }
 
         .academy-hero {
@@ -494,6 +495,7 @@ export default function AcademyPage() {
           font-size: 12px;
           font-weight: 800;
           letter-spacing: 0.04em;
+          line-height: 1.35;
           text-transform: uppercase;
         }
 
@@ -532,9 +534,11 @@ export default function AcademyPage() {
         .academy-primary {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 9px;
           text-decoration: none;
           border-radius: 8px;
+          text-align: center;
         }
 
         .academy-secondary,
@@ -551,6 +555,7 @@ export default function AcademyPage() {
           color: #67e8f9;
           text-decoration: none;
           font-weight: 800;
+          text-align: center;
           transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
         }
 
@@ -621,6 +626,7 @@ export default function AcademyPage() {
           gap: 14px;
           margin-top: -34px;
           z-index: 2;
+          padding-inline: 5%;
         }
 
         .academy-stat-shell {
@@ -698,6 +704,7 @@ export default function AcademyPage() {
           letter-spacing: 0.08em;
           text-align: right;
           text-transform: uppercase;
+          overflow-wrap: anywhere;
         }
 
         .academy-stats strong {
@@ -838,6 +845,7 @@ export default function AcademyPage() {
           font-size: 14px;
           font-weight: 800;
           cursor: pointer;
+          text-align: left;
         }
 
         .academy-filters button.active {
@@ -925,6 +933,8 @@ export default function AcademyPage() {
           color: var(--accent);
           background: color-mix(in srgb, var(--accent) 13%, transparent);
           padding: 6px 10px;
+          line-height: 1.3;
+          text-align: right;
         }
 
         .academy-course-card h3,
@@ -985,6 +995,8 @@ export default function AcademyPage() {
           min-height: 40px;
           padding: 9px 12px;
           font-size: 13px;
+          flex: 1 1 150px;
+          text-align: center;
         }
 
         .learning-path-grid,
@@ -1105,6 +1117,7 @@ export default function AcademyPage() {
           font: inherit;
           font-weight: 900;
           cursor: pointer;
+          white-space: nowrap;
         }
 
         .waitlist-form button:disabled {
@@ -1195,6 +1208,7 @@ export default function AcademyPage() {
         @media (max-width: 860px) {
           .academy-hero {
             padding-top: 110px;
+            padding-bottom: 58px;
           }
 
           .academy-hero-inner,
@@ -1202,15 +1216,12 @@ export default function AcademyPage() {
             grid-template-columns: 1fr;
           }
 
-          .academy-visual {
-            order: -1;
-          }
-
           .academy-stats {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             margin-left: 5%;
             margin-right: 5%;
             width: auto;
+            padding-inline: 0;
           }
 
           .academy-benefit-grid,
@@ -1226,9 +1237,54 @@ export default function AcademyPage() {
           .waitlist-form button {
             width: 100%;
           }
+
+          .academy-hero-copy,
+          .academy-section-head,
+          .academy-support,
+          .academy-waitlist {
+            text-align: left;
+          }
+
+          .academy-waitlist .academy-section-head {
+            margin-left: 0;
+            margin-right: 0;
+          }
         }
 
         @media (max-width: 520px) {
+          .academy-hero {
+            padding: 104px 4.5% 48px;
+          }
+
+          .academy-hero h1 {
+            font-size: clamp(34px, 13vw, 44px);
+            line-height: 1.04;
+          }
+
+          .academy-section-head h2,
+          .academy-support h2 {
+            font-size: clamp(26px, 9vw, 34px);
+            line-height: 1.12;
+          }
+
+          .academy-lead,
+          .academy-section-head p,
+          .academy-support p {
+            font-size: 16px;
+            line-height: 1.68;
+          }
+
+          .academy-kicker,
+          .academy-label {
+            align-items: flex-start;
+            width: 100%;
+            border-radius: 8px;
+          }
+
+          .academy-visual {
+            padding: 18px;
+          }
+
           .academy-map {
             grid-template-columns: 1fr;
           }
@@ -1244,6 +1300,56 @@ export default function AcademyPage() {
           .academy-actions a,
           .academy-filters button,
           .academy-secondary {
+            width: 100%;
+            min-width: 0;
+          }
+
+          .academy-filters {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .academy-filters button {
+            justify-content: space-between;
+          }
+
+          .academy-course-grid,
+          .learning-path-grid,
+          .faq-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .academy-course-card,
+          .learning-path,
+          .faq-card,
+          .academy-benefit-card {
+            padding: 18px;
+          }
+
+          .course-topline {
+            align-items: flex-start;
+          }
+
+          .course-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .course-actions a {
+            width: 100%;
+          }
+
+          .academy-enrollment-options a {
+            min-height: auto;
+          }
+
+          .waitlist-form {
+            gap: 12px;
+          }
+
+          .waitlist-form select,
+          .waitlist-form input,
+          .waitlist-form button {
             width: 100%;
           }
         }
