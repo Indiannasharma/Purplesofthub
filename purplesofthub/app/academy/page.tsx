@@ -1,875 +1,833 @@
-'use client'
-import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import { useTheme } from '@/context/ThemeContext'
+"use client";
 
-const programs = [
-  {
-    icon: '🌐',
-    title: 'Web Development Bootcamp',
-    desc: 'Full-stack mastery: HTML, CSS, JavaScript, React, Next.js & Node.js. Build real-world projects from day one.',
-    duration: '12 Weeks',
-    level: 'Beginner → Pro',
-    color: '#7c3aed',
-    students: '1.2k',
-    tag: 'Most Popular',
-  },
-  {
-    icon: '📣',
-    title: 'Digital Marketing Mastery',
-    desc: 'SEO, social media, paid ads, content strategy, and analytics. Learn to grow brands across all digital channels.',
-    duration: '8 Weeks',
-    level: 'Beginner',
-    color: '#06b6d4',
-    students: '890',
-    tag: 'Trending',
-  },
-  {
-    icon: '🎵',
-    title: 'Music Tech & Distribution',
-    desc: 'Music production, streaming distribution, playlist pitching, royalties, and digital promotion strategies.',
-    duration: '6 Weeks',
-    level: 'All Levels',
-    color: '#a855f7',
-    students: '645',
-    tag: 'New',
-  },
-  {
-    icon: '🚀',
-    title: 'SaaS & Product Development',
-    desc: 'Idea validation, product design, building an MVP, pricing models, and launching a profitable SaaS product.',
-    duration: '10 Weeks',
-    level: 'Intermediate',
-    color: '#10b981',
-    students: '430',
-    tag: 'Hot',
-  },
-  {
-    icon: '🎨',
-    title: 'UI/UX Design',
-    desc: 'User research, Figma, wireframing, prototyping, design systems, and building stunning user experiences.',
-    duration: '8 Weeks',
-    level: 'Beginner → Mid',
-    color: '#f59e0b',
-    students: '760',
-    tag: 'Creative',
-  },
-]
+import { useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Blocks,
+  BookOpen,
+  Bot,
+  BriefcaseBusiness,
+  CheckCircle2,
+  Code2,
+  Film,
+  Filter,
+  GraduationCap,
+  LayoutTemplate,
+  Megaphone,
+  Music2,
+  PenTool,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  Users,
+  Wand2,
+} from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { academyCategories, academyFaqs, academyTracks, learningPaths, type AcademyCategory } from "@/app/academy/_data/tracks";
 
-const whyCards = [
-  {
-    icon: '🎯',
-    title: 'Industry-Led Curriculum',
-    desc: 'Programs built and taught by active professionals working at top tech companies in Nigeria and abroad.',
-    color: '#7c3aed',
-  },
-  {
-    icon: '🛠️',
-    title: 'Build Real Projects',
-    desc: 'No theory-only courses. Every module ends with a hands-on project you can add directly to your portfolio.',
-    color: '#06b6d4',
-  },
-  {
-    icon: '🌍',
-    title: 'Built for Africa',
-    desc: "Content localized for Nigerian and African market realities — from payments to infrastructure to business models.",
-    color: '#10b981',
-  },
-  {
-    icon: '💼',
-    title: 'Career Support',
-    desc: "CV reviews, mock interviews, job board access, and direct introductions to our network of hiring partners.",
-    color: '#a855f7',
-  },
-  {
-    icon: '📱',
-    title: 'Learn Anywhere',
-    desc: 'Mobile-optimized content. Download lessons and learn even without stable internet connection.',
-    color: '#f59e0b',
-  },
-  {
-    icon: '🤝',
-    title: 'Community & Mentors',
-    desc: 'Join a private community of learners. Get 1-on-1 mentor sessions and peer accountability groups.',
-    color: '#ef4444',
-  },
-]
+const trackIcons = {
+  "web-development": Code2,
+  "mobile-app-development": Phone,
+  "ui-ux-design": LayoutTemplate,
+  "graphic-design": PenTool,
+  "digital-marketing": Megaphone,
+  "ai-productivity": Bot,
+  "saas-product-development": Blocks,
+  "cybersecurity-basics": ShieldCheck,
+  "business-automation": BriefcaseBusiness,
+  "music-business-distribution": Music2,
+  "content-creation-video-editing": Film,
+  "youth-digital-foundation": GraduationCap,
+};
 
-const testimonials = [
-  {
-    name: 'Chioma Okafor',
-    role: 'Frontend Dev · Lagos',
-    text: 'The Web Dev Bootcamp landed me my first remote job 3 weeks after completing the course. The projects were genuinely challenging and portfolio-worthy.',
-    avatar: '👩🏾',
-    rating: 5,
+const categoryCounts = academyCategories.reduce(
+  (acc, category) => {
+    acc[category] = category === "All" ? academyTracks.length : academyTracks.filter((track) => track.category === category).length;
+    return acc;
   },
-  {
-    name: 'Emeka Nwosu',
-    role: 'Digital Marketer · Abuja',
-    text: "Best investment I made in 2024. The digital marketing course paid for itself within 30 days. I'm now running campaigns for 4 clients.",
-    avatar: '👨🏿',
-    rating: 5,
-  },
-  {
-    name: 'Fatima Bello',
-    role: 'UI/UX Designer · Kano',
-    text: 'Went from zero design knowledge to landing a ₦350k/month design role. The Figma modules alone are worth it.',
-    avatar: '👩🏾‍💻',
-    rating: 5,
-  },
-]
-
-const stats = [
-  { value: '5,000+', label: 'Students Enrolled' },
-  { value: '92%', label: 'Completion Rate' },
-  { value: '5', label: 'Expert Programs' },
-  { value: '₦0', label: 'Hidden Fees' },
-]
+  {} as Record<AcademyCategory, number>
+);
 
 export default function AcademyPage() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const [activeProgram, setActiveProgram] = useState<number | null>(null)
-  const [testimonialIdx, setTestimonialIdx] = useState(0)
-  const [email, setEmail] = useState('')
-  const [enrolled, setEnrolled] = useState(false)
-  const [notifyLoading, setNotifyLoading] = useState(false)
-  const heroRef = useRef<HTMLDivElement>(null)
+  const [activeCategory, setActiveCategory] = useState<AcademyCategory>("All");
+  const [selectedTrack, setSelectedTrack] = useState(academyTracks[0].slug);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
-  const academy = {
-    pageBg: isDark ? '#06030f' : '#f7f3ff',
-    pageText: isDark ? '#ffffff' : '#1a1a2e',
-    titleAccent: isDark ? '#c4b5fd' : '#5f4b8b',
-    muted: isDark ? '#9d8fd4' : '#6b5fa0',
-    mutedStrong: isDark ? '#6b5fa0' : '#7a6a96',
-    quote: isDark ? '#e2d9f3' : '#4a3f6b',
-    card: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
-    cardStrong: isDark ? 'rgba(6,3,15,0.8)' : 'rgba(255,255,255,0.92)',
-    inputBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(124,58,237,0.05)',
-  }
+  const visibleTracks = useMemo(
+    () => academyTracks.filter((track) => activeCategory === "All" || track.category === activeCategory),
+    [activeCategory]
+  );
 
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const t = setInterval(() => {
-      setTestimonialIdx(i => (i + 1) % testimonials.length)
-    }, 4500)
-    return () => clearInterval(t)
-  }, [])
+  const selectedTrackTitle = academyTracks.find((track) => track.slug === selectedTrack)?.title ?? "Academy updates";
 
-  const handleNotify = async () => {
-    if (!email || !email.includes('@')) return
-    setNotifyLoading(true)
+  async function handleWaitlist() {
+    if (!email.includes("@")) return;
+
+    setStatus("loading");
     try {
-      await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'academy-enroll' }),
-      })
+      await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: `academy-${selectedTrack}` }),
+      });
     } catch {}
-    setEnrolled(true)
-    setNotifyLoading(false)
+    setStatus("success");
   }
 
   return (
-    <>
+    <main className="academy-page">
       <Navbar />
 
-      <div style={{
-        minHeight: '100vh',
-        background: academy.pageBg,
-        fontFamily: 'Outfit, Inter, sans-serif',
-        overflowX: 'hidden',
-        color: academy.pageText,
-      }}>
-
-        {/* ── GLOBAL STAR GRID ── */}
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundImage: `
-            radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
-            radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 100%),
-            radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.08) 0%, transparent 100%),
-            radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.12) 0%, transparent 100%),
-            radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,0.1) 0%, transparent 100%)
-          `,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }} />
-
-        {/* ═══════════════════════════════════════════
-            HERO SECTION
-        ═══════════════════════════════════════════ */}
-        <section ref={heroRef} style={{
-          position: 'relative',
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '120px 24px 80px',
-          overflow: 'hidden',
-          textAlign: 'center',
-        }}>
-          {/* Big purple glow center */}
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -60%)',
-            width: '900px',
-            height: '900px',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(124,58,237,0.18) 0%, rgba(76,29,149,0.1) 40%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(124,58,237,0.05) 40%, transparent 70%)',
-            pointerEvents: 'none',
-          }} />
-          {/* Cyan glow top-right */}
-          <div style={{
-            position: 'absolute',
-            top: '-10%',
-            right: '-5%',
-            width: '500px',
-            height: '500px',
-            background: isDark
-              ? 'radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 65%)'
-              : 'radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 65%)',
-            pointerEvents: 'none',
-          }} />
-          {/* Planet orb */}
-          <div style={{
-            position: 'absolute',
-            top: '8%',
-            right: '5%',
-            width: '260px',
-            height: '260px',
-            borderRadius: '50%',
-            background: isDark
-              ? 'radial-gradient(circle at 35% 35%, #a855f7, #4c1d95, #06030f)'
-              : 'radial-gradient(circle at 35% 35%, #c084fc, #8b5cf6, #f7f3ff)',
-            boxShadow: '0 0 80px rgba(168,85,247,0.35), 0 0 160px rgba(124,58,237,0.2)',
-            animation: 'rotatePlanet 20s linear infinite',
-          }}>
-            {/* Ring */}
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%) rotateX(72deg)',
-              width: '360px',
-              height: '360px',
-              borderRadius: '50%',
-              border: '2px solid rgba(6,182,212,0.4)',
-              boxShadow: '0 0 20px rgba(6,182,212,0.3)',
-            }} />
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%) rotateX(72deg)',
-              width: '420px',
-              height: '420px',
-              borderRadius: '50%',
-              border: '1px solid rgba(168,85,247,0.2)',
-            }} />
-          </div>
-
-          {/* Floating badge */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(6,182,212,0.1)',
-            border: '1px solid rgba(6,182,212,0.3)',
-            borderRadius: '100px',
-            padding: '6px 18px',
-            marginBottom: '28px',
-            zIndex: 1,
-          }}>
-            <span style={{ fontSize: '10px', color: '#06b6d4', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              🚀 Now Enrolling — Limited Seats
+      <section className="academy-hero">
+        <div className="grid-bg academy-grid-bg" />
+        <div className="academy-hero-inner">
+          <div className="academy-hero-copy">
+            <span className="academy-kicker">
+              <Sparkles size={15} />
+              Practical digital skills for African learners
             </span>
-          </div>
 
-          {/* Hero Headline */}
-          <h1 style={{
-            fontSize: 'clamp(40px, 7vw, 80px)',
-            fontWeight: 900,
-            lineHeight: 1.05,
-            letterSpacing: '-2px',
-            margin: '0 0 20px',
-            maxWidth: '900px',
-            zIndex: 1,
-          }}>
-            <span style={{ color: academy.pageText }}>PurpleSoftHub</span>{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #a855f7, #06b6d4)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              Academy
-            </span>
-          </h1>
+            <h1>
+              PurpleSoftHub <span className="grad-text">Academy</span>
+            </h1>
 
-          <p style={{
-            fontSize: 'clamp(18px, 3vw, 26px)',
-            fontWeight: 600,
-            color: academy.titleAccent,
-            margin: '0 0 14px',
-            zIndex: 1,
-          }}>
-            Learn. Build. Launch.
-          </p>
-          <p style={{
-            fontSize: 'clamp(15px, 2vw, 18px)',
-            color: academy.muted,
-            margin: '0 0 44px',
-            maxWidth: '580px',
-            lineHeight: 1.7,
-            zIndex: 1,
-          }}>
-            Master the skills that power the future. Industry-led programs in tech, design, marketing, music & product — built for Africa.
-          </p>
-
-          {/* CTA Buttons */}
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', zIndex: 1 }}>
-            <a href="#programs" style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: academy.pageText,
-              padding: '16px 36px',
-              borderRadius: '12px',
-              fontWeight: 800,
-              fontSize: '16px',
-              textDecoration: 'none',
-              boxShadow: '0 0 40px rgba(124,58,237,0.45)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 60px rgba(124,58,237,0.6)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 0 40px rgba(124,58,237,0.45)' }}
-            >
-              🎓 Enroll Now
-            </a>
-            <a href="#programs" style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'transparent',
-              color: '#06b6d4',
-              padding: '16px 36px',
-              borderRadius: '12px',
-              fontWeight: 700,
-              fontSize: '16px',
-              textDecoration: 'none',
-              border: '2px solid rgba(6,182,212,0.4)',
-              transition: 'all 0.2s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(6,182,212,0.08)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(6,182,212,0.7)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(6,182,212,0.4)' }}
-            >
-              ▶ Watch Intro Video
-            </a>
-          </div>
-
-          {/* Stats Row */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '1px',
-            marginTop: '72px',
-            width: '100%',
-            maxWidth: '760px',
-            background: 'rgba(124,58,237,0.15)',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            border: '1px solid rgba(124,58,237,0.2)',
-            zIndex: 1,
-          }}>
-            {stats.map((s, i) => (
-              <div key={i} style={{
-                padding: '24px 16px',
-                textAlign: 'center',
-                background: academy.cardStrong,
-                backdropFilter: 'blur(12px)',
-              }}>
-                <p style={{ fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 900, color: '#a855f7', margin: '0 0 4px' }}>{s.value}</p>
-                <p style={{ fontSize: '12px', color: academy.mutedStrong, margin: 0, fontWeight: 600 }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════
-            WHY CHOOSE US
-        ═══════════════════════════════════════════ */}
-        <section style={{ padding: 'clamp(60px, 8vw, 100px) clamp(16px, 5vw, 80px)', position: 'relative', zIndex: 1 }}>
-          {/* Section glow */}
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '800px',
-            height: '400px',
-            background: 'radial-gradient(ellipse, rgba(124,58,237,0.07) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }} />
-
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#06b6d4', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-              WHY CHOOSE US
-            </span>
-            <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 900, margin: '12px 0 16px', letterSpacing: '-1px' }}>
-              Everything You Need to{' '}
-              <span style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Succeed
-              </span>
-            </h2>
-            <p style={{ fontSize: '16px', color: academy.muted, maxWidth: '500px', margin: '0 auto', lineHeight: 1.7 }}>
-              We built the academy we wish existed when we were starting out.
+            <p className="academy-lead">
+              Learn web, mobile, design, marketing, AI, music business, and automation skills through hands-on projects built around real business needs.
             </p>
+
+            <div className="academy-actions">
+              <a className="btn-main academy-primary" href="#courses">
+                View Courses
+                <ArrowRight size={18} />
+              </a>
+              <a className="academy-secondary" href="#waitlist">
+                Join Waitlist
+              </a>
+            </div>
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '20px',
-            maxWidth: '1100px',
-            margin: '0 auto',
-          }}>
-            {whyCards.map((card, i) => (
-              <div key={i} style={{
-                background: academy.card,
-                border: '1px solid rgba(124,58,237,0.15)',
-                borderRadius: '20px',
-                padding: '28px',
-                backdropFilter: 'blur(12px)',
-                transition: 'all 0.3s',
-                cursor: 'default',
-              }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLDivElement
-                  el.style.background = `rgba(${card.color === '#7c3aed' ? '124,58,237' : card.color === '#06b6d4' ? '6,182,212' : card.color === '#10b981' ? '16,185,129' : card.color === '#a855f7' ? '168,85,247' : card.color === '#f59e0b' ? '245,158,11' : '239,68,68'},0.08)`
-                  el.style.borderColor = `${card.color}44`
-                  el.style.transform = 'translateY(-4px)'
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLDivElement
-                  el.style.background = academy.card
-                  el.style.borderColor = 'rgba(124,58,237,0.15)'
-                  el.style.transform = 'translateY(0)'
-                }}
-              >
-                <div style={{
-                  width: '52px',
-                  height: '52px',
-                  borderRadius: '14px',
-                  background: `${card.color}18`,
-                  border: `1px solid ${card.color}33`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '24px',
-                  marginBottom: '16px',
-                }}>
-                  {card.icon}
-                </div>
-                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: '0 0 10px', color: academy.pageText }}>{card.title}</h3>
-                <p style={{ fontSize: '14px', color: academy.muted, margin: 0, lineHeight: 1.7 }}>{card.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════
-            OUR PROGRAMS
-        ═══════════════════════════════════════════ */}
-        <section id="programs" style={{ padding: 'clamp(60px, 8vw, 100px) clamp(16px, 5vw, 80px)', position: 'relative', zIndex: 1 }}>
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#a855f7', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-              OUR PROGRAMS
-            </span>
-            <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 900, margin: '12px 0 16px', letterSpacing: '-1px' }}>
-              Pick Your{' '}
-              <span style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Program
-              </span>
-            </h2>
-            <p style={{ fontSize: '16px', color: academy.muted, maxWidth: '500px', margin: '0 auto', lineHeight: 1.7 }}>
-              5 career-changing programs. Choose your path and start building your future today.
-            </p>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '24px',
-            maxWidth: '1100px',
-            margin: '0 auto',
-          }}>
-            {programs.map((prog, i) => (
-              <div key={i}
-                onMouseEnter={() => setActiveProgram(i)}
-                onMouseLeave={() => setActiveProgram(null)}
-                style={{
-                  background: activeProgram === i
-                    ? `linear-gradient(135deg, ${prog.color}18, ${academy.cardStrong})`
-                    : academy.card,
-                  border: `1px solid ${activeProgram === i ? prog.color + '55' : 'rgba(124,58,237,0.15)'}`,
-                  borderRadius: '20px',
-                  padding: '28px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  transform: activeProgram === i ? 'translateY(-6px)' : 'translateY(0)',
-                  boxShadow: activeProgram === i ? `0 20px 60px ${prog.color}22` : 'none',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* Tag */}
-                <span style={{
-                  position: 'absolute',
-                  top: '18px',
-                  right: '18px',
-                  fontSize: '10px',
-                  fontWeight: 800,
-                  color: prog.color,
-                  background: `${prog.color}18`,
-                  border: `1px solid ${prog.color}33`,
-                  padding: '3px 10px',
-                  borderRadius: '100px',
-                  letterSpacing: '0.05em',
-                }}>
-                  {prog.tag}
+          <div className="academy-visual" aria-label="PurpleSoftHub Academy learning tracks">
+            <Image
+              src="/images/logo/purplesoft-logo-main.png"
+              alt="PurpleSoftHub"
+              width={210}
+              height={72}
+              priority
+              className="academy-logo"
+            />
+            <div className="academy-map">
+              {["Tech", "Design", "Marketing", "Music", "Youth"].map((item, index) => (
+                <span key={item} style={{ "--i": index } as React.CSSProperties}>
+                  {item}
                 </span>
-
-                {/* Icon */}
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '16px',
-                  background: `${prog.color}20`,
-                  border: `1px solid ${prog.color}44`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '28px',
-                  marginBottom: '18px',
-                  boxShadow: activeProgram === i ? `0 0 20px ${prog.color}44` : 'none',
-                  transition: 'box-shadow 0.3s',
-                }}>
-                  {prog.icon}
-                </div>
-
-                <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 10px', color: academy.pageText, paddingRight: '60px' }}>{prog.title}</h3>
-                <p style={{ fontSize: '14px', color: academy.muted, margin: '0 0 20px', lineHeight: 1.7 }}>{prog.desc}</p>
-
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                  <span style={{ fontSize: '12px', color: academy.mutedStrong, background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
-                    ⏱ {prog.duration}
-                  </span>
-                  <span style={{ fontSize: '12px', color: academy.mutedStrong, background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
-                    📊 {prog.level}
-                  </span>
-                  <span style={{ fontSize: '12px', color: academy.mutedStrong, background: 'rgba(124,58,237,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
-                    👥 {prog.students} enrolled
-                  </span>
-                </div>
-
-                <button style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '10px',
-                  border: `1px solid ${prog.color}44`,
-                  background: activeProgram === i ? `linear-gradient(135deg, ${prog.color}, ${prog.color}cc)` : 'transparent',
-                  color: activeProgram === i ? '#fff' : prog.color,
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  fontFamily: 'inherit',
-                }}>
-                  {activeProgram === i ? 'Enroll Now →' : 'Learn More'}
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════
-            TESTIMONIALS
-        ═══════════════════════════════════════════ */}
-        <section style={{ padding: 'clamp(60px, 8vw, 100px) clamp(16px, 5vw, 80px)', position: 'relative', zIndex: 1 }}>
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '700px',
-            height: '400px',
-            background: 'radial-gradient(ellipse, rgba(6,182,212,0.07) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }} />
-
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#06b6d4', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-              STUDENT STORIES
-            </span>
-            <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 900, margin: '12px 0 16px', letterSpacing: '-1px' }}>
-              Real Results from{' '}
-              <span style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Real Students
-              </span>
-            </h2>
-          </div>
-
-          {/* Big testimonial card */}
-          <div style={{
-            maxWidth: '700px',
-            margin: '0 auto',
-              background: academy.card,
-            border: '1px solid rgba(124,58,237,0.2)',
-            borderRadius: '24px',
-            padding: 'clamp(28px, 4vw, 48px)',
-            backdropFilter: 'blur(16px)',
-            textAlign: 'center',
-            boxShadow: '0 0 60px rgba(124,58,237,0.1)',
-          }}>
-            {/* Stars */}
-            <div style={{ marginBottom: '20px' }}>
-              {'⭐'.repeat(testimonials[testimonialIdx].rating)}
-            </div>
-            <p style={{
-              fontSize: 'clamp(16px, 2.5vw, 20px)',
-              lineHeight: 1.8,
-              color: academy.quote,
-              margin: '0 0 28px',
-              fontStyle: 'italic',
-            }}>
-              "{testimonials[testimonialIdx].text}"
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-              }}>
-                {testimonials[testimonialIdx].avatar}
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '15px', fontWeight: 800, color: academy.pageText, margin: 0 }}>
-                  {testimonials[testimonialIdx].name}
-                </p>
-                <p style={{ fontSize: '13px', color: academy.muted, margin: 0 }}>
-                  {testimonials[testimonialIdx].role}
-                </p>
-              </div>
-            </div>
-            {/* Dots */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '28px' }}>
-              {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setTestimonialIdx(i)}
-                  style={{
-                    width: i === testimonialIdx ? '24px' : '8px',
-                    height: '8px',
-                    borderRadius: '100px',
-                    background: i === testimonialIdx ? '#a855f7' : 'rgba(124,58,237,0.3)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                    padding: 0,
-                  }}
-                />
               ))}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ═══════════════════════════════════════════
-            CTA SECTION
-        ═══════════════════════════════════════════ */}
-        <section style={{
-          padding: 'clamp(60px, 8vw, 100px) clamp(16px, 5vw, 80px)',
-          position: 'relative',
-          zIndex: 1,
-          textAlign: 'center',
-        }}>
-          <div style={{
-            maxWidth: '800px',
-            margin: '0 auto',
-            background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.08))',
-            border: '1px solid rgba(124,58,237,0.25)',
-            borderRadius: '32px',
-            padding: 'clamp(40px, 6vw, 80px)',
-            backdropFilter: 'blur(20px)',
-            boxShadow: '0 0 80px rgba(124,58,237,0.15)',
-            overflow: 'hidden',
-            position: 'relative',
-          }}>
-            {/* Corner glow */}
-            <div style={{
-              position: 'absolute',
-              top: '-80px',
-              right: '-80px',
-              width: '300px',
-              height: '300px',
-              background: 'radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 65%)',
-              pointerEvents: 'none',
-            }} />
-            <div style={{
-              position: 'absolute',
-              bottom: '-60px',
-              left: '-60px',
-              width: '250px',
-              height: '250px',
-              background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 65%)',
-              pointerEvents: 'none',
-            }} />
-
-            <span style={{
-              fontSize: '12px',
-              fontWeight: 700,
-              color: '#a855f7',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              display: 'block',
-              marginBottom: '16px',
-            }}>
-              LIMITED SPOTS AVAILABLE
-            </span>
-
-            <h2 style={{
-              fontSize: 'clamp(28px, 5vw, 52px)',
-              fontWeight: 900,
-              margin: '0 0 16px',
-              letterSpacing: '-1px',
-              lineHeight: 1.1,
-            }}>
-              Ready to Build{' '}
-              <span style={{
-                background: 'linear-gradient(135deg, #a855f7, #06b6d4)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                Your Future?
-              </span>
-            </h2>
-
-            <p style={{
-              fontSize: '17px',
-              color: academy.muted,
-              margin: '0 0 40px',
-              lineHeight: 1.7,
-              maxWidth: '500px',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-            }}>
-              Join thousands of African students building career-changing skills. Enroll today and get early access pricing.
-            </p>
-
-            {enrolled ? (
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                background: 'rgba(16,185,129,0.12)',
-                border: '1px solid rgba(16,185,129,0.3)',
-                borderRadius: '14px',
-                padding: '16px 28px',
-                color: '#10b981',
-                fontWeight: 700,
-                fontSize: '16px',
-              }}>
-                🎉 You're on the list! We'll be in touch soon.
-              </div>
-            ) : (
-              <div style={{
-                display: 'flex',
-                gap: '12px',
-                maxWidth: '480px',
-                margin: '0 auto',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-              }}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleNotify()}
-                  placeholder="your@email.com"
-                  style={{
-                    flex: 1,
-                    minWidth: '220px',
-                    background: academy.inputBg,
-                    border: '1px solid rgba(124,58,237,0.3)',
-                    borderRadius: '12px',
-                    padding: '14px 18px',
-                    fontSize: '15px',
-                    color: '#fff',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                  }}
-                />
-                <button
-                  onClick={handleNotify}
-                  disabled={notifyLoading || !email}
-                  style={{
-                    background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '12px',
-                    padding: '14px 28px',
-                    fontWeight: 800,
-                    fontSize: '15px',
-                    cursor: notifyLoading || !email ? 'not-allowed' : 'pointer',
-                    opacity: !email ? 0.6 : 1,
-                    boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
-                    whiteSpace: 'nowrap',
-                    fontFamily: 'inherit',
-                    transition: 'transform 0.2s',
-                  }}
-                  onMouseEnter={e => { if (email) (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)' }}
-                >
-                  {notifyLoading ? 'Sending...' : '🎓 Get Early Access'}
-                </button>
-              </div>
-            )}
-
-            <p style={{ fontSize: '13px', color: academy.mutedStrong, margin: '16px 0 0' }}>
-              No spam. Unsubscribe anytime.
-            </p>
+      <section className="academy-stats" aria-label="Academy overview">
+        {[
+          ["12", "Course tracks"],
+          ["5", "Learning categories"],
+          ["100%", "Project-based"],
+          ["Africa", "Market focus"],
+        ].map(([value, label]) => (
+          <div key={label}>
+            <strong>{value}</strong>
+            <span>{label}</span>
           </div>
-        </section>
+        ))}
+      </section>
 
-        {/* CSS Animations */}
-        <style>{`
-          @keyframes rotatePlanet {
-            from { box-shadow: 0 0 80px rgba(168,85,247,0.35), 0 0 160px rgba(124,58,237,0.2); }
-            50% { box-shadow: 0 0 100px rgba(168,85,247,0.5), 0 0 200px rgba(124,58,237,0.3); }
-            to { box-shadow: 0 0 80px rgba(168,85,247,0.35), 0 0 160px rgba(124,58,237,0.2); }
-          }
-          @media (max-width: 768px) {
-            [data-planet] { display: none; }
-          }
-        `}</style>
-      </div>
+      <section className="academy-section academy-band" id="courses">
+        <div className="academy-section-head">
+          <span className="academy-label">
+            <Filter size={15} />
+            Course catalog
+          </span>
+          <h2>Choose a track that matches the learner's goal.</h2>
+          <p>
+            Each course is designed to end with a useful project, not just lesson notes.
+          </p>
+        </div>
+
+        <div className="academy-filters" role="tablist" aria-label="Course categories">
+          {academyCategories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              className={activeCategory === category ? "active" : ""}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+              <span>{categoryCounts[category]}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="academy-course-grid">
+          {visibleTracks.map((track) => {
+            const Icon = trackIcons[track.slug as keyof typeof trackIcons] ?? BookOpen;
+
+            return (
+              <article className="academy-course-card" key={track.slug} style={{ "--accent": track.accent } as React.CSSProperties}>
+                <div className="course-topline">
+                  <div className="course-icon">
+                    <Icon size={24} />
+                  </div>
+                  <span>{track.category}</span>
+                </div>
+
+                <h3>{track.title}</h3>
+                <p>{track.outcome}</p>
+
+                <div className="course-meta">
+                  <span>{track.level}</span>
+                  <span>{track.duration}</span>
+                </div>
+
+                <div className="module-list" aria-label={`${track.title} modules`}>
+                  {track.modules.slice(0, 6).map((module) => (
+                    <span key={module}>{module}</span>
+                  ))}
+                </div>
+
+                <div className="course-project">
+                  <CheckCircle2 size={16} />
+                  {track.project}
+                </div>
+
+                <div className="course-actions">
+                  <a
+                    href="#waitlist"
+                    onClick={() => setSelectedTrack(track.slug)}
+                  >
+                    Join waitlist
+                    <ArrowRight size={16} />
+                  </a>
+                  {track.relatedServiceSlug ? (
+                    <Link href={`/services/${track.relatedServiceSlug}`}>Related service</Link>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="academy-section">
+        <div className="academy-section-head">
+          <span className="academy-label">
+            <Wand2 size={15} />
+            Learning paths
+          </span>
+          <h2>Simple routes for different kinds of learners.</h2>
+        </div>
+
+        <div className="learning-path-grid">
+          {learningPaths.map((path) => (
+            <article key={path.title} className="learning-path">
+              <h3>{path.title}</h3>
+              <p>{path.desc}</p>
+              <div>
+                {path.tracks.map((track) => (
+                  <span key={track}>{track}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="academy-section academy-support">
+        <div>
+          <span className="academy-label">
+            <Users size={15} />
+            Scholarships and support
+          </span>
+          <h2>Built to support African youth, not just sell courses.</h2>
+          <p>
+            The Academy can connect directly to PurpleSoftHub's donation mission: scholarships, laptops, internet access, mentorship, and local learning hubs for young people who need a real path into tech and digital creativity.
+          </p>
+        </div>
+        <Link href="/donate" className="academy-donate-link">
+          Support the mission
+          <ArrowRight size={17} />
+        </Link>
+      </section>
+
+      <section className="academy-section academy-faq">
+        <div className="academy-section-head">
+          <span className="academy-label">
+            <BookOpen size={15} />
+            FAQ
+          </span>
+          <h2>What learners and sponsors need to know.</h2>
+        </div>
+
+        <div className="faq-grid">
+          {academyFaqs.map((faq) => (
+            <article key={faq.q}>
+              <h3>{faq.q}</h3>
+              <p>{faq.a}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="academy-section academy-waitlist" id="waitlist">
+        <div className="academy-section-head">
+          <span className="academy-label">Enrollment interest</span>
+          <h2>Join the Academy waitlist.</h2>
+          <p>Pick a course interest and leave an email so PurpleSoftHub can follow up when enrollment opens.</p>
+        </div>
+
+        <div className="waitlist-form">
+          <select value={selectedTrack} onChange={(event) => setSelectedTrack(event.target.value)} aria-label="Select course interest">
+            {academyTracks.map((track) => (
+              <option key={track.slug} value={track.slug}>
+                {track.title}
+              </option>
+            ))}
+          </select>
+          <input
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            onKeyDown={(event) => event.key === "Enter" && handleWaitlist()}
+            type="email"
+            placeholder="your@email.com"
+            aria-label="Email address"
+          />
+          <button type="button" onClick={handleWaitlist} disabled={status === "loading" || !email.includes("@")}>
+            {status === "loading" ? "Saving..." : "Get updates"}
+          </button>
+        </div>
+
+        {status === "success" ? (
+          <p className="waitlist-success">Saved. You are on the list for {selectedTrackTitle}.</p>
+        ) : null}
+      </section>
 
       <Footer />
-    </>
-  )
+
+      <style>{`
+        .academy-page {
+          min-height: 100vh;
+          background: var(--cyber-bg);
+          color: var(--cyber-heading);
+          overflow-x: hidden;
+        }
+
+        .academy-hero {
+          position: relative;
+          padding: 132px 5% 72px;
+          overflow: hidden;
+          background:
+            linear-gradient(135deg, rgba(124,58,237,0.16), transparent 38%),
+            linear-gradient(225deg, rgba(6,182,212,0.12), transparent 36%),
+            var(--cyber-bg);
+        }
+
+        .academy-grid-bg {
+          position: absolute;
+          inset: 0;
+          opacity: 0.42;
+          pointer-events: none;
+        }
+
+        .academy-hero-inner,
+        .academy-section,
+        .academy-stats {
+          width: min(1120px, 100%);
+          margin: 0 auto;
+          position: relative;
+          z-index: 1;
+        }
+
+        .academy-hero-inner {
+          display: grid;
+          grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+          gap: clamp(32px, 5vw, 64px);
+          align-items: center;
+        }
+
+        .academy-kicker,
+        .academy-label {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          width: fit-content;
+          color: var(--accent);
+          background: rgba(124,58,237,0.11);
+          border: 1px solid rgba(168,85,247,0.24);
+          border-radius: 999px;
+          padding: 7px 13px;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
+        .academy-hero h1 {
+          margin: 22px 0 18px;
+          max-width: 780px;
+          font-family: Outfit, Inter, sans-serif;
+          font-size: clamp(42px, 7vw, 82px);
+          line-height: 0.98;
+          font-weight: 900;
+          letter-spacing: 0;
+        }
+
+        .academy-lead,
+        .academy-section-head p,
+        .academy-support p {
+          color: var(--text-muted);
+          font-size: clamp(16px, 2vw, 19px);
+          line-height: 1.75;
+        }
+
+        .academy-lead {
+          max-width: 680px;
+          margin: 0 0 30px;
+        }
+
+        .academy-actions,
+        .course-actions,
+        .academy-donate-link {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .academy-primary {
+          display: inline-flex;
+          align-items: center;
+          gap: 9px;
+          text-decoration: none;
+          border-radius: 8px;
+        }
+
+        .academy-secondary,
+        .course-actions a,
+        .academy-donate-link {
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px 18px;
+          border-radius: 8px;
+          border: 1px solid rgba(6,182,212,0.34);
+          color: #67e8f9;
+          text-decoration: none;
+          font-weight: 800;
+          transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        .academy-secondary:hover,
+        .course-actions a:hover,
+        .academy-donate-link:hover {
+          transform: translateY(-2px);
+          border-color: rgba(6,182,212,0.7);
+          background: rgba(6,182,212,0.08);
+        }
+
+        .academy-visual {
+          border: 1px solid var(--cyber-border);
+          border-radius: 8px;
+          padding: clamp(22px, 4vw, 34px);
+          background: color-mix(in srgb, var(--cyber-card) 86%, transparent);
+          box-shadow: 0 24px 80px rgba(4, 8, 28, 0.18);
+        }
+
+        .academy-logo {
+          width: min(210px, 100%);
+          height: auto;
+          margin-bottom: 26px;
+          object-fit: contain;
+        }
+
+        .academy-map {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .academy-map span {
+          min-height: 78px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid rgba(124,58,237,0.18);
+          border-radius: 8px;
+          color: var(--cyber-heading);
+          font-weight: 900;
+          background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(6,182,212,0.05));
+        }
+
+        .academy-map span:nth-child(5) {
+          grid-column: 1 / -1;
+        }
+
+        .academy-stats {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 1px;
+          margin-top: -28px;
+          border: 1px solid var(--cyber-border);
+          border-radius: 8px;
+          overflow: hidden;
+          background: var(--cyber-border);
+          z-index: 2;
+        }
+
+        .academy-stats div {
+          padding: 22px 18px;
+          background: var(--cyber-card);
+        }
+
+        .academy-stats strong {
+          display: block;
+          color: var(--accent);
+          font-size: clamp(24px, 4vw, 34px);
+          font-weight: 900;
+          margin-bottom: 4px;
+        }
+
+        .academy-stats span {
+          color: var(--text-muted);
+          font-size: 13px;
+          font-weight: 700;
+        }
+
+        .academy-section {
+          padding: clamp(58px, 8vw, 96px) 0;
+        }
+
+        .academy-band {
+          width: 100%;
+          max-width: none;
+          padding-left: max(5%, calc((100% - 1120px) / 2));
+          padding-right: max(5%, calc((100% - 1120px) / 2));
+          background: linear-gradient(180deg, transparent, rgba(124,58,237,0.06), transparent);
+        }
+
+        .academy-section-head {
+          max-width: 740px;
+          margin-bottom: 28px;
+        }
+
+        .academy-section-head h2,
+        .academy-support h2 {
+          font-family: Outfit, Inter, sans-serif;
+          font-size: clamp(28px, 4vw, 48px);
+          line-height: 1.08;
+          font-weight: 900;
+          letter-spacing: 0;
+          margin: 14px 0 10px;
+        }
+
+        .academy-filters {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+          margin-bottom: 26px;
+        }
+
+        .academy-filters button {
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 15px;
+          border-radius: 8px;
+          border: 1px solid var(--cyber-border);
+          background: var(--cyber-card);
+          color: var(--cyber-heading);
+          font: inherit;
+          font-size: 14px;
+          font-weight: 800;
+          cursor: pointer;
+        }
+
+        .academy-filters button.active {
+          border-color: rgba(168,85,247,0.72);
+          background: rgba(124,58,237,0.18);
+          color: #d8b4fe;
+        }
+
+        .academy-filters span {
+          color: var(--text-muted);
+          font-size: 12px;
+        }
+
+        .academy-course-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 18px;
+        }
+
+        .academy-course-card,
+        .learning-path,
+        .faq-grid article {
+          border: 1px solid var(--cyber-border);
+          border-radius: 8px;
+          background: var(--cyber-card);
+        }
+
+        .academy-course-card {
+          display: flex;
+          flex-direction: column;
+          min-height: 430px;
+          padding: 22px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .academy-course-card::before {
+          content: "";
+          position: absolute;
+          inset: 0 0 auto;
+          height: 3px;
+          background: var(--accent);
+        }
+
+        .course-topline {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 18px;
+        }
+
+        .course-icon {
+          width: 48px;
+          height: 48px;
+          display: grid;
+          place-items: center;
+          border-radius: 8px;
+          color: var(--accent);
+          background: color-mix(in srgb, var(--accent) 15%, transparent);
+          border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+        }
+
+        .course-topline span,
+        .course-meta span,
+        .module-list span,
+        .learning-path span {
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .course-topline span {
+          color: var(--accent);
+          background: color-mix(in srgb, var(--accent) 13%, transparent);
+          padding: 6px 10px;
+        }
+
+        .academy-course-card h3,
+        .learning-path h3,
+        .faq-grid h3 {
+          color: var(--cyber-heading);
+          font-size: 20px;
+          line-height: 1.25;
+          font-weight: 900;
+          margin: 0 0 10px;
+        }
+
+        .academy-course-card p,
+        .learning-path p,
+        .faq-grid p,
+        .course-project {
+          color: var(--text-muted);
+          font-size: 14px;
+          line-height: 1.65;
+        }
+
+        .course-meta,
+        .module-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 16px;
+        }
+
+        .course-meta span,
+        .module-list span,
+        .learning-path span {
+          color: var(--cyber-heading);
+          background: rgba(124,58,237,0.1);
+          border: 1px solid rgba(124,58,237,0.16);
+          padding: 6px 10px;
+        }
+
+        .course-project {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          margin-top: 18px;
+        }
+
+        .course-project svg {
+          color: #22c55e;
+          flex: 0 0 auto;
+          margin-top: 3px;
+        }
+
+        .course-actions {
+          margin-top: auto;
+          padding-top: 20px;
+        }
+
+        .course-actions a {
+          min-height: 40px;
+          padding: 9px 12px;
+          font-size: 13px;
+        }
+
+        .learning-path-grid,
+        .faq-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 18px;
+        }
+
+        .learning-path,
+        .faq-grid article {
+          padding: 22px;
+        }
+
+        .learning-path div {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 18px;
+        }
+
+        .academy-support {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 28px;
+          border-top: 1px solid var(--cyber-border);
+          border-bottom: 1px solid var(--cyber-border);
+        }
+
+        .academy-support > div {
+          max-width: 760px;
+        }
+
+        .academy-waitlist {
+          text-align: center;
+        }
+
+        .academy-waitlist .academy-section-head {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .waitlist-form {
+          display: grid;
+          grid-template-columns: minmax(220px, 1.2fr) minmax(220px, 1fr) auto;
+          gap: 10px;
+          max-width: 860px;
+          margin: 0 auto;
+        }
+
+        .waitlist-form select,
+        .waitlist-form input {
+          min-height: 48px;
+          border: 1px solid var(--cyber-border);
+          border-radius: 8px;
+          background: var(--cyber-card);
+          color: var(--cyber-heading);
+          padding: 0 14px;
+          font: inherit;
+          outline: none;
+        }
+
+        .waitlist-form button {
+          min-height: 48px;
+          border: 0;
+          border-radius: 8px;
+          padding: 0 22px;
+          background: linear-gradient(135deg, #7c3aed, #06b6d4);
+          color: white;
+          font: inherit;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .waitlist-form button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .waitlist-success {
+          margin: 14px auto 0;
+          color: #22c55e;
+          font-weight: 800;
+        }
+
+        @media (max-width: 860px) {
+          .academy-hero {
+            padding-top: 110px;
+          }
+
+          .academy-hero-inner,
+          .waitlist-form {
+            grid-template-columns: 1fr;
+          }
+
+          .academy-visual {
+            order: -1;
+          }
+
+          .academy-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-left: 5%;
+            margin-right: 5%;
+            width: auto;
+          }
+
+          .academy-support {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .waitlist-form button {
+            width: 100%;
+          }
+        }
+
+        @media (max-width: 520px) {
+          .academy-map {
+            grid-template-columns: 1fr;
+          }
+
+          .academy-map span:nth-child(5) {
+            grid-column: auto;
+          }
+
+          .academy-stats {
+            grid-template-columns: 1fr;
+          }
+
+          .academy-actions a,
+          .academy-filters button,
+          .academy-secondary {
+            width: 100%;
+          }
+        }
+      `}</style>
+    </main>
+  );
 }
