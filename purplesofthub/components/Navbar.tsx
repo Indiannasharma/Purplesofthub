@@ -75,7 +75,7 @@ const NAV_LINKS = [
   { label: "Services", href: "/services" },
   { label: "Academy", href: "/academy" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Music", href: "/#music" },
+  { label: "Music", href: "/music" },
   { label: "Blog", href: "/blog" },
   { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },

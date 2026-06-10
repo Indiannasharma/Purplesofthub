@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
@@ -37,13 +38,26 @@ const platforms = [
   "Instagram/Facebook",
 ];
 
+const heroStats = [
+  { value: "150+", label: "Stores & DSPs" },
+  { value: "24-72h", label: "Release review" },
+  { value: "4", label: "Promotion channels" },
+];
+
+const heroHighlights = [
+  "DSP distribution",
+  "Spotify campaigns",
+  "Influencer rollouts",
+  "Meta ads setup",
+];
+
 const distributionPlans = [
   {
     name: "Single Release",
     price: "₦15,000",
     usd: "$10",
     cadence: "per release",
-    desc: "Best for artists releasing one single.",
+    desc: "A focused launch package for one official single.",
     features: ["1 single", "150+ platforms", "ISRC support", "Release scheduling", "Royalty support"],
     href: "/dashboard/music?service=distribution&plan=dist-single",
   },
@@ -52,7 +66,7 @@ const distributionPlans = [
     price: "₦35,000",
     usd: "$25",
     cadence: "per release",
-    desc: "For projects with multiple tracks.",
+    desc: "A clean release setup for projects with multiple tracks.",
     features: ["Up to 15 tracks", "UPC + ISRC support", "All major DSPs", "Metadata review", "Playlist pitch support"],
     href: "/dashboard/music?service=distribution&plan=dist-album",
     featured: true,
@@ -62,7 +76,7 @@ const distributionPlans = [
     price: "₦75,000",
     usd: "$53",
     cadence: "per year",
-    desc: "For artists releasing consistently.",
+    desc: "Built for artists with a consistent release calendar.",
     features: ["Unlimited releases", "Priority support", "Release calendar", "Profile setup help", "Promotion boost"],
     href: "/dashboard/music?service=distribution&plan=dist-artist",
   },
@@ -71,7 +85,7 @@ const distributionPlans = [
     price: "₦180,000",
     usd: "$120",
     cadence: "per year",
-    desc: "For managers, labels, and collectives.",
+    desc: "Release coordination for managers, labels, and collectives.",
     features: ["Multiple artists", "Campaign dashboard", "Release coordination", "Priority review", "Dedicated support"],
     href: "/dashboard/music?service=distribution&plan=dist-label",
   },
@@ -83,7 +97,7 @@ const promotionPlans = [
     price: "from ₦75,000",
     usd: "from $50",
     icon: Headphones,
-    desc: "Playlist pitching, listener growth, and Spotify-focused rollout support.",
+    desc: "Spotify-focused listener growth, playlist outreach, and rollout support.",
     tiers: ["Starter ₦75k", "Growth ₦150k", "Pro ₦300k", "Major custom"],
   },
   {
@@ -91,7 +105,7 @@ const promotionPlans = [
     price: "from ₦100,000",
     usd: "from $70",
     icon: Users,
-    desc: "TikTok, Reels, creator posts, story mentions, and short-form content pushes.",
+    desc: "Creator-led TikTok, Reels, story, and short-form content campaigns.",
     tiers: ["Micro push ₦100k", "Viral push ₦250k", "Multi-influencer ₦500k+"],
   },
   {
@@ -99,7 +113,7 @@ const promotionPlans = [
     price: "from ₦120,000",
     usd: "from $80",
     icon: Youtube,
-    desc: "Music video, Shorts, YouTube discovery, audience targeting, and campaign reporting.",
+    desc: "YouTube discovery, Shorts promotion, audience targeting, and reporting.",
     tiers: ["Starter ₦120k", "Growth ₦250k", "Scale ₦500k"],
   },
   {
@@ -107,25 +121,25 @@ const promotionPlans = [
     price: "from ₦75,000",
     usd: "from $50 + ad budget",
     icon: Instagram,
-    desc: "Instagram/Facebook campaign setup, targeting, creative direction, and ad reporting.",
+    desc: "Instagram and Facebook campaign setup, targeting, creative direction, and reporting.",
     tiers: ["Setup ₦75k", "Growth ₦150k", "Scale ₦300k", "Ad budget separate"],
   },
 ];
 
 const growthGoals = [
-  { icon: UploadCloud, title: "Release my song", desc: "Get your music live on global stores and streaming platforms." },
-  { icon: Headphones, title: "Get Spotify listeners", desc: "Run a focused Spotify campaign for new listeners and saves." },
+  { icon: UploadCloud, title: "Release my song", desc: "Prepare your release and send it to global stores and streaming platforms." },
+  { icon: Headphones, title: "Get Spotify listeners", desc: "Run a focused Spotify campaign for discovery, saves, and listener growth." },
   { icon: Youtube, title: "Promote my video", desc: "Push a music video, lyric video, visualizer, or Shorts campaign." },
-  { icon: Share2, title: "Go social", desc: "Build TikTok, Reels, and influencer momentum around the song." },
-  { icon: Target, title: "Run ads", desc: "Use Meta Ads to target real fans by country, genre, and interest." },
-  { icon: Radio, title: "Full rollout", desc: "Plan distribution, content, playlists, ads, and reporting together." },
+  { icon: Share2, title: "Go social", desc: "Build TikTok, Reels, and creator momentum around the record." },
+  { icon: Target, title: "Run ads", desc: "Use Meta Ads to reach fans by country, genre, interest, and behavior." },
+  { icon: Radio, title: "Full rollout", desc: "Plan distribution, content, playlists, ads, and reporting as one campaign." },
 ];
 
 const processSteps = [
   "Choose distribution, promotion, or a full rollout",
   "Submit artist, track, release, and platform details",
-  "PurpleSoftHub prepares the release or campaign",
-  "Track campaign progress from your dashboard",
+  "PurpleSoftHub reviews and prepares the release or campaign",
+  "Track submissions and campaign progress from your dashboard",
 ];
 
 export default function MusicPage() {
@@ -135,48 +149,113 @@ export default function MusicPage() {
 
       <section className="music-hero">
         <div className="music-grid-bg" />
+        <div className="music-noise" />
         <div className="music-hero-inner">
-          <div className="music-hero-copy">
+          <motion.div
+            className="music-hero-copy"
+            initial={{ opacity: 0, y: 26 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
             <span className="music-kicker">
               <Sparkles size={15} />
-              PurpleSoftHub Music
+              Distribution + promotion for serious artists
             </span>
             <h1>
-              Release, Promote & Grow Your Music <span>Worldwide</span>
+              Launch your next record like a real campaign.
             </h1>
             <p>
-              Distribute your music to Spotify, Apple Music, TikTok, YouTube Music, Boomplay, Audiomack and 150+ platforms, then promote it with Spotify, influencer, YouTube, and Meta Ads campaigns.
+              PurpleSoftHub helps artists release music worldwide, prepare clean artist data, and run promotion across Spotify, creators, YouTube, and Meta ads from one dashboard-ready flow.
             </p>
             <div className="music-actions">
               <Link className="music-primary" href="/dashboard/music?service=distribution">
-                Start Distribution
+                Start a Release
                 <ArrowRight size={18} />
               </Link>
               <Link className="music-secondary" href="/dashboard/music?service=promotion">
-                Promote My Song
+                Build a Campaign
               </Link>
             </div>
-          </div>
 
-          <div className="music-visual" aria-label="Music distribution and promotion dashboard preview">
-            <div className="music-orbit" />
-            <div className="music-cover">
-              <Image
-                src="/images/logo/purplesoft-logo-main.png"
-                alt="PurpleSoftHub"
-                width={180}
-                height={62}
-                priority
-              />
-              <Disc3 size={92} />
-              <span>Distribution + Promotion</span>
-            </div>
-            <div className="music-wave" aria-hidden="true">
-              {[18, 34, 52, 26, 72, 44, 58, 30, 64, 40, 24].map((height, index) => (
-                <i key={index} style={{ height }} />
+            <div className="hero-stat-grid" aria-label="PurpleSoftHub Music highlights">
+              {heroStats.map((stat) => (
+                <div key={stat.label}>
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </div>
               ))}
             </div>
-          </div>
+
+            <div className="hero-highlight-row">
+              {heroHighlights.map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="music-visual"
+            aria-label="Music distribution and promotion dashboard preview"
+            initial={{ opacity: 0, scale: 0.96, y: 22 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="launch-console">
+              <div className="console-topline">
+                <span>Release console</span>
+                <strong>Live rollout</strong>
+              </div>
+
+              <div className="console-main">
+                <div className="album-art">
+                  <Image
+                    src="/images/logo/purplesoft-logo-main.png"
+                    alt="PurpleSoftHub"
+                    width={170}
+                    height={58}
+                    priority
+                  />
+                  <Disc3 size={70} />
+                </div>
+
+                <div className="campaign-panel">
+                  <span className="panel-label">Next drop</span>
+                  <h2>Single release + promotion push</h2>
+                  <p>Spotify, Apple Music, TikTok, YouTube Music, Boomplay, Audiomack</p>
+                  <div className="progress-track">
+                    <i />
+                  </div>
+                  <div className="panel-meta">
+                    <span>Metadata checked</span>
+                    <span>Campaign brief ready</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="music-wave" aria-hidden="true">
+                {[22, 40, 58, 34, 76, 46, 68, 38, 62, 48, 28, 54, 36].map((height, index) => (
+                  <i key={index} style={{ height }} />
+                ))}
+              </div>
+
+              <div className="platform-marquee" aria-hidden="true">
+                <div>
+                  {[...platforms, ...platforms].map((platform, index) => (
+                    <span key={`${platform}-${index}`}>{platform}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="floating-signal signal-one">
+              <BadgeCheck size={16} />
+              Artist data received
+            </div>
+            <div className="floating-signal signal-two">
+              <BarChart3 size={16} />
+              Promotion plan active
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -184,12 +263,12 @@ export default function MusicPage() {
         <article>
           <Music2 size={28} />
           <h2>Music Distribution</h2>
-          <p>Release singles, EPs, albums, and yearly artist catalogs to 150+ platforms with metadata, codes, scheduling, and royalty support.</p>
+          <p>Release singles, EPs, albums, and artist catalogs to 150+ platforms with metadata review, release scheduling, ISRC/UPC support, and royalty guidance.</p>
         </article>
         <article>
           <Megaphone size={28} />
           <h2>Music Promotion</h2>
-          <p>Grow attention with Spotify campaigns, influencer pushes, YouTube promotion, Meta Ads, playlist outreach, and reporting.</p>
+          <p>Build demand with Spotify campaigns, creator rollouts, YouTube promotion, Meta Ads, playlist outreach, audience targeting, and clear reporting.</p>
         </article>
       </section>
 
@@ -200,7 +279,7 @@ export default function MusicPage() {
             Global distribution
           </span>
           <h2>Share your music with the world.</h2>
-          <p>Simple release packages inspired by DistroKid and TuneCore, priced for PurpleSoftHub artists.</p>
+          <p>Professional release packages for independent artists, labels, and managers who want global distribution without a confusing process.</p>
         </div>
 
         <div className="platform-strip">
@@ -240,8 +319,8 @@ export default function MusicPage() {
             <BarChart3 size={15} />
             Music promotion
           </span>
-          <h2>Build a real rollout, not just a release.</h2>
-          <p>Promotion should be transparent: campaign fee, platform focus, ad budget where needed, and no fake stream guarantees.</p>
+          <h2>Build a rollout around the record.</h2>
+          <p>Choose the channels that match your goal, budget, and audience. We keep the campaign transparent with clear fees, platform focus, and reporting.</p>
         </div>
 
         <div className="promo-grid">
@@ -274,7 +353,7 @@ export default function MusicPage() {
             <Target size={15} />
             Choose your goal
           </span>
-          <h2>Pick the outcome, then submit the right artist data.</h2>
+          <h2>Pick the outcome. We collect the right artist data.</h2>
         </div>
 
         <div className="goal-grid">
@@ -310,9 +389,9 @@ export default function MusicPage() {
       <section className="music-final-cta">
         <div>
           <span className="music-label">Artist dashboard intake</span>
-          <h2>Ready to release or promote your next song?</h2>
+          <h2>Ready to release or promote your next record?</h2>
           <p>
-            Start in the dashboard so PurpleSoftHub receives the right artist name, track title, release date, platform links, campaign goal, budget, and notes.
+            Start in the dashboard so PurpleSoftHub receives the artist name, track title, release date, platform links, campaign goal, budget range, and notes needed to manage the release correctly.
           </p>
           <div className="music-actions">
             <Link className="music-primary" href="/dashboard/music?service=distribution">
@@ -338,12 +417,11 @@ export default function MusicPage() {
 
         .music-hero {
           position: relative;
-          padding: 132px 5% 78px;
+          padding: 124px 5% 86px;
           overflow: hidden;
           background:
-            radial-gradient(circle at 76% 26%, rgba(6,182,212,0.18), transparent 28%),
-            radial-gradient(circle at 16% 22%, rgba(168,85,247,0.24), transparent 32%),
-            linear-gradient(180deg, rgba(124,58,237,0.08), transparent 72%),
+            linear-gradient(135deg, rgba(124,58,237,0.18), transparent 36%),
+            linear-gradient(180deg, rgba(6,182,212,0.08), transparent 70%),
             var(--cyber-bg);
         }
 
@@ -359,6 +437,17 @@ export default function MusicPage() {
           mask-image: linear-gradient(to bottom, black, transparent 86%);
         }
 
+        .music-noise {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0.18;
+          background-image:
+            linear-gradient(115deg, transparent 0 42%, rgba(255,255,255,0.12) 42% 43%, transparent 43% 100%),
+            linear-gradient(90deg, rgba(168,85,247,0.16), transparent 28%, rgba(6,182,212,0.12) 62%, transparent);
+          mix-blend-mode: screen;
+        }
+
         .music-hero-inner,
         .music-pillars,
         .music-section,
@@ -371,8 +460,8 @@ export default function MusicPage() {
 
         .music-hero-inner {
           display: grid;
-          grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-          gap: clamp(34px, 6vw, 72px);
+          grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+          gap: clamp(34px, 5vw, 66px);
           align-items: center;
         }
 
@@ -404,9 +493,9 @@ export default function MusicPage() {
         }
 
         .music-hero h1 {
-          max-width: 780px;
+          max-width: 680px;
           margin-top: 22px;
-          font-size: clamp(42px, 7vw, 82px);
+          font-size: clamp(42px, 6vw, 76px);
         }
 
         .music-hero h1 span,
@@ -423,8 +512,8 @@ export default function MusicPage() {
         }
 
         .music-hero p {
-          max-width: 680px;
-          margin: 22px 0 30px;
+          max-width: 640px;
+          margin: 22px 0 28px;
         }
 
         .music-actions {
@@ -466,11 +555,12 @@ export default function MusicPage() {
         }
 
         .music-visual {
-          min-height: 520px;
+          min-height: 540px;
           border: 1px solid var(--cyber-border);
           border-radius: 8px;
           background:
-            linear-gradient(145deg, rgba(124,58,237,0.2), transparent 42%),
+            linear-gradient(145deg, rgba(124,58,237,0.26), transparent 40%),
+            linear-gradient(315deg, rgba(6,182,212,0.16), transparent 44%),
             color-mix(in srgb, var(--cyber-card) 88%, transparent);
           position: relative;
           overflow: hidden;
@@ -479,77 +569,212 @@ export default function MusicPage() {
           box-shadow: 0 28px 90px rgba(3, 7, 18, 0.22);
         }
 
-        .music-orbit {
-          position: absolute;
-          width: 340px;
-          height: 340px;
-          border: 1px solid rgba(6,182,212,0.28);
-          border-radius: 50%;
-          animation: music-spin 18s linear infinite;
+        .hero-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 10px;
+          max-width: 620px;
+          margin-top: 30px;
         }
 
-        .music-orbit::before,
-        .music-orbit::after {
-          content: "";
-          position: absolute;
-          width: 13px;
-          height: 13px;
-          border-radius: 50%;
-          background: #06b6d4;
-          box-shadow: 0 0 20px rgba(6,182,212,0.8);
+        .hero-stat-grid div {
+          border: 1px solid rgba(124,58,237,0.22);
+          border-radius: 8px;
+          background: color-mix(in srgb, var(--cyber-card) 80%, transparent);
+          padding: 14px;
         }
 
-        .music-orbit::before {
-          left: 50%;
-          top: -7px;
+        .hero-stat-grid strong {
+          display: block;
+          color: var(--cyber-heading);
+          font-size: clamp(22px, 3vw, 34px);
+          line-height: 1;
+          font-weight: 950;
         }
 
-        .music-orbit::after {
-          right: 22px;
-          bottom: 52px;
-          background: #a855f7;
-          box-shadow: 0 0 20px rgba(168,85,247,0.8);
+        .hero-stat-grid span {
+          display: block;
+          margin-top: 7px;
+          color: var(--text-muted);
+          font-size: 12px;
+          font-weight: 800;
         }
 
-        .music-cover {
-          width: min(310px, 78%);
-          aspect-ratio: 1;
+        .hero-highlight-row {
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 20px;
-          text-align: center;
-          border: 1px solid rgba(168,85,247,0.28);
+          flex-wrap: wrap;
+          gap: 9px;
+          margin-top: 16px;
+        }
+
+        .hero-highlight-row span {
+          border: 1px solid rgba(6,182,212,0.2);
+          border-radius: 999px;
+          background: rgba(6,182,212,0.08);
+          color: var(--cyber-heading);
+          font-size: 12px;
+          font-weight: 850;
+          padding: 7px 11px;
+        }
+
+        .launch-console {
+          width: min(520px, calc(100% - 42px));
+          min-height: 420px;
+          border: 1px solid rgba(168,85,247,0.3);
           border-radius: 8px;
           background:
-            radial-gradient(circle at 50% 22%, rgba(6,182,212,0.18), transparent 40%),
-            rgba(10,5,25,0.72);
+            linear-gradient(180deg, rgba(255,255,255,0.08), transparent),
+            rgba(10,5,25,0.76);
+          position: relative;
+          z-index: 1;
+          overflow: hidden;
+          padding: 18px;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 28px 80px rgba(0,0,0,0.18);
+        }
+
+        .launch-console::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(90deg, transparent, rgba(6,182,212,0.12), transparent),
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+          background-size: 100% 100%, 100% 34px;
+          animation: console-scan 5s linear infinite;
+          pointer-events: none;
+        }
+
+        .console-topline,
+        .console-main,
+        .music-wave,
+        .platform-marquee {
           position: relative;
           z-index: 1;
         }
 
-        .music-cover img {
-          width: 178px;
+        .console-topline {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          align-items: center;
+          margin-bottom: 18px;
+          color: var(--text-muted);
+          font-size: 12px;
+          font-weight: 850;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .console-topline strong {
+          color: #67e8f9;
+        }
+
+        .console-main {
+          display: grid;
+          grid-template-columns: 0.86fr 1.14fr;
+          gap: 16px;
+          align-items: stretch;
+        }
+
+        .album-art,
+        .campaign-panel {
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 8px;
+          background: rgba(255,255,255,0.06);
+        }
+
+        .album-art {
+          min-height: 250px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 24px;
+          text-align: center;
+        }
+
+        .album-art img {
+          width: min(150px, 76%);
           height: auto;
         }
 
-        .music-cover svg {
+        .album-art svg {
           color: #a855f7;
           filter: drop-shadow(0 0 24px rgba(168,85,247,0.48));
           animation: music-disc 8s linear infinite;
         }
 
-        .music-cover span {
-          color: var(--cyber-heading);
-          font-weight: 900;
+        .campaign-panel {
+          padding: 20px;
+        }
+
+        .panel-label {
+          display: inline-flex;
+          color: #67e8f9;
+          font-size: 11px;
+          font-weight: 950;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 14px;
+        }
+
+        .campaign-panel h2 {
+          color: white;
+          margin: 0;
+          font-size: clamp(21px, 2.6vw, 30px);
+          line-height: 1.05;
+          font-weight: 950;
+        }
+
+        .campaign-panel p {
+          margin: 14px 0 20px;
+          color: rgba(255,255,255,0.66);
+          font-size: 13px;
+          line-height: 1.62;
+        }
+
+        .progress-track {
+          height: 9px;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.1);
+          overflow: hidden;
+        }
+
+        .progress-track i {
+          display: block;
+          width: 78%;
+          height: 100%;
+          border-radius: inherit;
+          background: linear-gradient(90deg, #7c3aed, #06b6d4, #22c55e);
+          animation: progress-pulse 2s ease-in-out infinite alternate;
+        }
+
+        .panel-meta {
+          display: grid;
+          gap: 8px;
+          margin-top: 18px;
+        }
+
+        .panel-meta span {
+          color: rgba(255,255,255,0.72);
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .panel-meta span::before {
+          content: "";
+          display: inline-block;
+          width: 7px;
+          height: 7px;
+          margin-right: 8px;
+          border-radius: 999px;
+          background: #22c55e;
+          box-shadow: 0 0 12px rgba(34,197,94,0.7);
         }
 
         .music-wave {
-          position: absolute;
-          left: 24px;
-          right: 24px;
-          bottom: 26px;
+          height: 92px;
+          margin: 26px 0 18px;
           display: flex;
           align-items: end;
           justify-content: center;
@@ -569,6 +794,62 @@ export default function MusicPage() {
 
         .music-wave i:nth-child(3n) {
           animation-delay: 320ms;
+        }
+
+        .platform-marquee {
+          overflow: hidden;
+          border-top: 1px solid rgba(255,255,255,0.1);
+          padding-top: 16px;
+        }
+
+        .platform-marquee div {
+          display: flex;
+          gap: 10px;
+          width: max-content;
+          animation: platform-scroll 22s linear infinite;
+        }
+
+        .platform-marquee span {
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 999px;
+          color: rgba(255,255,255,0.78);
+          background: rgba(255,255,255,0.06);
+          font-size: 11px;
+          font-weight: 900;
+          padding: 7px 10px;
+          white-space: nowrap;
+        }
+
+        .floating-signal {
+          position: absolute;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          border: 1px solid rgba(6,182,212,0.3);
+          border-radius: 8px;
+          background: rgba(10,5,25,0.72);
+          color: rgba(255,255,255,0.86);
+          padding: 10px 12px;
+          font-size: 12px;
+          font-weight: 900;
+          box-shadow: 0 18px 48px rgba(0,0,0,0.18);
+          z-index: 2;
+          animation: signal-float 4s ease-in-out infinite alternate;
+        }
+
+        .floating-signal svg {
+          color: #67e8f9;
+        }
+
+        .signal-one {
+          top: 60px;
+          right: 26px;
+        }
+
+        .signal-two {
+          left: 24px;
+          bottom: 56px;
+          animation-delay: 600ms;
         }
 
         .music-pillars {
@@ -828,10 +1109,6 @@ export default function MusicPage() {
           font-size: clamp(30px, 5vw, 58px);
         }
 
-        @keyframes music-spin {
-          to { transform: rotate(360deg); }
-        }
-
         @keyframes music-disc {
           to { transform: rotate(360deg); }
         }
@@ -841,10 +1118,33 @@ export default function MusicPage() {
           to { transform: scaleY(1.12); opacity: 1; }
         }
 
+        @keyframes console-scan {
+          from { transform: translateX(-52%); }
+          to { transform: translateX(52%); }
+        }
+
+        @keyframes progress-pulse {
+          from { filter: saturate(0.9); transform: scaleX(0.92); transform-origin: left; }
+          to { filter: saturate(1.25); transform: scaleX(1); transform-origin: left; }
+        }
+
+        @keyframes platform-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+
+        @keyframes signal-float {
+          from { transform: translateY(0); }
+          to { transform: translateY(-10px); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          .music-orbit,
-          .music-cover svg,
-          .music-wave i {
+          .album-art svg,
+          .music-wave i,
+          .launch-console::before,
+          .platform-marquee div,
+          .floating-signal,
+          .progress-track i {
             animation: none;
           }
 
@@ -876,9 +1176,41 @@ export default function MusicPage() {
           .music-visual {
             min-height: 420px;
           }
+
+          .launch-console {
+            width: min(560px, 100%);
+          }
+
+          .signal-one,
+          .signal-two {
+            display: none;
+          }
         }
 
         @media (max-width: 560px) {
+          .music-hero {
+            padding-bottom: 64px;
+          }
+
+          .hero-stat-grid,
+          .console-main {
+            grid-template-columns: 1fr;
+          }
+
+          .album-art {
+            min-height: 190px;
+          }
+
+          .launch-console {
+            min-height: auto;
+            padding: 14px;
+          }
+
+          .music-wave {
+            height: 74px;
+            margin: 20px 0 14px;
+          }
+
           .distribution-grid,
           .promo-grid,
           .process-grid {
