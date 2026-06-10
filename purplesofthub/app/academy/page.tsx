@@ -5,27 +5,35 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  Award,
   Blocks,
   BookOpen,
   Bot,
   BriefcaseBusiness,
+  CalendarDays,
   CheckCircle2,
+  ClipboardCheck,
   Code2,
   Film,
   Filter,
+  Globe2,
   GraduationCap,
   LayoutTemplate,
+  Laptop,
   Megaphone,
+  MessageCircle,
   Music2,
   PenTool,
   Phone,
   ShieldCheck,
   Sparkles,
+  Target,
   Users,
   Wand2,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { AnimatedCard, CountUp, FadeInUp, StaggerContainer, StaggerItem } from "@/components/motion";
 import { academyCategories, academyFaqs, academyTracks, learningPaths, type AcademyCategory } from "@/app/academy/_data/tracks";
 
 const trackIcons = {
@@ -50,6 +58,64 @@ const categoryCounts = academyCategories.reduce(
   },
   {} as Record<AcademyCategory, number>
 );
+
+const academyStats = [
+  {
+    value: 12,
+    suffix: "",
+    label: "Course tracks",
+    detail: "Tech, design, business, music, and youth programs",
+    icon: BookOpen,
+    accent: "#a855f7",
+  },
+  {
+    value: 5,
+    suffix: "",
+    label: "Learning categories",
+    detail: "Clear paths for beginners, creators, and founders",
+    icon: GraduationCap,
+    accent: "#06b6d4",
+  },
+  {
+    value: 100,
+    suffix: "%",
+    label: "Project-based",
+    detail: "Every track ends with practical portfolio work",
+    icon: Target,
+    accent: "#22c55e",
+  },
+  {
+    value: null,
+    text: "Africa",
+    label: "Market focus",
+    detail: "Built around local opportunities with global standards",
+    icon: Globe2,
+    accent: "#f472b6",
+  },
+];
+
+const academyBenefits = [
+  {
+    title: "Live cohort structure",
+    desc: "Guided lessons, weekly milestones, and clear deadlines so learners stay accountable.",
+    icon: CalendarDays,
+  },
+  {
+    title: "Portfolio-ready projects",
+    desc: "Every track ends with work students can show to clients, employers, or sponsors.",
+    icon: Laptop,
+  },
+  {
+    title: "Mentorship and review",
+    desc: "Support from practical builders, with feedback on projects, presentation, and next steps.",
+    icon: MessageCircle,
+  },
+  {
+    title: "Career and business focus",
+    desc: "Training connects skills to freelance work, digital jobs, startups, and local business needs.",
+    icon: Award,
+  },
+];
 
 export default function AcademyPage() {
   const [activeCategory, setActiveCategory] = useState<AcademyCategory>("All");
@@ -85,7 +151,7 @@ export default function AcademyPage() {
       <section className="academy-hero">
         <div className="grid-bg academy-grid-bg" />
         <div className="academy-hero-inner">
-          <div className="academy-hero-copy">
+          <FadeInUp className="academy-hero-copy">
             <span className="academy-kicker">
               <Sparkles size={15} />
               Practical digital skills for African learners
@@ -108,9 +174,9 @@ export default function AcademyPage() {
                 Join Waitlist
               </a>
             </div>
-          </div>
+          </FadeInUp>
 
-          <div className="academy-visual" aria-label="PurpleSoftHub Academy learning tracks">
+          <FadeInUp className="academy-visual" delay={0.12}>
             <Image
               src="/images/logo/purplesoft-logo-main.png"
               alt="PurpleSoftHub"
@@ -126,26 +192,62 @@ export default function AcademyPage() {
                 </span>
               ))}
             </div>
-          </div>
+          </FadeInUp>
         </div>
       </section>
 
-      <section className="academy-stats" aria-label="Academy overview">
-        {[
-          ["12", "Course tracks"],
-          ["5", "Learning categories"],
-          ["100%", "Project-based"],
-          ["Africa", "Market focus"],
-        ].map(([value, label]) => (
-          <div key={label}>
-            <strong>{value}</strong>
-            <span>{label}</span>
-          </div>
+      <StaggerContainer className="academy-stats" aria-label="Academy overview">
+        {academyStats.map((stat) => (
+          <StaggerItem className="academy-stat-shell" key={stat.label}>
+            <div className="academy-stat" style={{ "--stat-accent": stat.accent } as React.CSSProperties}>
+              <div className="academy-stat-top">
+                <span className="academy-stat-icon">
+                  <stat.icon size={19} />
+                </span>
+                <span className="academy-stat-label">{stat.label}</span>
+              </div>
+              <strong>
+                {typeof stat.value === "number" ? (
+                  <CountUp end={stat.value} suffix={stat.suffix} duration={1.35} />
+                ) : (
+                  <span className="academy-word-stat">{stat.text}</span>
+                )}
+              </strong>
+              <p>{stat.detail}</p>
+            </div>
+          </StaggerItem>
         ))}
+      </StaggerContainer>
+
+      <section className="academy-section academy-benefits" aria-labelledby="academy-benefits-title">
+        <FadeInUp className="academy-section-head">
+          <span className="academy-label">
+            <ClipboardCheck size={15} />
+            Academy experience
+          </span>
+          <h2 id="academy-benefits-title">More than video lessons and certificates.</h2>
+          <p>
+            The Academy should feel like a guided launchpad: structured learning, real projects, review, and a clear path from beginner skill to useful digital work.
+          </p>
+        </FadeInUp>
+
+        <StaggerContainer className="academy-benefit-grid">
+          {academyBenefits.map((benefit) => (
+            <StaggerItem key={benefit.title}>
+              <AnimatedCard className="academy-benefit-card">
+                <span>
+                  <benefit.icon size={22} />
+                </span>
+                <h3>{benefit.title}</h3>
+                <p>{benefit.desc}</p>
+              </AnimatedCard>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
       </section>
 
       <section className="academy-section academy-band" id="courses">
-        <div className="academy-section-head">
+        <FadeInUp className="academy-section-head">
           <span className="academy-label">
             <Filter size={15} />
             Course catalog
@@ -154,7 +256,7 @@ export default function AcademyPage() {
           <p>
             Each course is designed to end with a useful project, not just lesson notes.
           </p>
-        </div>
+        </FadeInUp>
 
         <div className="academy-filters" role="tablist" aria-label="Course categories">
           {academyCategories.map((category) => (
@@ -170,81 +272,85 @@ export default function AcademyPage() {
           ))}
         </div>
 
-        <div className="academy-course-grid">
+        <StaggerContainer className="academy-course-grid">
           {visibleTracks.map((track) => {
             const Icon = trackIcons[track.slug as keyof typeof trackIcons] ?? BookOpen;
 
             return (
-              <article className="academy-course-card" key={track.slug} style={{ "--accent": track.accent } as React.CSSProperties}>
-                <div className="course-topline">
-                  <div className="course-icon">
-                    <Icon size={24} />
+              <StaggerItem className="academy-course-motion" key={track.slug}>
+                <AnimatedCard className="academy-course-card" style={{ "--accent": track.accent } as React.CSSProperties}>
+                  <div className="course-topline">
+                    <div className="course-icon">
+                      <Icon size={24} />
+                    </div>
+                    <span>{track.category}</span>
                   </div>
-                  <span>{track.category}</span>
-                </div>
 
-                <h3>{track.title}</h3>
-                <p>{track.outcome}</p>
+                  <h3>{track.title}</h3>
+                  <p>{track.outcome}</p>
 
-                <div className="course-meta">
-                  <span>{track.level}</span>
-                  <span>{track.duration}</span>
-                </div>
+                  <div className="course-meta">
+                    <span>{track.level}</span>
+                    <span>{track.duration}</span>
+                  </div>
 
-                <div className="module-list" aria-label={`${track.title} modules`}>
-                  {track.modules.slice(0, 6).map((module) => (
-                    <span key={module}>{module}</span>
-                  ))}
-                </div>
+                  <div className="module-list" aria-label={`${track.title} modules`}>
+                    {track.modules.slice(0, 6).map((module) => (
+                      <span key={module}>{module}</span>
+                    ))}
+                  </div>
 
-                <div className="course-project">
-                  <CheckCircle2 size={16} />
-                  {track.project}
-                </div>
+                  <div className="course-project">
+                    <CheckCircle2 size={16} />
+                    {track.project}
+                  </div>
 
-                <div className="course-actions">
-                  <a
-                    href="#waitlist"
-                    onClick={() => setSelectedTrack(track.slug)}
-                  >
-                    Join waitlist
-                    <ArrowRight size={16} />
-                  </a>
-                  {track.relatedServiceSlug ? (
-                    <Link href={`/services/${track.relatedServiceSlug}`}>Related service</Link>
-                  ) : null}
-                </div>
-              </article>
+                  <div className="course-actions">
+                    <a
+                      href="#waitlist"
+                      onClick={() => setSelectedTrack(track.slug)}
+                    >
+                      Join waitlist
+                      <ArrowRight size={16} />
+                    </a>
+                    {track.relatedServiceSlug ? (
+                      <Link href={`/services/${track.relatedServiceSlug}`}>Related service</Link>
+                    ) : null}
+                  </div>
+                </AnimatedCard>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
       </section>
 
       <section className="academy-section">
-        <div className="academy-section-head">
+        <FadeInUp className="academy-section-head">
           <span className="academy-label">
             <Wand2 size={15} />
             Learning paths
           </span>
           <h2>Simple routes for different kinds of learners.</h2>
-        </div>
+        </FadeInUp>
 
-        <div className="learning-path-grid">
+        <StaggerContainer className="learning-path-grid">
           {learningPaths.map((path) => (
-            <article key={path.title} className="learning-path">
-              <h3>{path.title}</h3>
-              <p>{path.desc}</p>
-              <div>
-                {path.tracks.map((track) => (
-                  <span key={track}>{track}</span>
-                ))}
-              </div>
-            </article>
+            <StaggerItem key={path.title}>
+              <AnimatedCard className="learning-path">
+                <h3>{path.title}</h3>
+                <p>{path.desc}</p>
+                <div>
+                  {path.tracks.map((track) => (
+                    <span key={track}>{track}</span>
+                  ))}
+                </div>
+              </AnimatedCard>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </section>
 
-      <section className="academy-section academy-support">
+      <FadeInUp className="academy-section academy-support">
         <div>
           <span className="academy-label">
             <Users size={15} />
@@ -259,32 +365,49 @@ export default function AcademyPage() {
           Support the mission
           <ArrowRight size={17} />
         </Link>
-      </section>
+      </FadeInUp>
 
       <section className="academy-section academy-faq">
-        <div className="academy-section-head">
+        <FadeInUp className="academy-section-head">
           <span className="academy-label">
             <BookOpen size={15} />
             FAQ
           </span>
           <h2>What learners and sponsors need to know.</h2>
-        </div>
+        </FadeInUp>
 
-        <div className="faq-grid">
+        <StaggerContainer className="faq-grid">
           {academyFaqs.map((faq) => (
-            <article key={faq.q}>
-              <h3>{faq.q}</h3>
-              <p>{faq.a}</p>
-            </article>
+            <StaggerItem key={faq.q}>
+              <AnimatedCard className="faq-card">
+                <h3>{faq.q}</h3>
+                <p>{faq.a}</p>
+              </AnimatedCard>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </section>
 
-      <section className="academy-section academy-waitlist" id="waitlist">
+      <FadeInUp className="academy-section academy-waitlist" id="waitlist">
         <div className="academy-section-head">
           <span className="academy-label">Enrollment interest</span>
           <h2>Join the Academy waitlist.</h2>
-          <p>Pick a course interest and leave an email so PurpleSoftHub can follow up when enrollment opens.</p>
+          <p>Pick a course interest and leave an email so PurpleSoftHub can follow up when enrollment opens. Sponsors and partners can use the links below to support a learner or start a conversation.</p>
+        </div>
+
+        <div className="academy-enrollment-options" aria-label="Enrollment options">
+          <a href="#waitlist">
+            <strong>Learners</strong>
+            <span>Get cohort updates and course launch notices.</span>
+          </a>
+          <Link href="/donate">
+            <strong>Sponsors</strong>
+            <span>Support scholarships, devices, internet, and hubs.</span>
+          </Link>
+          <Link href="/contact">
+            <strong>Partners</strong>
+            <span>Talk to PurpleSoftHub about training or collaboration.</span>
+          </Link>
         </div>
 
         <div className="waitlist-form">
@@ -304,14 +427,14 @@ export default function AcademyPage() {
             aria-label="Email address"
           />
           <button type="button" onClick={handleWaitlist} disabled={status === "loading" || !email.includes("@")}>
-            {status === "loading" ? "Saving..." : "Get updates"}
+            {status === "loading" ? "Saving..." : "Join waitlist"}
           </button>
         </div>
 
         {status === "success" ? (
           <p className="waitlist-success">Saved. You are on the list for {selectedTrackTitle}.</p>
         ) : null}
-      </section>
+      </FadeInUp>
 
       <Footer />
 
@@ -338,6 +461,7 @@ export default function AcademyPage() {
           inset: 0;
           opacity: 0.42;
           pointer-events: none;
+          animation: academy-grid-drift 16s ease-in-out infinite alternate;
         }
 
         .academy-hero-inner,
@@ -444,6 +568,20 @@ export default function AcademyPage() {
           padding: clamp(22px, 4vw, 34px);
           background: color-mix(in srgb, var(--cyber-card) 86%, transparent);
           box-shadow: 0 24px 80px rgba(4, 8, 28, 0.18);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .academy-visual::before {
+          content: "";
+          position: absolute;
+          width: 220px;
+          height: 220px;
+          right: -84px;
+          top: -86px;
+          background: radial-gradient(circle, rgba(6,182,212,0.24), transparent 68%);
+          animation: academy-orbit-glow 7s ease-in-out infinite;
+          pointer-events: none;
         }
 
         .academy-logo {
@@ -469,6 +607,8 @@ export default function AcademyPage() {
           color: var(--cyber-heading);
           font-weight: 900;
           background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(6,182,212,0.05));
+          animation: academy-card-float 4.6s ease-in-out infinite;
+          animation-delay: calc(var(--i) * 120ms);
         }
 
         .academy-map span:nth-child(5) {
@@ -478,32 +618,115 @@ export default function AcademyPage() {
         .academy-stats {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 1px;
-          margin-top: -28px;
-          border: 1px solid var(--cyber-border);
-          border-radius: 8px;
-          overflow: hidden;
-          background: var(--cyber-border);
+          gap: 14px;
+          margin-top: -34px;
           z-index: 2;
         }
 
-        .academy-stats div {
-          padding: 22px 18px;
-          background: var(--cyber-card);
+        .academy-stat-shell {
+          min-width: 0;
+        }
+
+        .academy-stat {
+          min-height: 178px;
+          height: 100%;
+          position: relative;
+          overflow: hidden;
+          padding: 20px;
+          border: 1px solid color-mix(in srgb, var(--stat-accent) 34%, var(--cyber-border));
+          border-radius: 8px;
+          background:
+            linear-gradient(145deg, color-mix(in srgb, var(--stat-accent) 15%, transparent), transparent 44%),
+            linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015)),
+            color-mix(in srgb, var(--cyber-card) 92%, #05020d);
+          box-shadow:
+            0 18px 44px rgba(4, 8, 28, 0.22),
+            inset 0 1px 0 rgba(255,255,255,0.07);
+          transform: translateZ(0);
+        }
+
+        .academy-stat::before {
+          content: "";
+          position: absolute;
+          inset: 0 0 auto;
+          height: 3px;
+          background: linear-gradient(90deg, var(--stat-accent), transparent);
+          opacity: 0.95;
+        }
+
+        .academy-stat::after {
+          content: "";
+          position: absolute;
+          width: 96px;
+          height: 96px;
+          right: -34px;
+          top: -34px;
+          border-radius: 50%;
+          background: radial-gradient(circle, color-mix(in srgb, var(--stat-accent) 34%, transparent), transparent 68%);
+          opacity: 0.85;
+          animation: academy-stat-pulse 4.8s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        .academy-stat-top {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 18px;
+        }
+
+        .academy-stat-icon {
+          width: 42px;
+          height: 42px;
+          display: grid;
+          place-items: center;
+          border-radius: 8px;
+          color: var(--stat-accent);
+          border: 1px solid color-mix(in srgb, var(--stat-accent) 34%, transparent);
+          background: color-mix(in srgb, var(--stat-accent) 13%, transparent);
+          box-shadow: 0 0 28px color-mix(in srgb, var(--stat-accent) 18%, transparent);
+        }
+
+        .academy-stat-label {
+          color: color-mix(in srgb, var(--cyber-heading) 76%, var(--stat-accent));
+          font-size: 11px;
+          line-height: 1.35;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-align: right;
+          text-transform: uppercase;
         }
 
         .academy-stats strong {
+          position: relative;
+          z-index: 1;
           display: block;
-          color: var(--accent);
-          font-size: clamp(24px, 4vw, 34px);
+          color: var(--cyber-heading);
+          font-family: Outfit, Inter, sans-serif;
+          font-size: clamp(34px, 5vw, 52px);
+          line-height: 0.9;
           font-weight: 900;
-          margin-bottom: 4px;
+          margin-bottom: 14px;
+          text-shadow: 0 0 24px color-mix(in srgb, var(--stat-accent) 28%, transparent);
         }
 
-        .academy-stats span {
+        .academy-word-stat {
+          display: inline-block;
+          animation: academy-word-pop 900ms cubic-bezier(.21,.47,.32,.98) both;
+        }
+
+        .academy-stat p {
+          position: relative;
+          z-index: 1;
+          max-width: 230px;
+          margin: 0;
           color: var(--text-muted);
           font-size: 13px;
-          font-weight: 700;
+          line-height: 1.55;
+          font-weight: 750;
         }
 
         .academy-section {
@@ -531,6 +754,66 @@ export default function AcademyPage() {
           font-weight: 900;
           letter-spacing: 0;
           margin: 14px 0 10px;
+        }
+
+        .academy-benefits {
+          padding-bottom: clamp(42px, 6vw, 72px);
+        }
+
+        .academy-benefit-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .academy-benefit-card {
+          height: 100%;
+          min-height: 220px;
+          padding: 22px;
+          border: 1px solid var(--cyber-border);
+          border-radius: 8px;
+          background:
+            linear-gradient(145deg, rgba(124,58,237,0.11), transparent 48%),
+            color-mix(in srgb, var(--cyber-card) 92%, transparent);
+          box-shadow: 0 18px 50px rgba(4, 8, 28, 0.12);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .academy-benefit-card::after {
+          content: "";
+          position: absolute;
+          inset: auto 18px 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(6,182,212,0.64), transparent);
+          opacity: 0.8;
+        }
+
+        .academy-benefit-card > span {
+          width: 48px;
+          height: 48px;
+          display: grid;
+          place-items: center;
+          border-radius: 8px;
+          color: #67e8f9;
+          border: 1px solid rgba(6,182,212,0.3);
+          background: rgba(6,182,212,0.1);
+          margin-bottom: 18px;
+        }
+
+        .academy-benefit-card h3 {
+          margin: 0 0 10px;
+          color: var(--cyber-heading);
+          font-size: 18px;
+          line-height: 1.25;
+          font-weight: 900;
+        }
+
+        .academy-benefit-card p {
+          margin: 0;
+          color: var(--text-muted);
+          font-size: 14px;
+          line-height: 1.65;
         }
 
         .academy-filters {
@@ -576,7 +859,7 @@ export default function AcademyPage() {
 
         .academy-course-card,
         .learning-path,
-        .faq-grid article {
+        .faq-card {
           border: 1px solid var(--cyber-border);
           border-radius: 8px;
           background: var(--cyber-card);
@@ -585,10 +868,21 @@ export default function AcademyPage() {
         .academy-course-card {
           display: flex;
           flex-direction: column;
+          height: 100%;
           min-height: 430px;
           padding: 22px;
           position: relative;
           overflow: hidden;
+          transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .academy-course-motion {
+          height: 100%;
+        }
+
+        .academy-course-card:hover {
+          border-color: color-mix(in srgb, var(--accent) 44%, var(--cyber-border));
+          box-shadow: 0 18px 46px rgba(124,58,237,0.13);
         }
 
         .academy-course-card::before {
@@ -701,8 +995,9 @@ export default function AcademyPage() {
         }
 
         .learning-path,
-        .faq-grid article {
+        .faq-card {
           padding: 22px;
+          height: 100%;
         }
 
         .learning-path div {
@@ -732,6 +1027,52 @@ export default function AcademyPage() {
         .academy-waitlist .academy-section-head {
           margin-left: auto;
           margin-right: auto;
+        }
+
+        .academy-enrollment-options {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          max-width: 900px;
+          margin: 0 auto 18px;
+        }
+
+        .academy-enrollment-options a {
+          min-height: 112px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 8px;
+          padding: 18px;
+          border: 1px solid var(--cyber-border);
+          border-radius: 8px;
+          background:
+            linear-gradient(135deg, rgba(124,58,237,0.12), rgba(6,182,212,0.05)),
+            var(--cyber-card);
+          color: var(--cyber-heading);
+          text-align: left;
+          text-decoration: none;
+          transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        .academy-enrollment-options a:hover {
+          transform: translateY(-2px);
+          border-color: rgba(168,85,247,0.5);
+          background:
+            linear-gradient(135deg, rgba(124,58,237,0.18), rgba(6,182,212,0.08)),
+            var(--cyber-card);
+        }
+
+        .academy-enrollment-options strong {
+          font-size: 15px;
+          font-weight: 900;
+        }
+
+        .academy-enrollment-options span {
+          color: var(--text-muted);
+          font-size: 13px;
+          line-height: 1.5;
         }
 
         .waitlist-form {
@@ -777,6 +1118,80 @@ export default function AcademyPage() {
           font-weight: 800;
         }
 
+        @keyframes academy-grid-drift {
+          from {
+            transform: translate3d(0, 0, 0);
+          }
+          to {
+            transform: translate3d(18px, -12px, 0);
+          }
+        }
+
+        @keyframes academy-orbit-glow {
+          0%, 100% {
+            transform: translate3d(0, 0, 0) scale(1);
+            opacity: 0.64;
+          }
+          50% {
+            transform: translate3d(-24px, 26px, 0) scale(1.12);
+            opacity: 0.92;
+          }
+        }
+
+        @keyframes academy-card-float {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+        }
+
+        @keyframes academy-word-pop {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.96);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes academy-stat-pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.68;
+          }
+          50% {
+            transform: scale(1.16);
+            opacity: 1;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .academy-grid-bg,
+          .academy-visual::before,
+          .academy-map span,
+          .academy-word-stat,
+          .academy-stat::after {
+            animation: none;
+          }
+
+          .academy-secondary,
+          .course-actions a,
+          .academy-donate-link,
+          .academy-course-card {
+            transition: none;
+          }
+        }
+
+        @media (max-width: 1080px) {
+          .academy-benefit-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
         @media (max-width: 860px) {
           .academy-hero {
             padding-top: 110px;
@@ -796,6 +1211,11 @@ export default function AcademyPage() {
             margin-left: 5%;
             margin-right: 5%;
             width: auto;
+          }
+
+          .academy-benefit-grid,
+          .academy-enrollment-options {
+            grid-template-columns: 1fr;
           }
 
           .academy-support {

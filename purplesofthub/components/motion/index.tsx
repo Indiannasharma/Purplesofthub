@@ -9,16 +9,23 @@ import {
   fadeIn
 } from '@/lib/animations'
 
+type MotionDivExtraProps = {
+  id?: string
+  role?: string
+  'aria-label'?: string
+}
+
 // Scroll-triggered fade in from bottom
 export function FadeInUp({
   children,
   delay = 0,
-  className = ''
+  className = '',
+  ...props
 }: {
   children: React.ReactNode
   delay?: number
   className?: string
-}) {
+} & MotionDivExtraProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, {
     once: true,
@@ -33,6 +40,7 @@ export function FadeInUp({
       variants={fadeInUp}
       transition={{ delay }}
       className={className}
+      {...props}
     >
       {children}
     </motion.div>
@@ -43,12 +51,13 @@ export function FadeInUp({
 export function StaggerContainer({
   children,
   className = '',
-  style = {}
+  style = {},
+  ...props
 }: {
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
-}) {
+} & MotionDivExtraProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, {
     once: true,
@@ -63,6 +72,7 @@ export function StaggerContainer({
       variants={staggerContainer}
       className={className}
       style={style}
+      {...props}
     >
       {children}
     </motion.div>
