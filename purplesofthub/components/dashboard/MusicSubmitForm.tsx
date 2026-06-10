@@ -25,8 +25,13 @@ export default function MusicSubmitForm({
     artistName: '',
     genre: '',
     releaseDate: '',
+    trackUrl: '',
     spotifyUrl: '',
     appleUrl: '',
+    contactEmail: '',
+    contactPhone: '',
+    campaignGoal: planType === 'distribution' ? 'Music distribution' : 'Music promotion',
+    budgetRange: '',
     description: '',
     platforms: [] as string[],
   })
@@ -41,7 +46,14 @@ export default function MusicSubmitForm({
     'Deezer',
     'TikTok',
     'Instagram',
+    'Meta Ads',
+    'Influencers',
+    'All major platforms',
   ]
+
+  const campaignGoals = planType === 'distribution'
+    ? ['Music distribution', 'Single release', 'EP/Album release', 'Yearly artist plan', 'Label distribution']
+    : ['Spotify promotion', 'Influencer promotion', 'YouTube promotion', 'Meta ads promotion', 'Full rollout campaign']
 
   const handlePlatformToggle = (platform: string) => {
     setForm(prev => ({
@@ -71,6 +83,12 @@ export default function MusicSubmitForm({
         return
       }
 
+      if (!form.campaignGoal.trim()) {
+        setError('Select a campaign goal')
+        setLoading(false)
+        return
+      }
+
       if (form.platforms.length === 0) {
         setError('Select at least one platform')
         setLoading(false)
@@ -93,10 +111,16 @@ export default function MusicSubmitForm({
           client_id: user.id,
           track_title: form.trackTitle.trim(),
           artist_name: form.artistName.trim(),
+          track_url: form.trackUrl.trim() || form.spotifyUrl.trim() || form.appleUrl.trim() || 'Pending upload',
+          campaign_type: form.campaignGoal.trim(),
           genre: form.genre.trim() || null,
           release_date: form.releaseDate || null,
           spotify_url: form.spotifyUrl.trim() || null,
           apple_url: form.appleUrl.trim() || null,
+          contact_email: form.contactEmail.trim() || user.email || null,
+          contact_phone: form.contactPhone.trim() || null,
+          campaign_goal: form.campaignGoal.trim(),
+          budget_range: form.budgetRange.trim() || null,
           description: form.description.trim() || null,
           platforms: form.platforms,
           plan_name: planName,
@@ -210,8 +234,40 @@ export default function MusicSubmitForm({
             />
           </div>
 
+          {/* Campaign Goal */}
+          <div>
+            <label className="block text-sm font-medium text-black dark:text-white mb-2">
+              Campaign Goal *
+            </label>
+            <select
+              value={form.campaignGoal}
+              onChange={e => setForm(prev => ({ ...prev, campaignGoal: e.target.value }))}
+              className="w-full rounded-lg border border-stroke bg-white px-4 py-2 text-black outline-none transition dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+              disabled={loading}
+            >
+              {campaignGoals.map(goal => (
+                <option key={goal} value={goal}>{goal}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Track URL */}
+          <div>
+            <label className="block text-sm font-medium text-black dark:text-white mb-2">
+              Song / Upload / Smart Link
+            </label>
+            <input
+              type="url"
+              value={form.trackUrl}
+              onChange={e => setForm(prev => ({ ...prev, trackUrl: e.target.value }))}
+              placeholder="https://..."
+              className="w-full rounded-lg border border-stroke bg-white px-4 py-2 text-black outline-none transition dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+              disabled={loading}
+            />
+          </div>
+
           {/* Streaming URLs */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-black dark:text-white mb-2">
                 Spotify URL
@@ -238,6 +294,51 @@ export default function MusicSubmitForm({
                 disabled={loading}
               />
             </div>
+          </div>
+
+          {/* Contact */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-black dark:text-white mb-2">
+                Contact Email
+              </label>
+              <input
+                type="email"
+                value={form.contactEmail}
+                onChange={e => setForm(prev => ({ ...prev, contactEmail: e.target.value }))}
+                placeholder="artist@email.com"
+                className="w-full rounded-lg border border-stroke bg-white px-4 py-2 text-black outline-none transition dark:border-strokedark dark:bg-boxdark-2 dark:text-white text-sm"
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-black dark:text-white mb-2">
+                WhatsApp / Phone
+              </label>
+              <input
+                type="tel"
+                value={form.contactPhone}
+                onChange={e => setForm(prev => ({ ...prev, contactPhone: e.target.value }))}
+                placeholder="+234..."
+                className="w-full rounded-lg border border-stroke bg-white px-4 py-2 text-black outline-none transition dark:border-strokedark dark:bg-boxdark-2 dark:text-white text-sm"
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          {/* Budget */}
+          <div>
+            <label className="block text-sm font-medium text-black dark:text-white mb-2">
+              Budget / Campaign Range
+            </label>
+            <input
+              type="text"
+              value={form.budgetRange}
+              onChange={e => setForm(prev => ({ ...prev, budgetRange: e.target.value }))}
+              placeholder="e.g., ₦150,000 promotion budget or distribution only"
+              className="w-full rounded-lg border border-stroke bg-white px-4 py-2 text-black outline-none transition dark:border-strokedark dark:bg-boxdark-2 dark:text-white"
+              disabled={loading}
+            />
           </div>
 
           {/* Platforms */}

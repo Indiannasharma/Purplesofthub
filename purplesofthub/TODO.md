@@ -20,3 +20,11 @@
 - [x] Replace stale checkout plan validation with official `service-plans.ts`
 - [x] Align client dashboard services and plan modal with official service plans
 - [x] Run type checks and verify working tree
+
+## 2026-06-10 Task: Music page and artist intake
+- [x] Inspect existing Music page, service plans, dashboard, and music campaign schema
+- [x] Rebuild public Music page around distribution and promotion offers
+- [x] Improve client dashboard music intake for artist/release/campaign data
+- [x] Build admin music campaign listing
+- [x] Add database migration for complete music campaign fields
+- [x] Run build and verify `/music`, `/dashboard/music`, and `/admin/music`
