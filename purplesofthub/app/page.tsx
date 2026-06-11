@@ -54,7 +54,7 @@ const SERVICES = [
   { icon: "📣", title: "Digital Marketing", desc: "Meta, Google, TikTok & Snapchat ads — plus SEO strategies that drive real growth.", tags: ["Meta Ads", "Google Ads", "SEO"], href: "/services/digital-marketing" },
   { icon: "🎨", title: "UI/UX Design", desc: "Pixel-perfect product design grounded in user psychology and conversion principles.", tags: ["Figma", "Prototyping", "Research"], href: "/services/ui-ux-design" },
   { icon: "⚙️", title: "SaaS Development", desc: "AI tools, automation dashboards and creator platforms built from MVP to scale.", tags: ["SaaS", "AI Tools", "Automation"], href: "/services/saas-development" },
-  { icon: "🎵", title: "Music Promotion", desc: "Get your music on 150+ platforms and grow your fanbase with targeted promo.", tags: ["Spotify", "Apple Music", "Promotion"], href: "/services/music-distribution" },
+  { icon: "🎵", title: "Music Promotion", desc: "Get your music on 150+ platforms and grow your fanbase with targeted promo.", tags: ["Spotify", "Apple Music", "Promotion"], href: "/music" },
 ];
 
 const SUCCESS = [
@@ -142,7 +142,7 @@ export default async function Home() {
           {[
             { icon: "💻", title: "Digital Solutions", sub: "Web, Mobile & Marketing", cta: "View Services", href: "/services", color: "#4f46e5" },
             { icon: "🎓", title: "Purplesofthub Academy", sub: "Learn In-Demand Tech Skills", cta: "View Courses", href: "/academy", color: "#7c3aed" },
-            { icon: "🎵", title: "Music Promotion", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "/services/music-promotion", color: "#86198f" },
+            { icon: "🎵", title: "Music Promotion", sub: "Promote & Distribute Your Music", cta: "Get Started", href: "/music", color: "#86198f" },
           ].map((c) => (
             <StaggerItem key={c.title}>
               <div className="cyber-card" style={{ padding: "28px 28px 24px", position: "relative", overflow: "hidden" }}>
@@ -340,7 +340,7 @@ export default async function Home() {
                 <div key={t} style={{ color: "var(--cyber-body)", fontSize: 15 }}>{t}</div>
               ))}
             </div>
-            <Link href="/contact">
+            <Link href="/music">
               <button className="cyber-btn-primary" style={{ padding: "13px 30px", fontSize: 15, background: "linear-gradient(135deg,#86198f,#a855f7)" }}>
                 🎵 Promote My Music
               </button>
