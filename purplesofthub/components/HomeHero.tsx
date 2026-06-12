@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Reveal from "@/components/Reveal";
 import HeroCosmosScene from "@/components/HeroCosmosScene";
 
 export default function HomeHero() {
@@ -10,50 +9,42 @@ export default function HomeHero() {
 
       <div className="psh-home-hero__inner">
         <div className="psh-home-hero__copy">
-          <Reveal>
-            <div className="psh-home-hero__badge">
-              <span className="psh-home-hero__badge-dot" aria-hidden="true" />
-              <span>DIGITAL INNOVATION STUDIO</span>
-            </div>
-          </Reveal>
+          <div className="psh-home-hero__badge psh-home-hero__entrance psh-home-hero__entrance--badge">
+            <span className="psh-home-hero__badge-dot" aria-hidden="true" />
+            <span>DIGITAL INNOVATION STUDIO</span>
+          </div>
 
-          <Reveal delay={0.1}>
-            <h1 className="psh-home-hero__title">
-              <span>Building Technology</span>
-              <span>
-                for the <strong>Next</strong>
-              </span>
-              <span>
-                <strong>Generation</strong> of
-              </span>
-              <span>Businesses</span>
-            </h1>
-          </Reveal>
+          <h1 className="psh-home-hero__title psh-home-hero__entrance psh-home-hero__entrance--title">
+            <span>Building Technology</span>
+            <span>
+              for the <strong>Next</strong>
+            </span>
+            <span>
+              <strong>Generation</strong> of
+            </span>
+            <span>Businesses</span>
+          </h1>
 
-          <Reveal delay={0.2}>
-            <p className="psh-home-hero__subtext whitespace-nowrap">
-              Web Development • Mobile Apps • Digital Marketing • Music Distribution
-            </p>
-          </Reveal>
+          <p className="psh-home-hero__subtext whitespace-nowrap psh-home-hero__entrance psh-home-hero__entrance--subtext">
+            Web Development &bull; Mobile Apps &bull; Digital Marketing &bull; Music Distribution
+          </p>
 
-          <Reveal delay={0.3}>
-            <div className="psh-home-hero__actions" aria-label="Hero actions">
-              <Link href="/contact" className="psh-home-hero__button psh-home-hero__button--primary">
-                Start a Project
-              </Link>
-              <Link href="/contact" className="psh-home-hero__button psh-home-hero__button--secondary">
-                Book a Discovery Call
-              </Link>
-            </div>
-          </Reveal>
+          <div className="psh-home-hero__actions psh-home-hero__entrance psh-home-hero__entrance--actions" aria-label="Hero actions">
+            <Link href="/contact" className="psh-home-hero__button psh-home-hero__button--primary">
+              Start a Project
+            </Link>
+            <Link href="/contact" className="psh-home-hero__button psh-home-hero__button--secondary">
+              Book a Discovery Call
+            </Link>
+          </div>
         </div>
 
         <div className="psh-home-hero__visual">
-          <Reveal delay={0.55} className="psh-home-hero__visual-reveal">
+          <div className="psh-home-hero__visual-reveal">
             <div className="psh-home-hero__visual-stage">
               <HeroCosmosScene />
             </div>
-          </Reveal>
+          </div>
         </div>
       </div>
     </section>

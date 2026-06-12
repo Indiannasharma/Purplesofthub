@@ -162,11 +162,12 @@ html {
   overflow-y: auto !important;
   height: auto !important;
   max-width: 100vw;
+  background: #06030f;
 }
 
 body {
   font-family: 'Outfit', sans-serif;
-  background: var(--bg-primary);
+  background: var(--bg-primary, #06030f);
   color: var(--text-primary);
   overflow-x: hidden;
   overflow-y: auto !important;
@@ -174,7 +175,7 @@ body {
   height: auto !important;
   position: relative !important;
   padding-top: 68px;
-  transition: background 0.3s, color 0.3s;
+  transition: color 0.3s;
 }
 
 /* Prevent any element from blocking scroll */
@@ -2258,6 +2259,26 @@ html.dark .psh-home-hero {
   transform: translateY(-54px);
 }
 
+.psh-home-hero__entrance {
+  animation: pshHeroTextReveal 0.38s cubic-bezier(0.2, 0.85, 0.2, 1) both;
+}
+
+.psh-home-hero__entrance--badge {
+  animation-delay: 0s;
+}
+
+.psh-home-hero__entrance--title {
+  animation-delay: 0.04s;
+}
+
+.psh-home-hero__entrance--subtext {
+  animation-delay: 0.08s;
+}
+
+.psh-home-hero__entrance--actions {
+  animation-delay: 0.12s;
+}
+
 .psh-home-hero__badge {
   display: inline-flex;
   align-items: center;
@@ -2394,6 +2415,7 @@ html.dark .psh-home-hero {
 .psh-home-hero__visual-reveal {
   width: 100%;
   will-change: opacity, transform;
+  animation: pshHeroPlanetReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.56s both;
 }
 
 .psh-home-hero__visual-stage {
@@ -2413,6 +2435,30 @@ html.dark .psh-home-hero {
   50% {
     opacity: 1;
     transform: scale(1.18);
+  }
+}
+
+@keyframes pshHeroTextReveal {
+  from {
+    opacity: 1;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pshHeroPlanetReveal {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.96);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -2570,7 +2616,9 @@ html.dark .psh-home-hero {
 
 @media (prefers-reduced-motion: reduce) {
   .psh-home-hero__badge-dot,
-  .psh-home-hero__button {
+  .psh-home-hero__button,
+  .psh-home-hero__entrance,
+  .psh-home-hero__visual-reveal {
     animation: none !important;
     transition: none !important;
   }
