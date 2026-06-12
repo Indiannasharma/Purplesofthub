@@ -52,7 +52,7 @@ export default function WhatsAppButton() {
       </div>
       {/* WhatsApp Button */}
       <Link
-        href="https://wa.me/message/BPNJE7CPON3OJ1"
+        href="https://wa.me/qr/L36LMHQ4RLP2B1"
         target="_blank"
         rel="noopener noreferrer"
         onMouseEnter={() => setHovered(true)}

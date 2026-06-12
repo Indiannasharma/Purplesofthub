@@ -8,7 +8,6 @@ import ChatBot from "@/components/ChatBot";
 import TelegramButton from "@/components/TelegramButton";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
-import Preloader from "@/components/Preloader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -136,7 +135,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
-        <Preloader />
         <ThemeProvider>
           <Providers initialCountry={initialCountry}>
             {children}

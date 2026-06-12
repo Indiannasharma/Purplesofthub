@@ -2391,6 +2391,11 @@ html.dark .psh-home-hero {
   overflow: visible;
 }
 
+.psh-home-hero__visual-reveal {
+  width: 100%;
+  will-change: opacity, transform;
+}
+
 .psh-home-hero__visual-stage {
   position: relative;
   isolation: isolate;
