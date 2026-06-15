@@ -1,3 +1,11 @@
+## 2026-06-15 Task: Nova website agents
+- [x] Inspect existing chatbot/contact widget and Supabase patterns
+- [x] Add Nova floating agent UI across public, client, and admin surfaces
+- [x] Replace separate floating WhatsApp/Telegram buttons with Nova handoff options
+- [x] Add Nova API with role-aware modes, lead capture, and Softclaw alert hook
+- [x] Add Supabase migration for Nova conversations/messages/alerts
+- [x] Run type/build checks
+
 ## 2026-06-08 Task: Branded Auth Emails
 - [x] Inspect existing auth and email flow
 - [x] Add branded welcome and login email templates

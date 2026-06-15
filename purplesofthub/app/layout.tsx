@@ -5,8 +5,6 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { Providers } from "@/app/Providers";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
-import TelegramButton from "@/components/TelegramButton";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import "./globals.css";
 
@@ -139,8 +137,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Providers initialCountry={initialCountry}>
             {children}
             <ChatBot />
-            <TelegramButton />
-            <WhatsAppButton />
             <ScrollToTop />
           </Providers>
         </ThemeProvider>

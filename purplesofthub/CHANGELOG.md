@@ -1,9 +1,13 @@
 ## [Unreleased]
 ### Added
+- Added Nova by PurpleSoftHub, a floating website agent with public sales, client support, and admin operations modes.
+- Added `/api/nova` for role-aware agent replies, lead capture, Supabase persistence, and Softclaw/Railway alert forwarding.
+- Added Supabase migration for Nova conversations, messages, handoffs, and alerts.
 - Added a structured PurpleSoftHub Academy course catalog with filters, learning paths, scholarship messaging, and a course-interest waitlist.
 - Added branded PurpleSoftHub welcome and login notification emails for account signup and sign-in flows.
 
 ### Fixed
+- Replaced separate floating WhatsApp and Telegram buttons with Nova handoff options inside the assistant.
 - Homepage Academy CTA now links to `/academy` instead of the blog.
 - Login notification emails now verify the signed-in user with the current Supabase access token when cookies are not immediately available server-side.
 - Sign-up form fields no longer lose focus after the first typed character.
