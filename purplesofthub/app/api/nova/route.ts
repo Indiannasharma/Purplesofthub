@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClientIp, checkRateLimit, rateLimiters } from '@/lib/rateLimit'
@@ -31,75 +30,49 @@ type RequestBody = {
 }
 
 type ProfileRole = 'admin' | 'client' | null
-type NovaAiProvider = 'openrouter' | 'anthropic'
-type OpenRouterReasoningEffort = 'xhigh' | 'high' | 'medium' | 'low' | 'minimal' | 'none'
+type NovaAiProvider = 'softclaw' | 'anthropic'
 
 function getConfiguredAiProvider(): NovaAiProvider | null {
   const requested = process.env.NOVA_AI_PROVIDER?.trim().toLowerCase()
-  if (requested === 'openrouter' || requested === 'anthropic') return requested
-  if (process.env.OPENROUTER_API_KEY) return 'openrouter'
+  if (requested === 'softclaw' || requested === 'anthropic') return requested
+  if (process.env.SOFTCLAW_NOVA_CHAT_URL) return 'softclaw'
   if (process.env.ANTHROPIC_API_KEY) return 'anthropic'
   return null
 }
 
-function getOpenRouterReasoningEffort(): OpenRouterReasoningEffort {
-  const effort = process.env.OPENROUTER_REASONING_EFFORT?.trim().toLowerCase()
-  if (
-    effort === 'xhigh' ||
-    effort === 'high' ||
-    effort === 'medium' ||
-    effort === 'low' ||
-    effort === 'minimal' ||
-    effort === 'none'
-  ) {
-    return effort
-  }
-  return 'medium'
-}
-
-async function generateOpenRouterReply(input: {
+async function generateSoftclawReply(input: {
   mode: NovaMode
   messages: NovaUiMessage[]
   fallback: string
 }) {
-  const apiKey = process.env.OPENROUTER_API_KEY
-  if (!apiKey) return input.fallback
+  const url = process.env.SOFTCLAW_NOVA_CHAT_URL
+  if (!url) return input.fallback
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const secret = process.env.SOFTCLAW_NOVA_ALERT_SECRET
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'https://www.purplesofthub.com',
-      'X-Title': 'PurpleSoftHub Nova',
+      ...(secret ? { 'x-softclaw-nova-secret': secret } : {}),
     },
     body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || 'openai/gpt-5.5',
-      messages: [
-        { role: 'system', content: getNovaSystemPrompt(input.mode) },
-        ...input.messages.map((message) => ({
-          role: message.role,
-          content: message.content,
-        })),
-      ],
-      max_tokens: 700,
-      temperature: 0.4,
-      reasoning: {
-        effort: getOpenRouterReasoningEffort(),
-        exclude: true,
-      },
+      source: 'purplesofthub-nova',
+      mode: input.mode,
+      systemPrompt: getNovaSystemPrompt(input.mode),
+      messages: input.messages,
+      fallback: input.fallback,
     }),
   })
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => '')
-    throw new Error(`OpenRouter request failed: ${response.status} ${errorText.slice(0, 300)}`)
+    throw new Error(`Softclaw Nova chat failed: ${response.status} ${errorText.slice(0, 300)}`)
   }
 
   const data = await response.json() as {
-    choices?: Array<{ message?: { content?: string } }>
+    reply?: string
   }
-  return data.choices?.[0]?.message?.content?.trim() || input.fallback
+  return data.reply?.trim() || input.fallback
 }
 
 async function generateAnthropicReply(input: {
@@ -110,6 +83,7 @@ async function generateAnthropicReply(input: {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return input.fallback
 
+  const Anthropic = (await import('@anthropic-ai/sdk')).default
   const client = new Anthropic({ apiKey })
   const response = await client.messages.create({
     model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
@@ -130,7 +104,7 @@ async function generateAiReply(input: {
   if (!provider) return input.fallback
 
   try {
-    if (provider === 'openrouter') return await generateOpenRouterReply(input)
+    if (provider === 'softclaw') return await generateSoftclawReply(input)
     return await generateAnthropicReply(input)
   } catch (error) {
     console.warn(`Nova ${provider} fallback used:`, error)

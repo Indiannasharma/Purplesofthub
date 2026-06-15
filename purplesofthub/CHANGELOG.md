@@ -7,6 +7,7 @@
 - Added branded PurpleSoftHub welcome and login notification emails for account signup and sign-in flows.
 
 ### Fixed
+- Nova now uses Softclaw as the primary AI provider instead of OpenRouter, keeping scripted fallback replies if Softclaw is unavailable.
 - Replaced separate floating WhatsApp and Telegram buttons with Nova handoff options inside the assistant.
 - Homepage Academy CTA now links to `/academy` instead of the blog.
 - Login notification emails now verify the signed-in user with the current Supabase access token when cookies are not immediately available server-side.
