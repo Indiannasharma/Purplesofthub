@@ -99,16 +99,18 @@ async function generateAiReply(input: {
   mode: NovaMode
   messages: NovaUiMessage[]
   fallback: string
-}) {
+}): Promise<{ reply: string; provider: NovaAiProvider | null; usedAi: boolean }> {
   const provider = getConfiguredAiProvider()
-  if (!provider) return input.fallback
+  if (!provider) return { reply: input.fallback, provider, usedAi: false }
 
   try {
-    if (provider === 'softclaw') return await generateSoftclawReply(input)
-    return await generateAnthropicReply(input)
+    const reply = provider === 'softclaw'
+      ? await generateSoftclawReply(input)
+      : await generateAnthropicReply(input)
+    return { reply, provider, usedAi: reply !== input.fallback }
   } catch (error) {
     console.warn(`Nova ${provider} fallback used:`, error)
-    return input.fallback
+    return { reply: input.fallback, provider, usedAi: false }
   }
 }
 
@@ -337,11 +339,12 @@ export async function POST(req: NextRequest) {
       handoff: handoffByText,
     })
 
-    reply = await generateAiReply({
+    const aiResult = await generateAiReply({
       mode,
       messages: modelMessages,
       fallback: reply,
     })
+    reply = aiResult.reply
 
     const handoff = handoffByText || /whatsapp|telegram|talk to (a )?(human|person|team)|connect you/i.test(reply)
     const shouldSaveLead = handoff || Boolean(email || phone)
@@ -403,6 +406,10 @@ export async function POST(req: NextRequest) {
       showHandoff: handoff,
       leadSaved: Boolean(leadId),
       serviceInterest,
+      providerStatus: {
+        provider: aiResult.provider,
+        usedAi: aiResult.usedAi,
+      },
     })
   } catch (error) {
     console.error('Nova API error:', error)
