@@ -179,7 +179,7 @@ export default function ChatBot() {
   return (
     <div className="nova-shell" data-theme={theme} aria-live="polite">
       {open && (
-        <section className="nova-panel" aria-label="Nova by PurpleSoftHub">
+        <div className="nova-panel" role="dialog" aria-label="Nova by PurpleSoftHub">
           <div className="nova-header">
             <div className="nova-mark">
               <Sparkles size={22} />
@@ -260,7 +260,7 @@ export default function ChatBot() {
               <Send size={18} />
             </button>
           </form>
-        </section>
+        </div>
       )}
 
       <button
@@ -293,6 +293,9 @@ export default function ChatBot() {
           --nova-input-bg: rgba(255, 255, 255, 0.98);
           --nova-input-text: #160b2f;
           --nova-faint-border: rgba(124, 58, 237, 0.12);
+          --nova-handoff-bg: rgba(16, 185, 129, 0.12);
+          --nova-handoff-border: rgba(5, 150, 105, 0.22);
+          --nova-handoff-text: #064e3b;
           position: fixed;
           right: max(24px, env(safe-area-inset-right));
           bottom: max(24px, env(safe-area-inset-bottom));
@@ -317,6 +320,9 @@ export default function ChatBot() {
           --nova-input-bg: rgba(2, 6, 23, 0.76);
           --nova-input-text: #f8fafc;
           --nova-faint-border: rgba(148, 163, 184, 0.14);
+          --nova-handoff-bg: rgba(16, 185, 129, 0.1);
+          --nova-handoff-border: rgba(16, 185, 129, 0.18);
+          --nova-handoff-text: #d1fae5;
         }
 
         .nova-fab {
@@ -583,13 +589,13 @@ export default function ChatBot() {
           margin: 0 16px 12px;
           padding: 12px;
           border-radius: 14px;
-          background: rgba(16, 185, 129, 0.1);
-          border: 1px solid rgba(16, 185, 129, 0.18);
+          background: var(--nova-handoff-bg);
+          border: 1px solid var(--nova-handoff-border);
         }
 
         .nova-handoff p {
           margin: 0 0 8px;
-          color: #d1fae5;
+          color: var(--nova-handoff-text);
           font-size: 12px;
           font-weight: 800;
         }
