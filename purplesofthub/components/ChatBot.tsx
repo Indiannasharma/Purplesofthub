@@ -351,8 +351,9 @@ export default function ChatBot() {
         }
 
         .nova-panel {
-          width: min(420px, calc(100vw - 28px));
-          max-height: min(720px, calc(100dvh - 104px));
+          width: min(390px, calc(100vw - 28px));
+          height: min(640px, calc(100dvh - 108px));
+          min-height: 520px;
           margin-bottom: 14px;
           overflow: hidden;
           border-radius: 18px;
@@ -370,17 +371,18 @@ export default function ChatBot() {
         .nova-header {
           display: grid;
           grid-template-columns: auto 1fr auto;
-          gap: 12px;
+          gap: 11px;
           align-items: center;
-          padding: 18px;
+          padding: 15px;
           background: var(--nova-header-bg);
           border-bottom: 1px solid var(--nova-faint-border);
+          flex: 0 0 auto;
         }
 
         .nova-mark {
-          width: 46px;
-          height: 46px;
-          border-radius: 14px;
+          width: 42px;
+          height: 42px;
+          border-radius: 13px;
           display: grid;
           place-items: center;
           color: #fff;
@@ -400,7 +402,7 @@ export default function ChatBot() {
         .nova-header h2 {
           margin: 0;
           color: var(--nova-panel-text);
-          font-size: 21px;
+          font-size: 20px;
           line-height: 1.1;
           font-weight: 950;
           letter-spacing: 0;
@@ -446,19 +448,20 @@ export default function ChatBot() {
           display: flex;
           gap: 8px;
           align-items: center;
-          padding: 12px 16px;
+          padding: 10px 15px;
           color: var(--nova-panel-subtle);
-          font-size: 13px;
+          font-size: 12px;
           line-height: 1.45;
           background: var(--nova-surface);
           border-bottom: 1px solid var(--nova-faint-border);
+          flex: 0 0 auto;
         }
 
         .nova-messages {
-          min-height: 220px;
-          flex: 1 1 260px;
+          min-height: 0;
+          flex: 1 1 auto;
           overflow-y: auto;
-          padding: 16px;
+          padding: 14px 15px;
           display: flex;
           flex-direction: column;
           gap: 10px;
@@ -502,8 +505,9 @@ export default function ChatBot() {
           display: flex;
           gap: 8px;
           overflow-x: auto;
-          padding: 0 16px 12px;
+          padding: 0 15px 10px;
           scrollbar-width: none;
+          flex: 0 0 auto;
         }
 
         .nova-shortcuts::-webkit-scrollbar {
@@ -515,12 +519,12 @@ export default function ChatBot() {
           background: var(--nova-surface);
           color: var(--nova-panel-muted);
           border-radius: 10px;
-          padding: 8px 10px;
+          padding: 7px 10px;
           white-space: nowrap;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           cursor: pointer;
-          min-height: 34px;
+          min-height: 32px;
           transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
         }
 
@@ -531,11 +535,12 @@ export default function ChatBot() {
         }
 
         .nova-lead-box {
-          margin: 0 16px 12px;
+          margin: 0 15px 10px;
           border: 1px solid rgba(148, 163, 184, 0.15);
           border-radius: 14px;
           background: var(--nova-surface);
           overflow: hidden;
+          flex: 0 0 auto;
         }
 
         .nova-lead-box summary {
@@ -544,7 +549,7 @@ export default function ChatBot() {
           align-items: center;
           gap: 8px;
           cursor: pointer;
-          padding: 11px 12px;
+          padding: 10px 12px;
           color: var(--nova-panel-text);
           font-size: 12px;
           font-weight: 800;
@@ -586,11 +591,12 @@ export default function ChatBot() {
         }
 
         .nova-handoff {
-          margin: 0 16px 12px;
-          padding: 12px;
+          margin: 0 15px 10px;
+          padding: 10px;
           border-radius: 14px;
           background: var(--nova-handoff-bg);
           border: 1px solid var(--nova-handoff-border);
+          flex: 0 0 auto;
         }
 
         .nova-handoff p {
@@ -610,7 +616,7 @@ export default function ChatBot() {
           text-align: center;
           text-decoration: none;
           border-radius: 11px;
-          padding: 9px 10px;
+          padding: 8px 10px;
           color: #062a1b;
           background: #34d399;
           font-size: 12px;
@@ -624,20 +630,21 @@ export default function ChatBot() {
 
         .nova-form {
           display: grid;
-          grid-template-columns: 1fr 46px;
-          gap: 9px;
-          padding: 14px 16px 16px;
+          grid-template-columns: 1fr 44px;
+          gap: 8px;
+          padding: 12px 15px 14px;
           border-top: 1px solid var(--nova-faint-border);
+          flex: 0 0 auto;
         }
 
         .nova-form input {
-          height: 46px;
+          height: 44px;
           padding: 0 13px;
           font-size: 13px;
         }
 
         .nova-form button {
-          height: 46px;
+          height: 44px;
           border-radius: 14px;
           color: #fff;
           background: linear-gradient(135deg, #7c3aed, #06b6d4);
@@ -677,14 +684,14 @@ export default function ChatBot() {
 
           .nova-panel {
             width: 100%;
-            max-height: calc(100dvh - 86px);
+            height: min(680px, calc(100dvh - 86px));
+            min-height: min(560px, calc(100dvh - 86px));
             border-radius: 18px;
             margin-bottom: 10px;
           }
 
           .nova-messages {
-            min-height: 210px;
-            flex-basis: 236px;
+            min-height: 0;
           }
 
           .nova-lead-grid {
@@ -708,11 +715,12 @@ export default function ChatBot() {
 
         @media (max-width: 380px) {
           .nova-panel {
-            max-height: calc(100dvh - 78px);
+            height: calc(100dvh - 78px);
+            min-height: 0;
           }
 
           .nova-messages {
-            min-height: 180px;
+            min-height: 0;
           }
 
           .nova-header h2 {
@@ -725,6 +733,31 @@ export default function ChatBot() {
           .nova-message.loading svg {
             animation: none;
             transition: none;
+          }
+        }
+
+        @media (min-width: 641px) and (max-height: 780px) {
+          .nova-panel {
+            height: min(560px, calc(100dvh - 96px));
+            min-height: 0;
+          }
+
+          .nova-header {
+            padding: 13px 14px;
+          }
+
+          .nova-mark {
+            width: 38px;
+            height: 38px;
+          }
+
+          .nova-mode {
+            padding: 8px 14px;
+          }
+
+          .nova-message {
+            padding: 9px 11px;
+            font-size: 12px;
           }
         }
       `}</style>
