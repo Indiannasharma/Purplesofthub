@@ -48,7 +48,7 @@ async function generateSoftclawReply(input: {
   const url = process.env.SOFTCLAW_NOVA_CHAT_URL?.trim()
   if (!url) return input.fallback
 
-  const secret = process.env.SOFTCLAW_NOVA_ALERT_SECRET
+  const secret = process.env.SOFTCLAW_NOVA_ALERT_SECRET?.trim()
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -263,7 +263,7 @@ async function notifySoftclaw(input: {
   const url = process.env.SOFTCLAW_NOVA_ALERT_URL
   if (!url) return
 
-  const secret = process.env.SOFTCLAW_NOVA_ALERT_SECRET
+  const secret = process.env.SOFTCLAW_NOVA_ALERT_SECRET?.trim()
   try {
     await fetch(url, {
       method: 'POST',
