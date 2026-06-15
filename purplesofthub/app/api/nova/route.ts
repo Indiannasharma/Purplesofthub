@@ -31,6 +31,92 @@ type RequestBody = {
 }
 
 type ProfileRole = 'admin' | 'client' | null
+type NovaAiProvider = 'openrouter' | 'anthropic'
+
+function getConfiguredAiProvider(): NovaAiProvider | null {
+  const requested = process.env.NOVA_AI_PROVIDER?.trim().toLowerCase()
+  if (requested === 'openrouter' || requested === 'anthropic') return requested
+  if (process.env.OPENROUTER_API_KEY) return 'openrouter'
+  if (process.env.ANTHROPIC_API_KEY) return 'anthropic'
+  return null
+}
+
+async function generateOpenRouterReply(input: {
+  mode: NovaMode
+  messages: NovaUiMessage[]
+  fallback: string
+}) {
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!apiKey) return input.fallback
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'https://www.purplesofthub.com',
+      'X-Title': 'PurpleSoftHub Nova',
+    },
+    body: JSON.stringify({
+      model: process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini',
+      messages: [
+        { role: 'system', content: getNovaSystemPrompt(input.mode) },
+        ...input.messages.map((message) => ({
+          role: message.role,
+          content: message.content,
+        })),
+      ],
+      max_tokens: 700,
+      temperature: 0.4,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '')
+    throw new Error(`OpenRouter request failed: ${response.status} ${errorText.slice(0, 300)}`)
+  }
+
+  const data = await response.json() as {
+    choices?: Array<{ message?: { content?: string } }>
+  }
+  return data.choices?.[0]?.message?.content?.trim() || input.fallback
+}
+
+async function generateAnthropicReply(input: {
+  mode: NovaMode
+  messages: NovaUiMessage[]
+  fallback: string
+}) {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) return input.fallback
+
+  const client = new Anthropic({ apiKey })
+  const response = await client.messages.create({
+    model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
+    max_tokens: 700,
+    system: getNovaSystemPrompt(input.mode),
+    messages: input.messages,
+  })
+
+  return response.content[0]?.type === 'text' ? response.content[0].text : input.fallback
+}
+
+async function generateAiReply(input: {
+  mode: NovaMode
+  messages: NovaUiMessage[]
+  fallback: string
+}) {
+  const provider = getConfiguredAiProvider()
+  if (!provider) return input.fallback
+
+  try {
+    if (provider === 'openrouter') return await generateOpenRouterReply(input)
+    return await generateAnthropicReply(input)
+  } catch (error) {
+    console.warn(`Nova ${provider} fallback used:`, error)
+    return input.fallback
+  }
+}
 
 function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -250,7 +336,6 @@ export async function POST(req: NextRequest) {
     const phone = body.visitor?.phone || extractPhone(combinedText) || undefined
     const handoffByText = detectHandoffIntent(latest.content)
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
     let reply = generateNovaFallbackReply({
       mode,
       serviceInterest,
@@ -258,21 +343,11 @@ export async function POST(req: NextRequest) {
       handoff: handoffByText,
     })
 
-    if (apiKey) {
-      try {
-        const client = new Anthropic({ apiKey })
-        const response = await client.messages.create({
-          model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
-          max_tokens: 700,
-          system: getNovaSystemPrompt(mode),
-          messages: modelMessages,
-        })
-
-        reply = response.content[0]?.type === 'text' ? response.content[0].text : reply
-      } catch (error) {
-        console.warn('Nova AI fallback used:', error)
-      }
-    }
+    reply = await generateAiReply({
+      mode,
+      messages: modelMessages,
+      fallback: reply,
+    })
 
     const handoff = handoffByText || /whatsapp|telegram|talk to (a )?(human|person|team)|connect you/i.test(reply)
     const shouldSaveLead = handoff || Boolean(email || phone)
