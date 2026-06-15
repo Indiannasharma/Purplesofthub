@@ -45,7 +45,7 @@ async function generateSoftclawReply(input: {
   messages: NovaUiMessage[]
   fallback: string
 }) {
-  const url = process.env.SOFTCLAW_NOVA_CHAT_URL
+  const url = process.env.SOFTCLAW_NOVA_CHAT_URL?.trim()
   if (!url) return input.fallback
 
   const secret = process.env.SOFTCLAW_NOVA_ALERT_SECRET
