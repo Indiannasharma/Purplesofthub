@@ -275,7 +275,7 @@ export async function POST(req: NextRequest) {
     }
 
     const handoff = handoffByText || /whatsapp|telegram|talk to (a )?(human|person|team)|connect you/i.test(reply)
-    const shouldSaveLead = handoff || Boolean(email || phone || serviceInterest)
+    const shouldSaveLead = handoff || Boolean(email || phone)
     const summary = summarizeForLead([...modelMessages, { role: 'assistant', content: reply }])
 
     if (redis) {
