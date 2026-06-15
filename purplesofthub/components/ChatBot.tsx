@@ -13,6 +13,7 @@ import {
   UserRoundCheck,
   X,
 } from 'lucide-react'
+import { useTheme } from '@/context/ThemeContext'
 import type { NovaMode, NovaUiMessage } from '@/lib/nova'
 
 const WHATSAPP_LINK = 'https://wa.me/qr/L36LMHQ4RLP2B1'
@@ -65,9 +66,9 @@ function modeCopy(mode: NovaMode) {
   }
 
   return {
-    eyebrow: 'Public Sales Agent',
+    eyebrow: 'AI Growth Concierge',
     title: 'Nova',
-    intro: 'Find the right PurpleSoftHub service and get help fast.',
+    intro: 'Plan your website, app, ads, or digital growth with PurpleSoftHub.',
     placeholder: 'Tell Nova what you want to build or grow...',
     firstMessage: 'Hi, I am Nova by PurpleSoftHub. Tell me what you want to build or grow, and I will help you choose the right service.',
     shortcuts: ['I need a website', 'I need an app', 'I need ads or marketing'],
@@ -85,6 +86,7 @@ function getStoredSessionId() {
 
 export default function ChatBot() {
   const pathname = usePathname()
+  const { theme } = useTheme()
   const mode = useMemo(() => getMode(pathname), [pathname])
   const copy = useMemo(() => modeCopy(mode), [mode])
   const [open, setOpen] = useState(false)
@@ -175,7 +177,7 @@ export default function ChatBot() {
   const needsLeadFields = mode === 'public_sales' || mode === 'client_support'
 
   return (
-    <div className="nova-shell" aria-live="polite">
+    <div className="nova-shell" data-theme={theme} aria-live="polite">
       {open && (
         <section className="nova-panel" aria-label="Nova by PurpleSoftHub">
           <div className="nova-header">
@@ -206,7 +208,7 @@ export default function ChatBot() {
             {loading && (
               <div className="nova-message assistant loading">
                 <Loader2 size={16} />
-                Nova is thinking...
+                Thinking through the best next step...
               </div>
             )}
           </div>
@@ -223,7 +225,7 @@ export default function ChatBot() {
             <details className="nova-lead-box">
               <summary>
                 <UserRoundCheck size={16} />
-                Share contact details for follow-up
+                Send project details
                 <ChevronDown size={15} />
               </summary>
               <div className="nova-lead-grid">
@@ -233,13 +235,13 @@ export default function ChatBot() {
                 <input value={visitor.budget} onChange={(event) => setVisitor((v) => ({ ...v, budget: event.target.value }))} placeholder="Budget" />
                 <input value={visitor.timeline} onChange={(event) => setVisitor((v) => ({ ...v, timeline: event.target.value }))} placeholder="Timeline" />
               </div>
-              {leadSaved && <p className="nova-saved">Saved. Softclaw can alert the team when this needs attention.</p>}
+              {leadSaved && <p className="nova-saved">Saved. The PurpleSoftHub team has the context for follow-up.</p>}
             </details>
           )}
 
           {(showHandoff || mode !== 'admin_ops') && (
             <div className="nova-handoff">
-              <p>Need direct human help?</p>
+              <p>Prefer a direct conversation?</p>
               <div>
                 <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                 <a href={TELEGRAM_LINK} target="_blank" rel="noopener noreferrer">Telegram</a>
@@ -261,18 +263,60 @@ export default function ChatBot() {
         </section>
       )}
 
-      <button type="button" className="nova-fab" onClick={() => setOpen((value) => !value)} aria-label="Open Nova assistant">
+      <button
+        type="button"
+        className="nova-fab"
+        onClick={() => setOpen((value) => !value)}
+        aria-label="Open Nova assistant"
+        aria-expanded={open}
+      >
         {open ? <X size={24} /> : <MessageCircle size={25} />}
         {!open && <span>Nova</span>}
       </button>
 
       <style jsx>{`
         .nova-shell {
+          --nova-panel-bg: rgba(255, 255, 255, 0.96);
+          --nova-panel-text: #160b2f;
+          --nova-panel-subtle: #6b5b82;
+          --nova-panel-muted: #7c5a9e;
+          --nova-panel-border: rgba(124, 58, 237, 0.18);
+          --nova-panel-shadow: 0 26px 80px rgba(31, 15, 74, 0.22);
+          --nova-header-bg:
+            radial-gradient(circle at top left, rgba(34, 211, 238, 0.16), transparent 34%),
+            linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(255, 255, 255, 0));
+          --nova-mark-bg: linear-gradient(135deg, #7c3aed, #06b6d4);
+          --nova-surface: rgba(248, 245, 255, 0.88);
+          --nova-surface-strong: rgba(255, 255, 255, 0.94);
+          --nova-assistant-bg: rgba(248, 245, 255, 0.96);
+          --nova-assistant-text: #2f2145;
+          --nova-input-bg: rgba(255, 255, 255, 0.98);
+          --nova-input-text: #160b2f;
+          --nova-faint-border: rgba(124, 58, 237, 0.12);
           position: fixed;
           right: max(24px, env(safe-area-inset-right));
           bottom: max(24px, env(safe-area-inset-bottom));
           z-index: 9999;
           font-family: inherit;
+        }
+
+        .nova-shell[data-theme='dark'] {
+          --nova-panel-bg: rgba(9, 6, 24, 0.95);
+          --nova-panel-text: #f8fafc;
+          --nova-panel-subtle: #cbd5e1;
+          --nova-panel-muted: #a5b4fc;
+          --nova-panel-border: rgba(148, 163, 184, 0.22);
+          --nova-panel-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
+          --nova-header-bg:
+            radial-gradient(circle at top left, rgba(6, 182, 212, 0.26), transparent 34%),
+            linear-gradient(135deg, rgba(124, 58, 237, 0.28), rgba(5, 9, 22, 0));
+          --nova-surface: rgba(15, 23, 42, 0.62);
+          --nova-surface-strong: rgba(15, 23, 42, 0.78);
+          --nova-assistant-bg: rgba(30, 41, 59, 0.84);
+          --nova-assistant-text: #e2e8f0;
+          --nova-input-bg: rgba(2, 6, 23, 0.76);
+          --nova-input-text: #f8fafc;
+          --nova-faint-border: rgba(148, 163, 184, 0.14);
         }
 
         .nova-fab {
@@ -290,7 +334,7 @@ export default function ChatBot() {
           font-weight: 900;
           letter-spacing: 0;
           cursor: pointer;
-          box-shadow: 0 20px 45px rgba(124, 58, 237, 0.35);
+          box-shadow: 0 18px 48px rgba(124, 58, 237, 0.34), 0 0 0 6px rgba(124, 58, 237, 0.08);
           border: 1px solid rgba(255, 255, 255, 0.18);
           transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
@@ -301,19 +345,20 @@ export default function ChatBot() {
         }
 
         .nova-panel {
-          width: min(390px, calc(100vw - 28px));
-          max-height: min(720px, calc(100dvh - 112px));
+          width: min(420px, calc(100vw - 28px));
+          max-height: min(720px, calc(100dvh - 104px));
           margin-bottom: 14px;
           overflow: hidden;
-          border-radius: 22px;
-          border: 1px solid rgba(148, 163, 184, 0.22);
-          background: rgba(9, 6, 24, 0.94);
-          color: #f8fafc;
-          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+          border-radius: 18px;
+          border: 1px solid var(--nova-panel-border);
+          background: var(--nova-panel-bg);
+          color: var(--nova-panel-text);
+          box-shadow: var(--nova-panel-shadow);
           backdrop-filter: blur(22px);
           -webkit-backdrop-filter: blur(22px);
           display: flex;
           flex-direction: column;
+          animation: nova-pop 0.18s ease both;
         }
 
         .nova-header {
@@ -322,34 +367,33 @@ export default function ChatBot() {
           gap: 12px;
           align-items: center;
           padding: 18px;
-          background: radial-gradient(circle at top left, rgba(6, 182, 212, 0.26), transparent 34%),
-            linear-gradient(135deg, rgba(124, 58, 237, 0.28), rgba(5, 9, 22, 0));
-          border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+          background: var(--nova-header-bg);
+          border-bottom: 1px solid var(--nova-faint-border);
         }
 
         .nova-mark {
           width: 46px;
           height: 46px;
-          border-radius: 16px;
+          border-radius: 14px;
           display: grid;
           place-items: center;
           color: #fff;
-          background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+          background: var(--nova-mark-bg);
           box-shadow: 0 14px 30px rgba(34, 211, 238, 0.22);
         }
 
         .nova-header p {
           margin: 0 0 3px;
-          color: #a5b4fc;
+          color: var(--nova-panel-muted);
           font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: 0;
         }
 
         .nova-header h2 {
           margin: 0;
-          color: #fff;
+          color: var(--nova-panel-text);
           font-size: 21px;
           line-height: 1.1;
           font-weight: 950;
@@ -387,8 +431,9 @@ export default function ChatBot() {
           width: 34px;
           height: 34px;
           border-radius: 12px;
-          color: #cbd5e1;
-          background: rgba(15, 23, 42, 0.76);
+          color: var(--nova-panel-subtle);
+          background: var(--nova-surface-strong);
+          border: 1px solid var(--nova-faint-border);
         }
 
         .nova-mode {
@@ -396,10 +441,11 @@ export default function ChatBot() {
           gap: 8px;
           align-items: center;
           padding: 12px 16px;
-          color: #cbd5e1;
+          color: var(--nova-panel-subtle);
           font-size: 13px;
           line-height: 1.45;
-          border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+          background: var(--nova-surface);
+          border-bottom: 1px solid var(--nova-faint-border);
         }
 
         .nova-messages {
@@ -425,9 +471,9 @@ export default function ChatBot() {
 
         .nova-message.assistant {
           align-self: flex-start;
-          color: #e2e8f0;
-          background: rgba(30, 41, 59, 0.82);
-          border: 1px solid rgba(148, 163, 184, 0.14);
+          color: var(--nova-assistant-text);
+          background: var(--nova-assistant-bg);
+          border: 1px solid var(--nova-faint-border);
         }
 
         .nova-message.user {
@@ -460,9 +506,9 @@ export default function ChatBot() {
 
         .nova-shortcuts button {
           border: 1px solid rgba(34, 211, 238, 0.2);
-          background: rgba(8, 47, 73, 0.38);
-          color: #bae6fd;
-          border-radius: 999px;
+          background: var(--nova-surface);
+          color: var(--nova-panel-muted);
+          border-radius: 10px;
           padding: 8px 10px;
           white-space: nowrap;
           font-size: 12px;
@@ -475,14 +521,14 @@ export default function ChatBot() {
         .nova-shortcuts button:hover {
           transform: translateY(-1px);
           border-color: rgba(34, 211, 238, 0.44);
-          background: rgba(8, 47, 73, 0.58);
+          background: var(--nova-surface-strong);
         }
 
         .nova-lead-box {
           margin: 0 16px 12px;
           border: 1px solid rgba(148, 163, 184, 0.15);
           border-radius: 14px;
-          background: rgba(15, 23, 42, 0.55);
+          background: var(--nova-surface);
           overflow: hidden;
         }
 
@@ -493,7 +539,7 @@ export default function ChatBot() {
           gap: 8px;
           cursor: pointer;
           padding: 11px 12px;
-          color: #e0e7ff;
+          color: var(--nova-panel-text);
           font-size: 12px;
           font-weight: 800;
         }
@@ -513,9 +559,9 @@ export default function ChatBot() {
         .nova-form input {
           width: 100%;
           min-width: 0;
-          color: #f8fafc;
-          background: rgba(2, 6, 23, 0.74);
-          border: 1px solid rgba(148, 163, 184, 0.16);
+          color: var(--nova-input-text);
+          background: var(--nova-input-bg);
+          border: 1px solid var(--nova-faint-border);
           outline: none;
           border-radius: 12px;
         }
@@ -575,7 +621,7 @@ export default function ChatBot() {
           grid-template-columns: 1fr 46px;
           gap: 9px;
           padding: 14px 16px 16px;
-          border-top: 1px solid rgba(148, 163, 184, 0.13);
+          border-top: 1px solid var(--nova-faint-border);
         }
 
         .nova-form input {
@@ -599,6 +645,17 @@ export default function ChatBot() {
         @keyframes nova-spin {
           to {
             transform: rotate(360deg);
+          }
+        }
+
+        @keyframes nova-pop {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
           }
         }
 
