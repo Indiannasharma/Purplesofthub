@@ -32,6 +32,7 @@ type RequestBody = {
 
 type ProfileRole = 'admin' | 'client' | null
 type NovaAiProvider = 'openrouter' | 'anthropic'
+type OpenRouterReasoningEffort = 'xhigh' | 'high' | 'medium' | 'low' | 'minimal' | 'none'
 
 function getConfiguredAiProvider(): NovaAiProvider | null {
   const requested = process.env.NOVA_AI_PROVIDER?.trim().toLowerCase()
@@ -39,6 +40,21 @@ function getConfiguredAiProvider(): NovaAiProvider | null {
   if (process.env.OPENROUTER_API_KEY) return 'openrouter'
   if (process.env.ANTHROPIC_API_KEY) return 'anthropic'
   return null
+}
+
+function getOpenRouterReasoningEffort(): OpenRouterReasoningEffort {
+  const effort = process.env.OPENROUTER_REASONING_EFFORT?.trim().toLowerCase()
+  if (
+    effort === 'xhigh' ||
+    effort === 'high' ||
+    effort === 'medium' ||
+    effort === 'low' ||
+    effort === 'minimal' ||
+    effort === 'none'
+  ) {
+    return effort
+  }
+  return 'medium'
 }
 
 async function generateOpenRouterReply(input: {
@@ -58,7 +74,7 @@ async function generateOpenRouterReply(input: {
       'X-Title': 'PurpleSoftHub Nova',
     },
     body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini',
+      model: process.env.OPENROUTER_MODEL || 'openai/gpt-5.5',
       messages: [
         { role: 'system', content: getNovaSystemPrompt(input.mode) },
         ...input.messages.map((message) => ({
@@ -68,6 +84,10 @@ async function generateOpenRouterReply(input: {
       ],
       max_tokens: 700,
       temperature: 0.4,
+      reasoning: {
+        effort: getOpenRouterReasoningEffort(),
+        exclude: true,
+      },
     }),
   })
 
