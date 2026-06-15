@@ -146,3 +146,26 @@ export function summarizeForLead(messages: NovaUiMessage[]) {
     .join('\n')
     .slice(0, 3000)
 }
+
+export function generateNovaFallbackReply(input: {
+  mode: NovaMode
+  serviceInterest: string | null
+  latestMessage: string
+  handoff: boolean
+}) {
+  const service = input.serviceInterest ?? 'the right PurpleSoftHub service'
+
+  if (input.mode === 'admin_ops') {
+    return 'Nova Ops is online. I can help summarize leads, draft a client reply, organize next steps, or prepare a follow-up checklist. Tell me the client name, service, current stage, and what you want to move forward.'
+  }
+
+  if (input.mode === 'client_support') {
+    return 'I can help with your PurpleSoftHub project, invoice, files, revision request, or support issue. Please share your project name and what you need help with. If it is urgent, I can also point you to WhatsApp or Telegram support.'
+  }
+
+  if (input.handoff) {
+    return `I can connect you with the PurpleSoftHub team for ${service}. To make the handoff useful, please send your name, email or WhatsApp number, budget range, timeline, and a short summary of what you want to build.`
+  }
+
+  return `PurpleSoftHub can help with ${service}. The usual flow is discovery, strategy, design/build, launch, then support. To recommend the best package, tell me your goal, budget range, timeline, and whether this is for a new business, existing brand, or client project.`
+}

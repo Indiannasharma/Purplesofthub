@@ -9,6 +9,7 @@ import {
   detectServiceInterest,
   extractEmail,
   extractPhone,
+  generateNovaFallbackReply,
   getNovaSystemPrompt,
   summarizeForLead,
   type NovaMode,
@@ -221,19 +222,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
-    if (!apiKey) {
-      return NextResponse.json(
-        {
-          reply:
-            'Nova is almost ready, but the AI key is not configured yet. Please use WhatsApp or Telegram for now.',
-          showHandoff: true,
-          mode: 'public_sales',
-        },
-        { status: 200 }
-      )
-    }
-
     const body = await req.json() as RequestBody
     const messages = Array.isArray(body.messages) ? body.messages.slice(-20) : []
     const latest = messages[messages.length - 1]
@@ -262,17 +250,30 @@ export async function POST(req: NextRequest) {
     const phone = body.visitor?.phone || extractPhone(combinedText) || undefined
     const handoffByText = detectHandoffIntent(latest.content)
 
-    const client = new Anthropic({ apiKey })
-    const response = await client.messages.create({
-      model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
-      max_tokens: 700,
-      system: getNovaSystemPrompt(mode),
-      messages: modelMessages,
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    let reply = generateNovaFallbackReply({
+      mode,
+      serviceInterest,
+      latestMessage: latest.content,
+      handoff: handoffByText,
     })
 
-    const reply = response.content[0]?.type === 'text'
-      ? response.content[0].text
-      : 'I can help, but I need to connect you with the PurpleSoftHub team for that.'
+    if (apiKey) {
+      try {
+        const client = new Anthropic({ apiKey })
+        const response = await client.messages.create({
+          model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
+          max_tokens: 700,
+          system: getNovaSystemPrompt(mode),
+          messages: modelMessages,
+        })
+
+        reply = response.content[0]?.type === 'text' ? response.content[0].text : reply
+      } catch (error) {
+        console.warn('Nova AI fallback used:', error)
+      }
+    }
+
     const handoff = handoffByText || /whatsapp|telegram|talk to (a )?(human|person|team)|connect you/i.test(reply)
     const shouldSaveLead = handoff || Boolean(email || phone || serviceInterest)
     const summary = summarizeForLead([...modelMessages, { role: 'assistant', content: reply }])
