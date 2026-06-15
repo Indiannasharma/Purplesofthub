@@ -209,7 +209,10 @@ async function notifySoftclaw(input: {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req.headers)
-    const rl = await checkRateLimit(rateLimiters.chat, ip)
+    const rl = await checkRateLimit(rateLimiters.chat, ip).catch((error) => {
+      console.warn('Nova rate limit skipped:', error)
+      return { ok: true, remaining: 999, resetAt: Date.now() + 600000 }
+    })
     if (!rl.ok) {
       const retryAfterSec = Math.ceil((rl.resetAt - Date.now()) / 1000)
       return NextResponse.json(
