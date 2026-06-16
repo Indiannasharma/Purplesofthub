@@ -155,6 +155,7 @@ export function formatNovaPlainText(text: string) {
     .replace(/__([^_]+)__/g, '$1')
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^\s*[-*]\s+/gm, '- ')
+    .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 }
