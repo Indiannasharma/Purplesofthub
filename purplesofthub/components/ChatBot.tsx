@@ -4,9 +4,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import {
   Bot,
-  BriefcaseBusiness,
   ChevronDown,
-  Loader2,
   MessageCircle,
   Send,
   Sparkles,
@@ -93,6 +91,7 @@ export default function ChatBot() {
   const [messages, setMessages] = useState<NovaUiMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [introTyping, setIntroTyping] = useState(false)
   const [showHandoff, setShowHandoff] = useState(false)
   const [leadSaved, setLeadSaved] = useState(false)
   const [sessionId, setSessionId] = useState('')
@@ -110,19 +109,34 @@ export default function ChatBot() {
   }, [])
 
   useEffect(() => {
-    setMessages([{ role: 'assistant', content: copy.firstMessage }])
+    setMessages([])
     setShowHandoff(false)
     setLeadSaved(false)
   }, [copy.firstMessage, mode])
 
   useEffect(() => {
+    if (!open || messages.length > 0) return
+
+    setIntroTyping(true)
+    const introTimer = window.setTimeout(() => {
+      setMessages([{ role: 'assistant', content: copy.firstMessage }])
+      setIntroTyping(false)
+    }, 1100)
+
+    return () => {
+      window.clearTimeout(introTimer)
+      setIntroTyping(false)
+    }
+  }, [copy.firstMessage, messages.length, open])
+
+  useEffect(() => {
     if (!scrollRef.current) return
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [messages, loading, open])
+  }, [messages, loading, introTyping, open])
 
   async function sendMessage(text: string) {
     const clean = text.trim()
-    if (!clean || loading) return
+    if (!clean || loading || introTyping) return
 
     const nextMessages: NovaUiMessage[] = [...messages, { role: 'user', content: clean }]
     setMessages(nextMessages)
@@ -153,7 +167,7 @@ export default function ChatBot() {
           content: data.reply || 'Nova had trouble answering. Please use WhatsApp or Telegram for help.',
         },
       ])
-      setShowHandoff(Boolean(data.showHandoff))
+      setShowHandoff(Boolean(data.showHandoff) && mode !== 'admin_ops')
       if (data.leadSaved) setLeadSaved(true)
     } catch {
       setMessages((current) => [
@@ -201,14 +215,24 @@ export default function ChatBot() {
 
           <div className="nova-messages" ref={scrollRef}>
             {messages.map((message, index) => (
-              <div key={`${message.role}-${index}`} className={`nova-message ${message.role}`}>
-                {message.content}
+              <div key={`${message.role}-${index}`} className={`nova-message-row ${message.role}`}>
+                {message.role === 'assistant' && <NovaAvatar size="sm" />}
+                <div className={`nova-message ${message.role}`}>
+                  {message.content}
+                </div>
               </div>
             ))}
-            {loading && (
-              <div className="nova-message assistant loading">
-                <Loader2 size={16} />
-                Thinking through the best next step...
+            {(introTyping || loading) && (
+              <div className="nova-message-row assistant">
+                <NovaAvatar size="sm" />
+                <div className="nova-message assistant loading" aria-label="Nova is typing">
+                  <span>Nova is typing</span>
+                  <span className="nova-typing-dots" aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -239,9 +263,9 @@ export default function ChatBot() {
             </details>
           )}
 
-          {(showHandoff || mode !== 'admin_ops') && (
+          {showHandoff && (
             <div className="nova-handoff">
-              <p>Prefer a direct conversation?</p>
+              <p>Nova can connect you directly.</p>
               <div>
                 <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                 <a href={TELEGRAM_LINK} target="_blank" rel="noopener noreferrer">Telegram</a>
@@ -256,7 +280,7 @@ export default function ChatBot() {
               placeholder={copy.placeholder}
               aria-label="Message Nova"
             />
-            <button type="submit" disabled={loading || !input.trim()} aria-label="Send message">
+            <button type="submit" disabled={loading || introTyping || !input.trim()} aria-label="Send message">
               <Send size={18} />
             </button>
           </form>
@@ -467,6 +491,92 @@ export default function ChatBot() {
           gap: 10px;
         }
 
+        .nova-message-row {
+          display: flex;
+          align-items: flex-end;
+          gap: 8px;
+          width: 100%;
+        }
+
+        .nova-message-row.user {
+          justify-content: flex-end;
+        }
+
+        .nova-message-row.assistant {
+          justify-content: flex-start;
+        }
+
+        .nova-avatar {
+          position: relative;
+          flex: 0 0 auto;
+          display: grid;
+          place-items: center;
+          border-radius: 999px;
+          background:
+            radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.9), transparent 20%),
+            linear-gradient(135deg, #7c3aed, #06b6d4 58%, #22c55e);
+          box-shadow: 0 12px 28px rgba(6, 182, 212, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.38);
+        }
+
+        .nova-avatar.md {
+          width: 42px;
+          height: 42px;
+        }
+
+        .nova-avatar.sm {
+          width: 30px;
+          height: 30px;
+        }
+
+        .nova-avatar-face {
+          position: relative;
+          width: 68%;
+          height: 58%;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.88);
+          box-shadow: inset 0 -5px 10px rgba(124, 58, 237, 0.14);
+        }
+
+        .nova-avatar-eye {
+          position: absolute;
+          top: 33%;
+          width: 4px;
+          height: 4px;
+          border-radius: 999px;
+          background: #7c3aed;
+        }
+
+        .nova-avatar-eye.left {
+          left: 28%;
+        }
+
+        .nova-avatar-eye.right {
+          right: 28%;
+        }
+
+        .nova-avatar-smile {
+          position: absolute;
+          left: 50%;
+          bottom: 22%;
+          width: 12px;
+          height: 6px;
+          border-bottom: 2px solid #06b6d4;
+          border-radius: 0 0 999px 999px;
+          transform: translateX(-50%);
+        }
+
+        .nova-avatar-status {
+          position: absolute;
+          right: -1px;
+          bottom: -1px;
+          width: 9px;
+          height: 9px;
+          border-radius: 999px;
+          background: #22c55e;
+          border: 2px solid var(--nova-panel-bg);
+        }
+
         .nova-message {
           width: fit-content;
           max-width: 88%;
@@ -497,8 +607,31 @@ export default function ChatBot() {
           gap: 8px;
         }
 
-        .nova-message.loading svg {
-          animation: nova-spin 0.8s linear infinite;
+        .nova-typing-dots {
+          display: inline-flex;
+          gap: 3px;
+          align-items: center;
+          transform: translateY(1px);
+        }
+
+        .nova-typing-dots i {
+          width: 5px;
+          height: 5px;
+          border-radius: 999px;
+          background: #7c3aed;
+          animation: nova-dot 1s ease-in-out infinite;
+        }
+
+        .nova-shell[data-theme='dark'] .nova-typing-dots i {
+          background: #a5b4fc;
+        }
+
+        .nova-typing-dots i:nth-child(2) {
+          animation-delay: 0.15s;
+        }
+
+        .nova-typing-dots i:nth-child(3) {
+          animation-delay: 0.3s;
         }
 
         .nova-shortcuts {
@@ -655,9 +788,16 @@ export default function ChatBot() {
           cursor: not-allowed;
         }
 
-        @keyframes nova-spin {
-          to {
-            transform: rotate(360deg);
+        @keyframes nova-dot {
+          0%,
+          80%,
+          100% {
+            opacity: 0.35;
+            transform: translateY(0);
+          }
+          40% {
+            opacity: 1;
+            transform: translateY(-3px);
           }
         }
 
@@ -730,7 +870,7 @@ export default function ChatBot() {
 
         @media (prefers-reduced-motion: reduce) {
           .nova-fab,
-          .nova-message.loading svg {
+          .nova-typing-dots i {
             animation: none;
             transition: none;
           }
@@ -761,6 +901,19 @@ export default function ChatBot() {
           }
         }
       `}</style>
+    </div>
+  )
+}
+
+function NovaAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
+  return (
+    <div className={`nova-avatar ${size}`} aria-hidden="true">
+      <div className="nova-avatar-face">
+        <span className="nova-avatar-eye left" />
+        <span className="nova-avatar-eye right" />
+        <span className="nova-avatar-smile" />
+      </div>
+      <span className="nova-avatar-status" />
     </div>
   )
 }
