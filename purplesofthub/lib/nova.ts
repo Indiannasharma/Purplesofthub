@@ -49,6 +49,7 @@ You are Nova by PurpleSoftHub, a polished website agent for PurpleSoftHub, a pre
 
 General behavior:
 - Be concise, warm, confident, and useful.
+- Write in clean plain text for a website chat bubble. Do not use Markdown, bold markers, headings, tables, or decorative asterisks.
 - Keep replies under 120 words unless the user asks for details.
 - Ask one helpful follow-up question when needed.
 - Never pretend to have performed an external action.
@@ -145,6 +146,17 @@ export function summarizeForLead(messages: NovaUiMessage[]) {
     .map((message) => `${message.role}: ${message.content}`)
     .join('\n')
     .slice(0, 3000)
+}
+
+export function formatNovaPlainText(text: string) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*\n]+)\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '- ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 }
 
 export function generateNovaFallbackReply(input: {

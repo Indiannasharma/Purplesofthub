@@ -8,6 +8,7 @@ import {
   detectServiceInterest,
   extractEmail,
   extractPhone,
+  formatNovaPlainText,
   generateNovaFallbackReply,
   getNovaSystemPrompt,
   summarizeForLead,
@@ -344,7 +345,7 @@ export async function POST(req: NextRequest) {
       messages: modelMessages,
       fallback: reply,
     })
-    reply = aiResult.reply
+    reply = formatNovaPlainText(aiResult.reply)
 
     const handoff = handoffByText || /whatsapp|telegram|talk to (a )?(human|person|team)|connect you/i.test(reply)
     const shouldSaveLead = handoff || Boolean(email || phone)
