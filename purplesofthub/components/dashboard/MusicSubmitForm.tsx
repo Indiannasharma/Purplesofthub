@@ -25,7 +25,7 @@ function FieldLabel({
   required?: boolean
 }) {
   return (
-    <label className="mb-2 block text-[13px] font-bold text-slate-800 dark:text-white">
+    <label className="mb-2 block text-[12px] font-black uppercase tracking-[0.08em] text-slate-700 dark:text-slate-200">
       {children}
       {required && <span className="ml-1 text-brand-400">*</span>}
     </label>
@@ -42,20 +42,23 @@ function SectionTitle({
   subtitle: string
 }) {
   return (
-    <div className="mb-4 flex items-start gap-3 sm:mb-5">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10 text-brand-400 sm:h-10 sm:w-10">
+    <div className="mb-5 flex items-start gap-3">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-300/25 bg-gradient-to-br from-brand-500/20 to-cyan-400/10 text-brand-200 shadow-lg shadow-brand-950/20">
         {icon}
       </div>
       <div>
-        <h4 className="text-sm font-black text-slate-950 dark:text-white">{title}</h4>
-        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-bodydark2">{subtitle}</p>
+        <h4 className="text-[15px] font-black text-slate-950 dark:text-white">{title}</h4>
+        <p className="mt-1 text-[13px] leading-5 text-slate-500 dark:text-slate-400">{subtitle}</p>
       </div>
     </div>
   )
 }
 
 const inputClass =
-  'h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#111827] dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-300 dark:focus:ring-brand-300/15'
+  'h-[52px] w-full rounded-xl border border-slate-200 bg-white px-4 text-[15px] font-bold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:shadow-none dark:placeholder:text-slate-500 dark:focus:border-brand-300 dark:focus:bg-[#111a2e] dark:focus:ring-brand-300/15'
+
+const panelClass =
+  'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 dark:border-white/10 dark:bg-white/[0.045] dark:shadow-none sm:p-5'
 
 export default function MusicSubmitForm({
   planName,
@@ -203,11 +206,11 @@ export default function MusicSubmitForm({
   }
 
   const formContent = (
-    <div className="fixed inset-0 z-[10000] flex items-stretch justify-center overflow-hidden bg-slate-950/75 p-0 backdrop-blur-md sm:p-5 lg:items-center">
-      <div className="relative flex h-dvh max-h-dvh w-full max-w-full flex-col overflow-hidden border-0 border-white/10 bg-white shadow-2xl shadow-brand-950/30 dark:bg-[#0b1020] sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-2xl sm:border">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_25%_0%,rgba(168,85,247,0.38),transparent_34%),radial-gradient(circle_at_82%_12%,rgba(34,211,238,0.22),transparent_32%)]" />
+    <div className="fixed inset-0 z-[10000] flex items-stretch justify-center overflow-hidden bg-slate-950/80 p-0 backdrop-blur-md sm:p-5 lg:items-center">
+      <div className="relative flex h-dvh max-h-dvh w-full max-w-full flex-col overflow-hidden border-0 border-white/10 bg-white shadow-2xl shadow-brand-950/40 dark:bg-[#080d1a] sm:h-auto sm:max-h-[92dvh] sm:max-w-6xl sm:rounded-[22px] sm:border">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[radial-gradient(circle_at_18%_0%,rgba(168,85,247,0.42),transparent_36%),radial-gradient(circle_at_80%_10%,rgba(34,211,238,0.22),transparent_34%),linear-gradient(135deg,rgba(124,58,237,0.14),transparent_42%)]" />
 
-        <div className="relative border-b border-white/10 bg-slate-950 px-4 py-4 text-white sm:px-7 sm:py-5">
+        <div className="relative border-b border-white/10 bg-slate-950/95 px-4 py-4 text-white sm:px-7 sm:py-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -219,10 +222,10 @@ export default function MusicSubmitForm({
                   {planType}
                 </span>
               </div>
-              <h3 className="text-xl font-black tracking-tight text-white sm:text-3xl">
+              <h3 className="max-w-3xl text-2xl font-black leading-none tracking-tight text-white sm:text-4xl">
                 Submit your music campaign
               </h3>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 max-sm:hidden">
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 max-sm:hidden">
                 Send us the release details, platform links, contact information, and campaign target so the team can prepare your rollout properly.
               </p>
               <p className="mt-2 max-w-[18rem] truncate text-xs font-bold text-slate-300 sm:hidden">
@@ -234,24 +237,27 @@ export default function MusicSubmitForm({
               type="button"
               onClick={onClose}
               aria-label="Close form"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-white shadow-lg shadow-black/20 transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
             >
               <X size={18} />
             </button>
           </div>
 
-          <div className="mt-5 hidden gap-3 sm:grid sm:grid-cols-3">
-            <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
+          <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Plan</p>
-              <p className="mt-1 truncate text-sm font-black text-white">{planName}</p>
+              <p className="mt-1 truncate text-base font-black text-white">{planName}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Package</p>
-              <p className="mt-1 text-sm font-black text-white">{displayPlanPrice}</p>
+              <p className="mt-1 text-base font-black text-white">{displayPlanPrice}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Status</p>
-              <p className="mt-1 text-sm font-black text-white">Ready for review</p>
+              <p className="mt-1 inline-flex items-center gap-2 text-base font-black text-white">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.85)]" />
+                Ready for review
+              </p>
             </div>
           </div>
         </div>
@@ -264,8 +270,8 @@ export default function MusicSubmitForm({
               </div>
             )}
 
-            <div className="grid gap-4 sm:gap-5">
-              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+            <div className="mx-auto grid max-w-5xl gap-4 sm:gap-5">
+              <div className={panelClass}>
                 <SectionTitle
                   icon={<Music2 size={18} />}
                   title="Release details"
@@ -344,9 +350,9 @@ export default function MusicSubmitForm({
                     </div>
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <div className={panelClass}>
                 <SectionTitle
                   icon={<Link2 size={18} />}
                   title="Music links"
@@ -390,9 +396,9 @@ export default function MusicSubmitForm({
                     />
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <div className={panelClass}>
                 <SectionTitle
                   icon={<Mail size={18} />}
                   title="Contact and budget"
@@ -442,9 +448,9 @@ export default function MusicSubmitForm({
                     />
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <div className={panelClass}>
                 <SectionTitle
                   icon={<Sparkles size={18} />}
                   title="Target platforms"
@@ -463,8 +469,8 @@ export default function MusicSubmitForm({
                         disabled={loading}
                         className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left text-sm font-black transition focus:outline-none focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 ${
                           selected
-                            ? 'border-brand-400 bg-brand-500 text-white shadow-lg shadow-brand-500/20'
-                            : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-brand-300 hover:bg-brand-50 dark:border-white/10 dark:bg-[#111827] dark:text-white dark:hover:border-brand-300/50 dark:hover:bg-brand-500/10'
+                            ? 'border-brand-300 bg-gradient-to-r from-brand-600 to-fuchsia-500 text-white shadow-lg shadow-brand-500/25'
+                            : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-brand-300 hover:bg-brand-50 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:hover:border-brand-300/50 dark:hover:bg-brand-500/10'
                         }`}
                       >
                         <span className="min-w-0 break-words">{platform}</span>
@@ -479,9 +485,9 @@ export default function MusicSubmitForm({
                     )
                   })}
                 </div>
-              </section>
+              </div>
 
-              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <div className={panelClass}>
                 <SectionTitle
                   icon={<Send size={18} />}
                   title="Campaign notes"
@@ -493,15 +499,15 @@ export default function MusicSubmitForm({
                   onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Example: Focus on Afrobeats listeners in Lagos, Accra, London, and Toronto..."
                   rows={4}
-                  className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#111827] dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-300"
+                  className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-[15px] font-semibold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:shadow-none dark:placeholder:text-slate-500 dark:focus:border-brand-300"
                   disabled={loading}
                 />
-              </section>
+              </div>
             </div>
           </div>
 
-          <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-200 bg-white/95 p-3 backdrop-blur dark:border-white/10 dark:bg-[#0b1020]/95 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
-            <p className="text-xs leading-5 text-slate-500 dark:text-bodydark2 max-sm:hidden">
+          <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-200 bg-white/95 p-3 backdrop-blur dark:border-white/10 dark:bg-[#080d1a]/95 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
+            <p className="text-xs leading-5 text-slate-500 dark:text-slate-400 max-sm:hidden">
               Required fields are marked with <span className="font-black text-brand-400">*</span>. Your submission goes straight to the Music dashboard.
             </p>
             <div className="flex gap-3 sm:shrink-0">
@@ -509,14 +515,14 @@ export default function MusicSubmitForm({
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="h-11 flex-1 rounded-xl border border-slate-200 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10 sm:flex-none"
+                className="h-12 flex-1 rounded-xl border border-slate-200 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10 sm:flex-none"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="h-11 flex-1 rounded-xl bg-gradient-to-r from-brand-600 via-brand-500 to-fuchsia-500 px-5 text-sm font-black text-white shadow-lg shadow-brand-500/25 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
+                className="h-12 flex-1 rounded-xl bg-gradient-to-r from-brand-600 via-brand-500 to-fuchsia-500 px-6 text-sm font-black text-white shadow-lg shadow-brand-500/30 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none"
               >
                 {loading ? 'Submitting...' : 'Submit music'}
               </button>
