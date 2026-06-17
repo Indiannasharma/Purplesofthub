@@ -2,7 +2,8 @@
 
 import type { ReactNode } from 'react'
 import { CalendarDays, Check, ChevronDown, Link2, Mail, Music2, Phone, Send, Sparkles, Target, UserRound, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
 
 interface MusicSubmitFormProps {
@@ -43,8 +44,8 @@ function SectionTitle({
   subtitle: string
 }) {
   return (
-    <div className="mb-5 flex items-start gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10 text-brand-400">
+    <div className="mb-4 flex items-start gap-3 sm:mb-5">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10 text-brand-400 sm:h-10 sm:w-10">
         {icon}
       </div>
       <div>
@@ -65,6 +66,7 @@ export default function MusicSubmitForm({
   onSuccess,
   onClose,
 }: MusicSubmitFormProps) {
+  const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
@@ -82,6 +84,10 @@ export default function MusicSubmitForm({
     description: '',
     platforms: [] as string[],
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const commonPlatforms = [
     'Spotify',
@@ -195,12 +201,12 @@ export default function MusicSubmitForm({
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-3 backdrop-blur-md sm:p-5">
-      <div className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl shadow-brand-950/30 dark:bg-[#0b1020]">
+  const formContent = (
+    <div className="fixed inset-0 z-[10000] flex items-stretch justify-center overflow-hidden bg-slate-950/75 p-0 backdrop-blur-md sm:p-5 lg:items-center">
+      <div className="relative flex h-dvh max-h-dvh w-full max-w-full flex-col overflow-hidden border-0 border-white/10 bg-white shadow-2xl shadow-brand-950/30 dark:bg-[#0b1020] sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-2xl sm:border">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_25%_0%,rgba(168,85,247,0.38),transparent_34%),radial-gradient(circle_at_82%_12%,rgba(34,211,238,0.22),transparent_32%)]" />
 
-        <div className="relative border-b border-white/10 bg-slate-950 px-5 py-5 text-white sm:px-7">
+        <div className="relative border-b border-white/10 bg-slate-950 px-4 py-4 text-white sm:px-7 sm:py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -212,11 +218,14 @@ export default function MusicSubmitForm({
                   {planType}
                 </span>
               </div>
-              <h3 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+              <h3 className="text-xl font-black tracking-tight text-white sm:text-3xl">
                 Submit your music campaign
               </h3>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 max-sm:hidden">
                 Send us the release details, platform links, contact information, and campaign target so the team can prepare your rollout properly.
+              </p>
+              <p className="mt-2 max-w-[18rem] truncate text-xs font-bold text-slate-300 sm:hidden">
+                {planName} · {formatPlanPrice(planPrice)}
               </p>
             </div>
 
@@ -230,16 +239,16 @@ export default function MusicSubmitForm({
             </button>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur">
+          <div className="mt-5 hidden gap-3 sm:grid sm:grid-cols-3">
+            <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Plan</p>
               <p className="mt-1 truncate text-sm font-black text-white">{planName}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur">
+            <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Package</p>
               <p className="mt-1 text-sm font-black text-white">{formatPlanPrice(planPrice)}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/8 p-4 backdrop-blur">
+            <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Status</p>
               <p className="mt-1 text-sm font-black text-white">Ready for review</p>
             </div>
@@ -247,22 +256,22 @@ export default function MusicSubmitForm({
         </div>
 
         <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 p-4 dark:bg-[#070b16] sm:p-6">
+          <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 p-3 dark:bg-[#070b16] sm:p-6">
             {error && (
-              <div className="mb-5 rounded-2xl border border-red-400/25 bg-red-500/10 p-4 text-sm font-semibold text-red-600 dark:text-red-300">
+              <div className="mb-4 rounded-xl border border-red-400/25 bg-red-500/10 p-4 text-sm font-semibold text-red-600 dark:text-red-300 sm:mb-5">
                 {error}
               </div>
             )}
 
-            <div className="grid gap-5">
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+            <div className="grid gap-4 sm:gap-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
                 <SectionTitle
                   icon={<Music2 size={18} />}
                   title="Release details"
                   subtitle="Tell us what you are submitting and the exact campaign direction."
                 />
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <div>
                     <FieldLabel required>Track title</FieldLabel>
                     <input
@@ -316,7 +325,7 @@ export default function MusicSubmitForm({
                     </div>
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="lg:col-span-2">
                     <FieldLabel required>Campaign goal</FieldLabel>
                     <div className="relative">
                       <Target className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
@@ -336,15 +345,15 @@ export default function MusicSubmitForm({
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
                 <SectionTitle
                   icon={<Link2 size={18} />}
                   title="Music links"
                   subtitle="Add existing streaming links, smart links, or upload references if available."
                 />
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="md:col-span-2">
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <div className="lg:col-span-2">
                     <FieldLabel>Song upload or smart link</FieldLabel>
                     <input
                       type="url"
@@ -382,14 +391,14 @@ export default function MusicSubmitForm({
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
                 <SectionTitle
                   icon={<Mail size={18} />}
                   title="Contact and budget"
                   subtitle="This helps the team confirm campaign scope and follow up fast."
                 />
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <div>
                     <FieldLabel>Contact email</FieldLabel>
                     <div className="relative">
@@ -420,7 +429,7 @@ export default function MusicSubmitForm({
                     </div>
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="lg:col-span-2">
                     <FieldLabel>Budget / campaign range</FieldLabel>
                     <input
                       type="text"
@@ -434,14 +443,14 @@ export default function MusicSubmitForm({
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
                 <SectionTitle
                   icon={<Sparkles size={18} />}
                   title="Target platforms"
                   subtitle="Select every platform or channel you want included in the release or campaign."
                 />
 
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-3">
                   {commonPlatforms.map(platform => {
                     const selected = form.platforms.includes(platform)
 
@@ -457,7 +466,7 @@ export default function MusicSubmitForm({
                             : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-brand-300 hover:bg-brand-50 dark:border-white/10 dark:bg-[#111827] dark:text-white dark:hover:border-brand-300/50 dark:hover:bg-brand-500/10'
                         }`}
                       >
-                        <span className="min-w-0 truncate">{platform}</span>
+                        <span className="min-w-0 break-words">{platform}</span>
                         <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${
                           selected
                             ? 'border-white/30 bg-white/20 text-white'
@@ -471,7 +480,7 @@ export default function MusicSubmitForm({
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.035] sm:p-5">
                 <SectionTitle
                   icon={<Send size={18} />}
                   title="Campaign notes"
@@ -490,8 +499,8 @@ export default function MusicSubmitForm({
             </div>
           </div>
 
-          <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur dark:border-white/10 dark:bg-[#0b1020]/95 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p className="text-xs leading-5 text-slate-500 dark:text-bodydark2">
+          <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-200 bg-white/95 p-3 backdrop-blur dark:border-white/10 dark:bg-[#0b1020]/95 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
+            <p className="text-xs leading-5 text-slate-500 dark:text-bodydark2 max-sm:hidden">
               Required fields are marked with <span className="font-black text-brand-400">*</span>. Your submission goes straight to the Music dashboard.
             </p>
             <div className="flex gap-3 sm:shrink-0">
@@ -516,4 +525,8 @@ export default function MusicSubmitForm({
       </div>
     </div>
   )
+
+  if (!mounted) return null
+
+  return createPortal(formContent, document.body)
 }
