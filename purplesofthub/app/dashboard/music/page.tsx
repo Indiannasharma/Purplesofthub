@@ -187,7 +187,7 @@ export default function ClientMusicPage() {
           Submit artist, release, distribution, and promotion campaign data.
         </p>
         <div style={{ marginTop: "14px" }}>
-          <CurrencySwitcher compact />
+          <CurrencySwitcher compact dropdownAlign="left" />
         </div>
       </div>
 

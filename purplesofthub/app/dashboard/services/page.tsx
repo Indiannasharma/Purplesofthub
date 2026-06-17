@@ -60,7 +60,7 @@ export default function DashboardServicesPage() {
           Choose a service to get started
         </p>
         <div style={{ marginTop: '14px' }}>
-          <CurrencySwitcher compact />
+          <CurrencySwitcher compact dropdownAlign="left" />
         </div>
       </div>
 

@@ -66,7 +66,7 @@ export default function InvoicesClient({ invoices }: Props) {
           {invoices.length} total invoices
         </p>
         <div style={{ marginTop: '14px' }}>
-          <CurrencySwitcher compact />
+          <CurrencySwitcher compact dropdownAlign="left" />
         </div>
       </div>
 

@@ -4,15 +4,20 @@ import { useEffect, useRef, useState } from 'react'
 import { CURRENCY_CONFIG, SUPPORTED_CURRENCIES } from '@/lib/pricing/currency'
 import { useCurrency } from '@/context/CurrencyContext'
 
+type DropdownAlign = 'left' | 'right' | 'auto'
+
 interface Props {
   compact?: boolean
   onChange?: () => void
+  dropdownAlign?: DropdownAlign
 }
 
-export default function CurrencySwitcher({ compact = false, onChange }: Props) {
+export default function CurrencySwitcher({ compact = false, onChange, dropdownAlign = 'auto' }: Props) {
   const { currency, setCurrency } = useCurrency()
   const [open, setOpen] = useState(false)
+  const [resolvedAlign, setResolvedAlign] = useState<Exclude<DropdownAlign, 'auto'>>('right')
   const rootRef = useRef<HTMLDivElement>(null)
+  const dropdownWidth = compact ? 118 : 142
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -24,6 +29,32 @@ export default function CurrencySwitcher({ compact = false, onChange }: Props) {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (!open || dropdownAlign !== 'auto') {
+      setResolvedAlign(dropdownAlign === 'left' ? 'left' : 'right')
+      return
+    }
+
+    const rect = rootRef.current?.getBoundingClientRect()
+    if (!rect) return
+
+    const rightAlignedLeft = rect.right - dropdownWidth
+    const leftAlignedRight = rect.left + dropdownWidth
+    const viewportWidth = window.innerWidth
+
+    if (rightAlignedLeft < 12) {
+      setResolvedAlign('left')
+      return
+    }
+
+    if (leftAlignedRight > viewportWidth - 12) {
+      setResolvedAlign('right')
+      return
+    }
+
+    setResolvedAlign('right')
+  }, [dropdownAlign, dropdownWidth, open])
 
   return (
     <div
@@ -124,9 +155,10 @@ export default function CurrencySwitcher({ compact = false, onChange }: Props) {
           style={{
             position: 'absolute',
             top: 'calc(100% + 8px)',
-            right: 0,
+            left: resolvedAlign === 'left' ? 0 : 'auto',
+            right: resolvedAlign === 'right' ? 0 : 'auto',
             zIndex: 1200,
-            width: compact ? 118 : 142,
+            width: dropdownWidth,
             padding: 6,
             borderRadius: 12,
             border: '1px solid rgba(168,85,247,0.24)',
