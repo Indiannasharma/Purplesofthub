@@ -2,7 +2,8 @@
 
 import CheckoutModal from '@/app/services/_components/CheckoutModal'
 import type { Service, ServicePlan } from '@/lib/payments/service-plans'
-import { formatPrice } from '@/lib/payments/service-plans'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
+import { useCurrency } from '@/context/CurrencyContext'
 import { useState } from 'react'
 
 interface ServicePlanModalProps {
@@ -23,6 +24,7 @@ function getBillingLabel(plan: ServicePlan) {
 export default function ServicePlanModal({ service, onClose }: ServicePlanModalProps) {
   const [selectedPlan, setSelectedPlan] = useState<ServicePlan | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
+  const { currency } = useCurrency()
 
   const payablePlans = service.plans.filter(plan => !plan.isCustom && plan.priceNGN > 0)
   const customPlans = service.plans.filter(plan => plan.isCustom || plan.priceNGN <= 0)
@@ -137,7 +139,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <p style={{ fontSize: '22px', fontWeight: 900, color: '#a855f7', margin: '0 0 2px' }}>
-                    {formatPrice(plan.priceNGN)}
+                    {formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)}
                   </p>
                   <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
                     {getBillingLabel(plan)}

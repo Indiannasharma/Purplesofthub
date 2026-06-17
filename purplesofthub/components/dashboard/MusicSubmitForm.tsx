@@ -5,18 +5,16 @@ import { CalendarDays, Check, ChevronDown, Link2, Mail, Music2, Phone, Send, Spa
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 interface MusicSubmitFormProps {
   planName: string
   planPrice: number
+  planPriceUSD: number
   planType: 'promotion' | 'distribution'
   onSuccess?: () => void
   onClose: () => void
-}
-
-function formatPlanPrice(price: number) {
-  if (!price) return 'Custom'
-  return price >= 1000 ? `N${price.toLocaleString()}` : `N${price}`
 }
 
 function FieldLabel({
@@ -62,6 +60,7 @@ const inputClass =
 export default function MusicSubmitForm({
   planName,
   planPrice,
+  planPriceUSD,
   planType,
   onSuccess,
   onClose,
@@ -69,6 +68,8 @@ export default function MusicSubmitForm({
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const { currency } = useCurrency()
+  const displayPlanPrice = formatRegionalPrice(planPrice, planPriceUSD, currency)
   const [form, setForm] = useState({
     trackTitle: '',
     artistName: '',
@@ -225,7 +226,7 @@ export default function MusicSubmitForm({
                 Send us the release details, platform links, contact information, and campaign target so the team can prepare your rollout properly.
               </p>
               <p className="mt-2 max-w-[18rem] truncate text-xs font-bold text-slate-300 sm:hidden">
-                {planName} · {formatPlanPrice(planPrice)}
+                {planName} · {displayPlanPrice}
               </p>
             </div>
 
@@ -246,7 +247,7 @@ export default function MusicSubmitForm({
             </div>
             <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Package</p>
-              <p className="mt-1 text-sm font-black text-white">{formatPlanPrice(planPrice)}</p>
+              <p className="mt-1 text-sm font-black text-white">{displayPlanPrice}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/8 p-4 backdrop-blur">
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Status</p>

@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { SERVICES as SERVICE_CATALOG, type ServiceCategory } from '@/lib/payments/service-plans'
 import ServicePlanModal from '@/components/dashboard/ServicePlanModal'
+import CurrencySwitcher from '@/components/pricing/CurrencySwitcher'
+import { useCurrency } from '@/context/CurrencyContext'
+import { formatRegionalPrice } from '@/lib/pricing/currency'
 
 type DashboardService = (typeof SERVICE_CATALOG)[number]
 
@@ -32,6 +35,7 @@ function formatPrice(price: number) {
 export default function DashboardServicesPage() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [selectedService, setSelectedService] = useState<DashboardService | null>(null)
+  const { currency } = useCurrency()
 
   const filteredServices = selectedCategory === 'All'
     ? SERVICE_CATALOG
@@ -55,6 +59,9 @@ export default function DashboardServicesPage() {
         }}>
           Choose a service to get started
         </p>
+        <div style={{ marginTop: '14px' }}>
+          <CurrencySwitcher compact />
+        </div>
       </div>
 
       <div style={{
@@ -187,7 +194,7 @@ export default function DashboardServicesPage() {
                 fontWeight: 700,
                 color: '#a855f7',
               }}>
-                From {formatPrice(service.startingPriceNGN)}
+                From {formatRegionalPrice(service.startingPriceNGN, service.startingPriceUSD, currency)}
               </span>
             </div>
 

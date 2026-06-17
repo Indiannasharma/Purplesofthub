@@ -6,6 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 import { getServiceBySlug, type Service, type ServicePlan } from "@/lib/payments/service-plans";
 import UniversalCheckoutModal from "@/components/checkout/UniversalCheckoutModal";
 import MusicSubmitForm from "@/components/dashboard/MusicSubmitForm";
+import CurrencySwitcher from "@/components/pricing/CurrencySwitcher";
+import { useCurrency } from "@/context/CurrencyContext";
+import { formatRegionalPrice } from "@/lib/pricing/currency";
 
 interface MusicCampaign {
   id: string;
@@ -57,6 +60,7 @@ export default function ClientMusicPage() {
   const [submitPlan, setSubmitPlan] = useState<ServicePlan | null>(null);
   const [submitPlanType, setSubmitPlanType] = useState<PlanType>("promotion");
   const [submitFormOpen, setSubmitFormOpen] = useState(false);
+  const { currency } = useCurrency();
 
   const promotionService = getServiceBySlug("music-promotion");
   const distributionService = getServiceBySlug("music-distribution");
@@ -182,6 +186,9 @@ export default function ClientMusicPage() {
         <p style={{ fontSize: "14px", color: "var(--cmd-body)", margin: 0 }}>
           Submit artist, release, distribution, and promotion campaign data.
         </p>
+        <div style={{ marginTop: "14px" }}>
+          <CurrencySwitcher compact />
+        </div>
       </div>
 
       {planGroups.map((group) => (
@@ -262,7 +269,9 @@ export default function ClientMusicPage() {
                 </p>
                 <div style={{ display: "flex", gap: "16px", marginBottom: "20px", fontSize: "12px", color: "var(--cmd-muted)", flexWrap: "wrap" }}>
                   <span>{plan.delivery}</span>
-                  <span style={{ fontWeight: 800, color: "#a855f7" }}>{formatPrice(plan.priceNGN)}</span>
+                  <span style={{ fontWeight: 800, color: "#a855f7" }}>
+                    {formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)}
+                  </span>
                 </div>
 
                 <div style={{ display: "grid", gap: "8px" }}>
@@ -404,6 +413,7 @@ export default function ClientMusicPage() {
         <MusicSubmitForm
           planName={submitPlan.name}
           planPrice={submitPlan.priceNGN}
+          planPriceUSD={submitPlan.priceUSD}
           planType={submitPlanType}
           onSuccess={handleFormSuccess}
           onClose={() => setSubmitFormOpen(false)}
