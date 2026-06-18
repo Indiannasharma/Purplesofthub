@@ -166,126 +166,219 @@ export default function ClientMusicPage() {
   ];
 
   return (
-    <div className="w-full min-w-0">
-      <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="m-0 text-[22px] font-black leading-tight text-[var(--cmd-heading)] sm:text-2xl">
-            🎵 Music Dashboard
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--cmd-body)]">
-            Submit artist, release, distribution, and promotion campaign data.
-          </p>
-        </div>
-        <div className="w-full sm:w-auto sm:shrink-0">
+    <div style={{ width: "100%", minWidth: 0 }}>
+      <div style={{ marginBottom: "28px" }}>
+        <h1 style={{ fontSize: "24px", fontWeight: 900, color: "var(--cmd-heading)", margin: "0 0 4px", lineHeight: 1.2 }}>
+          🎵 Music Dashboard
+        </h1>
+        <p style={{ fontSize: "14px", color: "var(--cmd-body)", margin: 0, lineHeight: 1.6 }}>
+          Submit artist, release, distribution, and promotion campaign data.
+        </p>
+        <div style={{ marginTop: "14px", width: "fit-content", maxWidth: "100%" }}>
           <CurrencySwitcher compact dropdownAlign="left" />
         </div>
       </div>
 
-      <div className="space-y-8">
-        {planGroups.map((group) => (
-          <section key={group.type} className="min-w-0">
-            <div className="mb-4">
-              <h2 className="m-0 text-lg font-black text-[var(--cmd-heading)]">{group.title}</h2>
-              <p className="mt-1 max-w-3xl text-[13px] leading-6 text-[var(--cmd-body)]">{group.desc}</p>
-            </div>
+      {planGroups.map((group) => (
+        <div key={group.type} style={{ marginBottom: "36px", minWidth: 0 }}>
+          <div style={{ marginBottom: "16px" }}>
+            <h2 style={{ fontSize: "18px", fontWeight: 900, color: "var(--cmd-heading)", margin: "0 0 4px" }}>
+              {group.title}
+            </h2>
+            <p style={{ fontSize: "13px", color: "var(--cmd-body)", margin: 0, lineHeight: 1.6 }}>{group.desc}</p>
+          </div>
 
-            <div className="grid grid-cols-1 gap-4 min-[720px]:grid-cols-2 xl:grid-cols-3">
-              {group.service.plans.filter((plan) => !plan.isCustom).map((plan) => (
-                <article
-                  key={plan.id}
-                  className="relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-brand-500/15 bg-[var(--cmd-card)] p-4 shadow-sm shadow-brand-950/5 sm:p-5"
-                >
-                  <div
-                    className={`absolute inset-x-0 top-0 h-1 ${
-                      group.type === "distribution"
-                        ? "bg-gradient-to-r from-cyan-500 to-brand-600"
-                        : "bg-gradient-to-r from-brand-600 to-pink-500"
-                    }`}
-                  />
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+            gap: "16px",
+            alignItems: "stretch",
+          }}>
+            {group.service.plans.filter((plan) => !plan.isCustom).map((plan) => (
+              <article
+                key={plan.id}
+                style={{
+                  background: "var(--cmd-card)",
+                  border: "1px solid rgba(124,58,237,0.15)",
+                  borderRadius: "16px",
+                  padding: "22px",
+                  position: "relative",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                  minWidth: 0,
+                }}
+              >
+                <div style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "3px",
+                  background: group.type === "distribution"
+                    ? "linear-gradient(90deg, #06b6d4, #7c3aed)"
+                    : "linear-gradient(90deg, #7c3aed, #ec4899)",
+                }} />
 
-                  <div className="mb-4 flex items-start gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10 text-2xl">
-                      {PLAN_ICONS[plan.id] || "🎵"}
-                    </div>
-                    <div className="min-w-0">
-                      <span className="inline-flex rounded-full border border-brand-500/20 bg-brand-500/10 px-2.5 py-1 text-[10px] font-extrabold uppercase text-brand-500">
-                        {group.type}
-                      </span>
-                      <h3 className="mt-2 text-base font-extrabold leading-snug text-[var(--cmd-heading)]">
-                        {plan.name}
-                      </h3>
-                    </div>
-                  </div>
+                <div style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  background: "rgba(124,58,237,0.1)",
+                  border: "1px solid rgba(124,58,237,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                  marginBottom: "16px",
+                  flexShrink: 0,
+                }}>
+                  {PLAN_ICONS[plan.id] || "🎵"}
+                </div>
 
-                  <p className="mb-4 flex-1 text-[13px] leading-6 text-[var(--cmd-body)]">{plan.description}</p>
+                <span style={{
+                  width: "fit-content",
+                  padding: "3px 10px",
+                  borderRadius: "100px",
+                  fontSize: "10px",
+                  fontWeight: 800,
+                  background: "rgba(124,58,237,0.1)",
+                  color: "#a855f7",
+                  border: "1px solid rgba(124,58,237,0.2)",
+                  marginBottom: "12px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}>
+                  {group.type}
+                </span>
 
-                  <div className="mb-5 grid gap-2 rounded-lg border border-brand-500/10 bg-brand-500/[0.04] p-3 text-xs min-[420px]:grid-cols-2">
-                    <span className="font-semibold text-[var(--cmd-muted)]">{plan.delivery}</span>
-                    <span className="font-black text-brand-500 min-[420px]:text-right">
-                      {formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)}
-                    </span>
-                  </div>
+                <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--cmd-heading)", margin: "0 0 8px", lineHeight: 1.25 }}>
+                  {plan.name}
+                </h3>
+                <p style={{ fontSize: "13px", color: "var(--cmd-body)", lineHeight: 1.6, margin: "0 0 16px", flex: 1 }}>
+                  {plan.description}
+                </p>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  marginBottom: "20px",
+                  fontSize: "12px",
+                  color: "var(--cmd-muted)",
+                  flexWrap: "wrap",
+                  minWidth: 0,
+                }}>
+                  <span style={{ minWidth: 0 }}>{plan.delivery}</span>
+                  <span style={{ fontWeight: 800, color: "#a855f7", whiteSpace: "nowrap" }}>
+                    {formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)}
+                  </span>
+                </div>
 
-                  <div className="grid gap-2">
-                    <button
-                      onClick={() => openSubmitForm(plan, group.type)}
-                      className="min-h-11 w-full rounded-lg border-0 bg-gradient-to-br from-brand-600 to-brand-400 px-4 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-600/20 transition hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-brand-500/20"
-                    >
-                      Submit Artist Data →
-                    </button>
-                    <button
-                      onClick={() => setCheckout({ service: group.service, plan })}
-                      className="min-h-11 w-full rounded-lg border border-brand-500/30 bg-transparent px-4 py-3 text-[13px] font-extrabold text-brand-500 transition hover:bg-brand-500/10 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
-                    >
-                      Pay / Checkout →
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+                <div style={{ display: "grid", gap: "8px" }}>
+                  <button
+                    onClick={() => openSubmitForm(plan, group.type)}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      minHeight: "44px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+                      color: "#fff",
+                      fontSize: "14px",
+                      fontWeight: 800,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    Submit Artist Data →
+                  </button>
+                  <button
+                    onClick={() => setCheckout({ service: group.service, plan })}
+                    style={{
+                      width: "100%",
+                      padding: "11px",
+                      minHeight: "44px",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(124,58,237,0.28)",
+                      background: "transparent",
+                      color: "#a855f7",
+                      fontSize: "13px",
+                      fontWeight: 800,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    Pay / Checkout →
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {campaigns.length > 0 ? (
-        <section className="mt-9">
-          <h2 className="mb-4 text-lg font-extrabold text-[var(--cmd-heading)]">My Music Campaigns</h2>
-          <div className="flex flex-col gap-3">
+        <div style={{ marginTop: "4px" }}>
+          <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--cmd-heading)", margin: "0 0 16px" }}>
+            My Music Campaigns
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {campaigns.map((campaign) => {
               const s = STATUS_STYLES[campaign.status] || STATUS_STYLES.pending;
 
               return (
                 <article
                   key={campaign.id}
-                  className="flex min-w-0 flex-col gap-4 rounded-xl border border-brand-500/15 bg-[var(--cmd-card)] p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5"
+                  style={{
+                    background: "var(--cmd-card)",
+                    border: "1px solid rgba(124,58,237,0.12)",
+                    borderRadius: "14px",
+                    padding: "20px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    gap: "16px",
+                    flexWrap: "wrap",
+                    minWidth: 0,
+                  }}
                 >
-                  <div className="min-w-0">
-                    <h5 className="m-0 break-words text-[15px] font-extrabold text-[var(--cmd-heading)]">
+                  <div style={{ minWidth: 0 }}>
+                    <h5 style={{ fontSize: "15px", fontWeight: 800, color: "var(--cmd-heading)", margin: "0 0 4px", overflowWrap: "anywhere" }}>
                       {campaign.track_title}
                     </h5>
-                    <p className="mt-1 text-[13px] text-[var(--cmd-muted)]">
+                    <p style={{ fontSize: "13px", color: "var(--cmd-muted)", margin: "0 0 10px" }}>
                       {campaign.artist_name} · {campaign.plan_name || "Music campaign"}
                     </p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                       {(campaign.platforms || []).slice(0, 4).map((platform) => (
-                        <span
-                          key={platform}
-                          className="rounded-full border border-brand-500/20 bg-brand-500/10 px-2.5 py-1 text-[11px] font-semibold text-brand-500"
-                        >
+                        <span key={platform} style={{
+                          fontSize: "11px",
+                          padding: "2px 10px",
+                          borderRadius: "100px",
+                          background: "rgba(124,58,237,0.1)",
+                          color: "#a855f7",
+                          border: "1px solid rgba(124,58,237,0.2)",
+                        }}>
                           {platform}
                         </span>
                       ))}
                     </div>
                   </div>
-
-                  <div className="flex shrink-0 items-center justify-between gap-3 sm:block sm:text-right">
-                    <span
-                      className="inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold capitalize"
-                      style={{ background: s.bg, color: s.color }}
-                    >
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <span style={{
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      padding: "4px 12px",
+                      borderRadius: "100px",
+                      background: s.bg,
+                      color: s.color,
+                      textTransform: "capitalize",
+                    }}>
                       {campaign.status.replace(/_/g, " ")}
                     </span>
-                    <p className="m-0 text-[11px] text-[var(--cmd-muted)] sm:mt-2">
+                    <p style={{ fontSize: "11px", color: "var(--cmd-muted)", margin: "8px 0 0" }}>
                       {format(new Date(campaign.created_at), "MMM d, yyyy")}
                     </p>
                   </div>
@@ -293,10 +386,17 @@ export default function ClientMusicPage() {
               );
             })}
           </div>
-        </section>
+        </div>
       ) : (
-        <div className="mt-8 rounded-xl border border-dashed border-brand-500/25 bg-brand-500/[0.04] px-4 py-8 text-center sm:px-8">
-          <p className="m-0 text-sm leading-6 text-[var(--cmd-muted)]">
+        <div style={{
+          marginTop: "8px",
+          borderRadius: "14px",
+          border: "1px dashed rgba(124,58,237,0.2)",
+          background: "rgba(124,58,237,0.03)",
+          padding: "32px",
+          textAlign: "center",
+        }}>
+          <p style={{ fontSize: "14px", color: "var(--cmd-muted)", margin: 0, lineHeight: 1.6 }}>
             No music campaigns yet. Pick a distribution or promotion plan to submit artist details.
           </p>
         </div>
