@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { CalendarDays, Check, ChevronDown, Link2, Mail, Music2, Phone, Send, Sparkles, Target, UserRound, X } from 'lucide-react'
+import { BadgeCheck, CalendarDays, Check, ChevronDown, Clock3, Link2, Mail, Music2, Phone, Send, Sparkles, Target, UserRound, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
@@ -59,6 +59,28 @@ const inputClass =
 
 const panelClass =
   'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 dark:border-white/10 dark:bg-white/[0.045] dark:shadow-none sm:p-5'
+
+function BriefRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.07] p-3">
+      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-cyan-100">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">{label}</p>
+        <p className="mt-1 truncate text-sm font-black text-white">{value}</p>
+      </div>
+    </div>
+  )
+}
 
 export default function MusicSubmitForm({
   planName,
@@ -210,23 +232,23 @@ export default function MusicSubmitForm({
       <div className="relative flex h-dvh max-h-dvh w-full max-w-full flex-col overflow-hidden border-0 border-white/10 bg-white shadow-2xl shadow-brand-950/40 dark:bg-[#080d1a] sm:h-auto sm:max-h-[92dvh] sm:max-w-6xl sm:rounded-[22px] sm:border">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-[radial-gradient(circle_at_18%_0%,rgba(168,85,247,0.42),transparent_36%),radial-gradient(circle_at_80%_10%,rgba(34,211,238,0.22),transparent_34%),linear-gradient(135deg,rgba(124,58,237,0.14),transparent_42%)]" />
 
-        <div className="relative border-b border-white/10 bg-slate-950/95 px-4 py-4 text-white sm:px-7 sm:py-6">
+        <div className="relative border-b border-white/10 bg-slate-950/95 px-4 py-4 text-white sm:px-7 sm:py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-2 rounded-full border border-brand-300/30 bg-brand-400/15 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-brand-100">
                   <Sparkles size={13} />
-                  Artist intake
+                  Campaign brief
                 </span>
                 <span className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-100">
                   {planType}
                 </span>
               </div>
-              <h3 className="max-w-3xl text-2xl font-black leading-none tracking-tight text-white sm:text-4xl">
-                Submit your music campaign
+              <h3 className="max-w-3xl text-2xl font-black leading-none tracking-tight text-white sm:text-3xl">
+                Submit Music Campaign
               </h3>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 max-sm:hidden">
-                Send us the release details, platform links, contact information, and campaign target so the team can prepare your rollout properly.
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 max-sm:hidden">
+                Send your release details so the PurpleSoftHub music team can prepare the rollout properly.
               </p>
               <p className="mt-2 max-w-[18rem] truncate text-xs font-bold text-slate-300 sm:hidden">
                 {planName} · {displayPlanPrice}
@@ -243,34 +265,52 @@ export default function MusicSubmitForm({
             </button>
           </div>
 
-          <div className="mt-6 hidden gap-3 sm:grid sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Plan</p>
-              <p className="mt-1 truncate text-base font-black text-white">{planName}</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Package</p>
-              <p className="mt-1 text-base font-black text-white">{displayPlanPrice}</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Status</p>
-              <p className="mt-1 inline-flex items-center gap-2 text-base font-black text-white">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.85)]" />
-                Ready for review
-              </p>
-            </div>
+          <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold text-slate-300 sm:hidden">
+            <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">{displayPlanPrice}</span>
+            <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">Team review</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 p-3 dark:bg-[#070b16] sm:p-6">
-            {error && (
-              <div className="mb-4 rounded-xl border border-red-400/25 bg-red-500/10 p-4 text-sm font-semibold text-red-600 dark:text-red-300 sm:mb-5">
-                {error}
-              </div>
-            )}
+          <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 dark:bg-[#070b16] lg:grid lg:grid-cols-[320px_minmax(0,1fr)]">
+            <aside className="relative overflow-hidden bg-slate-950 p-4 text-white sm:p-6 lg:sticky lg:top-0 lg:min-h-full">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(168,85,247,0.28),transparent_34%),radial-gradient(circle_at_90%_20%,rgba(34,211,238,0.16),transparent_32%)]" />
+              <div className="relative">
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/10 shadow-xl shadow-brand-950/40">
+                  <Music2 size={24} />
+                </div>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100">Selected package</p>
+                <h4 className="mt-2 text-2xl font-black leading-tight text-white">{planName}</h4>
+                <p className="mt-2 text-3xl font-black tracking-tight text-white">{displayPlanPrice}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  Complete the brief once. Our team uses it to confirm the campaign direction, platforms, and rollout requirements.
+                </p>
 
-            <div className="mx-auto grid max-w-5xl gap-4 sm:gap-5">
+                <div className="mt-6 grid gap-3">
+                  <BriefRow icon={<BadgeCheck size={17} />} label="Status" value="Ready for team review" />
+                  <BriefRow icon={<Clock3 size={17} />} label="Next step" value="Campaign check-in" />
+                  <BriefRow icon={<Target size={17} />} label="Campaign type" value={planType === 'distribution' ? 'Distribution' : 'Promotion'} />
+                </div>
+
+                <div className="mt-6 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-cyan-100">What happens next</p>
+                  <div className="mt-3 space-y-3 text-sm text-slate-200">
+                    <p className="flex gap-3"><span className="font-black text-cyan-200">1</span> Team reviews your release details.</p>
+                    <p className="flex gap-3"><span className="font-black text-cyan-200">2</span> We confirm links, timing, and campaign focus.</p>
+                    <p className="flex gap-3"><span className="font-black text-cyan-200">3</span> Your rollout moves into the music dashboard.</p>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <div className="p-3 sm:p-6">
+              {error && (
+                <div className="mb-4 rounded-xl border border-red-400/25 bg-red-500/10 p-4 text-sm font-semibold text-red-600 dark:text-red-300 sm:mb-5">
+                  {error}
+                </div>
+              )}
+
+              <div className="mx-auto grid max-w-4xl gap-4 sm:gap-5">
               <div className={panelClass}>
                 <SectionTitle
                   icon={<Music2 size={18} />}
@@ -504,6 +544,7 @@ export default function MusicSubmitForm({
                 />
               </div>
             </div>
+          </div>
           </div>
 
           <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-200 bg-white/95 p-3 backdrop-blur dark:border-white/10 dark:bg-[#080d1a]/95 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
