@@ -25,7 +25,7 @@ function FieldLabel({
   required?: boolean
 }) {
   return (
-    <label className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.06em] text-slate-600 dark:text-slate-300">
+    <label className="mb-2 block text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-600 dark:text-slate-300">
       {children}
       {required && <span className="ml-1 text-brand-400">*</span>}
     </label>
@@ -42,23 +42,23 @@ function SectionTitle({
   subtitle: string
 }) {
   return (
-    <div className="mb-4 flex items-start gap-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand-300/25 bg-gradient-to-br from-brand-500/18 to-cyan-400/10 text-brand-200 shadow-lg shadow-brand-950/20">
+    <div className="mb-4 flex items-start gap-3 sm:mb-5">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-300/25 bg-gradient-to-br from-brand-500/18 to-cyan-400/10 text-brand-200 shadow-lg shadow-brand-950/20">
         {icon}
       </div>
-      <div>
-        <h4 className="text-sm font-extrabold text-slate-950 dark:text-white">{title}</h4>
-        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{subtitle}</p>
+      <div className="min-w-0">
+        <h4 className="text-[15px] font-black text-slate-950 dark:text-white">{title}</h4>
+        <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500 dark:text-slate-400">{subtitle}</p>
       </div>
     </div>
   )
 }
 
 const inputClass =
-  'h-12 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:shadow-none dark:placeholder:text-slate-500 dark:focus:border-brand-300 dark:focus:bg-[#111a2e] dark:focus:ring-brand-300/15'
+  'h-12 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-[15px] font-semibold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:shadow-none dark:placeholder:text-slate-500 dark:focus:border-brand-300 dark:focus:bg-[#111a2e] dark:focus:ring-brand-300/15'
 
 const formSectionClass =
-  'border-b border-slate-200/80 p-3.5 last:border-b-0 dark:border-white/10 sm:p-5'
+  'border-b border-slate-200/80 bg-white px-4 py-5 last:border-b-0 dark:border-white/10 dark:bg-[#0b1220] sm:px-6 sm:py-6'
 
 export default function MusicSubmitForm({
   planName,
@@ -206,11 +206,11 @@ export default function MusicSubmitForm({
   }
 
   const formContent = (
-    <div className="fixed inset-0 z-[10000] flex items-stretch justify-center overflow-hidden bg-slate-950/80 p-0 backdrop-blur-md sm:p-4 lg:items-center">
-      <div className="relative flex h-dvh max-h-dvh w-full max-w-full flex-col overflow-hidden border-0 border-white/10 bg-slate-50 shadow-2xl shadow-brand-950/40 dark:bg-[#070b16] sm:h-auto sm:max-h-[92dvh] sm:max-w-4xl sm:rounded-2xl sm:border">
-        <div className="relative shrink-0 border-b border-white/10 bg-slate-950 px-3.5 py-3.5 text-white sm:px-6 sm:py-4">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(168,85,247,0.32),transparent_34%),radial-gradient(circle_at_84%_18%,rgba(34,211,238,0.18),transparent_30%)]" />
-          <div className="relative flex items-start justify-between gap-4">
+    <div className="fixed inset-0 z-[10000] flex items-stretch justify-center overflow-hidden bg-slate-950/82 p-0 backdrop-blur-md sm:p-4 lg:items-center">
+      <div className="relative flex h-dvh max-h-dvh w-full max-w-full flex-col overflow-hidden border-0 border-white/10 bg-slate-100 shadow-2xl shadow-brand-950/40 dark:bg-[#060a14] sm:h-auto sm:max-h-[92dvh] sm:max-w-5xl sm:rounded-2xl sm:border">
+        <div className="relative shrink-0 overflow-hidden border-b border-white/10 bg-slate-950 px-4 py-4 text-white sm:px-6 sm:py-5">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_0%,rgba(168,85,247,0.35),transparent_32%),radial-gradient(circle_at_92%_18%,rgba(34,211,238,0.2),transparent_30%)]" />
+          <div className="relative flex items-start justify-between gap-3 sm:gap-5">
             <div className="min-w-0">
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-2 rounded-full border border-brand-300/30 bg-brand-400/15 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-brand-100">
@@ -221,11 +221,11 @@ export default function MusicSubmitForm({
                   {planType}
                 </span>
               </div>
-              <h3 className="text-lg font-black leading-tight tracking-tight text-white min-[380px]:text-xl sm:text-2xl">
+              <h3 className="text-xl font-black leading-tight tracking-tight text-white sm:text-2xl">
                 Submit Your Music Campaign
               </h3>
-              <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-300 sm:text-sm max-[420px]:hidden">
-                Share the essentials once. The PurpleSoftHub music team will use this to prepare the rollout.
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-300 max-[430px]:hidden">
+                Send the team the artist, song, platform, and rollout details in one clean brief.
               </p>
             </div>
 
@@ -233,7 +233,7 @@ export default function MusicSubmitForm({
               type="button"
               onClick={onClose}
               aria-label="Close form"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white shadow-lg shadow-black/20 transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-white shadow-lg shadow-black/20 transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
             >
               <X size={18} />
             </button>
@@ -241,16 +241,16 @@ export default function MusicSubmitForm({
         </div>
 
         <form onSubmit={handleSubmit} className="relative flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 overflow-y-auto px-2.5 py-3 sm:px-5 sm:py-5">
-            <div className="mx-auto max-w-3xl">
-              <div className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 dark:border-white/10 dark:bg-white/[0.045] dark:shadow-none sm:mb-4 sm:rounded-2xl">
-                <div className="grid gap-px bg-slate-200/80 dark:bg-white/10 min-[560px]:grid-cols-3">
-                  <div className="bg-white p-3.5 dark:bg-[#0d1424] sm:p-4">
+          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5 sm:py-5">
+            <div className="mx-auto max-w-4xl">
+              <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 dark:border-white/10 dark:bg-[#0b1220] dark:shadow-none">
+                <div className="grid gap-px bg-slate-200/80 dark:bg-white/10 sm:grid-cols-3">
+                  <div className="bg-white p-4 dark:bg-[#0d1424]">
                     <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Selected package</p>
-                    <p className="mt-1 truncate text-sm font-black text-slate-950 dark:text-white">{planName}</p>
+                    <p className="mt-1 break-words text-sm font-black text-slate-950 dark:text-white">{planName}</p>
                     <p className="mt-1 text-lg font-black text-brand-600 dark:text-brand-200">{displayPlanPrice}</p>
                   </div>
-                  <div className="bg-white p-3.5 dark:bg-[#0d1424] sm:p-4">
+                  <div className="bg-white p-4 dark:bg-[#0d1424]">
                     <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Status</p>
                     <p className="mt-2 flex items-center gap-2 text-sm font-extrabold text-slate-950 dark:text-white">
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500">
@@ -259,7 +259,7 @@ export default function MusicSubmitForm({
                       Ready for review
                     </p>
                   </div>
-                  <div className="bg-white p-3.5 dark:bg-[#0d1424] sm:p-4">
+                  <div className="bg-white p-4 dark:bg-[#0d1424]">
                     <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Next step</p>
                     <p className="mt-2 text-sm font-extrabold text-slate-950 dark:text-white">Team check-in</p>
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">We confirm links and timing.</p>
@@ -273,7 +273,7 @@ export default function MusicSubmitForm({
                 </div>
               )}
 
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 dark:border-white/10 dark:bg-white/[0.045] dark:shadow-none sm:rounded-2xl">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5 dark:border-white/10 dark:bg-[#0b1220] dark:shadow-none">
                 <div className={formSectionClass}>
                   <SectionTitle
                     icon={<Music2 size={18} />}
@@ -281,7 +281,7 @@ export default function MusicSubmitForm({
                     subtitle="Start with the song and artist details."
                   />
 
-                  <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-4">
+                  <div className="grid gap-4 lg:grid-cols-2">
                     <div>
                       <FieldLabel required>Track title</FieldLabel>
                       <input
@@ -344,7 +344,7 @@ export default function MusicSubmitForm({
                     subtitle="Choose the goal and platforms for this rollout."
                   />
 
-                  <div className="grid gap-3.5 sm:gap-4">
+                  <div className="grid gap-4">
                     <div>
                       <FieldLabel required>Campaign goal</FieldLabel>
                       <div className="relative">
@@ -370,7 +370,7 @@ export default function MusicSubmitForm({
                           {form.platforms.length} selected
                         </span>
                       </div>
-                      <div className="grid grid-cols-1 gap-2 min-[430px]:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-2.5 min-[440px]:grid-cols-2 lg:grid-cols-3">
                         {commonPlatforms.map(platform => {
                           const selected = form.platforms.includes(platform)
 
@@ -380,7 +380,7 @@ export default function MusicSubmitForm({
                               type="button"
                               onClick={() => handlePlatformToggle(platform)}
                               disabled={loading}
-                              className={`group flex min-h-11 items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-xs font-extrabold leading-4 transition focus:outline-none focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 ${
+                              className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition focus:outline-none focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 ${
                                 selected
                                   ? 'border-brand-300 bg-brand-600 text-white shadow-md shadow-brand-500/20'
                                   : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-brand-300 hover:bg-brand-50 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:hover:border-brand-300/50 dark:hover:bg-brand-500/10'
@@ -421,7 +421,7 @@ export default function MusicSubmitForm({
                     subtitle="Add streaming links, smart links, or reference links if available."
                   />
 
-                  <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-4">
+                  <div className="grid gap-4 lg:grid-cols-2">
                     <div className="lg:col-span-2">
                       <FieldLabel>Song upload or smart link</FieldLabel>
                       <input
@@ -467,7 +467,7 @@ export default function MusicSubmitForm({
                     subtitle="So the team can confirm campaign details quickly."
                   />
 
-                  <div className="grid gap-3.5 lg:grid-cols-2 lg:gap-4">
+                  <div className="grid gap-4 lg:grid-cols-2">
                     <div>
                       <FieldLabel>Contact email</FieldLabel>
                       <div className="relative">
@@ -512,7 +512,7 @@ export default function MusicSubmitForm({
                     onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Example: Focus on Afrobeats listeners in Lagos, Accra, London, and Toronto..."
                     rows={4}
-                    className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3.5 py-3 text-sm font-semibold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:shadow-none dark:placeholder:text-slate-500 dark:focus:border-brand-300"
+                    className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[15px] font-semibold text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#0d1424] dark:text-white dark:shadow-none dark:placeholder:text-slate-500 dark:focus:border-brand-300"
                     disabled={loading}
                   />
                 </div>
@@ -520,8 +520,8 @@ export default function MusicSubmitForm({
             </div>
           </div>
 
-          <div className="shrink-0 border-t border-slate-200 bg-white/95 p-2.5 backdrop-blur dark:border-white/10 dark:bg-[#080d1a]/95 sm:px-5 sm:py-3">
-            <div className="mx-auto flex max-w-3xl flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="shrink-0 border-t border-slate-200 bg-white/95 p-3 backdrop-blur dark:border-white/10 dark:bg-[#080d1a]/95 sm:px-5 sm:py-4">
+            <div className="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs leading-5 text-slate-500 dark:text-slate-400 max-sm:hidden">
                 Required fields are marked with <span className="font-black text-brand-400">*</span>. Your submission goes straight to the Music dashboard.
               </p>
@@ -530,16 +530,16 @@ export default function MusicSubmitForm({
                   type="button"
                   onClick={onClose}
                   disabled={loading}
-                  className="h-11 rounded-lg border border-slate-200 px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10 sm:px-5"
+                  className="h-12 rounded-xl border border-slate-200 px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:text-white dark:hover:bg-white/10 sm:px-5"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-11 rounded-lg bg-gradient-to-r from-brand-600 via-brand-500 to-fuchsia-500 px-4 text-sm font-extrabold text-white shadow-lg shadow-brand-500/30 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:px-6"
+                  className="h-12 rounded-xl bg-gradient-to-r from-brand-600 via-brand-500 to-fuchsia-500 px-4 text-sm font-extrabold text-white shadow-lg shadow-brand-500/30 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:px-6"
                 >
-                  {loading ? 'Submitting...' : 'Submit music'}
+                  {loading ? 'Submitting...' : 'Submit campaign'}
                 </button>
               </div>
             </div>
