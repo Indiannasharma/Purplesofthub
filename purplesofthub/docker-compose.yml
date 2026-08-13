@@ -1,0 +1,140 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      DATABASE_URL: postgresql://purplesofthub:purplesofthub_dev_password@postgres:5432/purplesofthub
+      REDIS_URL: redis://redis:6379
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_PUBLIC_URL: http://localhost:9000
+      MAILHOG_SMTP_HOST: mailhog
+      MAILHOG_SMTP_PORT: 1025
+      MAILHOG_WEB_URL: http://localhost:8025
+    volumes:
+      - .:/app
+      - web-node-modules:/app/node_modules
+      - web-next-cache:/app/.next
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      mailhog:
+        condition: service_started
+    networks:
+      - purplesofthub
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: purplesofthub
+      POSTGRES_USER: purplesofthub
+      POSTGRES_PASSWORD: purplesofthub_dev_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U purplesofthub -d purplesofthub"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - purplesofthub
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - purplesofthub
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - purplesofthub
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - purplesofthub
+
+  minio-init:
+    image: minio/mc:latest
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      until mc alias set local http://minio:9000 minioadmin minioadmin123 >/dev/null 2>&1; do
+        sleep 2;
+      done;
+      mc mb -p local/purplesofthub >/dev/null 2>&1 || true;
+      mc anonymous set download local/purplesofthub >/dev/null 2>&1 || true;
+      exit 0
+    networks:
+      - purplesofthub
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    profiles:
+      - proxy
+    depends_on:
+      web:
+        condition: service_started
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - purplesofthub
+
+networks:
+  purplesofthub:
+    name: purplesofthub-internal
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  web-node-modules:
+  web-next-cache:
