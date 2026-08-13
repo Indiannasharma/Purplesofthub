@@ -1,111 +1,71 @@
-'use client'
+"use client"
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import React, { createContext, useContext, useMemo } from "react"
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from "next-themes"
 
-type Theme = 'light' | 'dark'
+export type ThemeMode = "light" | "dark" | "system"
+type ThemeResolved = "light" | "dark"
 
 interface ThemeContextType {
-  theme: Theme
+  theme: ThemeResolved
+  resolvedTheme: ThemeResolved
+  mode: ThemeMode
+  setTheme: (theme: ThemeMode) => void
   toggleTheme: () => void
-  setTheme: (theme: Theme) => void
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-export function ThemeProvider({
-  children
-}: {
-  children: React.ReactNode
-}) {
-  const [theme, setThemeState] =
-    useState<Theme>('dark')
-  const [mounted, setMounted] =
-    useState(false)
+function ThemeContextBridge({ children }: { children: React.ReactNode }) {
+  const { theme, resolvedTheme, setTheme } = useNextTheme()
 
-  // Only run on client side
-  useEffect(() => {
-    setMounted(true)
+  const value = useMemo<ThemeContextType>(() => {
+    const currentResolvedTheme =
+      (resolvedTheme as ThemeResolved | undefined) ||
+      (theme === "dark" ? "dark" : "light")
 
-    // Get saved theme from localStorage
-    try {
-      const saved = localStorage
-        .getItem('theme') as Theme | null
-      const preferred = saved || 'dark'
-      setThemeState(preferred)
-
-      // Apply to document
-      if (preferred === 'dark') {
-        document.documentElement
-          .classList.add('dark')
-      } else {
-        document.documentElement
-          .classList.remove('dark')
-      }
-    } catch {
-      // localStorage not available
-      setThemeState('dark')
+    const toggleTheme = () => {
+      setTheme(currentResolvedTheme === "dark" ? "light" : "dark")
     }
-  }, [])
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme)
-    try {
-      localStorage.setItem(
-        'theme', newTheme
-      )
-      if (newTheme === 'dark') {
-        document.documentElement
-          .classList.add('dark')
-      } else {
-        document.documentElement
-          .classList.remove('dark')
-      }
-    } catch {}
-  }
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark'
-      ? 'light' : 'dark'
-    )
-  }
-
-  // Provide context value even
-  // before mounted to prevent
-  // "must be used within" errors
-  return (
-    <ThemeContext.Provider value={{
-      theme,
+    return {
+      theme: currentResolvedTheme,
+      resolvedTheme: currentResolvedTheme,
+      mode: (theme as ThemeMode) || "system",
+      setTheme: (nextTheme: ThemeMode) => setTheme(nextTheme),
       toggleTheme,
-      setTheme
-    }}>
-      {children}
-    </ThemeContext.Provider>
+    }
+  }, [resolvedTheme, setTheme, theme])
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+      storageKey="purplesofthub-theme"
+    >
+      <ThemeContextBridge>{children}</ThemeContextBridge>
+    </NextThemesProvider>
   )
 }
 
-// Safe useTheme hook that never crashes
-export function useTheme():
-  ThemeContextType {
+export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext)
 
-  if (context === undefined) {
-    // Return safe defaults instead
-    // of throwing an error
-    // This prevents the crash
-    return {
-      theme: 'dark',
-      toggleTheme: () => {},
-      setTheme: () => {},
-    }
-  }
+  if (context) return context
 
-  return context
+  return {
+    theme: "dark",
+    resolvedTheme: "dark",
+    mode: "system",
+    setTheme: () => {},
+    toggleTheme: () => {},
+  }
 }
 
-// Also export as default
 export default ThemeProvider

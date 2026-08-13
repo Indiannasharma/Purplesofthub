@@ -6,6 +6,7 @@ import { Providers } from "@/app/Providers";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
 import ScrollToTop from "@/components/ScrollToTop";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -131,13 +132,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialCountry = requestHeaders.get("x-vercel-ip-country");
 
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
         <ThemeProvider>
           <Providers initialCountry={initialCountry}>
             {children}
             <ChatBot />
             <ScrollToTop />
+            <Toaster richColors closeButton />
           </Providers>
         </ThemeProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
