@@ -2695,3 +2695,78 @@ html.dark .psh-home-hero {
     transition: none !important;
   }
 }
+
+/* ══════════════════════════════════════
+   PORTFOLIO — PREMIUM SHOWROOM
+══════════════════════════════════════ */
+
+/* Portfolio Card Hover Effects */
+.portfolio-card:hover .portfolio-card-btn {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.portfolio-card:hover .portfolio-card-accent {
+  opacity: 1 !important;
+}
+
+.portfolio-card:hover img,
+.portfolio-card:hover .portfolio-card-cover {
+  transform: scale(1.05);
+}
+
+.portfolio-card-cover {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Portfolio Tabs — horizontal scroll on mobile */
+.portfolio-tabs {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 8px;
+}
+.portfolio-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Portfolio Grid Responsive */
+@media (max-width: 639px) {
+  .portfolio-tabs {
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+  }
+  .portfolio-tabs button {
+    flex-shrink: 0;
+  }
+}
+
+/* Dark mode adjustments for portfolio */
+html.dark .portfolio-card {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(168,85,247,0.2);
+}
+html.dark .portfolio-card:hover {
+  border-color: rgba(168,85,247,0.5);
+  box-shadow: 0 20px 60px rgba(124,58,237,0.3), 0 0 40px rgba(124,58,237,0.15);
+}
+
+/* Light mode adjustments for portfolio */
+html:not(.dark) .portfolio-card {
+  background: rgba(255,255,255,0.9);
+}
+html:not(.dark) .portfolio-card:hover {
+  border-color: rgba(124,58,237,0.4);
+  box-shadow: 0 20px 60px rgba(124,58,237,0.15), 0 0 40px rgba(124,58,237,0.08);
+}
+
+/* Portfolio select dropdowns */
+html.dark select option {
+  background: #0d0820;
+  color: #e2d9f3;
+}
+html:not(.dark) select option {
+  background: #ffffff;
+  color: #1a0533;
+}

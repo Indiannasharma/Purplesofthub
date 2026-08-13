@@ -8,7 +8,7 @@ import Reveal from "@/components/Reveal";
 import ProjectCard from "./_components/ProjectCard";
 import FeaturedProject from "./_components/FeaturedProject";
 import Testimonials from "./_components/Testimonials";
-import { getPublishedProjects, getFeaturedProjects, getCategories, getIndustries, getServices } from "@/lib/portfolio";
+import { fetchPublishedProjectsClient, fetchCategoriesClient, fetchIndustriesClient, fetchServicesClient } from "@/lib/portfolio.client";
 import type { PortfolioCategory, PortfolioIndustry, PortfolioService, PortfolioProject } from "@/types/portfolio";
 
 export default function PortfolioPage() {
@@ -26,10 +26,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     const fetchData = async () => {
       const [cats, inds, svcs, projects] = await Promise.allSettled([
-        getCategories(),
-        getIndustries(),
-        getServices(),
-        getPublishedProjects(),
+        fetchCategoriesClient(),
+        fetchIndustriesClient(),
+        fetchServicesClient(),
+        fetchPublishedProjectsClient(),
       ]);
       if (cats.status === "fulfilled") setCategories(cats.value || []);
       if (inds.status === "fulfilled") setIndustries(inds.value || []);
@@ -56,7 +56,7 @@ export default function PortfolioPage() {
         (p: PortfolioProject) =>
           p.title.toLowerCase().includes(q) ||
           (p.overview?.toLowerCase().includes(q) ?? false) ||
-          p.tags.some((t: string) => t.toLowerCase().includes(q)) ||
+          (p.tags ?? []).some((t: string) => t.toLowerCase().includes(q)) ||
           (p.client_name && p.client_name.toLowerCase().includes(q)) ||
           (p.industry && p.industry.toLowerCase().includes(q))
       );
@@ -229,7 +229,7 @@ export default function PortfolioPage() {
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
               {featuredProjects.map((project: PortfolioProject, i: number) => (
-                <FeaturedProject key={project.slug} project={project} index={i} condensed={true} />
+                <FeaturedProject key={project.slug} project={project} index={i} />
               ))}
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function PortfolioPage() {
       <section style={{ padding: "60px 5%", background: "var(--bg-primary)", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 40, justifyContent: "center" }}>
-            {["All Projects", ...categories].map((cat: PortfolioCategory) => {
+            {categories.map((cat: PortfolioCategory) => {
               const catValue = cat.slug || cat.name;
               return (
                 <button

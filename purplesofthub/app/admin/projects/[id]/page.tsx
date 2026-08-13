@@ -4,7 +4,8 @@ import { getAuthenticatedProfile } from '@/lib/auth'
 // TODO: Restore ProjectDetailClient component from git
 // import ProjectDetailClient from '@/components/Admin/ProjectDetail'
 
-export default async function ProjectDetail({ params }: { params: { id: string } }) {
+export default async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const auth = await getAuthenticatedProfile()
   if (!auth.ok) {
     redirect(auth.response.status === 401 ? '/sign-in' : '/dashboard')
@@ -24,17 +25,17 @@ export default async function ProjectDetail({ params }: { params: { id: string }
       )
     `
     )
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (!project) redirect('/admin/projects')
 
-  const { data: tasks } = await supabase.from('tasks').select('*').eq('project_id', params.id).order('order')
+  const { data: tasks } = await supabase.from('tasks').select('*').eq('project_id', id).order('order')
 
   const { data: updates } = await supabase
     .from('project_updates')
     .select('*')
-    .eq('project_id', params.id)
+    .eq('project_id', id)
     .order('created_at', { ascending: false })
 
   return (
