@@ -4,43 +4,102 @@ export interface PortfolioProject {
   id: string
   title: string
   slug: string
-  client_name: string | null
-  client_id: string | null
+  clientName: string | null
+  clientId: string | null
   industry: string | null
   category: string | null
   service: string | null
-  completion_date: string | null
+  completionDate: string | null
   year: string | null
 
   // Cover / Media
-  cover_image: string | null
-  hero_banner: string | null
-  featured_thumbnail: string | null
+  coverImage: string | null
+  heroBanner: string | null
+  featuredThumbnail: string | null
   gallery: string[]
 
-  // Content
+  // Case Study Sections (NEW)
   overview: string | null
   challenge: string | null
-  solution: string | null
+  research: string | null
+  strategy: string | null
+  creativeDirection: string | null
+  wireframes: string | null
+  moodboard: string | null
+  typography: string | null
+  colourSystem: string | null
+  gridSystem: string | null
+  finalSolution: string | null
   deliverables: string[]
   results: string | null
-  client_feedback: string | null
+  clientFeedback: string | null
 
-  // Services
-  services_used: string[]
+  // Comparison (before / after, brand refresh, redesign)
+  comparison: {
+    type: 'before-after' | 'brand-refresh' | 'website-redesign' | 'logo-evolution'
+    before?: string
+    after?: string
+    label?: string
+  } | null
+
+  // Related services to recommend on the case study
+  recommendedServices: string[]
+
+  // Interactive Mockups (NEW)
+  mockups: {
+    desktop?: string
+    laptop?: string
+    tablet?: string
+    phone?: string
+    magazine?: string
+    billboard?: string
+    packaging?: string
+    businessCard?: string
+    vehicleBranding?: string
+    rollupBanner?: string
+    socialMedia?: string
+    _3d?: string
+  } | null
+
+  // Videos (NEW)
+  videos: {
+    promo?: string
+    walkthrough?: string
+    animation?: string
+    youtube?: string
+    instagram?: string
+    tiktok?: string
+  } | null
+
+  // Project Timeline (NEW)
+  timeline: {
+    discovery: string | null
+    research: string | null
+    design: string | null
+    revision: string | null
+    delivery: string | null
+    completion: string | null
+  } | null
+
+  // Services Used (NEW)
+  servicesUsed: string[]
 
   // Tags
   tags: string[]
 
   // Client Info
-  client_logo: string | null
-  client_website: string | null
+  clientLogo: string | null
+  clientWebsite: string | null
 
-  // Statistics
-  project_duration: string | null
-  team_size: string | null
-  software_used: string | null
-  deliverables_count: number | null
+  // Statistics (NEW)
+  projectDuration: string | null
+  teamSize: string[] | null
+  softwareUsed: string[] | null
+  deliverablesCount: number | null
+  views: number
+  downloadCount: number
+  likes: number
+  enquiries: number
 
   // Status
   status: ProjectStatus
@@ -51,26 +110,55 @@ export interface PortfolioProject {
   emoji: string
 
   // SEO
-  seo_title: string | null
-  seo_description: string | null
-  seo_keywords: string[]
-  og_image: string | null
-  canonical_url: string | null
-  structured_data: Record<string, unknown> | null
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string[]
+  ogImage: string | null
+  canonicalUrl: string | null
+  structuredData: Record<string, unknown> | null
 
   // External Links
-  live_url: string | null
-  behance_url: string | null
-  dribbble_url: string | null
-  youtube_embed: string | null
-  instagram_embed: string | null
-  figma_embed: string | null
-  adobe_xd_embed: string | null
+  liveUrl: string | null
+  behanceUrl: string | null
+  dribbbleUrl: string | null
+  youtubeEmbed: string | null
+  instagramEmbed: string | null
+  figmaEmbed: string | null
+  adobeXdEmbed: string | null
+
+  // Downloads (NEW)
+  downloads: {
+    companyProfile?: string
+    corporateProfile?: string
+    sponsorshipDeck?: string
+    sponsorshipProposal?: string
+    brandGuidelines?: string
+    capabilityStatement?: string
+    annualReport?: string
+    magazine?: string
+    productCatalogue?: string
+    presentation?: string
+    brochure?: string
+    trainingManual?: string
+    businessProposal?: string
+    eventBrandingKit?: string
+    investmentPitchDeck?: string
+  } | null
+
+  // Awards & Recognition (NEW)
+  awards: {
+    agencyAwards: string[]
+    clientRecognition: string[]
+    certifications: string[]
+  } | null
+
+  // Related Projects (NEW)
+  relatedProjects: string[] // slugs
 
   // Meta
-  view_count: number
-  created_at: string
-  updated_at: string
+  viewCount: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PortfolioCategory {
@@ -80,9 +168,9 @@ export interface PortfolioCategory {
   description: string | null
   icon: string | null
   color: string
-  sort_order: number
-  created_at: string
-  updated_at: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PortfolioIndustry {
@@ -92,9 +180,9 @@ export interface PortfolioIndustry {
   description: string | null
   icon: string | null
   color: string
-  sort_order: number
-  created_at: string
-  updated_at: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PortfolioService {
@@ -103,49 +191,50 @@ export interface PortfolioService {
   slug: string
   icon: string | null
   color: string
-  sort_order: number
-  created_at: string
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PortfolioClient {
   id: string
   name: string
   slug: string
-  logo_url: string | null
+  logoUrl: string | null
   website: string | null
   industry: string | null
   description: string | null
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PortfolioTestimonial {
   id: string
-  project_id: string | null
-  client_name: string
+  projectId: string | null
+  clientName: string
   company: string | null
-  photo_url: string | null
+  photoUrl: string | null
   rating: number
   review: string
-  is_featured: boolean
-  created_at: string
-  updated_at: string
+  isFeatured: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface MediaItem {
   id: string
   filename: string
   url: string
-  public_id: string | null
+  publicId: string | null
   folder: string
-  file_type: string | null
-  file_size: number | null
+  fileType: string | null
+  fileSize: number | null
   width: number | null
   height: number | null
-  alt_text: string | null
-  created_by: string | null
-  created_at: string
-  updated_at: string
+  altText: string | null
+  createdBy: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export const PORTFOLIO_SERVICES_LIST = [
@@ -178,3 +267,47 @@ export const PORTFOLIO_CATEGORIES_LIST = [
   'Motion Graphics', 'AI Creative', 'Print Design',
   'Marketing Campaigns', 'Live Streaming',
 ]
+
+export type ResourceCategory =
+  | 'Company Profile'
+  | 'Corporate Profile'
+  | 'Sponsorship Proposal'
+  | 'Sponsorship Deck'
+  | 'Brand Guidelines'
+  | 'Capability Statement'
+  | 'Annual Report'
+  | 'Magazine'
+  | 'Product Catalogue'
+  | 'Marketing Brochure'
+  | 'Training Manual'
+  | 'Business Proposal'
+  | 'Event Branding Kit'
+  | 'Investment Pitch Deck'
+
+export interface PremiumResource {
+  id: string
+  title: string
+  slug: string
+  description: string
+  category: ResourceCategory
+  version: string
+  tags: string[]
+  coverImage: string | null
+  pdfUrl: string | null
+  previewUrl: string | null
+  relatedServices: string[]
+  emailGate: boolean
+  downloadCount: number
+  status: 'draft' | 'published'
+  createdAt: string
+  updatedAt: string
+}
+
+export type RawPortfolioProject = Partial<PortfolioProject> & {
+  slug: string
+  title: string
+  client_name?: string | null
+  solution?: string | null
+  tech?: string[]
+  services_used?: string[]
+}

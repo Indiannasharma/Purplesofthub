@@ -8,7 +8,10 @@ import Reveal from "@/components/Reveal";
 import ProjectCard from "./_components/ProjectCard";
 import FeaturedProject from "./_components/FeaturedProject";
 import Testimonials from "./_components/Testimonials";
+import { ComparisonGallery, IndustryGrid, ServiceIconCards, TrustLogoWall } from "./_components/ShowcaseSections";
 import { fetchPublishedProjectsClient, fetchCategoriesClient, fetchIndustriesClient, fetchServicesClient } from "@/lib/portfolio.client";
+import { PORTFOLIO_PROJECTS, PORTFOLIO_CATEGORIES, INDUSTRIES, SERVICES, YEARS } from "./_data/portfolio";
+import { normalizeProjects, matchesShowcaseSearch } from "@/lib/portfolio-normalize";
 import type { PortfolioCategory, PortfolioIndustry, PortfolioService, PortfolioProject } from "@/types/portfolio";
 
 export default function PortfolioPage() {
@@ -17,11 +20,10 @@ export default function PortfolioPage() {
   const [industry, setIndustry] = useState<string>("All Industries");
   const [service, setService] = useState<string>("All Services");
   const [year, setYear] = useState<string>("All Years");
-  const [showFilters, setShowFilters] = useState(false);
   const [categories, setCategories] = useState<PortfolioCategory[]>([]);
   const [industries, setIndustries] = useState<PortfolioIndustry[]>([]);
   const [services, setServices] = useState<PortfolioService[]>([]);
-  const [publishedProjects, setPublishedProjects] = useState<PortfolioProject[]>([]);
+  const [publishedProjects, setPublishedProjects] = useState<PortfolioProject[]>(PORTFOLIO_PROJECTS);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,59 +33,59 @@ export default function PortfolioPage() {
         fetchServicesClient(),
         fetchPublishedProjectsClient(),
       ]);
-      if (cats.status === "fulfilled") setCategories(cats.value || []);
-      if (inds.status === "fulfilled") setIndustries(inds.value || []);
-      if (svcs.status === "fulfilled") setServices(svcs.value || []);
-      if (projects.status === "fulfilled") setPublishedProjects(projects.value || []);
+      if (cats.status === "fulfilled" && cats.value?.length) setCategories(cats.value);
+      if (inds.status === "fulfilled" && inds.value?.length) setIndustries(inds.value);
+      if (svcs.status === "fulfilled" && svcs.value?.length) setServices(svcs.value);
+      if (projects.status === "fulfilled" && projects.value?.length) {
+        setPublishedProjects(normalizeProjects(projects.value));
+      }
     };
     fetchData();
   }, []);
+
+  const categoryOptions = categories.length
+    ? categories
+    : PORTFOLIO_CATEGORIES.map((name) => ({ id: name, name, slug: name }) as PortfolioCategory);
+  const industryOptions = industries.length ? industries.map((item) => item.name) : INDUSTRIES;
+  const serviceOptions = services.length ? ["All Services", ...services.map((item) => item.name)] : SERVICES;
 
   const featuredProjects = useMemo(() => {
     return publishedProjects.filter((p: PortfolioProject) => p.featured).slice(0, 6);
   }, [publishedProjects]);
 
   const filteredProjects = useMemo(() => {
-    let projects = featuredProjects;
+    let projects = publishedProjects;
     if (activeCategory === "Featured Projects") {
       projects = projects.filter((p: PortfolioProject) => p.featured);
     } else if (activeCategory !== "All Projects") {
-      projects = projects.filter((p: PortfolioProject) => p.category === activeCategory);
+      projects = projects.filter((p: PortfolioProject) => p.category === activeCategory || p.category === categories.find((c) => c.slug === activeCategory)?.name);
     }
     if (search.trim()) {
-      const q = search.toLowerCase();
-      projects = projects.filter(
-        (p: PortfolioProject) =>
-          p.title.toLowerCase().includes(q) ||
-          (p.overview?.toLowerCase().includes(q) ?? false) ||
-          (p.tags ?? []).some((t: string) => t.toLowerCase().includes(q)) ||
-          (p.client_name && p.client_name.toLowerCase().includes(q)) ||
-          (p.industry && p.industry.toLowerCase().includes(q))
-      );
+      projects = projects.filter((p: PortfolioProject) => matchesShowcaseSearch(p, search));
     }
     if (industry !== "All Industries") {
       projects = projects.filter((p: PortfolioProject) => p.industry === industry);
     }
     if (service !== "All Services") {
-      projects = projects.filter((p: PortfolioProject) => p.service === service);
+      projects = projects.filter((p: PortfolioProject) => p.service === service || (p.servicesUsed || []).includes(service));
     }
     if (year !== "All Years") {
       projects = projects.filter((p: PortfolioProject) => p.year === year);
     }
     return projects;
-  }, [activeCategory, search, industry, service, year, featuredProjects]);
+  }, [activeCategory, search, industry, service, year, publishedProjects, categories]);
 
   const stats = useMemo(
     () => [
       { value: `${featuredProjects.length}+`, label: "Projects Completed" },
       { value: "28", label: "Happy Clients" },
       { value: "10+", label: "Years Experience" },
-      { value: `${categories.length}`, label: "Industries Served" },
+      { value: `${new Set(publishedProjects.map((p) => p.industry).filter(Boolean)).size}+`, label: "Industries Served" },
       { value: "150+", label: "Design Assets Created" },
       { value: "45", label: "Websites Delivered" },
       { value: "30", label: "Videos Produced" },
     ],
-    [featuredProjects.length, categories.length]
+    [featuredProjects.length, publishedProjects]
   );
 
   return (
@@ -239,12 +241,12 @@ export default function PortfolioPage() {
       {/* ============ PORTFOLIO CATEGORIES FILTER ============ */}
       <section style={{ padding: "60px 5%", background: "var(--bg-primary)", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 40, justifyContent: "center" }}>
-            {categories.map((cat: PortfolioCategory) => {
-              const catValue = cat.slug || cat.name;
+          <div className="portfolio-tabs" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28, justifyContent: "center" }}>
+            {categoryOptions.map((cat: PortfolioCategory) => {
+              const catValue = cat.name;
               return (
                 <button
-                  key={catValue}
+                  key={cat.id || catValue}
                   onClick={() => setActiveCategory(catValue)}
                   style={{
                     padding: "10px 24px",
@@ -265,14 +267,57 @@ export default function PortfolioPage() {
               );
             })}
           </div>
+          <div className="portfolio-search-grid" style={{ display: "grid", gridTemplateColumns: "minmax(220px,1.4fr) repeat(3,minmax(140px,1fr))", gap: 12, marginBottom: 20 }}>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by category, industry, client, software, colour, tags, services…"
+              aria-label="Search showcase"
+              style={{
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: 12,
+                border: "1px solid rgba(124,58,237,0.2)",
+                background: "var(--bg-card)",
+                color: "var(--text-primary)",
+                fontSize: 14,
+              }}
+            />
+            <select value={industry} onChange={(e) => setIndustry(e.target.value)} aria-label="Filter by industry" style={{ padding: "12px 12px", borderRadius: 12, border: "1px solid rgba(124,58,237,0.2)", background: "var(--bg-card)", color: "var(--text-primary)" }}>
+              {industryOptions.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+            <select value={service} onChange={(e) => setService(e.target.value)} aria-label="Filter by service" style={{ padding: "12px 12px", borderRadius: 12, border: "1px solid rgba(124,58,237,0.2)", background: "var(--bg-card)", color: "var(--text-primary)" }}>
+              {serviceOptions.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+            <select value={year} onChange={(e) => setYear(e.target.value)} aria-label="Filter by year" style={{ padding: "12px 12px", borderRadius: 12, border: "1px solid rgba(124,58,237,0.2)", background: "var(--bg-card)", color: "var(--text-primary)" }}>
+              {YEARS.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+          </div>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
             <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>
               Showing <strong style={{ color: "#6d28d9" }}>{filteredProjects.length}</strong> {filteredProjects.length === 1 ? "project" : "projects"}
               {activeCategory !== "All Projects" && activeCategory !== "Featured Projects" && ` in ${activeCategory}`}
             </span>
           </div>
+          <AnimatePresence mode="popLayout">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }}>
+              {filteredProjects.map((project, index) => (
+                <ProjectCard key={project.slug} project={project} index={index} />
+              ))}
+            </div>
+          </AnimatePresence>
+          {filteredProjects.length === 0 && (
+            <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--text-muted)" }}>
+              No projects match that search. Try a client, colour, software, or service.
+            </div>
+          )}
         </div>
       </section>
+
+      <IndustryGrid active={industry} onSelect={setIndustry} />
+      <ServiceIconCards />
+      <TrustLogoWall />
+      <ComparisonGallery projects={publishedProjects} />
 
       <Testimonials />
 

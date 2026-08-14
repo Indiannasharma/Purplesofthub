@@ -1,14 +1,9 @@
 import { MetadataRoute } from "next";
+import { PORTFOLIO_PROJECTS } from "@/app/portfolio/_data/portfolio";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
-const PORTFOLIO_SLUGS = [
-  "eco-pi-rewards",
-  "24hrs-content-hub",
-  "starzz-properties",
-  "3rdyearts",
-  "collinskind-fashion",
-];
+const PORTFOLIO_SLUGS = PORTFOLIO_PROJECTS.map((project) => project.slug);
 
 const SERVICE_SLUGS = [
   "web-development",
@@ -34,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
     { url: `${SITE_URL}/services`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
     { url: `${SITE_URL}/portfolio`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${SITE_URL}/resources`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
     { url: `${SITE_URL}/blog`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
     { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },

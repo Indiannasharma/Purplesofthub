@@ -15,6 +15,8 @@ import {
   FadeIn
 } from "@/components/motion";
 import { createClient } from "@/lib/supabase/server";
+import HomePortfolio from "@/components/HomePortfolio";
+import { PORTFOLIO_PROJECTS } from "@/app/portfolio/_data/portfolio";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -199,6 +201,8 @@ export default async function Home() {
           </Reveal>
         </div>
       </section>
+
+      <HomePortfolio projects={PORTFOLIO_PROJECTS} />
 
       {/* ── PREMIUM DIAGONAL DIVIDER ── */}
       <div

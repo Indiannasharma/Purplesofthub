@@ -2701,6 +2701,14 @@ html.dark .psh-home-hero {
 ══════════════════════════════════════ */
 
 /* Portfolio Card Hover Effects */
+.portfolio-card-overlay,
+.portfolio-card-btn {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.portfolio-card:hover .portfolio-card-overlay,
 .portfolio-card:hover .portfolio-card-btn {
   opacity: 1 !important;
   transform: translateY(0) !important;
@@ -2769,4 +2777,28 @@ html.dark select option {
 html:not(.dark) select option {
   background: #ffffff;
   color: #1a0533;
+}
+
+.mockup-float {
+  animation: mockupFloat 5s ease-in-out infinite;
+}
+
+@keyframes mockupFloat {
+  0%, 100% { transform: translateY(0) rotateX(0deg); }
+  50% { transform: translateY(-10px) rotateX(4deg); }
+}
+
+@media (max-width: 900px) {
+  .portfolio-search-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .case-story-spine {
+    grid-template-columns: 1fr !important;
+  }
+  .case-story-spine > div:first-child {
+    display: none !important;
+  }
 }

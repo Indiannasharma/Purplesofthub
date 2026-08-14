@@ -15,6 +15,7 @@ export default function FeaturedProject({ project, index }: FeaturedProjectProps
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="portfolio-card"
       style={{
         position: "relative",
         borderRadius: 24,
@@ -116,6 +117,26 @@ export default function FeaturedProject({ project, index }: FeaturedProjectProps
         >
           ★ FEATURED
         </div>
+        <div className="portfolio-card-overlay" style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(180deg, transparent 20%, rgba(17,8,40,0.82) 100%)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          padding: 16,
+          gap: 8,
+          zIndex: 3,
+        }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {(project.servicesUsed || project.deliverables || []).slice(0, 3).map((item) => (
+              <span key={item} style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "rgba(255,255,255,0.14)", borderRadius: 100, padding: "3px 8px" }}>{item}</span>
+            ))}
+          </div>
+          <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 11, fontWeight: 600 }}>
+            {project.views.toLocaleString()} views · {project.likes} likes
+          </div>
+        </div>
       </div>
 
       {/* Content */}
@@ -157,7 +178,7 @@ export default function FeaturedProject({ project, index }: FeaturedProjectProps
               {project.industry}
             </span>
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500 }}>
-              {project.client_name} · {project.year}
+              {project.clientName} · {project.year}
             </span>
           </div>
         </div>
