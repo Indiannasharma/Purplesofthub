@@ -1,349 +1,336 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Reveal from "@/components/Reveal";
-import ProjectCard from "./_components/ProjectCard";
-import FeaturedProject from "./_components/FeaturedProject";
-import Testimonials from "./_components/Testimonials";
-import { ComparisonGallery, IndustryGrid, ServiceIconCards, TrustLogoWall } from "./_components/ShowcaseSections";
-import { fetchPublishedProjectsClient, fetchCategoriesClient, fetchIndustriesClient, fetchServicesClient } from "@/lib/portfolio.client";
-import { PORTFOLIO_PROJECTS, PORTFOLIO_CATEGORIES, INDUSTRIES, SERVICES, YEARS } from "./_data/portfolio";
-import { normalizeProjects, matchesShowcaseSearch } from "@/lib/portfolio-normalize";
-import type { PortfolioCategory, PortfolioIndustry, PortfolioService, PortfolioProject } from "@/types/portfolio";
+import { fetchPublishedProjectsClient } from "@/lib/portfolio.client";
+import { normalizeProjects } from "@/lib/portfolio-normalize";
+import { PORTFOLIO_PROJECTS } from "./_data/portfolio";
+import type { PortfolioProject } from "@/types/portfolio";
+
+const CATEGORY_TABS = [
+  "All",
+  "Branding",
+  "Graphic Design",
+  "Web Design",
+  "Social Media",
+  "Video",
+  "Corporate",
+] as const;
+
+const CATEGORY_MATCHERS: Record<(typeof CATEGORY_TABS)[number], string[]> = {
+  All: [],
+  Branding: ["brand", "branding", "identity", "logo"],
+  "Graphic Design": ["graphic", "design", "print", "poster", "brochure", "flyer", "social"],
+  "Web Design": ["web", "website", "ui", "ux", "app", "product"],
+  "Social Media": ["social", "instagram", "facebook", "linkedin", "content", "campaign"],
+  Video: ["video", "motion", "animation", "film", "production"],
+  Corporate: ["corporate", "company profile", "proposal", "deck", "presentation", "report"],
+};
+
+const SERVICE_CARDS = [
+  {
+    title: "Brand Identity",
+    description: "Modern identity systems with clear logo usage, colour direction, and flexible brand assets.",
+  },
+  {
+    title: "Graphic Design",
+    description: "Editorial, marketing, and campaign visuals that stay sharp across print and digital touchpoints.",
+  },
+  {
+    title: "Web Design",
+    description: "Premium landing pages and marketing sites that feel fast, clear, and conversion-focused.",
+  },
+  {
+    title: "Social Media",
+    description: "Consistent content systems for campaigns, launches, and always-on audience engagement.",
+  },
+  {
+    title: "Video Production",
+    description: "Short-form and promotional edits that communicate clearly and keep the brand tone polished.",
+  },
+  {
+    title: "Corporate Assets",
+    description: "Company profiles, pitch decks, and presentations that make the business feel credible and ready.",
+  },
+];
+
+function matchesCategory(project: PortfolioProject, category: (typeof CATEGORY_TABS)[number]) {
+  if (category === "All") return true;
+
+  const needle = CATEGORY_MATCHERS[category];
+  const haystack = [
+    project.title,
+    project.category,
+    project.service,
+    project.industry,
+    project.overview,
+    ...(project.tags || []),
+    ...(project.deliverables || []),
+    ...(project.servicesUsed || []),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return needle.some((term) => haystack.includes(term));
+}
+
+function formatMeta(project: PortfolioProject) {
+  return [project.service || project.category, project.year, project.clientName]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function projectKey(project: PortfolioProject) {
+  return `${project.slug}-${project.updatedAt || project.createdAt}`;
+}
 
 export default function PortfolioPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("Featured Projects");
-  const [search, setSearch] = useState("");
-  const [industry, setIndustry] = useState<string>("All Industries");
-  const [service, setService] = useState<string>("All Services");
-  const [year, setYear] = useState<string>("All Years");
-  const [categories, setCategories] = useState<PortfolioCategory[]>([]);
-  const [industries, setIndustries] = useState<PortfolioIndustry[]>([]);
-  const [services, setServices] = useState<PortfolioService[]>([]);
-  const [publishedProjects, setPublishedProjects] = useState<PortfolioProject[]>(PORTFOLIO_PROJECTS);
+  const [activeCategory, setActiveCategory] = useState<(typeof CATEGORY_TABS)[number]>("All");
+  const [projects, setProjects] = useState<PortfolioProject[]>(normalizeProjects(PORTFOLIO_PROJECTS));
 
   useEffect(() => {
-    const fetchData = async () => {
-      const [cats, inds, svcs, projects] = await Promise.allSettled([
-        fetchCategoriesClient(),
-        fetchIndustriesClient(),
-        fetchServicesClient(),
-        fetchPublishedProjectsClient(),
-      ]);
-      if (cats.status === "fulfilled" && cats.value?.length) setCategories(cats.value);
-      if (inds.status === "fulfilled" && inds.value?.length) setIndustries(inds.value);
-      if (svcs.status === "fulfilled" && svcs.value?.length) setServices(svcs.value);
-      if (projects.status === "fulfilled" && projects.value?.length) {
-        setPublishedProjects(normalizeProjects(projects.value));
-      }
+    let mounted = true;
+
+    const loadProjects = async () => {
+      const publishedProjects = await fetchPublishedProjectsClient();
+      if (!mounted || !publishedProjects.length) return;
+      setProjects(normalizeProjects(publishedProjects));
     };
-    fetchData();
+
+    loadProjects();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const categoryOptions = categories.length
-    ? categories
-    : PORTFOLIO_CATEGORIES.map((name) => ({ id: name, name, slug: name }) as PortfolioCategory);
-  const industryOptions = industries.length ? industries.map((item) => item.name) : INDUSTRIES;
-  const serviceOptions = services.length ? ["All Services", ...services.map((item) => item.name)] : SERVICES;
+  const visibleProjects = useMemo(() => {
+    return [...projects]
+      .filter((project) => matchesCategory(project, activeCategory))
+      .sort((a, b) => Number(b.featured) - Number(a.featured) || (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+  }, [activeCategory, projects]);
 
-  const featuredProjects = useMemo(() => {
-    return publishedProjects.filter((p: PortfolioProject) => p.featured).slice(0, 6);
-  }, [publishedProjects]);
-
-  const filteredProjects = useMemo(() => {
-    let projects = publishedProjects;
-    if (activeCategory === "Featured Projects") {
-      projects = projects.filter((p: PortfolioProject) => p.featured);
-    } else if (activeCategory !== "All Projects") {
-      projects = projects.filter((p: PortfolioProject) => p.category === activeCategory || p.category === categories.find((c) => c.slug === activeCategory)?.name);
-    }
-    if (search.trim()) {
-      projects = projects.filter((p: PortfolioProject) => matchesShowcaseSearch(p, search));
-    }
-    if (industry !== "All Industries") {
-      projects = projects.filter((p: PortfolioProject) => p.industry === industry);
-    }
-    if (service !== "All Services") {
-      projects = projects.filter((p: PortfolioProject) => p.service === service || (p.servicesUsed || []).includes(service));
-    }
-    if (year !== "All Years") {
-      projects = projects.filter((p: PortfolioProject) => p.year === year);
-    }
-    return projects;
-  }, [activeCategory, search, industry, service, year, publishedProjects, categories]);
-
-  const stats = useMemo(
-    () => [
-      { value: `${featuredProjects.length}+`, label: "Projects Completed" },
-      { value: "28", label: "Happy Clients" },
-      { value: "10+", label: "Years Experience" },
-      { value: `${new Set(publishedProjects.map((p) => p.industry).filter(Boolean)).size}+`, label: "Industries Served" },
-      { value: "150+", label: "Design Assets Created" },
-      { value: "45", label: "Websites Delivered" },
-      { value: "30", label: "Videos Produced" },
-    ],
-    [featuredProjects.length, publishedProjects]
-  );
+  const featuredCount = useMemo(() => projects.filter((project) => project.featured).length, [projects]);
 
   return (
-    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh", overflowX: "hidden" }}>
+    <main className="bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <Navbar />
 
-      {/* ============ PREMIUM HERO SECTION ============ */}
-      <section style={{
-        position: "relative",
-        overflow: "hidden",
-        padding: "200px 5% 160px",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        background: "var(--bg-primary)",
-        transition: "background-color 0.5s",
-      }}>
-        <div style={{
-          position: "absolute",
-          top: -100,
-          right: -50,
-          width: 400,
-          height: 400,
-          background: "radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute",
-          bottom: -50,
-          left: -50,
-          width: 300,
-          height: 300,
-          background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "var(--bg-pattern)",
-          pointerEvents: "none",
-          opacity: 0.3,
-          backgroundSize: "400px 400px",
-        }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, width: "100%" }}>
-          <motion.div
-            animate={{ y: [0, -20, 0], transition: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
-            style={{ position: "relative", display: "flex", gap: 32, justifyContent: "center", marginBottom: 64 }}
-          >
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              style={{ width: 280, height: 180, background: "var(--bg-card)", borderRadius: 24, overflow: "hidden", border: "1px solid rgba(124,58,237,0.15)", position: "relative" }}
-            >
-              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${featuredProjects.length > 0 ? featuredProjects[0].color : "#7c3aed"}22, rgba(124,58,237,0.05))`, borderRadius: 24 }} />
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 24, background: "linear-gradient(transparent, rgba(0,0,0,0.3))" }}>
-                <div style={{ fontSize: 64, marginBottom: 8 }}>{featuredProjects[0]?.emoji || "🎨"}</div>
-                <h4 style={{ fontFamily: "Outfit", fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>Modern Brand Identity</h4>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>Complete brand system</p>
+      <section className="relative overflow-hidden border-b border-[color:var(--border)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(124,58,237,0.08),transparent_30%)]" />
+        <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(124,58,237,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(124,58,237,0.08)_1px,transparent_1px)] [background-size:56px_56px]" />
+        <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pb-24 lg:pt-32">
+          <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div className="max-w-3xl">
+              <div className="mb-5 inline-flex items-center rounded-full border border-[color:var(--border)] bg-[color:var(--bg-card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)] shadow-sm backdrop-blur">
+                Portfolio
               </div>
-            </motion.div>
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              style={{ width: 280, height: 180, background: "var(--bg-card)", borderRadius: 24, overflow: "hidden", border: "1px solid rgba(124,58,237,0.15)", position: "relative" }}
-            >
-              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${featuredProjects[1]?.color || "#a855f7"}22, rgba(168,85,247,0.05))`, borderRadius: 24 }} />
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 24, background: "linear-gradient(transparent, rgba(0,0,0,0.3))" }}>
-                <div style={{ fontSize: 64, marginBottom: 8 }}>{featuredProjects[1]?.emoji || "📱"}</div>
-                <h4 style={{ fontFamily: "Outfit", fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>Responsive Website</h4>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>Full stack development</p>
+              <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-[color:var(--text-primary)] sm:text-5xl lg:text-6xl">
+                Creative work that speaks for itself.
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-[color:var(--text-secondary)] sm:text-lg">
+                Branding, graphic design, websites, social media, video, and digital experiences crafted to feel premium, clear, and built for growth.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center rounded-full bg-[color:var(--primary)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                >
+                  Start a Project
+                </Link>
+                <Link
+                  href="#work"
+                  className="inline-flex items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--bg-card)] px-6 py-3 text-sm font-semibold text-[color:var(--text-primary)] transition hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]"
+                >
+                  View Work
+                </Link>
               </div>
-            </motion.div>
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              style={{ width: 280, height: 180, background: "var(--bg-card)", borderRadius: 24, overflow: "hidden", border: "1px solid rgba(124,58,237,0.15)", position: "relative" }}
-            >
-              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${featuredProjects[2]?.color || "#ec4899"}22, rgba(236,72,153,0.05))`, borderRadius: 24 }} />
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 24, background: "linear-gradient(transparent, rgba(0,0,0,0.3))" }}>
-                <div style={{ fontSize: 64, marginBottom: 8 }}>{featuredProjects[2]?.emoji || "🚀"}</div>
-                <h4 style={{ fontFamily: "Outfit", fontSize: 18, fontWeight: 600, color: "var(--text-primary)" }}>AI Creative Studio</h4>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>Generative design</p>
-              </div>
-            </motion.div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          >
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.1)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 32, fontSize: 12, fontWeight: 600, color: "#6d28d9", letterSpacing: 1 }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
-              OUR WORK
-            </div>
-            <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(48px,10vw,100px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-3px", lineHeight: 1.1, marginBottom: 24, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 0 }}>
-              A Digital Showroom of <span className="grad-text">Creative Excellence</span>
-            </h1>
-            <p style={{ color: "var(--text-muted)", fontSize: 20, lineHeight: 1.8, maxWidth: 700, margin: "0 auto 48px", fontWeight: 400 }}>
-              Explore our portfolio of branding, websites, publications, content creation, AI innovation and creative strategy — crafted to build trust, showcase quality, and convert visitors into clients.
-            </p>
-            <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/portfolio">
-                <button className="btn-main animate-glow" style={{ padding: "20px 48px", fontSize: 18, fontWeight: 700, background: "linear-gradient(135deg,#7c3aed,#a855f7)", color: "#fff", border: "none", borderRadius: 12, boxShadow: "0 8px 32px rgba(124,58,237,0.4)", transition: "all 0.3s" }}>
-                  View Projects →
-                </button>
-              </Link>
-              <Link href="/contact">
-                <button className="btn-outline" style={{ padding: "20px 48px", fontSize: 18, fontWeight: 700, background: "transparent", color: "var(--text-primary)", border: "2px solid rgba(124,58,237,0.3)", borderRadius: 12, transition: "all 0.3s" }}>Start Your Project →</button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ============ STATISTICS SECTION ============ */}
-      <section style={{ padding: "80px 5%", background: "var(--bg-secondary)", position: "relative", overflow: "hidden" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 32, marginBottom: 64 }}>
-            {stats.map((stat, i) => (
-              <div key={stat.label} style={{ textAlign: "center" }}>
-                <div style={{ width: 80, height: 80, margin: "0 auto 24px", background: "var(--bg-card)", borderRadius: 20, border: "1px solid rgba(124,58,237,0.15)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                  <div style={{ width: 40, height: 40 }}>
-                    {stat.label.includes("Years") ? "🏆" : stat.label.includes("Clients") ? "👥" : "💡"}
+              <dl className="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
+                {[
+                  { value: `${featuredCount}+`, label: "Featured projects" },
+                  { value: `${projects.length}+`, label: "Published pieces" },
+                  { value: "5+ years", label: "Built to scale" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg-card)] p-5 shadow-sm backdrop-blur">
+                    <dt className="text-xs font-medium uppercase tracking-[0.2em] text-[color:var(--text-muted)]">{item.label}</dt>
+                    <dd className="mt-2 text-2xl font-semibold tracking-[-0.03em]">{item.value}</dd>
                   </div>
-                </div>
-                <div style={{ fontFamily: "Outfit", fontSize: "clamp(32px,8vw,48px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4, lineHeight: 1 }}>
-                  {stat.value}
-                </div>
-                <div style={{ color: "var(--text-muted)", fontSize: 14, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  {stat.label}
-                </div>
+                ))}
+              </dl>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -inset-4 rounded-[2rem] bg-[radial-gradient(circle,rgba(168,85,247,0.2),transparent_70%)] blur-2xl" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--bg-card)] shadow-[0_30px_80px_rgba(17,8,40,0.12)] backdrop-blur">
+                {visibleProjects[0]?.coverImage || visibleProjects[0]?.heroBanner || visibleProjects[0]?.gallery?.[0] ? (
+                  <div className="relative aspect-[4/5]">
+                    <Image
+                      src={visibleProjects[0].coverImage || visibleProjects[0].heroBanner || visibleProjects[0].gallery[0] || ""}
+                      alt={visibleProjects[0].title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(6,3,15,0.8)] via-[rgba(6,3,15,0.15)] to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                      <div className="mb-3 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+                        Featured project
+                      </div>
+                      <h2 className="text-2xl font-semibold tracking-[-0.03em]">{visibleProjects[0].title}</h2>
+                      <p className="mt-2 text-sm text-white/75">{formatMeta(visibleProjects[0])}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex aspect-[4/5] items-end bg-[linear-gradient(160deg,rgba(124,58,237,0.9),rgba(40,10,84,0.98))] p-8 text-white">
+                    <div>
+                      <div className="text-5xl">{visibleProjects[0]?.emoji || "🎨"}</div>
+                      <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em]">{visibleProjects[0]?.title || "Portfolio spotlight"}</h2>
+                      <p className="mt-2 text-sm text-white/75">{visibleProjects[0] ? formatMeta(visibleProjects[0]) : "Selected creative work from PurpleSoftHub"}</p>
+                    </div>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,6vw,48px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-1.5px", textAlign: "center", marginBottom: 32 }}>
-              <span className="grad-text">Featured</span> Work
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
-              {featuredProjects.map((project: PortfolioProject, i: number) => (
-                <FeaturedProject key={project.slug} project={project} index={i} />
-              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ============ PORTFOLIO CATEGORIES FILTER ============ */}
-      <section style={{ padding: "60px 5%", background: "var(--bg-primary)", position: "relative", overflow: "hidden" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div className="portfolio-tabs" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28, justifyContent: "center" }}>
-            {categoryOptions.map((cat: PortfolioCategory) => {
-              const catValue = cat.name;
+      <section className="border-b border-[color:var(--border)] bg-[color:var(--bg-secondary)]/60" id="work">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap gap-2">
+            {CATEGORY_TABS.map((category) => {
+              const active = activeCategory === category;
               return (
                 <button
-                  key={cat.id || catValue}
-                  onClick={() => setActiveCategory(catValue)}
-                  style={{
-                    padding: "10px 24px",
-                    borderRadius: 100,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    transition: "all 0.3s",
-                    background: activeCategory === catValue ? "linear-gradient(135deg,#7c3aed,#a855f7)" : "rgba(124,58,237,.08)",
-                    border: activeCategory === catValue ? "1px solid transparent" : "1px solid rgba(124,58,237,.2)",
-                    color: activeCategory === catValue ? "#fff" : "#6d28d9",
-                    boxShadow: activeCategory === catValue ? "0 4px 16px rgba(124,58,237,.3)" : "none",
-                    whiteSpace: "nowrap",
-                  }}
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveCategory(category)}
+                  className={[
+                    "rounded-full border px-4 py-2 text-sm font-medium transition",
+                    active
+                      ? "border-[color:var(--primary)] bg-[color:var(--primary)] text-white shadow-sm"
+                      : "border-[color:var(--border)] bg-[color:var(--bg-card)] text-[color:var(--text-secondary)] hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]",
+                  ].join(" ")}
                 >
-                  {cat.name}
+                  {category}
                 </button>
               );
             })}
           </div>
-          <div className="portfolio-search-grid" style={{ display: "grid", gridTemplateColumns: "minmax(220px,1.4fr) repeat(3,minmax(140px,1fr))", gap: 12, marginBottom: 20 }}>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by category, industry, client, software, colour, tags, services…"
-              aria-label="Search showcase"
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: 12,
-                border: "1px solid rgba(124,58,237,0.2)",
-                background: "var(--bg-card)",
-                color: "var(--text-primary)",
-                fontSize: 14,
-              }}
-            />
-            <select value={industry} onChange={(e) => setIndustry(e.target.value)} aria-label="Filter by industry" style={{ padding: "12px 12px", borderRadius: 12, border: "1px solid rgba(124,58,237,0.2)", background: "var(--bg-card)", color: "var(--text-primary)" }}>
-              {industryOptions.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-            <select value={service} onChange={(e) => setService(e.target.value)} aria-label="Filter by service" style={{ padding: "12px 12px", borderRadius: 12, border: "1px solid rgba(124,58,237,0.2)", background: "var(--bg-card)", color: "var(--text-primary)" }}>
-              {serviceOptions.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-            <select value={year} onChange={(e) => setYear(e.target.value)} aria-label="Filter by year" style={{ padding: "12px 12px", borderRadius: 12, border: "1px solid rgba(124,58,237,0.2)", background: "var(--bg-card)", color: "var(--text-primary)" }}>
-              {YEARS.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-          </div>
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 500 }}>
-              Showing <strong style={{ color: "#6d28d9" }}>{filteredProjects.length}</strong> {filteredProjects.length === 1 ? "project" : "projects"}
-              {activeCategory !== "All Projects" && activeCategory !== "Featured Projects" && ` in ${activeCategory}`}
-            </span>
-          </div>
-          <AnimatePresence mode="popLayout">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }}>
-              {filteredProjects.map((project, index) => (
-                <ProjectCard key={project.slug} project={project} index={index} />
-              ))}
-            </div>
-          </AnimatePresence>
-          {filteredProjects.length === 0 && (
-            <div style={{ textAlign: "center", padding: "48px 16px", color: "var(--text-muted)" }}>
-              No projects match that search. Try a client, colour, software, or service.
-            </div>
-          )}
         </div>
       </section>
 
-      <IndustryGrid active={industry} onSelect={setIndustry} />
-      <ServiceIconCards />
-      <TrustLogoWall />
-      <ComparisonGallery projects={publishedProjects} />
-
-      <Testimonials />
-
-      {/* ============ CTA SECTION ============ */}
-      <section style={{ padding: "120px 5% 100px", position: "relative", overflow: "hidden", textAlign: "center" }}>
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.15) 0%,transparent 60%)",
-          pointerEvents: "none",
-        }} />
-        <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.5 }} />
-        <div style={{ maxWidth: 800, margin: "0 auto", position: "relative", zIndex: 2 }}>
-          <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(36px,8vw,56px)", fontWeight: 900, color: "var(--text-primary)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 24 }}>
-            Ready to Build Something <span className="grad-text">Extraordinary?</span>
-          </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: 18, lineHeight: 1.8, maxWidth: 600, margin: "0 auto 48px" }}>
-            Let's create work that builds trust, showcases quality, and converts visitors into clients. Your vision deserves world-class execution.
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--text-muted)]">Selected work</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">A focused grid of our best recent projects.</h2>
+          </div>
+          <p className="max-w-xl text-sm leading-7 text-[color:var(--text-secondary)]">
+            Each card keeps the image front and centre so the work is easy to scan, easy to trust, and easy to move into a client conversation.
           </p>
-          <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/contact">
-              <button className="btn-main animate-glow" style={{ padding: "24px 48px", fontSize: 20, fontWeight: 700, background: "linear-gradient(135deg,#7c3aed,#a855f7)", color: "#fff", border: "none", borderRadius: 12, boxShadow: "0 8px 32px rgba(124,58,237,0.4)", transition: "all 0.3s" }}>Book Consultation →</button>
-            </Link>
-            <Link href="/contact">
-              <button className="btn-outline" style={{ padding: "24px 48px", fontSize: 20, fontWeight: 700, background: "transparent", color: "var(--text-primary)", border: "2px solid rgba(124,58,237,0.3)", borderRadius: 12, transition: "all 0.3s" }}>Request Quote</button>
-            </Link>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {visibleProjects.map((project) => {
+            const imageSrc = project.coverImage || project.heroBanner || project.gallery?.[0] || null;
+
+            return (
+              <Link
+                key={projectKey(project)}
+                href={`/portfolio/${project.slug}`}
+                className="group overflow-hidden rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--bg-card)] shadow-[0_12px_32px_rgba(17,8,40,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(17,8,40,0.12)]"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-[linear-gradient(135deg,rgba(124,58,237,0.16),rgba(168,85,247,0.06))]">
+                  {imageSrc ? (
+                    <Image
+                      src={imageSrc}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-end p-6 text-white">
+                      <div>
+                        <div className="text-5xl">{project.emoji || "🎨"}</div>
+                        <p className="mt-3 text-sm text-white/75">{project.category || "Creative work"}</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(6,3,15,0.72)] via-transparent to-transparent opacity-90" />
+                  <div className="absolute left-4 top-4 inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur">
+                    {project.category || "Portfolio"}
+                  </div>
+                  {project.featured && (
+                    <div className="absolute right-4 top-4 inline-flex rounded-full bg-[color:var(--primary)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white shadow-sm">
+                      Featured
+                    </div>
+                  )}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-sm font-medium text-white/80">{formatMeta(project)}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 p-6">
+                  <h3 className="text-xl font-semibold tracking-[-0.03em] text-[color:var(--text-primary)]">{project.title}</h3>
+                  <p className="line-clamp-3 text-sm leading-7 text-[color:var(--text-secondary)]">{project.overview}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {(project.servicesUsed?.length ? project.servicesUsed : project.deliverables).slice(0, 3).map((item) => (
+                      <span key={item} className="rounded-full border border-[color:var(--border)] bg-[color:var(--bg-secondary)] px-3 py-1 text-[11px] font-medium text-[color:var(--text-secondary)]">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="border-t border-b border-[color:var(--border)] bg-[color:var(--bg-secondary)]/50">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--text-muted)]">Services</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">What we deliver for brands, teams, and creators.</h2>
+          </div>
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {SERVICE_CARDS.map((service) => (
+              <div
+                key={service.title}
+                className="rounded-[1.5rem] border border-[color:var(--border)] bg-[color:var(--bg-card)] p-6 shadow-sm backdrop-blur"
+              >
+                <h3 className="text-lg font-semibold tracking-[-0.02em]">{service.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[color:var(--text-secondary)]">{service.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="rounded-[2rem] border border-[color:var(--border)] bg-[linear-gradient(135deg,rgba(124,58,237,0.94),rgba(50,12,103,0.98))] px-6 py-10 text-white shadow-[0_24px_80px_rgba(124,58,237,0.25)] sm:px-10 sm:py-12">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Need a project like this?</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">Let&apos;s turn the next idea into polished work that feels premium from day one.</h2>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
+              Whether the brief is branding, web, content, or launch support, we can help shape the creative direction and build the right digital experience.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link href="/contact" className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[color:var(--primary)] transition hover:bg-white/95">
+                Start a Project
+              </Link>
+              <Link href="/services" className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/15">
+                Explore Services
+              </Link>
+            </div>
           </div>
         </div>
       </section>
