@@ -13,7 +13,6 @@ const serviceLinks = [
 const companyLinks = [
   { label: 'About Us', href: '/about' },
   { label: 'Portfolio', href: '/portfolio' },
-  { label: 'Resources', href: '/resources' },
   { label: 'Blog', href: '/blog' },
   { label: 'Donate 💜', href: '/donate' },
   { label: 'Contact', href: '/contact' },
@@ -268,7 +267,7 @@ export default function Footer() {
         .purplefoot-container {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 64px 24px 48px;
+          padding: 48px 24px 36px;
         }
 
         /* ═══════════════════════════
@@ -277,7 +276,7 @@ export default function Footer() {
         .purplefoot-grid {
           display: grid;
           grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
-          gap: 48px;
+          gap: 36px;
         }
 
         /* ═══════════════════════════
@@ -456,7 +455,7 @@ export default function Footer() {
             gap: 32px;
           }
           .purplefoot-container {
-            padding: 48px 20px 36px;
+            padding: 36px 20px 28px;
           }
           .purplefoot-bottom-inner {
             flex-direction: column;

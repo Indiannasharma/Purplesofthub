@@ -464,7 +464,7 @@ export default function CaseStudyExperience({
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 12 }}>
             {PROJECT_DOWNLOAD_CATALOG.map((item) => {
               const url = project.downloads?.[item.key as keyof NonNullable<PortfolioProject["downloads"]>];
-              const href = url || `/resources?type=${item.resource}`;
+              const href = url || `/contact?intent=download&resource=${item.resource}`;
               return (
                 <Link key={item.key} href={href} className="glass-card" style={{ padding: 16, textDecoration: "none", color: "inherit" }}>
                   <div style={{ fontSize: 22 }}>📄</div>
@@ -519,8 +519,8 @@ export default function CaseStudyExperience({
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
               <MagneticButton href={`/contact?intent=similar&project=${project.slug}`}>Request Similar Project</MagneticButton>
               <MagneticButton href="/contact?intent=consult" variant="outline">Book Consultation</MagneticButton>
-              <MagneticButton href="/resources?type=capability-statement" variant="outline">Download Capability Statement</MagneticButton>
-              <MagneticButton href="/resources?type=company-profile" variant="outline">Download Company Profile</MagneticButton>
+              <MagneticButton href="/contact?intent=download&resource=capability-statement" variant="outline">Request Capability Statement</MagneticButton>
+              <MagneticButton href="/contact?intent=download&resource=company-profile" variant="outline">Request Company Profile</MagneticButton>
               <MagneticButton href={WHATSAPP_URL} variant="whatsapp">WhatsApp</MagneticButton>
             </div>
           </div>
