@@ -258,6 +258,32 @@ main,
   height: auto !important;
 }
 
+/* Public pages: pin footer to the bottom so leftover min-height
+   does not sit under the copyright bar (body has 68px nav offset). */
+main:has(.purplefoot-wrapper) {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 68px) !important;
+  width: 100%;
+}
+
+/* Toast overlay is a <section> outside main; never let page section padding
+   create empty scroll space under the footer. */
+section[data-react-aria-top-layer="true"],
+section[aria-label^="Notifications"] {
+  position: fixed !important;
+  inset: auto 0 0 auto;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+section[data-react-aria-top-layer="true"] > *,
+section[aria-label^="Notifications"] > * {
+  pointer-events: auto;
+}
+
 /* EXCEPTION FOR DASHBOARD LAYOUTS - allow independent scrolling */
 .dashboard-main main,
 .admin-main main {
@@ -452,7 +478,7 @@ html:not(.dark) [style*="color: #a855f7"],
 html:not(.dark) [style*="color:#a855f7"] { color: #6d28d9 !important; }
 html:not(.dark) [style*="color: #7c3aed"],
 html:not(.dark) [style*="color:#7c3aed"] { color: #5b21b6 !important; }
-html:not(.dark) section { background: transparent !important; }
+html:not(.dark) main section { background: transparent !important; }
 html.dark .hero-section,
 html:not(.dark) .hero-section { background: var(--hero-section-bg, transparent) !important; }
 html:not(.dark) main { background: var(--bg-primary) !important; color: var(--text-primary) !important; }
@@ -639,7 +665,7 @@ html:not(.dark) [style*="color:#5b4d8a"] { color: var(--text-muted) !important; 
    GLOBAL RESPONSIVE
 ══════════════════════════════ */
 @media (max-width: 639px) {
-  section { padding-left: 16px !important; padding-right: 16px !important; padding-top: 48px !important; padding-bottom: 48px !important; }
+  main section { padding-left: 16px !important; padding-right: 16px !important; padding-top: 48px !important; padding-bottom: 48px !important; }
   h1 { letter-spacing: -1px !important; }
   [style*="grid-template-columns: 1fr 1fr"],
   [style*="gridTemplateColumns: \"1fr 1fr\""] { grid-template-columns: 1fr !important; }
@@ -659,12 +685,12 @@ html:not(.dark) [style*="color:#5b4d8a"] { color: var(--text-muted) !important; 
   .btn-main, .btn-outline { width: 100%; text-align: center; }
 }
 @media (min-width: 640px) and (max-width: 1023px) {
-  section { padding-left: 24px !important; padding-right: 24px !important; padding-top: 64px !important; padding-bottom: 64px !important; }
+  main section { padding-left: 24px !important; padding-right: 24px !important; padding-top: 64px !important; padding-bottom: 64px !important; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
   .contact-grid, .service-inner-grid { grid-template-columns: 1fr !important; }
 }
 @media (min-width: 1024px) {
-  section { padding-left: 5% !important; padding-right: 5% !important; padding-top: 90px; padding-bottom: 90px; }
+  main section { padding-left: 5% !important; padding-right: 5% !important; padding-top: 90px; padding-bottom: 90px; }
 }
 
 /* ══════════════════════════════

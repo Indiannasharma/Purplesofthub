@@ -259,6 +259,8 @@ export default function Footer() {
           background: var(--f-bg) !important;
           border-top: 1px solid var(--f-border) !important;
           margin-top: auto;
+          flex-shrink: 0;
+          width: 100%;
         }
 
         /* ═══════════════════════════
