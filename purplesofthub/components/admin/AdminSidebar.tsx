@@ -24,7 +24,7 @@ const navGroups: { group: string; items: NavItem[] }[] = [
     group: 'CONTENT',
     items: [
       { icon: '✍️', label: 'Blog Manager', path: '/admin/blog' },
-      { icon: '🎨', label: 'Showcase Analytics', path: '/admin/portfolio' },
+      { icon: '🎨', label: 'Work', path: '/admin/portfolio' },
       { icon: '📁', label: 'Resource Library', path: '/admin/resources' },
       { icon: '📣', label: 'Promotions', path: '/admin/promotions' },
     ],

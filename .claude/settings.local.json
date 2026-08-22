@@ -45,7 +45,8 @@
       "Bash(grep -r \"ADMIN\\\\|admin_email\\\\|NEXT_PUBLIC_ADMIN\" purplesofthub/.env* purplesofthub/.env.local)",
       "Bash(ls -la /c/Users/HP/Documents/Code/Softwork/purplesofthub/.claude/worktrees/epic-bhaskara/purplesofthub/.env*)",
       "Bash(git pull:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(rtk ls *)"
     ]
   }
 }

@@ -86,8 +86,9 @@ export async function PUT(request: NextRequest) {
 
     if (!projectId) return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
 
+    const { id: _id, ...rest } = body
     const payload = {
-      ...body,
+      ...rest,
       slug: body.slug || toSlug(body.title || ''),
       updated_at: new Date().toISOString(),
     }

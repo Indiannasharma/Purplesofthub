@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { getProjectBySlug } from "@/lib/portfolio.server";
 import { normalizeProject } from "@/lib/portfolio-normalize";
 import { PORTFOLIO_PROJECTS } from "../_data/portfolio";
-import { WHATSAPP_URL } from "@/lib/portfolio-showcase";
+import { WHATSAPP_URL, youtubeIdFromUrl } from "@/lib/portfolio-showcase";
 import type { PortfolioProject } from "@/types/portfolio";
 
 export function generateStaticParams() {
@@ -94,6 +94,20 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
             )}
           </div>
         </div>
+
+        {youtubeIdFromUrl(project.videos?.youtube) ? (
+          <div className="mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="relative aspect-video overflow-hidden rounded-[1.5rem] bg-black">
+              <iframe
+                src={`https://www.youtube.com/embed/${youtubeIdFromUrl(project.videos?.youtube)}`}
+                title={project.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full border-0"
+              />
+            </div>
+          </div>
+        ) : null}
 
         {/* ── OVERVIEW + DELIVERABLES ── */}
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_280px] lg:px-8 lg:py-20">
