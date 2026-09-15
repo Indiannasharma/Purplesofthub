@@ -31,9 +31,9 @@ export default function CheckoutSuccessClient() {
 
   useEffect(() => {
     const paymentReference =
-      searchParams.get('reference') ||
-      searchParams.get('trxref') ||
-      searchParams.get('tx_ref') ||
+      searchParams?.get('reference') ||
+      searchParams?.get('trxref') ||
+      searchParams?.get('tx_ref') ||
       ''
 
     if (!paymentReference) {
@@ -79,7 +79,7 @@ export default function CheckoutSuccessClient() {
         return
       }
 
-      const paymentMethod = (searchParams.get('provider') as 'paystack' | 'flutterwave' | null) || 'paystack'
+      const paymentMethod = (searchParams?.get('provider') as 'paystack' | 'flutterwave' | null) || 'paystack'
       const resolvedNextPath = draft.requiresProjectCreation ? '/dashboard/projects' : '/sign-in'
 
       try {

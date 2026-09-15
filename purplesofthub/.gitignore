@@ -25,6 +25,7 @@ yarn-debug.log*
 yarn-error.log*
 dev-*.log
 dev-*.err.log
+*.log
 
 # OS files
 .DS_Store
@@ -39,3 +40,8 @@ next-env.d.ts
 
 # Claude Code local settings (may contain API keys)
 .claude/
+
+# Local recovery artifacts
+node_modules_old/
+package-lock.json.old
+proxy.ts.local-disabled

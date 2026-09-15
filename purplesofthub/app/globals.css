@@ -389,6 +389,145 @@ html.dark .glass-card:hover {
   box-shadow: 0 20px 60px rgba(124,58,237,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
+.home-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 20px;
+}
+
+.home-service-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.94), rgba(250,245,255,0.88)) !important;
+  border-color: rgba(124,58,237,0.26) !important;
+  color: #1a0533 !important;
+}
+
+.home-service-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: rgba(124,58,237,0.12);
+  border: 1px solid rgba(124,58,237,0.22);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.home-service-title {
+  margin-bottom: 10px;
+  color: #1a0533 !important;
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.home-service-desc {
+  flex: 1;
+  margin-bottom: 18px;
+  color: #4a2d6b !important;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.home-service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.home-service-tag {
+  padding: 3px 11px;
+  border: 1px solid rgba(124,58,237,0.26);
+  border-radius: 100px;
+  background: rgba(124,58,237,0.11);
+  color: #5b21b6 !important;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.home-service-card a span,
+.home-service-link {
+  color: #5b21b6 !important;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.home-service-card a:hover span,
+.home-service-link:hover {
+  color: #7c3aed !important;
+}
+
+.home-service-progress {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(124,58,237,0.14);
+}
+
+.home-service-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+html.dark .home-service-card {
+  background:
+    linear-gradient(180deg, rgba(28,14,55,0.96), rgba(13,5,32,0.94)) !important;
+  border-color: rgba(192,132,252,0.34) !important;
+  box-shadow: 0 4px 24px rgba(124,58,237,0.18), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  color: #ffffff !important;
+}
+
+html.dark .home-service-icon {
+  background: rgba(168,85,247,0.18);
+  border-color: rgba(216,180,254,0.3);
+}
+
+html.dark .home-service-title {
+  color: #ffffff !important;
+}
+
+html.dark .home-service-desc {
+  color: #d8cff0 !important;
+}
+
+html.dark .home-service-tag {
+  background: rgba(168,85,247,0.18);
+  border-color: rgba(216,180,254,0.32);
+  color: #f0e7ff !important;
+}
+
+html.dark .home-service-card a span,
+html.dark .home-service-link {
+  color: #d8b4fe !important;
+}
+
+html.dark .home-service-card a:hover span,
+html.dark .home-service-link:hover {
+  color: #ffffff !important;
+}
+
+html.dark .home-service-progress {
+  border-top-color: rgba(216,180,254,0.18);
+}
+
+@media (max-width: 430px) {
+  .home-service-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-service-card {
+    padding: 24px 20px !important;
+  }
+}
+
 /* ══════════════════════════════
    BUTTONS
 ══════════════════════════════ */

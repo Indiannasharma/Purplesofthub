@@ -74,11 +74,6 @@ const nextConfig = {
       ],
     },
   ],
-  // Experimental features for better performance
-  experimental: {
-    // Optimize server components
-    optimizePackageImports: ["lucide-react", "recharts", "react-apexcharts"],
-  },
 };
 
 export default nextConfig;

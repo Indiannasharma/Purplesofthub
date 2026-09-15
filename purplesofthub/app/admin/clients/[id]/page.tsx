@@ -27,7 +27,7 @@ export default function ClientDetailPage() {
   const router = useRouter()
 
   // Extract client ID from pathname: /admin/clients/[id]
-  const clientId = pathname.split('/').pop()
+  const clientId = (pathname ?? '').split('/').pop()
 
   const [client, setClient] = useState<Client | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])

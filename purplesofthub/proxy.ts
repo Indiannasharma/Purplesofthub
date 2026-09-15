@@ -1,14 +1,34 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+function hasUsableSupabaseEnv() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!url || !key) return false
+  if (/placeholder|your_|changeme|example|xxx|todo|replace/i.test(`${url} ${key}`)) {
+    return false
+  }
+
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function proxy(request: NextRequest) {
-  // Create response FIRST with request headers properly forwarded
-  let response = NextResponse.next({
+  if (!hasUsableSupabaseEnv()) {
+    return NextResponse.next()
+  }
+
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   })
 
+  const { createServerClient } = await import('@supabase/ssr')
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -17,8 +37,6 @@ export async function proxy(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        // When supabase needs to set cookies (e.g. refreshed token),
-        // update the response object we created above
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
@@ -28,8 +46,6 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  // This reads the request cookies and may call setAll() if token needs refresh
-  // Any cookies set will be in the response object above
   await supabase.auth.getUser()
 
   return response
@@ -37,13 +53,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder files
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

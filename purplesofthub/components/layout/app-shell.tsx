@@ -18,8 +18,8 @@ type AppShellProps = {
 
 function AppShellFrame({ children, rightPanel, footer }: AppShellProps) {
   const pathname = usePathname();
-  const workspace = getWorkspaceByPath(pathname);
-  const breadcrumbs = getBreadcrumbs(pathname);
+  const workspace = getWorkspaceByPath(pathname ?? "");
+  const breadcrumbs = getBreadcrumbs(pathname ?? "");
 
   return (
     <div className="min-h-dvh bg-background text-foreground">

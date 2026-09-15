@@ -188,7 +188,7 @@ export default function AdminOverview() {
       },
       dataLabels: { enabled: false },
       tooltip: {
-        theme: 'dark',
+        theme: 'dark' as const,
         style: { fontSize: '12px' },
       },
     },
@@ -230,7 +230,7 @@ export default function AdminOverview() {
           },
         },
       },
-      tooltip: { theme: 'dark' },
+      tooltip: { theme: 'dark' as const },
     },
   }
 
@@ -280,7 +280,7 @@ export default function AdminOverview() {
       },
       dataLabels: { enabled: false },
       tooltip: {
-        theme: 'dark',
+        theme: 'dark' as const,
         y: {
           formatter: (val: number) => `₦${val.toLocaleString()}`,
         },

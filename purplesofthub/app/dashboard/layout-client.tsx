@@ -171,7 +171,7 @@ export default function DashboardLayoutClient({
 
   const isActive = (href: string) => 
     pathname === href || 
-    (href !== '/dashboard' && pathname.startsWith(href))
+    (href !== '/dashboard' && (pathname ?? '').startsWith(href))
 
   return (
     <div style={{

@@ -113,14 +113,32 @@ const TYPEWRITER_WORDS = [
   "Media Houses", "Event Planners", "Law Firms",
 ];
 
+function hasUsableSupabaseEnv() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) return false;
+  if (/placeholder|your_|changeme|example|xxx|todo|replace/i.test(`${url} ${key}`)) {
+    return false;
+  }
+
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default async function Home() {
-  const supabase = await createClient();
-  const { data: trendingPostsData } = await supabase
-    .from('blog_posts')
-    .select('id, title, slug, excerpt, read_time, comment_count, likes_count')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false })
-    .limit(3);
+  const trendingPostsData = hasUsableSupabaseEnv()
+    ? (await (await createClient())
+        .from('blog_posts')
+        .select('id, title, slug, excerpt, read_time, comment_count, likes_count')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(3)).data
+    : [];
 
   const trendingPosts = trendingPostsData || [];
 

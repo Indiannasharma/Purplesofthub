@@ -281,7 +281,7 @@ export default function AdminLayoutClient({
   const isActive = (href: string, exact = false) => 
     exact
       ? pathname === href
-      : pathname === href || (href !== '/admin' && pathname.startsWith(href))
+      : pathname === href || (href !== '/admin' && (pathname ?? '').startsWith(href))
 
   return (
     <div style={{

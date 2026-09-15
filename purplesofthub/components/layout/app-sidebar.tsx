@@ -102,7 +102,7 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
       <div className={cn("flex-1 overflow-y-auto py-4", collapsed ? "px-2" : "px-3")}>
         <TooltipProvider delayDuration={100}>
           <SidebarNav
-            pathname={pathname}
+            pathname={pathname ?? ""}
             sections={visibleNavigation}
             collapsed={collapsed}
           />

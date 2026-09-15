@@ -43,13 +43,13 @@ export default function ServiceCards({ services }: { services: Service[] }) {
   }, [])
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: 20 }}>
+    <div className="home-service-grid">
       {services.map((s) => {
         const p = PROGRESS[s.title]
         return (
           <div
             key={s.title}
-            className="glass-card"
+            className="glass-card home-service-card"
             style={{ padding: '30px 26px', display: 'flex', flexDirection: 'column', transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease' }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLDivElement
@@ -64,12 +64,12 @@ export default function ServiceCards({ services }: { services: Service[] }) {
               el.style.borderColor = ''
             }}
           >
-            <div style={{ fontSize: 38, marginBottom: 16 }}>{s.icon}</div>
-            <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 17, color: 'var(--text-primary)', marginBottom: 10 }}>{s.title}</div>
-            <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.75, marginBottom: 18, flex: 1 }}>{s.desc}</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 18 }}>
+            <div className="home-service-icon">{s.icon}</div>
+            <div className="home-service-title">{s.title}</div>
+            <p className="home-service-desc">{s.desc}</p>
+            <div className="home-service-tags">
               {s.tags.map((t) => (
-                <span key={t} style={{ background: 'rgba(124,58,237,.12)', border: '1px solid rgba(168,85,247,.25)', borderRadius: 100, padding: '3px 11px', fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>{t}</span>
+                <span key={t} className="home-service-tag">{t}</span>
               ))}
             </div>
             <Link href={s.href}>
@@ -78,8 +78,8 @@ export default function ServiceCards({ services }: { services: Service[] }) {
 
             {/* Progress bar */}
             {p && (
-              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(124,58,237,0.08)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div className="home-service-progress">
+                <div className="home-service-progress-head">
                   <span style={{ fontSize: 11, fontWeight: 700, color: p.color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{p.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: p.color }}>{p.pct}%</span>
                 </div>

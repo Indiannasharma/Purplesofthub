@@ -56,7 +56,7 @@ export default function ClientSidebar() {
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           {navItems.map((item) => {
-            const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path))
+            const isActive = pathname === item.path || (item.path !== '/dashboard' && (pathname ?? '').startsWith(item.path))
             return (
               <Link
                 key={item.label}

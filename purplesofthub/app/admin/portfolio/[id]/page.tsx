@@ -8,6 +8,7 @@ import ProjectForm from "../_components/ProjectForm"
 
 export default function EditPortfolioProjectPage() {
   const params = useParams<{ id: string }>()
+  const projectId = params?.id
   const [ready, setReady] = useState(false)
   const [initial, setInitial] = useState<{
     title: string
@@ -23,8 +24,12 @@ export default function EditPortfolioProjectPage() {
   }>()
 
   useEffect(() => {
+    if (!projectId) {
+      setReady(true)
+      return
+    }
     const supabase = createClient()
-    supabase.from("portfolio_projects").select("*").eq("id", params.id).maybeSingle().then(({ data }) => {
+    supabase.from("portfolio_projects").select("*").eq("id", projectId).maybeSingle().then(({ data }) => {
       if (data) {
         const project = normalizeProject(data)
         setInitial({
@@ -42,8 +47,8 @@ export default function EditPortfolioProjectPage() {
       }
       setReady(true)
     })
-  }, [params.id])
+  }, [projectId])
 
   if (!ready) return <p style={{ color: "#9d8fd4" }}>Loading…</p>
-  return <ProjectForm projectId={params.id} initial={initial} />
+  return <ProjectForm projectId={projectId} initial={initial} />
 }

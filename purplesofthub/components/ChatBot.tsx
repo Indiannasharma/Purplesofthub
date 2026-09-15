@@ -85,7 +85,7 @@ function getStoredSessionId() {
 export default function ChatBot() {
   const pathname = usePathname()
   const { theme } = useTheme()
-  const mode = useMemo(() => getMode(pathname), [pathname])
+  const mode = useMemo(() => getMode(pathname ?? ''), [pathname])
   const copy = useMemo(() => modeCopy(mode), [mode])
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<NovaUiMessage[]>([])
