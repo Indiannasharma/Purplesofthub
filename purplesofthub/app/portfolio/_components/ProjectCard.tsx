@@ -1,49 +1,58 @@
 "use client";
+
 import Link from "next/link";
 import type { PortfolioProject } from "@/types/portfolio";
+import ProjectMedia from "./ProjectMedia";
 
-export default function ProjectCard({ project }: { project: PortfolioProject; index?: number }) {
-  const image = project.coverImage || project.featuredThumbnail || project.heroBanner || project.gallery?.[0] || null;
+interface ProjectCardProps {
+  project: PortfolioProject;
+  index?: number;
+}
+
+export default function ProjectCard({ project, index }: ProjectCardProps) {
+  const summary =
+    project.overview ||
+    project.finalSolution ||
+    project.challenge ||
+    "A focused digital project built to improve brand presence and customer action.";
+
+  const tags = (project.tags?.length ? project.tags : project.servicesUsed || []).slice(0, 2);
+  const number = typeof index === "number" ? String(index + 1).padStart(2, "0") : null;
 
   return (
-    <Link href={`/portfolio/${project.slug}`} className="group block" style={{ textDecoration: "none" }}>
-      <div
-        style={{
-          position: "relative",
-          aspectRatio: "4 / 3",
-          overflow: "hidden",
-          borderRadius: 20,
-          background: "linear-gradient(135deg, #2a1058, #7c3aed)",
-        }}
-      >
-        {image ? (
-          <img
-            src={image}
-            alt={project.title}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transition: "transform 0.6s ease",
-            }}
-            className="group-hover:scale-[1.04]"
-          />
-        ) : (
-          <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#2a1058,#7c3aed)" }} />
-        )}
+    <Link href={`/portfolio/${project.slug}`} className="pf-card">
+      <ProjectMedia project={project} className="pf-card-media" />
+
+      <div className="pf-card-body">
+        <div className="pf-card-head">
+          {number ? (
+            <span className="pf-card-number" aria-hidden="true">
+              {number}
+            </span>
+          ) : null}
+          <p className="pf-card-client">
+            {project.clientName || project.industry || "PurpleSoftHub client"}
+          </p>
+          {project.year ? <span className="pf-card-year">{project.year}</span> : null}
+        </div>
+
+        <h3 className="pf-card-title">{project.title}</h3>
+        <p className="pf-card-summary">{summary}</p>
+
+        <div className="pf-card-foot">
+          <div className="pf-card-tags">
+            {tags.map((tag) => (
+              <span key={tag} className="pf-tag">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <span className="pf-card-cta" aria-hidden="true">
+            View case study
+            <span className="pf-card-arrow">→</span>
+          </span>
+        </div>
       </div>
-      <p
-        style={{
-          margin: "14px 0 0",
-          fontFamily: "Outfit, sans-serif",
-          fontSize: 16,
-          fontWeight: 700,
-          letterSpacing: "-0.02em",
-          color: "var(--text-primary)",
-        }}
-      >
-        {project.title}
-      </p>
     </Link>
   );
 }
