@@ -68,7 +68,9 @@ export const SERVICES = [
 
 export const YEARS = ["All Years", "2026", "2025", "2024", "2023"];
 
-const RAW_PROJECTS: RawPortfolioProject[] = [
+// Exported so case-study pages can tell studio-authored copy apart from the draft text
+// `normalizeProjects()` generates for fields a project does not carry yet.
+export const RAW_PROJECTS: RawPortfolioProject[] = [
   // ══════════════════════════════════════════
   // FEATURED PROJECTS
   // ══════════════════════════════════════════

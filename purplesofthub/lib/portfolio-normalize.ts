@@ -220,3 +220,69 @@ export function matchesShowcaseSearch(project: PortfolioProject, query: string):
     .toLowerCase()
   return haystack.includes(q)
 }
+
+/**
+ * Canonical field name -> raw key aliases. Mirrors the `pick()` calls above so pages can
+ * resolve a field against the raw record (DB row or seed entry) instead of the normalised one.
+ */
+const AUTHORED_ALIASES: Record<string, string[]> = {
+  overview: ['overview'],
+  challenge: ['challenge'],
+  solution: ['finalSolution', 'solution'],
+  research: ['research'],
+  strategy: ['strategy'],
+  creativeDirection: ['creativeDirection', 'creative_direction'],
+  wireframes: ['wireframes'],
+  moodboard: ['moodboard'],
+  typography: ['typography'],
+  colourSystem: ['colourSystem', 'colour_system', 'color_system'],
+  gridSystem: ['gridSystem', 'grid_system'],
+  results: ['results'],
+  clientFeedback: ['clientFeedback', 'client_feedback'],
+  comparison: ['comparison'],
+  gallery: ['gallery'],
+  mockups: ['mockups'],
+  videos: ['videos'],
+  timeline: ['timeline'],
+  deliverables: ['deliverables'],
+  tags: ['tags'],
+  servicesUsed: ['servicesUsed', 'services_used'],
+  softwareUsed: ['softwareUsed', 'software_used', 'tech'],
+  downloads: ['downloads'],
+  awards: ['awards'],
+  liveUrl: ['liveUrl', 'live_url'],
+  projectDuration: ['projectDuration', 'project_duration'],
+  teamSize: ['teamSize', 'team_size'],
+  deliverablesCount: ['deliverablesCount', 'deliverables_count'],
+}
+
+function hasValue(value: unknown): boolean {
+  if (value === null || value === undefined) return false
+  if (typeof value === 'string') return value.trim().length > 0
+  if (Array.isArray(value)) return value.length > 0
+  if (typeof value === 'object') return Object.values(value as Record<string, unknown>).some(hasValue)
+  return true
+}
+
+/**
+ * True when the raw project record actually carries copy for a field.
+ *
+ * `normalizeProject()` fills research, strategy, typography, colour system, grid system and
+ * results with generated drafts whenever a project does not have them, so the normalised
+ * object alone cannot distinguish authored work from a draft. Case-study pages read the raw
+ * record through this helper and only present studio-written narrative as project fact.
+ */
+export function hasAuthoredContent(raw: Record<string, unknown> | null | undefined, field: string): boolean {
+  if (!raw) return false
+  const keys = AUTHORED_ALIASES[field] || [field]
+  return keys.some((key) => hasValue(raw[key]))
+}
+
+/** Raw record -> lookup of every field that carries authored content. */
+export function authoredContentMap(raw: Record<string, unknown> | null | undefined): Record<string, boolean> {
+  const map: Record<string, boolean> = {}
+  for (const field of Object.keys(AUTHORED_ALIASES)) {
+    map[field] = hasAuthoredContent(raw, field)
+  }
+  return map
+}

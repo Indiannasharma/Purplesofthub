@@ -16,7 +16,7 @@ export function projectImage(project: PortfolioProject): string | null {
 
 /** Two-character monogram used by the fallback artwork. Prefers letter initials so
  *  digit-leading titles (e.g. "24HRS Content Hub") still read as a brand mark. */
-function monogram(title: string): string {
+export function monogram(title: string): string {
   const words = title
     .replace(/[^a-zA-Z0-9 ]/g, " ")
     .split(/\s+/)
