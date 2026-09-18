@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth'
 import { toSlug } from '@/lib/portfolio'
 
 export const dynamic = 'force-dynamic'
 
+// ── GET: public listing of published portfolio projects ──
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
@@ -33,22 +35,27 @@ export async function GET(request: NextRequest) {
     }
 
     const { data, error, count } = await query
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.error('[portfolio] GET failed:', error.code, error.message)
+      return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 })
+    }
     return NextResponse.json({ data, count })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    console.error('[portfolio] GET failed:', error)
+    return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 })
   }
 }
 
+// ── POST: Create Project (admin only) ──
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin()
+  if (!auth.ok) return auth.response
+
   try {
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (!user || authError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
     const body = await request.json()
     const slug = body.slug || toSlug(body.title || '')
-    
+
     if (!body.title) return NextResponse.json({ error: 'Title is required' }, { status: 400 })
 
     const payload = {
@@ -67,20 +74,24 @@ export async function POST(request: NextRequest) {
     }
 
     const { data, error } = await supabase.from('portfolio_projects').insert(payload).select('*').single()
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.error('[portfolio] POST failed:', error.code, error.message)
+      return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
+    }
     return NextResponse.json({ data }, { status: 201 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    console.error('[portfolio] POST failed:', error)
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
   }
 }
 
-// ── PUT: Update Project ──
+// ── PUT: Update Project (admin only) ──
 export async function PUT(request: NextRequest) {
+  const auth = await requireAdmin()
+  if (!auth.ok) return auth.response
+
   try {
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (!user || authError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
     const body = await request.json()
     const projectId = body.id
 
@@ -100,20 +111,24 @@ export async function PUT(request: NextRequest) {
       .select()
       .single()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.error('[portfolio] PUT failed:', error.code, error.message)
+      return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
+    }
     return NextResponse.json({ data })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    console.error('[portfolio] PUT failed:', error)
+    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
   }
 }
 
-// ── DELETE / Archive Project ──
+// ── DELETE / Archive Project (admin only) ──
 export async function DELETE(request: NextRequest) {
+  const auth = await requireAdmin()
+  if (!auth.ok) return auth.response
+
   try {
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (!user || authError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('id')
 
@@ -126,9 +141,13 @@ export async function DELETE(request: NextRequest) {
       .select()
       .single()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.error('[portfolio] DELETE failed:', error.code, error.message)
+      return NextResponse.json({ error: 'Failed to archive project' }, { status: 500 })
+    }
     return NextResponse.json({ data })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    console.error('[portfolio] DELETE failed:', error)
+    return NextResponse.json({ error: 'Failed to archive project' }, { status: 500 })
   }
 }

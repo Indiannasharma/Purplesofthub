@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getAuthenticatedProfile } from '@/lib/auth'
-import AdminLayoutClient from './layout-client'
+import AdminShell from '@/components/admin/AdminShell'
 
 export default async function AdminLayout({
   children,
@@ -14,5 +14,16 @@ export default async function AdminLayout({
 
   if (auth.role !== 'admin') redirect('/dashboard')
 
-  return <AdminLayoutClient>{children}</AdminLayoutClient>
+  return (
+    <AdminShell
+      profile={{
+        userId: auth.userId,
+        email: auth.email,
+        fullName: auth.fullName,
+        role: auth.role,
+      }}
+    >
+      {children}
+    </AdminShell>
+  )
 }

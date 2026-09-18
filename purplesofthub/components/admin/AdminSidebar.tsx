@@ -1,148 +1,220 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { useSidebar } from '@/context/SidebarContext'
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { Globe } from "lucide-react";
 
-type NavItem = {
-  icon: string
-  label: string
-  path?: string
-  children?: { label: string; path: string }[]
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  adminNavigationSections,
+  isAdminNavItemActive,
+  type AdminNavItem,
+} from "@/lib/admin-navigation";
+import { cn } from "@/lib/utils";
+import { useAdminShell } from "@/components/admin/admin-shell-context";
+import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
+
+const BRAND_LOGO = "/images/logo/purplesoft-logo-main.png";
+
+export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 items-center border-b border-border/60",
+        collapsed ? "justify-center px-3 py-4" : "justify-between gap-3 px-4 py-4"
+      )}
+    >
+      <Link
+        href="/admin"
+        aria-label="PurpleSoftHub admin dashboard"
+        className={cn(
+          "flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          collapsed && "justify-center"
+        )}
+      >
+        {collapsed ? (
+          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10">
+            <Image
+              src={BRAND_LOGO}
+              alt=""
+              width={26}
+              height={26}
+              className="h-6 w-6 object-contain"
+              priority
+            />
+          </span>
+        ) : (
+          <Image
+            src={BRAND_LOGO}
+            alt="PurpleSoftHub"
+            width={132}
+            height={38}
+            className="h-9 w-auto object-contain"
+            priority
+          />
+        )}
+      </Link>
+
+      {!collapsed ? (
+        <span className="shrink-0 rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+          Admin
+        </span>
+      ) : null}
+    </div>
+  );
 }
 
-const navGroups: { group: string; items: NavItem[] }[] = [
-  {
-    group: 'OVERVIEW',
-    items: [
-      { icon: '📊', label: 'Dashboard', path: '/admin' },
-    ],
-  },
-  {
-    group: 'CONTENT',
-    items: [
-      { icon: '✍️', label: 'Blog Manager', path: '/admin/blog' },
-      { icon: '🎨', label: 'Work', path: '/admin/portfolio' },
-      { icon: '📁', label: 'Resource Library', path: '/admin/resources' },
-      { icon: '📣', label: 'Promotions', path: '/admin/promotions' },
-    ],
-  },
-  {
-    group: 'CLIENTS',
-    items: [
-      { icon: '👥', label: 'All Clients', path: '/admin/clients' },
-      { icon: '💬', label: 'Chat Leads', path: '/admin/leads' },
-      { icon: '📧', label: 'Subscribers', path: '/admin/subscribers' },
-    ],
-  },
-  {
-    group: 'PROJECTS',
-    items: [
-      { icon: '📦', label: 'All Projects', path: '/admin/projects' },
-      { icon: '🎵', label: 'Music Promos', path: '/admin/music' },
-    ],
-  },
-  {
-    group: 'FINANCE',
-    items: [
-      { icon: '🧾', label: 'Invoices', path: '/admin/invoices' },
-      { icon: '💰', label: 'Payments', path: '/admin/payments' },
-    ],
-  },
-  {
-    group: 'SETTINGS',
-    items: [
-      { icon: '⚙️', label: 'Settings', path: '/admin/settings' },
-    ],
-  },
-]
+function AdminSidebarLink({
+  item,
+  pathname,
+  collapsed,
+  onNavigate,
+}: {
+  item: AdminNavItem;
+  pathname: string;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const active = isAdminNavItemActive(pathname, item);
+
+  const row = (
+    <Link
+      href={item.href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      aria-label={collapsed ? item.title : undefined}
+      className={cn(
+        "group relative flex w-full items-center gap-3 rounded-xl text-sm font-medium transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5",
+        active
+          ? "bg-primary/10 text-primary"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+      )}
+    >
+      {active ? (
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-primary"
+        />
+      ) : null}
+
+      <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+
+      {!collapsed ? <span className="truncate">{item.title}</span> : null}
+
+      {!collapsed && item.badge ? (
+        <span className="ml-auto rounded-full border border-border/60 bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+          {item.badge}
+        </span>
+      ) : null}
+    </Link>
+  );
+
+  if (!collapsed) return row;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{row}</TooltipTrigger>
+      <TooltipContent side="right">{item.title}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+export function AdminSidebarNav({ collapsed = false }: { collapsed?: boolean }) {
+  const pathname = usePathname() ?? "";
+  const { setCollapsed } = useAdminShell();
+
+  return (
+    <TooltipProvider delayDuration={120}>
+      <nav
+        aria-label="Admin sections"
+        className={cn(
+          "admin-sidebar-scroll min-h-0 flex-1 space-y-6 overflow-y-auto py-4",
+          collapsed ? "px-2" : "px-3"
+        )}
+      >
+        {adminNavigationSections.map((section) => (
+          <div key={section.id} className="space-y-1.5">
+            {collapsed ? (
+              <div className="mx-auto h-px w-6 bg-border/80" aria-hidden="true" />
+            ) : (
+              <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+                {section.title}
+              </p>
+            )}
+
+            <div className="space-y-1">
+              {section.items.map((item) => (
+                <AdminSidebarLink
+                  key={item.id}
+                  item={item}
+                  pathname={pathname}
+                  collapsed={collapsed}
+                  onNavigate={collapsed ? () => setCollapsed(false) : undefined}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+    </TooltipProvider>
+  );
+}
+
+export function AdminSidebarFooter({ collapsed = false }: { collapsed?: boolean }) {
+  if (collapsed) return null;
+
+  return (
+    <div className="shrink-0 border-t border-border/60 p-3">
+      <Link
+        href="/"
+        className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        <Globe className="h-3.5 w-3.5" aria-hidden="true" />
+        View website
+      </Link>
+      <p className="px-3 pt-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground/70">
+        Digital Innovation Studio
+      </p>
+    </div>
+  );
+}
+
+export function AdminSidebarContent({ collapsed = false }: { collapsed?: boolean }) {
+  return (
+    <div className="flex h-full min-h-0 flex-col bg-background">
+      <AdminSidebarBrand collapsed={collapsed} />
+      <AdminSidebarNav collapsed={collapsed} />
+      <AdminSidebarFooter collapsed={collapsed} />
+    </div>
+  );
+}
 
 export default function AdminSidebar() {
-  const pathname = usePathname()
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar()
-  const sidebarRef = useRef<HTMLDivElement>(null)
-
-  const isVisible = isExpanded || isHovered || isMobileOpen
+  const { isCollapsed } = useAdminShell();
 
   return (
     <>
-      {/* Overlay */}
-      {isMobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-gray-900/50 lg:hidden"
-          onClick={toggleMobileSidebar}
-        />
-      )}
-
       <aside
-        ref={sidebarRef}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`fixed left-0 top-0 z-50 flex h-screen flex-col bg-gray-900 transition-all duration-300 ease-in-out
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          ${isVisible ? 'w-[290px]' : 'w-[90px]'}
-        `}
-      >
-        {/* Logo */}
-        <div className={`flex items-center gap-3 border-b border-gray-800 px-6 py-5 ${!isVisible ? 'justify-center px-3' : ''}`}>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-500">
-            <span className="text-lg font-bold text-white">P</span>
-          </div>
-          {isVisible && (
-            <div>
-              <span className="block text-sm font-bold text-white">PurpleSoftHub</span>
-              <span className="block text-xs text-brand-400 font-medium tracking-widest uppercase">Admin Panel</span>
-            </div>
-          )}
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
-          {navGroups.map(({ group, items }) => (
-            <div key={group} className="mb-4">
-              {isVisible && (
-                <p className="mb-1 px-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                  {group}
-                </p>
-              )}
-              {items.map((item) => {
-                const isActive = pathname === item.path || (item.path !== '/admin' && (pathname ?? '').startsWith(item.path!))
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.path!}
-                    className={`mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all
-                      ${isActive
-                        ? 'bg-brand-500/20 text-brand-400 border-l-2 border-brand-500'
-                        : 'text-gray-400 hover:bg-white/5 hover:text-white'}
-                      ${!isVisible ? 'justify-center' : ''}
-                    `}
-                    title={!isVisible ? item.label : undefined}
-                  >
-                    <span className="text-base shrink-0">{item.icon}</span>
-                    {isVisible && <span>{item.label}</span>}
-                  </Link>
-                )
-              })}
-            </div>
-          ))}
-        </nav>
-
-        {/* Footer */}
-        {isVisible && (
-          <div className="border-t border-gray-800 p-4">
-            <Link
-              href="/"
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-400 hover:bg-white/5 hover:text-white transition-all"
-            >
-              <span>🌐</span>
-              <span>View Website</span>
-            </Link>
-          </div>
+        aria-label="Admin sidebar"
+        className={cn(
+          "hidden h-full shrink-0 border-r border-border/60 bg-background transition-[width] duration-200 ease-out lg:block",
+          isCollapsed ? "w-[84px]" : "w-[272px]"
         )}
+      >
+        <AdminSidebarContent collapsed={isCollapsed} />
       </aside>
+
+      <AdminMobileNav>
+        <AdminSidebarContent collapsed={false} />
+      </AdminMobileNav>
     </>
-  )
+  );
 }

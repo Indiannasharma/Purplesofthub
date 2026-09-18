@@ -5202,6 +5202,60 @@ html:not(.dark) .pf-btn-ghost:hover {
   font-size: 13.5px;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 1B — ADMIN SHELL FOUNDATION
+   Scoped, additive styling for the shared Admin shell only.
+   Reuses the existing shadcn semantic tokens (--background, --border,
+   --primary, --ring, ...) — no new page-specific hex palettes and no
+   [style*=...] hacks. All rules are namespaced under .admin-shell.
+══════════════════════════════════════════════════════════════════ */
+
+/* Scoped aliases for the admin shell surface (presentation only). */
+.admin-shell {
+  --admin-shell-bg: var(--background);
+  --admin-shell-card: var(--card);
+  --admin-shell-border: var(--border);
+  --admin-shell-accent: var(--primary);
+  --admin-shell-ring: var(--ring);
+}
+
+/* The legacy global `main { overflow: visible !important; }` rule would
+   disable the admin content scroller. This scoped override preserves the
+   previous admin shell's behaviour (independently scrolling content area);
+   the older `.admin-main main` rule remains for any legacy wrappers. */
+.admin-shell .admin-main main {
+  overflow: auto !important;
+  height: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Slim scrollbar for the independently scrolling sidebar navigation. */
+.admin-shell .admin-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.admin-shell .admin-sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.admin-shell .admin-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-shell .admin-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 100px;
+}
+.admin-shell .admin-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
 /* -- Process strip -- */
 .pf-cs-process {
   display: grid;

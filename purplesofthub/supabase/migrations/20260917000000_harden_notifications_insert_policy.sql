@@ -1,0 +1,71 @@
+-- ============================================================
+-- PurpleSoftHub — Harden the notifications INSERT policy
+--
+-- Security finding (S4): the original notifications migration created
+--
+--   CREATE POLICY "insert_notifications"
+--     ON public.notifications FOR INSERT
+--     WITH CHECK (true);
+--
+-- which allowed ANY authenticated user to insert a forged notification row
+-- for ANY admin_id (title / message / type fully attacker-controlled).
+--
+-- No application code inserts into public.notifications from a client or a
+-- session-scoped Supabase client:
+--   * lib/notifications.ts#createNotification() has zero importers.
+--   * Every notification is created by database triggers that run as
+--     SECURITY DEFINER functions (owned by the migration role), and those
+--     inserts bypass RLS because the function owner owns the table.
+--   * Any future trusted server-side insert must use the service role,
+--     which also bypasses RLS.
+--
+-- So the correct minimal fix is to drop the over-broad policy entirely.
+--
+-- Preserved unchanged:
+--   * admin_select_notifications  (admin reads own notifications)
+--   * admin_update_notifications  (admin marks own notifications read)
+--   * notification triggers on profiles / payments / projects /
+--     music_campaigns / account_recovery_requests
+--   * realtime publication membership for public.notifications
+--
+-- Run in the Supabase SQL Editor for the production project.
+-- ============================================================
+
+-- ─── Pre-flight verification (run BEFORE applying) ───────────
+-- Trigger inserts bypass RLS only when the trigger function owner owns the
+-- table (or the owner has BYPASSRLS, as Supabase's service_role does).
+-- Expect function_owner = table_owner for the rows below.
+--
+-- SELECT p.proname, pg_get_userbyid(p.proowner) AS function_owner
+-- FROM pg_proc p
+-- JOIN pg_namespace n ON n.oid = p.pronamespace
+-- WHERE n.nspname = 'public'
+--   AND p.proname IN (
+--     'get_first_admin_id',
+--     'notify_admin_on_signup',
+--     'notify_admin_on_payment',
+--     'notify_admin_on_project',
+--     'notify_admin_on_music_campaign',
+--     'notify_admin_on_recovery'
+--   )
+-- ORDER BY p.proname;
+--
+-- SELECT pg_get_userbyid(relowner) AS table_owner
+-- FROM pg_class
+-- WHERE oid = 'public.notifications'::regclass;
+
+DROP POLICY IF EXISTS "insert_notifications" ON public.notifications;
+
+-- ─── Verification ────────────────────────────────────────────
+-- Expect exactly two policies on public.notifications:
+--   admin_select_notifications
+--   admin_update_notifications
+--
+-- SELECT policyname, cmd, qual, with_check
+-- FROM pg_policies
+-- WHERE schemaname = 'public' AND tablename = 'notifications'
+-- ORDER BY policyname;
+
+-- ─── Rollback (only if a client-side insert path is ever required) ───
+-- Prefer routing any new notification creation through a service-role
+-- server route instead of re-opening a table-level INSERT policy.

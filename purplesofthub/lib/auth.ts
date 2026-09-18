@@ -6,6 +6,9 @@ type AuthSuccess = {
   ok: true
   userId: string
   role: 'admin' | 'client'
+  /** Additive display fields (never used for authorization decisions). */
+  fullName: string
+  email: string
 }
 
 type AuthFailure = {
@@ -51,11 +54,13 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
   const admin = getServiceRoleClient()
 
   let profileRole: string | null = null
+  let profileFullName = ''
+  let profileEmail = ''
 
   if (admin) {
     const { data: profile, error: profileError } = await admin
       .from('profiles')
-      .select('role')
+      .select('role, full_name, email')
       .eq('id', user.id)
       .maybeSingle()
 
@@ -67,17 +72,21 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
     })
 
     profileRole = profile?.role ?? null
+    profileFullName = profile?.full_name ?? ''
+    profileEmail = profile?.email ?? ''
 
     // Auto-create profile if it doesn't exist yet
     if (!profile && !profileError) {
       const adminEmails = (process.env.ADMIN_EMAIL || '')
         .split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
       const isAdmin = adminEmails.includes((user.email || '').toLowerCase())
+      const metadataName: string =
+        user.user_metadata?.full_name || user.user_metadata?.name || ''
 
       const { error: insertError } = await admin.from('profiles').insert({
         id: user.id,
         email: user.email,
-        full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+        full_name: metadataName,
         role: isAdmin ? 'admin' : 'client',
       })
       console.log('[getAuthenticatedProfile] Auto-created profile:', {
@@ -86,12 +95,14 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
         insertError: insertError?.message,
       })
       profileRole = isAdmin ? 'admin' : 'client'
+      profileFullName = metadataName
+      profileEmail = user.email ?? ''
     }
   } else {
     // Fallback: no service role key → try with user client (may fail with RLS)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, full_name, email')
       .eq('id', user.id)
       .maybeSingle()
 
@@ -103,6 +114,8 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
     })
 
     profileRole = profile?.role ?? null
+    profileFullName = profile?.full_name ?? ''
+    profileEmail = profile?.email ?? ''
   }
 
   if (!profileRole) {
@@ -122,6 +135,12 @@ export async function getAuthenticatedProfile(): Promise<AuthSuccess | AuthFailu
     ok: true,
     userId: user.id,
     role: profileRole === 'admin' ? 'admin' : 'client',
+    fullName:
+      profileFullName.trim() ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      '',
+    email: profileEmail || user.email || '',
   }
 }
 
