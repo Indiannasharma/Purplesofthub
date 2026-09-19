@@ -1,6 +1,11 @@
 import * as React from "react";
+import { AlertCircle, Inbox } from "lucide-react";
 
-import { Card } from "@/components/ui/Card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
 /** Title/description pair shared by every Command Center card. */
@@ -16,15 +21,24 @@ export function DashboardCardHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-wrap items-start justify-between gap-2 px-5 pt-5", className)}>
+    <CardHeader
+      className={cn(
+        "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 space-y-0 p-5 pb-3",
+        className
+      )}
+    >
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold tracking-tight text-foreground">{title}</h2>
+        <h2 className="text-sm font-semibold leading-5 tracking-tight text-foreground">
+          {title}
+        </h2>
         {description ? (
-          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+          <CardDescription className="mt-0.5 text-xs leading-4 text-muted-foreground">
+            {description}
+          </CardDescription>
         ) : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
-    </div>
+    </CardHeader>
   );
 }
 
@@ -34,12 +48,24 @@ export function DashboardCardHeader({
  */
 export function UnavailableNotice({ label, className }: { label: string; className?: string }) {
   return (
-    <p
+    <div
       role="status"
-      className={cn("px-5 pb-5 pt-2 text-sm text-muted-foreground", className)}
+      className={cn(
+        "mx-5 mb-5 flex items-start gap-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.07] px-3 py-2.5",
+        className
+      )}
     >
-      {label} is currently unavailable.
-    </p>
+      <AlertCircle
+        className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
+        aria-hidden="true"
+      />
+      <div>
+        <p className="text-sm font-medium text-foreground">Temporarily unavailable</p>
+        <p className="mt-0.5 text-xs leading-4 text-muted-foreground">
+          {label} could not be loaded safely. Try refreshing shortly.
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -54,11 +80,22 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div className={cn("px-5 pb-6 pt-2", className)}>
-      <p className="text-sm font-medium text-foreground">{title}</p>
-      {description ? (
-        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
-      ) : null}
+    <div
+      className={cn(
+        "mx-5 mb-5 flex items-start gap-2.5 rounded-lg bg-muted/55 px-3 py-2.5",
+        className
+      )}
+    >
+      <Inbox
+        className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+        aria-hidden="true"
+      />
+      <div>
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        {description ? (
+          <p className="mt-0.5 text-xs leading-4 text-muted-foreground">{description}</p>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -72,7 +109,12 @@ export function DashboardCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className={cn("min-w-0 gap-0 overflow-hidden rounded-xl py-0 shadow-none", className)}>
+    <Card
+      className={cn(
+        "min-w-0 gap-0 overflow-hidden rounded-xl border-border/70 bg-card py-0 shadow-[0_1px_2px_rgba(15,23,42,0.035)]",
+        className
+      )}
+    >
       {children}
     </Card>
   );

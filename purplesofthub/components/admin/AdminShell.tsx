@@ -37,7 +37,7 @@ function AdminShellFrame({ children, profile }: AdminShellProps) {
 
         <main
           id="admin-main"
-          className="admin-content min-h-0 flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8"
+          className="admin-content min-h-0 flex-1"
         >
           {children}
         </main>

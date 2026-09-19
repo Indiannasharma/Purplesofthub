@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useTheme } from "@/context/ThemeContext";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -12,6 +13,7 @@ export type ChartPoint = { label: string; value: number };
  * hardcoded hex values.
  */
 export function AreaChart({ data, seriesName }: { data: ChartPoint[]; seriesName: string }) {
+  const { resolvedTheme } = useTheme();
   const primary = resolveToken("--primary", "#7c3aed");
   const border = resolveToken("--border", "#e5e7eb");
   const muted = resolveToken("--muted-foreground", "#6b7280");
@@ -25,7 +27,7 @@ export function AreaChart({ data, seriesName }: { data: ChartPoint[]; seriesName
       type: "gradient" as const,
       gradient: { shadeIntensity: 0.25, opacityFrom: 0.3, opacityTo: 0.02 },
     },
-    grid: { borderColor: border, strokeDashArray: 4, padding: { top: 8 } },
+    grid: { borderColor: border, strokeDashArray: 4, padding: { top: 4, left: 4, right: 8, bottom: 0 } },
     xaxis: {
       categories: data.map((point) => point.label),
       labels: { style: { colors: muted, fontSize: "11px" } },
@@ -38,7 +40,7 @@ export function AreaChart({ data, seriesName }: { data: ChartPoint[]; seriesName
       tickAmount: 4,
     },
     tooltip: {
-      theme: "light" as const,
+      theme: resolvedTheme,
       y: { formatter: (value: number) => `${value.toLocaleString("en-NG")}` },
     },
     legend: { show: false },
@@ -47,7 +49,7 @@ export function AreaChart({ data, seriesName }: { data: ChartPoint[]; seriesName
   return (
     <ReactApexChart
       type="area"
-      height={250}
+      height={210}
       options={options}
       series={[{ name: seriesName, data: data.map((point) => point.value) }]}
     />

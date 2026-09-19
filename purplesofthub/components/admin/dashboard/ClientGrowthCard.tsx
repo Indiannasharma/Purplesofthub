@@ -19,7 +19,7 @@ export function ClientGrowthCard({ clients }: { clients: ClientsData }) {
   const hasData = clients.growth.some((point) => point.clients > 0);
 
   return (
-    <DashboardCard className="lg:col-span-2">
+    <DashboardCard>
       <DashboardCardHeader
         title="Client growth"
         description={`New clients per month · last ${clients.growth.length} months`}
@@ -27,7 +27,7 @@ export function ClientGrowthCard({ clients }: { clients: ClientsData }) {
       {!hasData ? (
         <EmptyState title="No client growth yet" description="Client signups will chart here as they happen." />
       ) : (
-        <div className="px-2 pb-2">
+        <div className="px-2 pb-1">
           <AreaChart
             data={clients.growth.map((point) => ({ label: point.label, value: point.clients }))}
             seriesName="New clients"

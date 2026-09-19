@@ -37,7 +37,7 @@ export function AdminPageHeader({
   className,
 }: AdminPageHeaderProps) {
   return (
-    <div className={cn("flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between", className)}>
+    <div className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
       <div className="min-w-0">
         {breadcrumbs?.length ? (
           <nav aria-label="Breadcrumb" className="mb-1.5">
@@ -74,12 +74,12 @@ export function AdminPageHeader({
           </nav>
         ) : null}
 
-        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+        <h1 className="text-2xl font-semibold leading-tight tracking-[-0.025em] text-foreground sm:text-[1.75rem]">
           {title}
         </h1>
 
         {description ? (
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1.5 max-w-2xl text-sm leading-5 text-muted-foreground">{description}</p>
         ) : null}
       </div>
 

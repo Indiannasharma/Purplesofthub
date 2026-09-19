@@ -27,12 +27,12 @@ export function QuickActions() {
   return (
     <DashboardCard>
       <DashboardCardHeader title="Quick actions" description="Jump to a create flow" />
-      <ul className="mt-2 grid gap-1 px-2 pb-3">
+      <ul className="grid gap-1 px-2 pb-3 sm:grid-cols-2 lg:grid-cols-1">
         {ACTIONS.map((action) => (
           <li key={action.href}>
             <Link
               href={action.href}
-              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground transition-colors group-hover:text-primary">
                 <action.icon className="h-3.5 w-3.5" aria-hidden="true" />

@@ -14,21 +14,30 @@ export function MetricCard({
   note,
   icon: Icon,
   href,
+  tone = "primary",
 }: {
   label: string;
   value: number | null;
   note?: string;
   icon: LucideIcon;
   href?: string;
+  tone?: "primary" | "sky" | "emerald" | "amber";
 }) {
+  const tones = {
+    primary: "bg-primary/10 text-primary",
+    sky: "bg-sky-500/10 text-sky-700 dark:text-sky-400",
+    emerald: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    amber: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  };
+
   const body = (
     <>
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", tones[tone])}>
         <Icon className="h-4 w-4" aria-hidden="true" />
       </div>
       <div className="min-w-0">
         <p className="truncate text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+        <p className="mt-0.5 text-2xl font-semibold leading-none tracking-tight text-foreground tabular-nums">
           {formatCount(value)}
         </p>
         {note ? <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{note}</p> : null}
@@ -37,8 +46,8 @@ export function MetricCard({
   );
 
   const classes = cn(
-    "flex items-center gap-3 rounded-xl border bg-card p-4 text-card-foreground shadow-none transition-colors",
-    href && "hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    "flex min-h-[88px] items-center gap-3 rounded-xl border border-border/70 bg-card p-4 text-card-foreground shadow-[0_1px_2px_rgba(15,23,42,0.035)] transition-[border-color,box-shadow,transform]",
+    href && "hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
   );
 
   if (href) {

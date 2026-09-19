@@ -48,6 +48,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           }
           icon={FolderKanban}
           href="/admin/projects"
+          tone="sky"
         />
         <MetricCard
           label="New leads"
@@ -59,6 +60,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           }
           icon={UserPlus}
           href="/admin/leads"
+          tone="emerald"
         />
         <MetricCard
           label="Outstanding invoices"
@@ -66,6 +68,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           note={outstandingNote ?? "Awaiting payment"}
           icon={ReceiptText}
           href="/admin/invoices"
+          tone="amber"
         />
       </div>
     </section>

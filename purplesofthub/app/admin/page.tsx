@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 
 import { getAuthenticatedProfile } from "@/lib/auth";
-import { getAdminBreadcrumbs } from "@/lib/admin-navigation";
 import {
   getAdminDashboardData,
   getGreeting,
 } from "@/lib/admin/dashboard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminPage } from "@/components/admin/AdminPage";
 import { BusinessPulse } from "@/components/admin/dashboard/BusinessPulse";
 import { ProjectOverview } from "@/components/admin/dashboard/ProjectOverview";
 import { AttentionCenter } from "@/components/admin/dashboard/AttentionCenter";
@@ -43,41 +43,62 @@ export default async function AdminOverviewPage() {
   const subtitle = "Here's what's happening at PurpleSoftHub.";
 
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col gap-5 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+    <AdminPage>
       <AdminPageHeader
         title={`${greeting}, ${firstName}`}
         description={subtitle}
-        breadcrumbs={getAdminBreadcrumbs("/admin")}
         actions={<RefreshButton />}
       />
 
       <BusinessPulse data={dashboard} />
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <section aria-label="Primary operations" className="grid items-start gap-5 lg:grid-cols-12">
+        <div
+          className={
+            dashboard.projects.status === "unavailable"
+              ? "lg:col-span-5"
+              : "lg:col-span-7 xl:col-span-8"
+          }
+        >
           <ProjectOverview projects={dashboard.projects} />
         </div>
-        <AttentionCenter attention={dashboard.attention} />
-      </div>
+        <div
+          className={
+            dashboard.projects.status === "unavailable"
+              ? "lg:col-span-7"
+              : "lg:col-span-5 xl:col-span-4"
+          }
+        >
+          <AttentionCenter attention={dashboard.attention} />
+        </div>
+      </section>
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <section aria-label="Business development and finance" className="grid items-start gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-7 xl:col-span-8">
           <LeadOverview leads={dashboard.leads} />
         </div>
-        <FinancialSnapshot finance={dashboard.finance} />
-      </div>
+        <div className="lg:col-span-5 xl:col-span-4">
+          <FinancialSnapshot finance={dashboard.finance} />
+        </div>
+      </section>
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <section aria-label="Recent activity and shortcuts" className="grid items-start gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-7 xl:col-span-8">
           <RecentActivity activity={dashboard.recentActivity} />
         </div>
-        <QuickActions />
-      </div>
+        <div className="lg:col-span-5 xl:col-span-4">
+          <QuickActions />
+        </div>
+      </section>
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <ClientGrowthCard clients={dashboard.clients} />
-        <BusinessInsights insights={dashboard.insights} />
-      </div>
-    </div>
+      <section aria-label="Analytics and insights" className="grid items-start gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-7 xl:col-span-8">
+          <ClientGrowthCard clients={dashboard.clients} />
+        </div>
+        <div className="lg:col-span-5 xl:col-span-4">
+          <BusinessInsights insights={dashboard.insights} />
+        </div>
+      </section>
+    </AdminPage>
   );
 }

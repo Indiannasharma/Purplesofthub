@@ -22,7 +22,8 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
   const breadcrumbs = getAdminBreadcrumbs(pathname);
 
   return (
-    <header className="z-30 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-border/60 bg-background/85 px-4 py-2.5 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="z-30 min-h-16 shrink-0 border-b border-border/70 bg-background/90 backdrop-blur-xl">
+      <div className="mx-auto flex min-h-16 w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
       <div className="flex min-w-0 items-center gap-2">
         <Button
           type="button"
@@ -62,6 +63,7 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
         <ThemeToggle />
         <NotificationBell adminId={profile.userId} />
         <AdminUserMenu profile={profile} />
+      </div>
       </div>
     </header>
   );

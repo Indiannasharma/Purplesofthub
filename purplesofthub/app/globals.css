@@ -5212,11 +5212,86 @@ html:not(.dark) .pf-btn-ghost:hover {
 
 /* Scoped aliases for the admin shell surface (presentation only). */
 .admin-shell {
+  --background: #f7f8fb;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f3f6;
+  --secondary-foreground: #27272a;
+  --muted: #f1f3f6;
+  --muted-foreground: #667085;
+  --accent: #f1f3f6;
+  --accent-foreground: #27272a;
+  --border: #e2e5ea;
+  --input: #d9dde5;
+  --ring: #8b5cf6;
   --admin-shell-bg: var(--background);
   --admin-shell-card: var(--card);
   --admin-shell-border: var(--border);
   --admin-shell-accent: var(--primary);
   --admin-shell-ring: var(--ring);
+}
+
+html.dark .admin-shell {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --card: #111114;
+  --card-foreground: #f4f4f5;
+  --popover: #151518;
+  --popover-foreground: #f4f4f5;
+  --primary: #a855f7;
+  --primary-foreground: #ffffff;
+  --secondary: #1c1c20;
+  --secondary-foreground: #f4f4f5;
+  --muted: #1a1a1e;
+  --muted-foreground: #a1a1aa;
+  --accent: #202024;
+  --accent-foreground: #f4f4f5;
+  --border: #29292e;
+  --input: #33333a;
+  --ring: #a855f7;
+}
+
+/* Public marketing sections intentionally have campaign-scale padding.
+   Admin sections are grid landmarks and must remain content-sized. */
+.admin-shell .admin-content section {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* Nova stays unchanged on public/client routes. In Admin, shrink the launcher
+   and pair it with AdminPage's safe bottom gutter so it cannot hide actions. */
+body:has(.admin-shell) .nova-shell {
+  right: max(18px, env(safe-area-inset-right)) !important;
+  bottom: max(18px, env(safe-area-inset-bottom)) !important;
+}
+
+body:has(.admin-shell) .nova-fab {
+  min-width: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.3), 0 0 0 4px rgba(124, 58, 237, 0.06) !important;
+}
+
+body:has(.admin-shell) .nova-fab span {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  body:has(.admin-shell) .nova-shell {
+    right: max(10px, env(safe-area-inset-right)) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    left: auto !important;
+  }
+
+  body:has(.admin-shell) .nova-panel {
+    width: calc(100vw - 20px) !important;
+  }
 }
 
 /* The legacy global `main { overflow: visible !important; }` rule would

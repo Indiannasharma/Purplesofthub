@@ -26,8 +26,8 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center border-b border-border/60",
-        collapsed ? "justify-center px-3 py-4" : "justify-between gap-3 px-4 py-4"
+        "flex shrink-0 items-center border-b border-border/70",
+        collapsed ? "justify-center px-3 py-3" : "px-4 py-3"
       )}
     >
       <Link
@@ -50,22 +50,22 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
             />
           </span>
         ) : (
-          <Image
-            src={BRAND_LOGO}
-            alt="PurpleSoftHub"
-            width={132}
-            height={38}
-            className="h-9 w-auto object-contain"
-            priority
-          />
+          <span className="flex min-w-0 items-center gap-3">
+            <Image
+              src={BRAND_LOGO}
+              alt="PurpleSoftHub"
+              width={124}
+              height={34}
+              className="h-8 w-auto object-contain"
+              priority
+            />
+            <span className="h-5 w-px bg-border" aria-hidden="true" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Admin
+            </span>
+          </span>
         )}
       </Link>
-
-      {!collapsed ? (
-        <span className="shrink-0 rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
-          Admin
-        </span>
-      ) : null}
     </div>
   );
 }
@@ -90,9 +90,9 @@ function AdminSidebarLink({
       aria-current={active ? "page" : undefined}
       aria-label={collapsed ? item.title : undefined}
       className={cn(
-        "group relative flex w-full items-center gap-3 rounded-xl text-sm font-medium transition-colors",
+        "group relative flex w-full items-center gap-3 rounded-lg text-[13px] font-medium transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5",
+        collapsed ? "justify-center px-0 py-2" : "px-3 py-2",
         active
           ? "bg-primary/10 text-primary"
           : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -136,21 +136,21 @@ export function AdminSidebarNav({ collapsed = false }: { collapsed?: boolean }) 
       <nav
         aria-label="Admin sections"
         className={cn(
-          "admin-sidebar-scroll min-h-0 flex-1 space-y-6 overflow-y-auto py-4",
+          "admin-sidebar-scroll min-h-0 flex-1 space-y-4 overflow-y-auto py-3",
           collapsed ? "px-2" : "px-3"
         )}
       >
         {adminNavigationSections.map((section) => (
-          <div key={section.id} className="space-y-1.5">
+          <div key={section.id} className="space-y-1">
             {collapsed ? (
               <div className="mx-auto h-px w-6 bg-border/80" aria-hidden="true" />
             ) : (
-              <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/80">
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/75">
                 {section.title}
               </p>
             )}
 
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {section.items.map((item) => (
                 <AdminSidebarLink
                   key={item.id}
@@ -172,7 +172,7 @@ export function AdminSidebarFooter({ collapsed = false }: { collapsed?: boolean 
   if (collapsed) return null;
 
   return (
-    <div className="shrink-0 border-t border-border/60 p-3">
+    <div className="shrink-0 border-t border-border/70 p-2.5">
       <Link
         href="/"
         className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -180,16 +180,13 @@ export function AdminSidebarFooter({ collapsed = false }: { collapsed?: boolean 
         <Globe className="h-3.5 w-3.5" aria-hidden="true" />
         View website
       </Link>
-      <p className="px-3 pt-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground/70">
-        Digital Innovation Studio
-      </p>
     </div>
   );
 }
 
 export function AdminSidebarContent({ collapsed = false }: { collapsed?: boolean }) {
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
+    <div className="flex h-full min-h-0 flex-col bg-card">
       <AdminSidebarBrand collapsed={collapsed} />
       <AdminSidebarNav collapsed={collapsed} />
       <AdminSidebarFooter collapsed={collapsed} />
@@ -205,8 +202,8 @@ export default function AdminSidebar() {
       <aside
         aria-label="Admin sidebar"
         className={cn(
-          "hidden h-full shrink-0 border-r border-border/60 bg-background transition-[width] duration-200 ease-out lg:block",
-          isCollapsed ? "w-[84px]" : "w-[272px]"
+          "hidden h-full shrink-0 border-r border-border/70 bg-card transition-[width] duration-200 ease-out lg:block",
+          isCollapsed ? "w-[76px]" : "w-[252px]"
         )}
       >
         <AdminSidebarContent collapsed={isCollapsed} />
