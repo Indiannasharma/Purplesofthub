@@ -22,14 +22,14 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
   const breadcrumbs = getAdminBreadcrumbs(pathname);
 
   return (
-    <header className="z-30 min-h-16 shrink-0 border-b border-border/70 bg-background/90 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
-      <div className="flex min-w-0 items-center gap-2">
+    <header className="z-30 min-h-14 shrink-0 border-b border-border/70 bg-card/90 backdrop-blur-xl">
+      <div className="mx-auto flex min-h-14 w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-2">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-10 w-10 lg:hidden"
+          className="h-9 w-9 lg:hidden"
           aria-label="Open admin navigation"
           aria-expanded={isMobileNavOpen}
           onClick={() => setMobileNavOpen(true)}
@@ -41,7 +41,7 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
           type="button"
           variant="ghost"
           size="icon"
-          className="hidden h-10 w-10 lg:inline-flex"
+          className="hidden h-9 w-9 lg:inline-flex"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-pressed={isCollapsed}
           onClick={toggleCollapsed}
@@ -56,14 +56,15 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
         <div className="hidden min-w-0 sm:block">
           <Breadcrumbs items={breadcrumbs} />
         </div>
-      </div>
+        </div>
 
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        <AdminSearchTrigger />
-        <ThemeToggle />
-        <NotificationBell adminId={profile.userId} />
-        <AdminUserMenu profile={profile} />
-      </div>
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <AdminSearchTrigger />
+          <ThemeToggle />
+          <NotificationBell adminId={profile.userId} />
+          <span className="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden="true" />
+          <AdminUserMenu profile={profile} />
+        </div>
       </div>
     </header>
   );

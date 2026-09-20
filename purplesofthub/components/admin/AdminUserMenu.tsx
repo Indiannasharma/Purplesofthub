@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,8 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase/client";
-
-const BRAND_LOGO = "/images/logo/purplesoft-logo-main.png";
 
 export type AdminShellProfile = {
   userId: string;
@@ -65,12 +63,13 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
         <Button
           type="button"
           variant="ghost"
-          className="h-10 gap-2 rounded-full px-1.5 sm:px-2"
+          className="h-9 gap-2 rounded-lg px-1.5 sm:px-2"
           aria-label="Open account menu"
         >
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={BRAND_LOGO} alt="" />
-            <AvatarFallback>{initialsOf(displayName)}</AvatarFallback>
+          <Avatar className="h-7 w-7">
+            <AvatarFallback className="bg-primary/10 text-[11px] font-semibold text-primary">
+              {initialsOf(displayName)}
+            </AvatarFallback>
           </Avatar>
           <span className="hidden max-w-[140px] truncate text-sm font-medium lg:inline-flex">
             {displayName}
@@ -83,8 +82,9 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9">
-              <AvatarImage src={BRAND_LOGO} alt="" />
-              <AvatarFallback>{initialsOf(displayName)}</AvatarFallback>
+              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                {initialsOf(displayName)}
+              </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{displayName}</p>

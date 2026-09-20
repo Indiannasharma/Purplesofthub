@@ -27,7 +27,7 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
     <div
       className={cn(
         "flex shrink-0 items-center border-b border-border/70",
-        collapsed ? "justify-center px-3 py-3" : "px-4 py-3"
+        collapsed ? "justify-center px-3 py-3" : "px-4 py-4"
       )}
     >
       <Link
@@ -54,14 +54,14 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
             <Image
               src={BRAND_LOGO}
               alt="PurpleSoftHub"
-              width={124}
+              width={118}
               height={34}
-              className="h-8 w-auto object-contain"
+              className="h-7 w-auto object-contain"
               priority
             />
-            <span className="h-5 w-px bg-border" aria-hidden="true" />
-            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Admin
+            <span className="h-7 w-px bg-border" aria-hidden="true" />
+            <span className="max-w-16 text-[9px] font-semibold uppercase leading-3 tracking-[0.14em] text-muted-foreground">
+              Admin workspace
             </span>
           </span>
         )}
@@ -94,8 +94,8 @@ function AdminSidebarLink({
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         collapsed ? "justify-center px-0 py-2" : "px-3 py-2",
         active
-          ? "bg-primary/10 text-primary"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          ? "bg-primary/[0.08] text-foreground"
+          : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
       )}
     >
       {active ? (
@@ -105,7 +105,7 @@ function AdminSidebarLink({
         />
       ) : null}
 
-      <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+      <item.icon className={cn("h-[18px] w-[18px] shrink-0", active && "text-primary")} aria-hidden="true" />
 
       {!collapsed ? <span className="truncate">{item.title}</span> : null}
 
@@ -136,7 +136,7 @@ export function AdminSidebarNav({ collapsed = false }: { collapsed?: boolean }) 
       <nav
         aria-label="Admin sections"
         className={cn(
-          "admin-sidebar-scroll min-h-0 flex-1 space-y-4 overflow-y-auto py-3",
+          "admin-sidebar-scroll min-h-0 flex-1 space-y-4 overflow-y-auto py-4",
           collapsed ? "px-2" : "px-3"
         )}
       >
@@ -145,7 +145,7 @@ export function AdminSidebarNav({ collapsed = false }: { collapsed?: boolean }) 
             {collapsed ? (
               <div className="mx-auto h-px w-6 bg-border/80" aria-hidden="true" />
             ) : (
-              <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/75">
+              <p className="px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
                 {section.title}
               </p>
             )}
@@ -203,7 +203,7 @@ export default function AdminSidebar() {
         aria-label="Admin sidebar"
         className={cn(
           "hidden h-full shrink-0 border-r border-border/70 bg-card transition-[width] duration-200 ease-out lg:block",
-          isCollapsed ? "w-[76px]" : "w-[252px]"
+          isCollapsed ? "w-[72px]" : "w-[248px]"
         )}
       >
         <AdminSidebarContent collapsed={isCollapsed} />

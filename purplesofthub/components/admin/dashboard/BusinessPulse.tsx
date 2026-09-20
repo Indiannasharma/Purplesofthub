@@ -27,8 +27,17 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
       : undefined;
 
   return (
-    <section aria-label="Business pulse">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section aria-labelledby="business-pulse-title">
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Live business pulse
+          </p>
+          <h2 id="business-pulse-title" className="sr-only">Business pulse</h2>
+        </div>
+        <p className="hidden text-xs text-muted-foreground sm:block">Real-time operational totals</p>
+      </div>
+      <div className="grid overflow-hidden rounded-xl border border-border/70 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.035)] sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Total clients"
           value={overview.totalClients}
@@ -39,6 +48,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           }
           icon={Users}
           href="/admin/clients"
+          className="border-b sm:border-r xl:border-b-0"
         />
         <MetricCard
           label="Active projects"
@@ -49,6 +59,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           icon={FolderKanban}
           href="/admin/projects"
           tone="sky"
+          className="border-b xl:border-b-0 xl:border-r"
         />
         <MetricCard
           label="New leads"
@@ -61,6 +72,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           icon={UserPlus}
           href="/admin/leads"
           tone="emerald"
+          className="border-b sm:border-b-0 sm:border-r"
         />
         <MetricCard
           label="Outstanding invoices"

@@ -15,6 +15,7 @@ export function MetricCard({
   icon: Icon,
   href,
   tone = "primary",
+  className,
 }: {
   label: string;
   value: number | null;
@@ -22,6 +23,7 @@ export function MetricCard({
   icon: LucideIcon;
   href?: string;
   tone?: "primary" | "sky" | "emerald" | "amber";
+  className?: string;
 }) {
   const tones = {
     primary: "bg-primary/10 text-primary",
@@ -32,22 +34,23 @@ export function MetricCard({
 
   const body = (
     <>
-      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", tones[tone])}>
+      <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg", tones[tone])}>
         <Icon className="h-4 w-4" aria-hidden="true" />
       </div>
-      <div className="min-w-0">
-        <p className="truncate text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="mt-0.5 text-2xl font-semibold leading-none tracking-tight text-foreground tabular-nums">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
+        <p className="mt-1.5 text-[26px] font-semibold leading-none tracking-[-0.03em] text-foreground tabular-nums">
           {formatCount(value)}
         </p>
-        {note ? <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{note}</p> : null}
+        {note ? <p className="mt-1 truncate text-xs text-muted-foreground">{note}</p> : null}
       </div>
     </>
   );
 
   const classes = cn(
-    "flex min-h-[88px] items-center gap-3 rounded-xl border border-border/70 bg-card p-4 text-card-foreground shadow-[0_1px_2px_rgba(15,23,42,0.035)] transition-[border-color,box-shadow,transform]",
-    href && "hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    "flex min-h-[104px] items-start gap-3 border-border/70 p-4 text-card-foreground transition-colors sm:p-5",
+    href && "hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+    className
   );
 
   if (href) {

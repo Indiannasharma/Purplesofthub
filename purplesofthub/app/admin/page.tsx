@@ -5,18 +5,16 @@ import {
   getAdminDashboardData,
   getGreeting,
 } from "@/lib/admin/dashboard";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminPage } from "@/components/admin/AdminPage";
+import { CommandHeader } from "@/components/admin/dashboard/CommandHeader";
 import { BusinessPulse } from "@/components/admin/dashboard/BusinessPulse";
+import { StudioOverview } from "@/components/admin/dashboard/StudioOverview";
 import { ProjectOverview } from "@/components/admin/dashboard/ProjectOverview";
 import { AttentionCenter } from "@/components/admin/dashboard/AttentionCenter";
 import { LeadOverview } from "@/components/admin/dashboard/LeadOverview";
 import { FinancialSnapshot } from "@/components/admin/dashboard/FinancialSnapshot";
 import { RecentActivity } from "@/components/admin/dashboard/RecentActivity";
 import { QuickActions } from "@/components/admin/dashboard/QuickActions";
-import { ClientGrowthCard } from "@/components/admin/dashboard/ClientGrowthCard";
-import { BusinessInsights } from "@/components/admin/dashboard/BusinessInsights";
-import { RefreshButton } from "@/components/admin/dashboard/RefreshButton";
 
 export const metadata = { title: "Command Center" };
 
@@ -40,44 +38,32 @@ export default async function AdminOverviewPage() {
 
   const greeting = getGreeting();
   const firstName = auth.fullName?.split(" ")[0] || "there";
-  const subtitle = "Here's what's happening at PurpleSoftHub.";
-
   return (
-    <AdminPage>
-      <AdminPageHeader
+    <AdminPage className="gap-6">
+      <CommandHeader
         title={`${greeting}, ${firstName}`}
-        description={subtitle}
-        actions={<RefreshButton />}
+        generatedAt={dashboard.generatedAt}
       />
 
       <BusinessPulse data={dashboard} />
 
-      <section aria-label="Primary operations" className="grid items-start gap-5 lg:grid-cols-12">
-        <div
-          className={
-            dashboard.projects.status === "unavailable"
-              ? "lg:col-span-5"
-              : "lg:col-span-7 xl:col-span-8"
-          }
-        >
-          <ProjectOverview projects={dashboard.projects} />
+      <section aria-label="Studio overview and priorities" className="grid items-start gap-5 xl:grid-cols-12">
+        <div className="xl:col-span-8">
+          <StudioOverview data={dashboard} />
         </div>
-        <div
-          className={
-            dashboard.projects.status === "unavailable"
-              ? "lg:col-span-7"
-              : "lg:col-span-5 xl:col-span-4"
-          }
-        >
+        <div className="xl:col-span-4">
           <AttentionCenter attention={dashboard.attention} />
         </div>
       </section>
 
-      <section aria-label="Business development and finance" className="grid items-start gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-7 xl:col-span-8">
+      <section aria-label="Operational snapshots" className="grid items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div>
+          <ProjectOverview projects={dashboard.projects} />
+        </div>
+        <div>
           <LeadOverview leads={dashboard.leads} />
         </div>
-        <div className="lg:col-span-5 xl:col-span-4">
+        <div className="md:col-span-2 xl:col-span-1">
           <FinancialSnapshot finance={dashboard.finance} />
         </div>
       </section>
@@ -88,15 +74,6 @@ export default async function AdminOverviewPage() {
         </div>
         <div className="lg:col-span-5 xl:col-span-4">
           <QuickActions />
-        </div>
-      </section>
-
-      <section aria-label="Analytics and insights" className="grid items-start gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-7 xl:col-span-8">
-          <ClientGrowthCard clients={dashboard.clients} />
-        </div>
-        <div className="lg:col-span-5 xl:col-span-4">
-          <BusinessInsights insights={dashboard.insights} />
         </div>
       </section>
     </AdminPage>

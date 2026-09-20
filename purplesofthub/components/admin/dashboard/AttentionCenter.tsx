@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, CalendarClock, FileText, FolderKanban, Inbox, UserPlus } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, FileText, FolderKanban, Inbox, UserPlus } from "lucide-react";
 
 import { Badge } from "@/components/ui/Badge";
 import type { AttentionData, AttentionKind } from "@/lib/admin/dashboard";
@@ -16,27 +16,20 @@ const KIND_ICONS: Record<AttentionKind, typeof Inbox> = {
 };
 
 const SEVERITY_STYLES: Record<string, string> = {
-  critical: "border-destructive/40 bg-destructive/10 text-destructive",
-  warning: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  critical: "border-destructive/30 bg-destructive/10 text-destructive",
+  warning: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
   info: "border-border bg-muted text-muted-foreground",
 };
 
-/**
- * Needs Attention — deterministic operational queue. Every item is derived
- * from a real rule (overdue invoice, uncontacted lead, upcoming deadline,
- * pending recovery, draft content). Nothing is fabricated.
- */
 export function AttentionCenter({ attention }: { attention: AttentionData }) {
   return (
     <DashboardCard>
       <DashboardCardHeader
         title="Needs attention"
-        description="Deterministic operational queue — highest severity first"
+        description="Priorities ordered by urgency"
         action={
           attention.truncated ? (
-            <Badge variant="outline" className="text-[11px]">
-              + more
-            </Badge>
+            <Badge variant="outline" className="text-[11px]">+ more</Badge>
           ) : undefined
         }
       />
@@ -47,42 +40,29 @@ export function AttentionCenter({ attention }: { attention: AttentionData }) {
           description="No overdue invoices, uncontacted leads, or open recovery requests."
         />
       ) : (
-        <ul className="mt-3 divide-y divide-border/60">
+        <ul className="divide-y divide-border/60 px-2 pb-2">
           {attention.items.map((item) => {
             const Icon = KIND_ICONS[item.kind] ?? Inbox;
             return (
               <li key={item.id}>
                 <Link
                   href={item.href}
-                  className="flex items-start gap-3 px-5 py-3 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  className="group flex items-start gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                 >
-                  <span
-                    className={cn(
-                      "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border",
-                      SEVERITY_STYLES[item.severity]
-                    )}
-                  >
+                  <span className={cn("mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border", SEVERITY_STYLES[item.severity])}>
                     <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                   </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-foreground">
-                      {item.title}
-                    </span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {item.description}
-                    </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-foreground">{item.title}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{item.description}</span>
                   </span>
+                  <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
                 </Link>
               </li>
             );
           })}
         </ul>
       )}
-
-      <div className="flex items-center gap-1.5 border-t border-border/60 px-5 py-2.5 text-[11px] text-muted-foreground">
-        <CalendarClock className="h-3 w-3" aria-hidden="true" />
-        Deterministic rules only — no AI heuristics.
-      </div>
     </DashboardCard>
   );
 }

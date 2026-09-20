@@ -12,14 +12,29 @@ export type ChartPoint = { label: string; value: number };
  * (reads custom properties at runtime), so light/dark both work without any
  * hardcoded hex values.
  */
-export function AreaChart({ data, seriesName }: { data: ChartPoint[]; seriesName: string }) {
+export function AreaChart({
+  data,
+  seriesName,
+  height = 210,
+}: {
+  data: ChartPoint[];
+  seriesName: string;
+  height?: number;
+}) {
   const { resolvedTheme } = useTheme();
   const primary = resolveToken("--primary", "#7c3aed");
   const border = resolveToken("--border", "#e5e7eb");
   const muted = resolveToken("--muted-foreground", "#6b7280");
 
   const options = {
-    chart: { type: "area" as const, toolbar: { show: false }, zoom: { enabled: false }, fontFamily: "inherit" },
+    chart: {
+      type: "area" as const,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+      fontFamily: "inherit",
+      sparkline: { enabled: false },
+      animations: { enabled: false },
+    },
     colors: [primary],
     dataLabels: { enabled: false },
     stroke: { curve: "smooth" as const, width: 2 },
@@ -30,29 +45,45 @@ export function AreaChart({ data, seriesName }: { data: ChartPoint[]; seriesName
     grid: { borderColor: border, strokeDashArray: 4, padding: { top: 4, left: 4, right: 8, bottom: 0 } },
     xaxis: {
       categories: data.map((point) => point.label),
-      labels: { style: { colors: muted, fontSize: "11px" } },
+      labels: {
+        rotate: 0,
+        hideOverlappingLabels: true,
+        style: { colors: muted, fontSize: "11px" },
+      },
       axisBorder: { show: false },
       axisTicks: { show: false },
     },
     yaxis: {
       labels: { style: { colors: muted, fontSize: "11px" } },
       min: 0,
-      tickAmount: 4,
+      tickAmount: 3,
     },
     tooltip: {
       theme: resolvedTheme,
       y: { formatter: (value: number) => `${value.toLocaleString("en-NG")}` },
     },
     legend: { show: false },
+    responsive: [
+      {
+        breakpoint: 640,
+        options: {
+          xaxis: { labels: { show: false } },
+          yaxis: { labels: { show: false } },
+          grid: { padding: { left: 0, right: 4 } },
+        },
+      },
+    ],
   };
 
   return (
-    <ReactApexChart
-      type="area"
-      height={210}
-      options={options}
-      series={[{ name: seriesName, data: data.map((point) => point.value) }]}
-    />
+    <div role="img" aria-label={`${seriesName} trend across ${data.length} months`}>
+      <ReactApexChart
+        type="area"
+        height={height}
+        options={options}
+        series={[{ name: seriesName, data: data.map((point) => point.value) }]}
+      />
+    </div>
   );
 }
 

@@ -31,7 +31,7 @@ export function AdminSearchTrigger() {
         variant="outline"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="hidden h-10 w-[240px] justify-start gap-2 px-3 text-sm font-normal text-muted-foreground xl:inline-flex"
+        className="hidden h-9 w-[210px] justify-start gap-2 bg-card px-3 text-sm font-normal text-muted-foreground xl:inline-flex"
       >
         <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="truncate">Search sections…</span>
@@ -46,7 +46,7 @@ export function AdminSearchTrigger() {
         size="icon"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="h-10 w-10 xl:hidden"
+        className="h-9 w-9 bg-card xl:hidden"
       >
         <Search className="h-4 w-4" aria-hidden="true" />
       </Button>
