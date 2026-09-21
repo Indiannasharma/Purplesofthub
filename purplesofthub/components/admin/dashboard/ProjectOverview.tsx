@@ -68,7 +68,7 @@ export function ProjectOverview({ projects }: { projects: ProjectsData }) {
 
       {projects.upcomingDeadlines.length > 0 ? (
         <div className="border-t border-border/60">
-          <p className="px-5 pt-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="px-5 pt-3 text-[11px] font-medium text-muted-foreground">
             Upcoming deadlines
           </p>
           <ul className="divide-y divide-border/50">

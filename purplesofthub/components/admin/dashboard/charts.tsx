@@ -135,6 +135,7 @@ export function DonutChart({ data }: { data: ChartPoint[] }) {
 
 function resolveToken(name: string, fallback: string): string {
   if (typeof window === "undefined") return fallback;
-  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const adminShell = document.querySelector(".admin-shell");
+  const value = getComputedStyle(adminShell ?? document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
 }

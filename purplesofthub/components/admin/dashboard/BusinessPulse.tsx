@@ -27,17 +27,12 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
       : undefined;
 
   return (
-    <section aria-labelledby="business-pulse-title">
-      <div className="mb-3 flex items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Live business pulse
-          </p>
-          <h2 id="business-pulse-title" className="sr-only">Business pulse</h2>
-        </div>
-        <p className="hidden text-xs text-muted-foreground sm:block">Real-time operational totals</p>
+    <section aria-labelledby="business-pulse-title" className="admin-pulse overflow-hidden rounded-2xl border border-border/80 bg-card">
+      <div className="flex items-center justify-between gap-3 px-4 pb-1 pt-4 sm:px-5">
+        <h2 id="business-pulse-title" className="text-sm font-semibold tracking-tight text-foreground">Business at a glance</h2>
+        <p className="hidden text-xs text-muted-foreground sm:block">Live operational totals</p>
       </div>
-      <div className="grid overflow-hidden rounded-xl border border-border/70 bg-card shadow-[0_1px_2px_rgba(15,23,42,0.035)] sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Total clients"
           value={overview.totalClients}
@@ -48,7 +43,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           }
           icon={Users}
           href="/admin/clients"
-          className="border-b sm:border-r xl:border-b-0"
+          className="border-b border-r xl:border-b-0"
         />
         <MetricCard
           label="Active projects"
@@ -72,7 +67,7 @@ export function BusinessPulse({ data }: { data: AdminDashboardData }) {
           icon={UserPlus}
           href="/admin/leads"
           tone="emerald"
-          className="border-b sm:border-b-0 sm:border-r"
+          className="border-r xl:border-r"
         />
         <MetricCard
           label="Outstanding invoices"

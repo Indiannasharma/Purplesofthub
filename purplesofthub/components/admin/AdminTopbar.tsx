@@ -22,7 +22,7 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
   const breadcrumbs = getAdminBreadcrumbs(pathname);
 
   return (
-    <header className="z-30 min-h-14 shrink-0 border-b border-border/70 bg-card/90 backdrop-blur-xl">
+    <header className="z-30 min-h-14 shrink-0 border-b border-border/70 bg-card/95 backdrop-blur-xl">
       <div className="mx-auto flex min-h-14 w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-2">
         <Button

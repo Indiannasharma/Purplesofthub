@@ -21,23 +21,19 @@ export function CommandHeader({
 }) {
   return (
     <section
-      aria-labelledby="command-center-title"
-      className="grid gap-5 border-b border-border/70 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end"
+      aria-labelledby="overview-title"
+      className="grid gap-4 border-b border-border/70 pb-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end"
     >
       <div className="min-w-0">
-        <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
-          Admin command center
-        </div>
         <h1
-          id="command-center-title"
-          className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.035em] text-foreground sm:text-[32px]"
+          id="overview-title"
+          className="text-balance text-[24px] font-semibold leading-[1.15] tracking-[-0.035em] text-foreground sm:text-[28px]"
         >
           {title}
         </h1>
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
           <p className="text-sm text-muted-foreground">
-            Here&apos;s what&apos;s happening at PurpleSoftHub.
+            A clear view of the studio right now.
           </p>
           <time
             dateTime={generatedAt}

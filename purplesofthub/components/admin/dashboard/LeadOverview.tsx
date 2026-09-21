@@ -62,7 +62,7 @@ export function LeadOverview({ leads }: { leads: LeadsData }) {
         <>
           {leads.topServices.length > 0 ? (
             <div className="px-5 pt-1">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              <p className="text-[11px] font-medium text-muted-foreground">
                 Top service interest
               </p>
               <ul className="mt-2 grid gap-1.5">
@@ -87,7 +87,7 @@ export function LeadOverview({ leads }: { leads: LeadsData }) {
 
           {leads.recent.length > 0 ? (
             <div className="mt-3 border-t border-border/60">
-              <p className="px-5 pt-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              <p className="px-5 pt-3 text-[11px] font-medium text-muted-foreground">
                 Recent
               </p>
               <ul className="divide-y divide-border/50">

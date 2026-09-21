@@ -23,7 +23,7 @@ export function DashboardCardHeader({
   return (
     <CardHeader
       className={cn(
-        "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 space-y-0 p-5 pb-3",
+        "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 space-y-0 p-4 pb-2 sm:p-5 sm:pb-2",
         className
       )}
     >
@@ -111,7 +111,7 @@ export function DashboardCard({
   return (
     <Card
       className={cn(
-        "min-w-0 gap-0 overflow-hidden rounded-xl border-border/70 bg-card py-0 shadow-[0_1px_2px_rgba(15,23,42,0.035)]",
+        "min-w-0 gap-0 overflow-hidden rounded-2xl border-border/80 bg-card py-0 shadow-[0_1px_2px_rgba(15,23,42,0.025)]",
         className
       )}
     >

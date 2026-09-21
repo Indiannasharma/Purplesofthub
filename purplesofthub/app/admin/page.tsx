@@ -16,7 +16,7 @@ import { FinancialSnapshot } from "@/components/admin/dashboard/FinancialSnapsho
 import { RecentActivity } from "@/components/admin/dashboard/RecentActivity";
 import { QuickActions } from "@/components/admin/dashboard/QuickActions";
 
-export const metadata = { title: "Command Center" };
+export const metadata = { title: "Overview" };
 
 /**
  * PurpleSoftHub Admin Overview � the Command Center.
@@ -39,7 +39,7 @@ export default async function AdminOverviewPage() {
   const greeting = getGreeting();
   const firstName = auth.fullName?.split(" ")[0] || "there";
   return (
-    <AdminPage className="gap-6">
+    <AdminPage className="admin-overview gap-5">
       <CommandHeader
         title={`${greeting}, ${firstName}`}
         generatedAt={dashboard.generatedAt}
@@ -47,7 +47,7 @@ export default async function AdminOverviewPage() {
 
       <BusinessPulse data={dashboard} />
 
-      <section aria-label="Studio overview and priorities" className="grid items-start gap-5 xl:grid-cols-12">
+      <section aria-label="Operations overview" className="grid items-stretch gap-4 xl:grid-cols-12 xl:gap-5">
         <div className="xl:col-span-8">
           <StudioOverview data={dashboard} />
         </div>
@@ -56,23 +56,23 @@ export default async function AdminOverviewPage() {
         </div>
       </section>
 
-      <section aria-label="Operational snapshots" className="grid items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <div>
+      <section aria-label="Workflow snapshots" className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-12 xl:gap-5">
+        <div className="xl:col-span-4">
           <ProjectOverview projects={dashboard.projects} />
         </div>
-        <div>
+        <div className="xl:col-span-4">
           <LeadOverview leads={dashboard.leads} />
         </div>
-        <div className="md:col-span-2 xl:col-span-1">
+        <div className="xl:col-span-4">
           <FinancialSnapshot finance={dashboard.finance} />
+        </div>
+        <div className="md:col-span-2 xl:col-span-4">
+          <RecentActivity activity={dashboard.recentActivity} />
         </div>
       </section>
 
-      <section aria-label="Recent activity and shortcuts" className="grid items-start gap-5 lg:grid-cols-12">
-        <div className="lg:col-span-7 xl:col-span-8">
-          <RecentActivity activity={dashboard.recentActivity} />
-        </div>
-        <div className="lg:col-span-5 xl:col-span-4">
+      <section aria-label="Admin shortcuts" className="grid items-start gap-4 lg:grid-cols-12 xl:gap-5">
+        <div className="lg:col-span-8">
           <QuickActions />
         </div>
       </section>

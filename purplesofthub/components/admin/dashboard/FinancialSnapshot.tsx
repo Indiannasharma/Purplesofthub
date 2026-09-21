@@ -68,7 +68,7 @@ export function FinancialSnapshot({ finance }: { finance: FinanceData }) {
           </ul>
 
           <div className="border-t border-border/60 px-5 py-3">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-[11px] font-medium text-muted-foreground">
               Outstanding
             </p>
             {finance.outstanding.length === 0 ? (
@@ -85,7 +85,7 @@ export function FinancialSnapshot({ finance }: { finance: FinanceData }) {
 
             {finance.paidThisMonth.length > 0 ? (
               <>
-                <p className="mt-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <p className="mt-3 text-[11px] font-medium text-muted-foreground">
                   Paid this month
                 </p>
                 <ul className="mt-1 grid gap-0.5">
@@ -101,7 +101,7 @@ export function FinancialSnapshot({ finance }: { finance: FinanceData }) {
 
           {finance.overdueInvoices.length > 0 ? (
             <div className="border-t border-border/60">
-              <p className="px-5 pt-3 text-[11px] font-medium uppercase tracking-wider text-destructive">
+              <p className="px-5 pt-3 text-[11px] font-medium text-destructive">
                 Overdue
               </p>
               <ul className="divide-y divide-border/50">

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import type { AttentionData, AttentionKind } from "@/lib/admin/dashboard";
 import { cn } from "@/lib/utils";
 
-import { DashboardCard, DashboardCardHeader, EmptyState } from "./shared";
+import { EmptyState } from "./shared";
 
 const KIND_ICONS: Record<AttentionKind, typeof Inbox> = {
   invoice: FileText,
@@ -23,16 +23,14 @@ const SEVERITY_STYLES: Record<string, string> = {
 
 export function AttentionCenter({ attention }: { attention: AttentionData }) {
   return (
-    <DashboardCard>
-      <DashboardCardHeader
-        title="Needs attention"
-        description="Priorities ordered by urgency"
-        action={
-          attention.truncated ? (
-            <Badge variant="outline" className="text-[11px]">+ more</Badge>
-          ) : undefined
-        }
-      />
+    <aside className={cn("admin-attention rounded-2xl border border-border/80 bg-card p-2", attention.items.length > 0 && "h-full")}>
+      <div className="flex items-start justify-between gap-3 px-3 pb-2 pt-2">
+        <div>
+          <h2 className="text-sm font-semibold tracking-tight text-foreground">Priorities</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">What needs a decision next</p>
+        </div>
+        {attention.truncated ? <Badge variant="outline" className="text-[11px]">+ more</Badge> : null}
+      </div>
 
       {attention.items.length === 0 ? (
         <EmptyState
@@ -40,14 +38,14 @@ export function AttentionCenter({ attention }: { attention: AttentionData }) {
           description="No overdue invoices, uncontacted leads, or open recovery requests."
         />
       ) : (
-        <ul className="divide-y divide-border/60 px-2 pb-2">
+        <ul className="divide-y divide-border/60">
           {attention.items.map((item) => {
             const Icon = KIND_ICONS[item.kind] ?? Inbox;
             return (
               <li key={item.id}>
                 <Link
                   href={item.href}
-                  className="group flex items-start gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  className="group flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                 >
                   <span className={cn("mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border", SEVERITY_STYLES[item.severity])}>
                     <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -63,6 +61,6 @@ export function AttentionCenter({ attention }: { attention: AttentionData }) {
           })}
         </ul>
       )}
-    </DashboardCard>
+    </aside>
   );
 }

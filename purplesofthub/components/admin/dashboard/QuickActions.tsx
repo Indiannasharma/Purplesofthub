@@ -22,20 +22,18 @@ export function QuickActions() {
   return (
     <DashboardCard>
       <DashboardCardHeader title="Quick actions" description="Verified studio shortcuts" />
-      <ul className="grid grid-cols-2 gap-2 px-4 pb-4">
+      <ul className="flex flex-wrap gap-2 px-4 pb-4 sm:px-5">
         {ACTIONS.map((action) => (
           <li key={action.href}>
             <Link
               href={action.href}
-              className="group flex min-h-[76px] flex-col items-start justify-between gap-3 rounded-lg border border-border/70 bg-background p-3 text-sm font-medium text-foreground transition-[border-color,background-color] hover:border-primary/25 hover:bg-primary/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group inline-flex min-h-9 items-center gap-2 rounded-lg border border-border/70 bg-background px-3 py-2 text-sm font-medium text-foreground transition-[border-color,background-color] hover:border-primary/25 hover:bg-primary/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span className="flex w-full items-start justify-between">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
-                  <action.icon className="h-3.5 w-3.5" aria-hidden="true" />
-                </span>
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground transition-colors group-hover:text-primary">
+                <action.icon className="h-3.5 w-3.5" aria-hidden="true" />
               </span>
-              <span className="line-clamp-2 leading-4">{action.label}</span>
+              <span>{action.label}</span>
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
             </Link>
           </li>
         ))}

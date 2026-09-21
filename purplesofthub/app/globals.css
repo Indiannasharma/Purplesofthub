@@ -5212,23 +5212,23 @@ html:not(.dark) .pf-btn-ghost:hover {
 
 /* Scoped aliases for the admin shell surface (presentation only). */
 .admin-shell {
-  --background: #f7f8fb;
-  --foreground: #18181b;
+  --background: #f8f8fa;
+  --foreground: #202124;
   --card: #ffffff;
-  --card-foreground: #18181b;
+  --card-foreground: #202124;
   --popover: #ffffff;
-  --popover-foreground: #18181b;
-  --primary: #7c3aed;
+  --popover-foreground: #202124;
+  --primary: #6339c8;
   --primary-foreground: #ffffff;
-  --secondary: #f1f3f6;
-  --secondary-foreground: #27272a;
-  --muted: #f1f3f6;
-  --muted-foreground: #667085;
-  --accent: #f1f3f6;
-  --accent-foreground: #27272a;
-  --border: #e2e5ea;
-  --input: #d9dde5;
-  --ring: #8b5cf6;
+  --secondary: #f1f1f4;
+  --secondary-foreground: #2b2c30;
+  --muted: #f4f4f6;
+  --muted-foreground: #71717a;
+  --accent: #f1f1f4;
+  --accent-foreground: #2b2c30;
+  --border: #e5e5e9;
+  --input: #d9d9e0;
+  --ring: #6339c8;
   --admin-shell-bg: var(--background);
   --admin-shell-card: var(--card);
   --admin-shell-border: var(--border);
@@ -5237,23 +5237,60 @@ html:not(.dark) .pf-btn-ghost:hover {
 }
 
 html.dark .admin-shell {
-  --background: #09090b;
-  --foreground: #f4f4f5;
-  --card: #111114;
-  --card-foreground: #f4f4f5;
-  --popover: #151518;
-  --popover-foreground: #f4f4f5;
-  --primary: #a855f7;
+  --background: #101013;
+  --foreground: #f1f1f2;
+  --card: #18181c;
+  --card-foreground: #f1f1f2;
+  --popover: #202024;
+  --popover-foreground: #f1f1f2;
+  --primary: #b396ff;
   --primary-foreground: #ffffff;
-  --secondary: #1c1c20;
-  --secondary-foreground: #f4f4f5;
-  --muted: #1a1a1e;
-  --muted-foreground: #a1a1aa;
-  --accent: #202024;
-  --accent-foreground: #f4f4f5;
-  --border: #29292e;
-  --input: #33333a;
-  --ring: #a855f7;
+  --secondary: #222226;
+  --secondary-foreground: #f1f1f2;
+  --muted: #202024;
+  --muted-foreground: #a3a3ad;
+  --accent: #25252a;
+  --accent-foreground: #f1f1f2;
+  --border: #2d2d33;
+  --input: #36363e;
+  --ring: #b396ff;
+}
+
+/* Admin overview: deliberately compact, neutral, and operational. */
+.admin-shell .admin-overview {
+  background-image: radial-gradient(circle at 80% -20%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 38%);
+}
+
+.admin-shell .admin-pulse,
+.admin-shell .admin-momentum,
+.admin-shell .admin-attention {
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.025), 0 8px 24px rgba(24, 24, 27, 0.018);
+}
+
+.admin-shell .admin-pulse > div:last-child > *:not(:last-child) {
+  border-right-width: 0;
+}
+
+@media (min-width: 640px) {
+  .admin-shell .admin-pulse > div:last-child > *:nth-child(odd) {
+    border-right-width: 1px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .admin-shell .admin-pulse > div:last-child > *:not(:last-child) {
+    border-right-width: 1px;
+  }
+}
+
+html.dark .admin-shell .admin-overview {
+  background-image: radial-gradient(circle at 80% -20%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 38%);
+}
+
+html.dark .admin-shell .admin-pulse,
+html.dark .admin-shell .admin-momentum,
+html.dark .admin-shell .admin-attention {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 12px 28px rgba(0, 0, 0, 0.12);
 }
 
 /* Public marketing sections intentionally have campaign-scale padding.

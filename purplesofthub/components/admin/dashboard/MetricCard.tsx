@@ -38,7 +38,7 @@ export function MetricCard({
         <Icon className="h-4 w-4" aria-hidden="true" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
+        <p className="truncate text-xs font-medium text-muted-foreground">{label}</p>
         <p className="mt-1.5 text-[26px] font-semibold leading-none tracking-[-0.03em] text-foreground tabular-nums">
           {formatCount(value)}
         </p>
@@ -48,7 +48,7 @@ export function MetricCard({
   );
 
   const classes = cn(
-    "flex min-h-[104px] items-start gap-3 border-border/70 p-4 text-card-foreground transition-colors sm:p-5",
+    "flex min-h-[86px] items-start gap-3 border-border/70 px-4 py-3.5 text-card-foreground transition-colors sm:px-5",
     href && "hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
     className
   );

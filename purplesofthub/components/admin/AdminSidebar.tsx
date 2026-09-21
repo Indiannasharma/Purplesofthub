@@ -27,7 +27,7 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
     <div
       className={cn(
         "flex shrink-0 items-center border-b border-border/70",
-        collapsed ? "justify-center px-3 py-3" : "px-4 py-4"
+        collapsed ? "justify-center px-3 py-3" : "px-4 py-5"
       )}
     >
       <Link
@@ -60,8 +60,8 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
               priority
             />
             <span className="h-7 w-px bg-border" aria-hidden="true" />
-            <span className="max-w-16 text-[9px] font-semibold uppercase leading-3 tracking-[0.14em] text-muted-foreground">
-              Admin workspace
+            <span className="max-w-16 text-[10px] font-medium leading-3 text-muted-foreground">
+              Studio admin
             </span>
           </span>
         )}
@@ -94,7 +94,7 @@ function AdminSidebarLink({
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         collapsed ? "justify-center px-0 py-2" : "px-3 py-2",
         active
-          ? "bg-primary/[0.08] text-foreground"
+          ? "bg-primary/[0.09] text-foreground"
           : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
       )}
     >
@@ -145,7 +145,7 @@ export function AdminSidebarNav({ collapsed = false }: { collapsed?: boolean }) 
             {collapsed ? (
               <div className="mx-auto h-px w-6 bg-border/80" aria-hidden="true" />
             ) : (
-              <p className="px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
+              <p className="px-3 text-[10px] font-medium text-muted-foreground/70">
                 {section.title}
               </p>
             )}
