@@ -88,13 +88,14 @@ export default function ServicesContent({ services }: { services: Service[] }) {
               <button
                 key={cat}
                 onClick={() => setActive(cat)}
+                aria-pressed={active === cat}
                 style={{
-                  background: active === cat ? "linear-gradient(135deg,#7c3aed,#a855f7)" : "rgba(124,58,237,.1)",
-                  border: active === cat ? "1px solid transparent" : "1px solid rgba(124,58,237,.2)",
+                  background: active === cat ? "linear-gradient(135deg,#7c3aed,#a855f7)" : "var(--services-filter-surface)",
+                  border: active === cat ? "1px solid transparent" : "1px solid var(--services-filter-border)",
                   borderRadius: 100,
                   padding: "8px 22px",
                   fontSize: 13,
-                  color: active === cat ? "#fff" : "var(--accent)",
+                  color: active === cat ? "#fff" : "var(--services-accent-text)",
                   fontWeight: 600,
                   cursor: "pointer",
                   transition: "all .2s",
@@ -120,7 +121,7 @@ export default function ServicesContent({ services }: { services: Service[] }) {
                     {/* Icon + category */}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                       <div style={{ fontSize: 40 }}>{s.icon}</div>
-                      <span style={{ background: "rgba(124,58,237,.1)", border: "1px solid rgba(124,58,237,.2)", borderRadius: 100, padding: "4px 12px", fontSize: 11, color: "var(--accent)", fontWeight: 600 }}>
+                      <span style={{ background: "var(--services-accent-surface)", border: "1px solid var(--services-accent-border)", borderRadius: 100, padding: "4px 12px", fontSize: 11, color: "var(--services-accent-text)", fontWeight: 600 }}>
                         {s.category}
                       </span>
                     </div>
@@ -139,7 +140,7 @@ export default function ServicesContent({ services }: { services: Service[] }) {
                       ))}
                     </div>
 
-                    <span style={{ color: "var(--accent)", fontSize: 13, fontWeight: 700 }}>Learn More →</span>
+                    <span style={{ color: "var(--services-accent-text)", fontSize: 13, fontWeight: 700 }}>Learn More →</span>
                   </div>
                 </div>
               </Link>

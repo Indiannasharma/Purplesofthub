@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function ServicesPage() {
   return (
-    <main style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
+    <main className="services-page" style={{ background: "var(--bg-primary)", color: "var(--text-primary)", minHeight: "100vh" }}>
       <Navbar />
 
       {/* ── HERO ── */}
@@ -33,7 +33,7 @@ export default function ServicesPage() {
         <div className="grid-bg" style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
         <Reveal>
           <div style={{ position: "relative", zIndex: 2 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 24, fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: 1 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--services-accent-surface)", border: "1px solid var(--services-accent-border)", borderRadius: 100, padding: "6px 16px", marginBottom: 24, fontSize: 12, fontWeight: 600, color: "var(--services-accent-text)", letterSpacing: 1 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
               WHAT WE OFFER
             </div>

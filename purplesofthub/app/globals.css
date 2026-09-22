@@ -556,6 +556,43 @@ html.dark .home-service-progress {
 .btn-outline:hover { border-color: #a855f7; background: rgba(124,58,237,0.08); transform: translateY(-2px); }
 html.dark .btn-outline { color: #c084fc; border-color: rgba(168,85,247,0.5); }
 
+/* Services directory: keep brand text independent from shadcn's semantic
+   --accent token. That token intentionally becomes a dark surface in dark
+   mode, which previously made filter labels and small service labels blend
+   into the page background. */
+.services-page {
+  --services-accent-text: #6d28d9;
+  --services-accent-surface: rgba(109, 40, 217, 0.10);
+  --services-accent-border: rgba(109, 40, 217, 0.30);
+  --services-filter-surface: rgba(109, 40, 217, 0.07);
+  --services-filter-border: rgba(109, 40, 217, 0.25);
+}
+
+.services-page .grad-text {
+  background: linear-gradient(110deg, #6d28d9 0%, #7c3aed 54%, #a21caf 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.services-page .svc-tabs-row button:hover:not([aria-pressed="true"]) {
+  background: var(--services-accent-surface) !important;
+  border-color: var(--services-accent-border) !important;
+}
+
+html.dark .services-page {
+  --services-accent-text: #d8b4fe;
+  --services-accent-surface: rgba(192, 132, 252, 0.16);
+  --services-accent-border: rgba(216, 180, 254, 0.38);
+  --services-filter-surface: rgba(192, 132, 252, 0.12);
+  --services-filter-border: rgba(216, 180, 254, 0.28);
+}
+
+html.dark .services-page .grad-text {
+  background: linear-gradient(110deg, #e9d5ff 0%, #d8b4fe 42%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 /* ══════════════════════════════
    GRID BG
 ══════════════════════════════ */
