@@ -50,9 +50,10 @@ export default function PricingPreview() {
       </div>
 
       {/* First 3 tier cards */}
-      <div style={{
+      <div
+        className="service-pricing-grid"
+        style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: '24px',
         marginBottom: '40px',
       }}>
@@ -121,7 +122,7 @@ export default function PricingPreview() {
             ],
           },
         ].map((tier, i) => (
-          <div key={tier.name} style={{
+          <div key={tier.name} className="service-pricing-card" style={{
             background: 'var(--card, #ffffff)',
             border: `1px solid ${tier.border}`,
             borderRadius: '20px',

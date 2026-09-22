@@ -97,23 +97,24 @@ export default function ServicePricingCards({
       </div>
 
       <div
+        className="service-pricing-grid"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '28px',
+          gap: '24px',
           marginBottom: hasMore && !showAllPlans ? '24px' : '32px',
         }}
       >
         {plans.map(plan => (
           <div
             key={plan.id}
+            className={`service-pricing-card${plan.highlighted ? ' is-highlighted' : ''}`}
             style={{
               background: plan.highlighted
                 ? 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(34,211,238,0.05))'
-                : 'var(--cyber-card, rgba(255,255,255,0.7))',
+                : 'var(--bg-card)',
               border: plan.highlighted
                 ? '2px solid rgba(124,58,237,0.4)'
-                : '1px solid var(--cyber-border, rgba(124,58,237,0.15))',
+                : '1px solid var(--border)',
               borderRadius: '20px',
               padding: '24px',
               position: 'relative',
@@ -135,7 +136,7 @@ export default function ServicePricingCards({
                     ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
                     : 'rgba(124,58,237,0.15)',
                   border: '1px solid rgba(124,58,237,0.3)',
-                  color: plan.highlighted ? '#fff' : '#a855f7',
+                  color: plan.highlighted ? '#fff' : 'var(--service-detail-accent)',
                   fontSize: '11px',
                   fontWeight: 700,
                   padding: '3px 14px',
@@ -153,7 +154,7 @@ export default function ServicePricingCards({
               style={{
                 fontSize: '18px',
                 fontWeight: 800,
-                color: 'var(--cyber-heading, #1a1a2e)',
+                color: 'var(--text-primary)',
                 margin: '0 0 8px',
               }}
             >
@@ -167,7 +168,7 @@ export default function ServicePricingCards({
                   style={{
                     fontSize: '28px',
                     fontWeight: 900,
-                    color: '#7c3aed',
+                    color: 'var(--service-detail-accent)',
                     margin: 0,
                     lineHeight: 1,
                   }}
@@ -180,7 +181,7 @@ export default function ServicePricingCards({
                     style={{
                       fontSize: '32px',
                       fontWeight: 900,
-                      color: '#7c3aed',
+                      color: 'var(--service-detail-accent)',
                       margin: '0 0 2px',
                       lineHeight: 1,
                     }}
@@ -190,7 +191,7 @@ export default function ServicePricingCards({
                   <p
                     style={{
                       fontSize: '13px',
-                      color: 'var(--cyber-body, #4a3f6b)',
+                      color: 'var(--text-secondary)',
                       margin: 0,
                     }}
                   >
@@ -204,7 +205,7 @@ export default function ServicePricingCards({
             <p
               style={{
                 fontSize: '12px',
-                color: '#a855f7',
+                color: 'var(--service-detail-accent)',
                 fontWeight: 600,
                 margin: '0 0 16px',
                 display: 'flex',
@@ -219,7 +220,7 @@ export default function ServicePricingCards({
             <p
               style={{
                 fontSize: '13px',
-                color: 'var(--cyber-body, #4a3f6b)',
+                color: 'var(--text-secondary)',
                 lineHeight: 1.6,
                 margin: '0 0 16px',
               }}
@@ -247,7 +248,7 @@ export default function ServicePricingCards({
                     alignItems: 'flex-start',
                     gap: '8px',
                     fontSize: '13px',
-                    color: 'var(--cyber-body, #4a3f6b)',
+                    color: 'var(--text-secondary)',
                     lineHeight: 1.4,
                   }}
                 >
@@ -282,7 +283,7 @@ export default function ServicePricingCards({
                   borderRadius: '12px',
                   background: 'rgba(124,58,237,0.1)',
                   border: '1px solid rgba(124,58,237,0.3)',
-                  color: '#7c3aed',
+                  color: 'var(--service-detail-accent)',
                   textDecoration: 'none',
                   fontWeight: 700,
                   fontSize: '14px',
@@ -304,7 +305,7 @@ export default function ServicePricingCards({
                   background: plan.highlighted
                     ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
                     : 'rgba(124,58,237,0.1)',
-                  color: plan.highlighted ? '#fff' : '#7c3aed',
+                  color: plan.highlighted ? '#fff' : 'var(--service-detail-accent)',
                   fontSize: '14px',
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -355,7 +356,7 @@ export default function ServicePricingCards({
                 borderRadius: '12px',
                 border: '1px solid rgba(124,58,237,0.3)',
                 background: 'rgba(124,58,237,0.06)',
-                color: '#7c3aed',
+                color: 'var(--service-detail-accent)',
                 fontSize: '14px',
                 fontWeight: 700,
                 textDecoration: 'none',
@@ -373,7 +374,7 @@ export default function ServicePricingCards({
                 borderRadius: '12px',
                 border: '1px solid rgba(124,58,237,0.3)',
                 background: 'rgba(124,58,237,0.06)',
-                color: '#7c3aed',
+                color: 'var(--service-detail-accent)',
                 fontSize: '14px',
                 fontWeight: 700,
                 cursor: 'pointer',

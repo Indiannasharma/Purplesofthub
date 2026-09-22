@@ -102,14 +102,15 @@ export default function FacebookAdsPricing() {
       </div>
 
       {/* 3 tier cards */}
-      <div style={{
+      <div
+        className="service-pricing-grid"
+        style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: '24px',
         marginBottom: '40px',
       }}>
         {plans.map((tier, i) => (
-          <div key={tier.name} style={{
+          <div key={tier.name} className={`service-pricing-card${tier.badge ? ' is-highlighted' : ''}`} style={{
             background: cardBg,
             border: `1px solid ${tier.color}30`,
             borderRadius: '20px',
