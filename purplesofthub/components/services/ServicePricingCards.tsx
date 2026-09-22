@@ -69,7 +69,7 @@ export default function ServicePricingCards({
   const plans = showAllPlans ? service.plans : service.plans.slice(0, previewCount)
   const hasMore = service.plans.length > previewCount
   const getBillingLabel = (plan: ServicePlan) => {
-    if (plan.billingType === 'monthly' && plan.delivery.toLowerCase().includes('week')) {
+    if (plan.billingType === 'weekly' || (plan.billingType === 'monthly' && plan.delivery.toLowerCase().includes('week'))) {
       return 'per week'
     }
 

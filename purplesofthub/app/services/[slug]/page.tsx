@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import services, { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
 import FaqAccordion from "@/app/services/_components/FaqAccordion";
+import ServicePricingCards from "@/components/services/ServicePricingCards";
+import { getServiceBySlug as getPaymentServiceBySlug } from "@/lib/payments/service-plans";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -43,6 +45,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   if (!service) notFound();
 
   const related = getRelatedServices(service.relatedServices);
+  const paymentService = getPaymentServiceBySlug(service.slug);
+  const isGoogleAds = service.slug === "google-ads";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -166,10 +170,12 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
-                Custom Quote
+                {isGoogleAds ? "From ₦15,000" : "Custom Quote"}
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
-                Every project is unique. Tell us about your goals and we&apos;ll craft a tailored proposal with clear, transparent pricing.
+                {isGoogleAds
+                  ? "Management starts with a weekly optimisation sprint. Google ad spend starts from ₦70,000 per month and is paid directly to Google."
+                  : "Every project is unique. Tell us about your goals and we&apos;ll craft a tailored proposal with clear, transparent pricing."}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
                 {service.benefits.map((b) => (
@@ -179,15 +185,39 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                   </div>
                 ))}
               </div>
-              <Link href="/contact">
+              <Link href={isGoogleAds ? "#pricing" : "/contact"}>
                 <button className="btn-main" style={{ width: "100%", padding: "13px", fontSize: 15, textAlign: "center" }}>
-                  Get a Quote →
+                  {isGoogleAds ? "View Google Ads Plans →" : "Get a Quote →"}
                 </button>
               </Link>
             </div>
           </Reveal>
         </div>
       </section>
+
+      {/* ── PRICING PREVIEW ── */}
+      {isGoogleAds && paymentService && (
+        <section id="pricing" style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(56px, 7vw, 96px) 16px" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "var(--service-detail-accent)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+              Google Ads management
+            </p>
+            <h2 style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 900, color: "var(--text-primary)", margin: "0 0 16px", letterSpacing: "-0.5px" }}>
+              Choose the level of support your campaign needs
+            </h2>
+            <p style={{ fontSize: 16, color: "var(--text-secondary)", maxWidth: 620, margin: "0 auto", lineHeight: 1.7 }}>
+              Management fees are separate from Google advertising spend. Start with a minimum media budget of ₦70,000 per month, paid directly to Google.
+            </p>
+          </div>
+          <ServicePricingCards
+            service={paymentService}
+            showAll={false}
+            previewCount={3}
+            showMoreLabel="See all Google Ads plans →"
+            showMoreHref={`/services/${service.slug}/pricing`}
+          />
+        </section>
+      )}
 
       {/* ── FEATURES GRID ── */}
       <section style={{ padding: "90px 5%" }}>

@@ -19,6 +19,27 @@ interface Props {
 
 type Step = 'details' | 'payment' | 'processing' | 'success'
 
+type PaystackResponse = { reference: string }
+type FlutterwaveResponse = { status: string; transaction_id: string | number }
+type PaymentWindow = Window & {
+  PaystackPop?: {
+    setup: (config: { callback: (response: PaystackResponse) => Promise<void>; onClose: () => void; [key: string]: unknown }) => { openIframe: () => void }
+  }
+  FlutterwaveCheckout?: (config: { callback: (response: FlutterwaveResponse) => Promise<void>; onclose: () => void; [key: string]: unknown }) => void
+}
+
+function getBillingSummary(plan: ServicePlan) {
+  if (plan.billingType === 'weekly') return { short: '/wk', label: 'Weekly' }
+  if (plan.billingType === 'monthly') return { short: '/mo', label: 'Monthly' }
+  if (plan.billingType === 'yearly') return { short: '/yr', label: 'Yearly' }
+  return { short: '', label: 'One-time' }
+}
+
+function createPaymentReference(serviceId: string, planId?: string) {
+  const parts = ['PSW', serviceId.toUpperCase(), planId?.toUpperCase(), Date.now().toString()].filter(Boolean)
+  return parts.join('-')
+}
+
 // ── Shared field styles ───────────────────────────────────────────────────────
 const fieldBase: React.CSSProperties = {
   width: '100%',
@@ -65,6 +86,7 @@ export default function UniversalCheckoutModal({
     businessName: '',
     password: '',
   })
+  const billingSummary = getBillingSummary(plan)
 
   useEffect(() => {
     const checkAndPrefill = async () => {
@@ -124,12 +146,18 @@ export default function UniversalCheckoutModal({
   const handlePaystack = () => {
     if (!validate()) return
     setStep('processing')
-    const handler = (window as any).PaystackPop.setup({
+    const paymentWindow = window as PaymentWindow
+    if (!paymentWindow.PaystackPop) {
+      setError('Paystack is unavailable. Please refresh and try again.')
+      setStep('payment')
+      return
+    }
+    const handler = paymentWindow.PaystackPop.setup({
       key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
       email: form.email,
       amount: plan.priceNGN * 100,
       currency: 'NGN',
-      ref: `PSW-${service.id.toUpperCase()}-${plan.id.toUpperCase()}-${Date.now()}`,
+      ref: createPaymentReference(service.id, plan.id),
       metadata: {
         service_id: service.id,
         service_name: service.name,
@@ -146,7 +174,7 @@ export default function UniversalCheckoutModal({
           { display_name: 'Client Name', variable_name: 'name', value: `${form.firstName} ${form.lastName}`.trim() },
         ],
       },
-      callback: async (response: any) => { await processPayment(response.reference, 'paystack') },
+      callback: async (response: PaystackResponse) => { await processPayment(response.reference, 'paystack') },
       onClose: () => setStep('payment'),
     })
     handler.openIframe()
@@ -157,7 +185,7 @@ export default function UniversalCheckoutModal({
     setStep('processing')
     const config = {
       public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
-      tx_ref: `PSW-${service.id.toUpperCase()}-${Date.now()}`,
+      tx_ref: createPaymentReference(service.id),
       amount: plan.priceNGN,
       currency: 'NGN',
       payment_options: 'card,banktransfer,ussd',
@@ -178,12 +206,18 @@ export default function UniversalCheckoutModal({
         description: `${service.name} — ${plan.name} Plan`,
         logo: 'https://www.purplesofthub.com/Purplesoft-logo-main.png',
       },
-      callback: async (response: any) => {
+      callback: async (response: FlutterwaveResponse) => {
         if (response.status === 'successful') await processPayment(String(response.transaction_id), 'flutterwave')
       },
       onclose: () => setStep('payment'),
     }
-    ;(window as any).FlutterwaveCheckout(config)
+    const paymentWindow = window as PaymentWindow
+    if (!paymentWindow.FlutterwaveCheckout) {
+      setError('Flutterwave is unavailable. Please refresh and try again.')
+      setStep('payment')
+      return
+    }
+    paymentWindow.FlutterwaveCheckout(config)
   }
 
   const processPayment = async (reference: string, method: 'paystack' | 'flutterwave') => {
@@ -271,7 +305,7 @@ export default function UniversalCheckoutModal({
             }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
               {service.name} — {plan.name} — {displayPrice}
-              {plan.billingType === 'monthly' ? '/mo' : plan.billingType === 'yearly' ? '/yr' : ''}
+              {billingSummary.short}
             </span>
           </div>
 
@@ -334,7 +368,7 @@ export default function UniversalCheckoutModal({
                 {isUserLoggedIn ? 'Processing payment…' : 'Setting up your account…'}
               </p>
               <p style={{ fontSize: 12, color: 'var(--cyber-body,#4a3f6b)', margin: 0 }}>
-                Please don't close this window
+                Please don&apos;t close this window
               </p>
             </div>
           )}
@@ -477,7 +511,7 @@ export default function UniversalCheckoutModal({
                 <div>
                   <p style={{ fontSize: 12, color: 'var(--cyber-body,#4a3f6b)', margin: '0 0 2px', fontWeight: 600 }}>{service.name}</p>
                   <p style={{ fontSize: 11, color: 'var(--cyber-body,#4a3f6b)', margin: 0, opacity: 0.7 }}>
-                    {plan.name} · {plan.billingType === 'monthly' ? 'Monthly' : plan.billingType === 'yearly' ? 'Yearly' : 'One-time'}
+                    {plan.name} · {billingSummary.label}
                   </p>
                 </div>
                 <p style={{ fontSize: 17, fontWeight: 900, color: '#7c3aed', margin: 0 }}>{displayPrice}</p>

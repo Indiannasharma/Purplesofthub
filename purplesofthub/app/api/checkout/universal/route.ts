@@ -199,7 +199,9 @@ export async function POST(req: NextRequest) {
     }
 
     const expiresAt = new Date()
-    if (billingType === 'monthly') {
+    if (billingType === 'weekly') {
+      expiresAt.setDate(expiresAt.getDate() + 7)
+    } else if (billingType === 'monthly') {
       expiresAt.setMonth(expiresAt.getMonth() + 1)
     } else if (billingType === 'yearly') {
       expiresAt.setFullYear(expiresAt.getFullYear() + 1)
@@ -250,10 +252,10 @@ export async function POST(req: NextRequest) {
       userId,
       message: 'Payment verified and subscription activated',
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Universal checkout error:', error)
     return NextResponse.json(
-      { error: error.message || 'Internal server error', success: false },
+      { error: error instanceof Error ? error.message : 'Internal server error', success: false },
       { status: 500 }
     )
   }

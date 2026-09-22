@@ -1,4 +1,4 @@
-﻿export type BillingType = 'one-time' | 'monthly' | 'yearly' | 'custom'
+export type BillingType = 'one-time' | 'weekly' | 'monthly' | 'yearly' | 'custom'
 
 export type ServiceCategory =
   | 'development'
@@ -332,6 +332,56 @@ export const SERVICES: Service[] = [
           'Priority support 7 days/week',
           'Recommended ad spend: ₦1.5M+',
         ],
+      },
+    ],
+  },
+
+  // ── GOOGLE ADS ──
+  {
+    id: 'google-ads',
+    slug: 'google-ads',
+    name: 'Google Ads Management',
+    tagline: 'Capture high-intent customers when they are ready to buy',
+    description: 'Google Ads management for measurable leads, sales, and enquiries. PurpleSoftHub handles strategy and optimisation; your advertising budget is paid directly to Google.',
+    category: 'marketing',
+    icon: '🎯',
+    startingPriceNGN: 15000,
+    startingPriceUSD: 11,
+    billingType: 'monthly',
+    payOnline: true,
+    plans: [
+      {
+        id: 'google-ads-weekly', name: 'Launch Weekly', priceNGN: 15000, priceUSD: 11, billingType: 'weekly', delivery: '7-day optimisation sprint',
+        description: 'A focused short campaign for an existing Google Ads account or time-sensitive promotion.',
+        features: ['Existing Google Ads campaign required', 'One campaign review and optimisation sprint', 'Keyword and negative-keyword clean-up', 'Bid and budget adjustments', 'Performance summary at the end of the week', 'Google ad budget from ₦70,000/month, paid directly to Google'],
+        badge: 'Short Campaign',
+      },
+      {
+        id: 'google-ads-starter', name: 'Starter', priceNGN: 42000, priceUSD: 30, billingType: 'monthly', delivery: 'Monthly management',
+        description: 'For small businesses starting with one focused search campaign and clear local goals.',
+        features: ['One Google Search campaign', 'Campaign and conversion setup', 'Keyword research and ad copywriting', 'Location and audience targeting', 'Weekly optimisation', 'Monthly performance report', 'Google ad budget from ₦70,000/month, paid directly to Google'],
+      },
+      {
+        id: 'google-ads-growth', name: 'Growth', priceNGN: 85000, priceUSD: 61, billingType: 'monthly', delivery: 'Monthly management',
+        description: 'For businesses that need stronger lead generation, testing, and a clearer view of what converts.',
+        features: ['Up to 2 active campaigns', 'Search plus Display or remarketing', 'Conversion tracking check', 'Ad copy and keyword testing', 'Negative-keyword management', 'Bi-weekly optimisation report', 'Monthly strategy recommendations', 'Google ad budget from ₦70,000/month, paid directly to Google'],
+        highlighted: true, badge: 'Most Popular',
+      },
+      {
+        id: 'google-ads-scale', name: 'Scale', priceNGN: 150000, priceUSD: 107, billingType: 'monthly', delivery: 'Monthly management',
+        description: 'For established businesses ready to run multiple acquisition campaigns and grow efficiently.',
+        features: ['Up to 4 active campaigns', 'Search, Display, YouTube or Shopping strategy', 'Remarketing audience setup', 'Landing-page conversion recommendations', 'Weekly optimisation', 'Monthly strategy call', 'Detailed monthly performance report', 'Google ad budget from ₦200,000/month, paid directly to Google'],
+      },
+      {
+        id: 'google-ads-business-pro', name: 'Business Pro', priceNGN: 250000, priceUSD: 179, billingType: 'monthly', delivery: 'Monthly management',
+        description: 'For larger companies that need a hands-on acquisition programme across services, products, or locations.',
+        features: ['Multi-campaign account management', 'Multi-location or multi-product targeting', 'Shopping feed or YouTube campaign support', 'Advanced remarketing and audience strategy', 'Weekly optimisation and insights', 'Dedicated strategy session', 'Executive performance dashboard', 'Google ad budget from ₦500,000/month, paid directly to Google'],
+      },
+      {
+        id: 'google-ads-enterprise', name: 'Enterprise', priceNGN: 0, priceUSD: 0, billingType: 'custom', delivery: 'Custom scope and reporting',
+        description: 'For high-spend, multi-market, e-commerce, or enterprise Google Ads programmes that need a dedicated team.',
+        features: ['Custom campaign architecture', 'Multiple brands, markets, or locations', 'Advanced analytics and attribution support', 'Shopping, Performance Max, YouTube and remarketing', 'Dedicated account lead', 'Custom reporting cadence', 'Priority support'],
+        isCustom: true, badge: 'Talk to Us',
       },
     ],
   },

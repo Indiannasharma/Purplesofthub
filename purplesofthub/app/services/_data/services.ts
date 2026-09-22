@@ -824,7 +824,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "What budget do I need for Google Ads?",
-        a: "We recommend a minimum ad spend of $200-500/month to see meaningful results. Our management fee is separate from your ad budget.",
+        a: "We recommend a minimum Google ad spend of $50 (about ₦70,000) per month to gather meaningful data. Our management fee is separate and is paid to PurpleSoftHub.",
       },
       {
         q: "How quickly will I see results?",

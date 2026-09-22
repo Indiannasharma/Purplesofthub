@@ -12,7 +12,7 @@ interface ServicePlanModalProps {
 }
 
 function getBillingLabel(plan: ServicePlan) {
-  if (plan.billingType === 'monthly' && plan.delivery.toLowerCase().includes('week')) {
+  if (plan.billingType === 'weekly' || (plan.billingType === 'monthly' && plan.delivery.toLowerCase().includes('week'))) {
     return 'per week'
   }
 
