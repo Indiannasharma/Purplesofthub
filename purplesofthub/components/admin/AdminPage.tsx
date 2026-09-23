@@ -17,7 +17,7 @@ export function AdminPage({
   return (
     <div
       className={cn(
-        "admin-page mx-auto flex w-full max-w-[1520px] flex-col gap-4 px-4 py-5 pb-24 sm:px-6 sm:py-6 sm:pb-24 lg:px-8 lg:py-7",
+        "admin-page mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 py-5 pb-24 sm:px-6 sm:py-6 sm:pb-24 lg:px-8",
         className
       )}
     >

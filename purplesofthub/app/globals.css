@@ -5354,42 +5354,8 @@ html.dark .admin-shell {
   --ring: #b396ff;
 }
 
-/* Admin overview: deliberately compact, neutral, and operational. */
-.admin-shell .admin-overview {
-  background-image: radial-gradient(circle at 80% -20%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 38%);
-}
-
-.admin-shell .admin-pulse,
-.admin-shell .admin-momentum,
-.admin-shell .admin-attention {
-  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.025), 0 8px 24px rgba(24, 24, 27, 0.018);
-}
-
-.admin-shell .admin-pulse > div:last-child > *:not(:last-child) {
-  border-right-width: 0;
-}
-
-@media (min-width: 640px) {
-  .admin-shell .admin-pulse > div:last-child > *:nth-child(odd) {
-    border-right-width: 1px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .admin-shell .admin-pulse > div:last-child > *:not(:last-child) {
-    border-right-width: 1px;
-  }
-}
-
-html.dark .admin-shell .admin-overview {
-  background-image: radial-gradient(circle at 80% -20%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 38%);
-}
-
-html.dark .admin-shell .admin-pulse,
-html.dark .admin-shell .admin-momentum,
-html.dark .admin-shell .admin-attention {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 12px 28px rgba(0, 0, 0, 0.12);
-}
+/* Admin overview: clean neutral canvas - content is grouped with hairline
+   rules and whitespace, not card chrome or decorative gradients. */
 
 /* Public marketing sections intentionally have campaign-scale padding.
    Admin sections are grid landmarks and must remain content-sized. */

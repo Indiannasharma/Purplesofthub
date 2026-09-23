@@ -1,121 +1,66 @@
 import * as React from "react";
-import { AlertCircle, Inbox } from "lucide-react";
 
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
-/** Title/description pair shared by every Command Center card. */
-export function DashboardCardHeader({
+/**
+ * Section heading for the overview. Plain typography, no card chrome —
+ * information is grouped through spacing and hairline rules instead.
+ */
+export function SectionTitle({
+  id,
   title,
-  description,
   action,
   className,
 }: {
+  id?: string;
   title: string;
-  description?: string;
   action?: React.ReactNode;
   className?: string;
 }) {
   return (
-    <CardHeader
-      className={cn(
-        "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 space-y-0 p-4 pb-2 sm:p-5 sm:pb-2",
-        className
-      )}
-    >
-      <div className="min-w-0">
-        <h2 className="text-sm font-semibold leading-5 tracking-tight text-foreground">
-          {title}
-        </h2>
-        {description ? (
-          <CardDescription className="mt-0.5 text-xs leading-4 text-muted-foreground">
-            {description}
-          </CardDescription>
-        ) : null}
-      </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
-    </CardHeader>
+    <div className={cn("flex items-baseline justify-between gap-3", className)}>
+      <h2 id={id} className="text-xs font-semibold tracking-tight text-foreground">
+        {title}
+      </h2>
+      {action}
+    </div>
   );
 }
 
 /**
- * Localized failure state — used when a single section's query failed so the
- * rest of the dashboard keeps working (failure isolation).
+ * Single-line empty state. Empty data must never create empty dashboard real
+ * estate — one muted line replaces the whole section body.
  */
-export function UnavailableNotice({ label, className }: { label: string; className?: string }) {
+export function EmptyLine({ children }: { children: React.ReactNode }) {
+  return <p className="text-[13px] leading-5 text-muted-foreground">{children}</p>;
+}
+
+/**
+ * Localized failure line — one section's query failed, the rest of the
+ * dashboard keeps working. Never renders raw errors.
+ */
+export function UnavailableLine({ label }: { label: string }) {
   return (
-    <div
-      role="status"
-      className={cn(
-        "mx-5 mb-5 flex items-start gap-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.07] px-3 py-2.5",
-        className
-      )}
-    >
-      <AlertCircle
-        className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
-        aria-hidden="true"
-      />
-      <div>
-        <p className="text-sm font-medium text-foreground">Temporarily unavailable</p>
-        <p className="mt-0.5 text-xs leading-4 text-muted-foreground">
-          {label} could not be loaded safely. Try refreshing shortly.
-        </p>
-      </div>
-    </div>
+    <p role="status" className="text-[13px] leading-5 text-muted-foreground">
+      {label} is temporarily unavailable. Try refreshing shortly.
+    </p>
   );
 }
 
-/** Concise empty state — no illustrations, no decoration. */
-export function EmptyState({
-  title,
-  description,
-  className,
-}: {
-  title: string;
-  description?: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "mx-5 mb-5 flex items-start gap-2.5 rounded-lg bg-muted/55 px-3 py-2.5",
-        className
-      )}
-    >
-      <Inbox
-        className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
-        aria-hidden="true"
-      />
-      <div>
-        <p className="text-sm font-medium text-foreground">{title}</p>
-        {description ? (
-          <p className="mt-0.5 text-xs leading-4 text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-/** Shared card shell with consistent padding rhythm. */
-export function DashboardCard({
-  className,
+/** Text link used for "View all"-style section actions. */
+export function SectionLink({
+  href,
   children,
 }: {
-  className?: string;
+  href: string;
   children: React.ReactNode;
 }) {
   return (
-    <Card
-      className={cn(
-        "min-w-0 gap-0 overflow-hidden rounded-2xl border-border/80 bg-card py-0 shadow-[0_1px_2px_rgba(15,23,42,0.025)]",
-        className
-      )}
+    <a
+      href={href}
+      className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {children}
-    </Card>
+    </a>
   );
 }

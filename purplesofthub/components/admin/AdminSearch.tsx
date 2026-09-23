@@ -28,13 +28,13 @@ export function AdminSearchTrigger() {
     <>
       <Button
         type="button"
-        variant="outline"
+        variant="ghost"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="hidden h-9 w-[210px] justify-start gap-2 bg-card px-3 text-sm font-normal text-muted-foreground xl:inline-flex"
+        className="hidden h-8 w-[200px] justify-start gap-2 px-2.5 text-xs font-normal text-muted-foreground xl:inline-flex"
       >
-        <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
-        <span className="truncate">Search sections…</span>
+        <Search className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+        <span className="truncate">Search…</span>
         <kbd className="ml-auto shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium tracking-widest text-muted-foreground">
           Ctrl K
         </kbd>
@@ -42,11 +42,11 @@ export function AdminSearchTrigger() {
 
       <Button
         type="button"
-        variant="outline"
+        variant="ghost"
         size="icon"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="h-9 w-9 bg-card xl:hidden"
+        className="h-8 w-8 xl:hidden"
       >
         <Search className="h-4 w-4" aria-hidden="true" />
       </Button>

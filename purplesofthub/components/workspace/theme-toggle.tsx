@@ -19,9 +19,9 @@ export function ThemeToggle() {
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="h-10 w-10"
+          className="h-8 w-8"
           aria-label="Change theme"
         >
           {mode === "dark" ? (

@@ -24,6 +24,7 @@ import {
 import { RefreshButton } from "./RefreshButton";
 
 const CREATE_ACTIONS = [
+  { label: "New project", href: "/admin/projects/new", icon: FolderPlus },
   { label: "New invoice", href: "/admin/invoices/new", icon: FileText },
   { label: "New service", href: "/admin/services/new", icon: Wrench },
   { label: "New portfolio project", href: "/admin/portfolio/new", icon: Globe2 },
@@ -32,15 +33,15 @@ const CREATE_ACTIONS = [
 
 export function DashboardCommandActions() {
   return (
-    <div className="flex flex-wrap items-center gap-2 md:justify-end">
+    <div className="flex flex-wrap items-center gap-1.5 md:justify-end">
       <RefreshButton compact />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button type="button" variant="outline" size="sm" className="bg-card">
-            <FilePlus2 className="h-4 w-4" aria-hidden="true" />
+          <Button type="button" variant="outline" size="sm" className="h-8 bg-card text-xs">
+            <FilePlus2 className="h-3.5 w-3.5" aria-hidden="true" />
             Create
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+            <ChevronDown className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
@@ -58,13 +59,6 @@ export function DashboardCommandActions() {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Button asChild size="sm">
-        <Link href="/admin/projects/new">
-          <FolderPlus className="h-4 w-4" aria-hidden="true" />
-          New project
-        </Link>
-      </Button>
     </div>
   );
 }

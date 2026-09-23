@@ -22,34 +22,34 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
   const breadcrumbs = getAdminBreadcrumbs(pathname);
 
   return (
-    <header className="z-30 min-h-14 shrink-0 border-b border-border/70 bg-card/95 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-14 w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center gap-2">
+    <header className="z-30 h-12 shrink-0 border-b border-border/70 bg-card/95 backdrop-blur-xl">
+      <div className="mx-auto flex h-12 w-full max-w-[1400px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-1.5">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-9 w-9 lg:hidden"
+          className="h-8 w-8 lg:hidden"
           aria-label="Open admin navigation"
           aria-expanded={isMobileNavOpen}
           onClick={() => setMobileNavOpen(true)}
         >
-          <Menu className="h-5 w-5" aria-hidden="true" />
+          <Menu className="h-[18px] w-[18px]" aria-hidden="true" />
         </Button>
 
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="hidden h-9 w-9 lg:inline-flex"
+          className="hidden h-8 w-8 lg:inline-flex"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-pressed={isCollapsed}
           onClick={toggleCollapsed}
         >
           {isCollapsed ? (
-            <PanelLeft className="h-5 w-5" aria-hidden="true" />
+            <PanelLeft className="h-[18px] w-[18px]" aria-hidden="true" />
           ) : (
-            <PanelLeftClose className="h-5 w-5" aria-hidden="true" />
+            <PanelLeftClose className="h-[18px] w-[18px]" aria-hidden="true" />
           )}
         </Button>
 
@@ -58,11 +58,11 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
         </div>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-1.5">
+        <div className="flex items-center gap-0.5">
           <AdminSearchTrigger />
           <ThemeToggle />
           <NotificationBell adminId={profile.userId} />
-          <span className="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden="true" />
+          <span className="mx-1.5 hidden h-4 w-px bg-border sm:block" aria-hidden="true" />
           <AdminUserMenu profile={profile} />
         </div>
       </div>

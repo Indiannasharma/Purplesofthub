@@ -1,29 +1,31 @@
 import { redirect } from "next/navigation";
 
 import { getAuthenticatedProfile } from "@/lib/auth";
-import {
-  getAdminDashboardData,
-  getGreeting,
-} from "@/lib/admin/dashboard";
+import { getAdminDashboardData, getGreeting } from "@/lib/admin/dashboard";
 import { AdminPage } from "@/components/admin/AdminPage";
 import { CommandHeader } from "@/components/admin/dashboard/CommandHeader";
-import { BusinessPulse } from "@/components/admin/dashboard/BusinessPulse";
-import { StudioOverview } from "@/components/admin/dashboard/StudioOverview";
-import { ProjectOverview } from "@/components/admin/dashboard/ProjectOverview";
-import { AttentionCenter } from "@/components/admin/dashboard/AttentionCenter";
-import { LeadOverview } from "@/components/admin/dashboard/LeadOverview";
-import { FinancialSnapshot } from "@/components/admin/dashboard/FinancialSnapshot";
-import { RecentActivity } from "@/components/admin/dashboard/RecentActivity";
+import { MetricsStrip } from "@/components/admin/dashboard/MetricsStrip";
+import { Priorities } from "@/components/admin/dashboard/Priorities";
+import { ActivityPanel } from "@/components/admin/dashboard/ActivityPanel";
+import { GrowthSection } from "@/components/admin/dashboard/GrowthSection";
+import { MoneyPanel } from "@/components/admin/dashboard/MoneyPanel";
+import { LeadsPanel } from "@/components/admin/dashboard/LeadsPanel";
+import { ProjectsPanel } from "@/components/admin/dashboard/ProjectsPanel";
+import { Signals } from "@/components/admin/dashboard/Signals";
 import { QuickActions } from "@/components/admin/dashboard/QuickActions";
 
 export const metadata = { title: "Overview" };
 
 /**
- * PurpleSoftHub Admin Overview � the Command Center.
+ * PurpleSoftHub Admin Overview.
  *
- * Server Component: all dashboard data is fetched server-side inside an
- * authenticated admin context. No browser Supabase queries, no fake numbers,
- * no hardcoded revenue. Charts are isolated to small client components.
+ * Composition: a quiet, typography-led operations page. Hairline rules and
+ * whitespace group information — not card chrome. The work queue ("Needs
+ * attention") leads the left column; money, leads and projects form a compact
+ * right rail; growth renders only when real signups exist.
+ *
+ * Server Component: all data is fetched server-side inside the authenticated
+ * admin context (lib/admin/dashboard.ts — unchanged).
  */
 export default async function AdminOverviewPage() {
   const auth = await getAuthenticatedProfile();
@@ -38,44 +40,32 @@ export default async function AdminOverviewPage() {
 
   const greeting = getGreeting();
   const firstName = auth.fullName?.split(" ")[0] || "there";
+
   return (
-    <AdminPage className="admin-overview gap-5">
+    <AdminPage className="gap-6">
       <CommandHeader
         title={`${greeting}, ${firstName}`}
         generatedAt={dashboard.generatedAt}
       />
 
-      <BusinessPulse data={dashboard} />
+      <MetricsStrip data={dashboard} />
 
-      <section aria-label="Operations overview" className="grid items-stretch gap-4 xl:grid-cols-12 xl:gap-5">
-        <div className="xl:col-span-8">
-          <StudioOverview data={dashboard} />
+      <div className="grid grid-cols-1 gap-x-12 gap-y-9 xl:grid-cols-12">
+        <div className="flex min-w-0 flex-col gap-9 xl:col-span-7">
+          <Priorities attention={dashboard.attention} />
+          <GrowthSection clients={dashboard.clients} />
+          <ActivityPanel activity={dashboard.recentActivity} />
         </div>
-        <div className="xl:col-span-4">
-          <AttentionCenter attention={dashboard.attention} />
-        </div>
-      </section>
 
-      <section aria-label="Workflow snapshots" className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-12 xl:gap-5">
-        <div className="xl:col-span-4">
-          <ProjectOverview projects={dashboard.projects} />
+        <div className="flex min-w-0 flex-col gap-9 xl:col-span-5">
+          <MoneyPanel finance={dashboard.finance} />
+          <LeadsPanel leads={dashboard.leads} />
+          <ProjectsPanel projects={dashboard.projects} />
+          <Signals insights={dashboard.insights} />
         </div>
-        <div className="xl:col-span-4">
-          <LeadOverview leads={dashboard.leads} />
-        </div>
-        <div className="xl:col-span-4">
-          <FinancialSnapshot finance={dashboard.finance} />
-        </div>
-        <div className="md:col-span-2 xl:col-span-4">
-          <RecentActivity activity={dashboard.recentActivity} />
-        </div>
-      </section>
+      </div>
 
-      <section aria-label="Admin shortcuts" className="grid items-start gap-4 lg:grid-cols-12 xl:gap-5">
-        <div className="lg:col-span-8">
-          <QuickActions />
-        </div>
-      </section>
+      <QuickActions />
     </AdminPage>
   );
 }

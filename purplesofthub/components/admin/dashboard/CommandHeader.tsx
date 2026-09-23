@@ -1,5 +1,3 @@
-import { Clock3 } from "lucide-react";
-
 import { DashboardCommandActions } from "./DashboardCommandActions";
 
 function formatUpdatedAt(value: string): string {
@@ -12,6 +10,10 @@ function formatUpdatedAt(value: string): string {
   })}`;
 }
 
+/**
+ * Compact command header. The greeting is a page title, not a hero — roughly
+ * body-scale, with context kept on one inline muted row.
+ */
 export function CommandHeader({
   title,
   generatedAt,
@@ -20,32 +22,18 @@ export function CommandHeader({
   generatedAt: string;
 }) {
   return (
-    <section
-      aria-labelledby="overview-title"
-      className="grid gap-4 border-b border-border/70 pb-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end"
-    >
-      <div className="min-w-0">
-        <h1
-          id="overview-title"
-          className="text-balance text-[24px] font-semibold leading-[1.15] tracking-[-0.035em] text-foreground sm:text-[28px]"
-        >
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
+        <h1 className="text-[15px] font-semibold tracking-tight text-foreground">
           {title}
         </h1>
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-          <p className="text-sm text-muted-foreground">
-            A clear view of the studio right now.
-          </p>
-          <time
-            dateTime={generatedAt}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
-          >
-            <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
-            {formatUpdatedAt(generatedAt)}
-          </time>
-        </div>
+        <p className="text-xs text-muted-foreground">
+          Studio overview ·{" "}
+          <time dateTime={generatedAt}>{formatUpdatedAt(generatedAt)}</time>
+        </p>
       </div>
 
       <DashboardCommandActions />
-    </section>
+    </div>
   );
 }
