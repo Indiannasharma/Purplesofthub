@@ -20,6 +20,9 @@ export interface ServicePlan {
   highlighted?: boolean
   isCustom?: boolean
   badge?: string
+  recommendedAdSpendNGN?: number
+  recommendedAdSpendUSD?: number
+  recommendedAdSpendPeriod?: 'week' | 'month'
 }
 
 export interface Service {
@@ -353,29 +356,34 @@ export const SERVICES: Service[] = [
       {
         id: 'google-ads-weekly', name: 'Launch Weekly', priceNGN: 15000, priceUSD: 11, billingType: 'weekly', delivery: '7-day optimisation sprint',
         description: 'A focused short campaign for an existing Google Ads account or time-sensitive promotion.',
-        features: ['Existing Google Ads campaign required', 'One campaign review and optimisation sprint', 'Keyword and negative-keyword clean-up', 'Bid and budget adjustments', 'Performance summary at the end of the week', 'Google ad budget from ₦70,000/month, paid directly to Google'],
+        features: ['Existing Google Ads campaign required', 'One campaign review and optimisation sprint', 'Keyword and negative-keyword clean-up', 'Bid and budget adjustments', 'Performance summary at the end of the week', 'Google media spend is paid directly to Google'],
+        recommendedAdSpendNGN: 21000, recommendedAdSpendUSD: 15, recommendedAdSpendPeriod: 'week',
         badge: 'Short Campaign',
       },
       {
         id: 'google-ads-starter', name: 'Starter', priceNGN: 42000, priceUSD: 30, billingType: 'monthly', delivery: 'Monthly management',
         description: 'For small businesses starting with one focused search campaign and clear local goals.',
-        features: ['One Google Search campaign', 'Campaign and conversion setup', 'Keyword research and ad copywriting', 'Location and audience targeting', 'Weekly optimisation', 'Monthly performance report', 'Google ad budget from ₦70,000/month, paid directly to Google'],
+        features: ['One Google Search campaign', 'Campaign and conversion setup', 'Keyword research and ad copywriting', 'Location and audience targeting', 'Weekly optimisation', 'Monthly performance report', 'Google media spend is paid directly to Google'],
+        recommendedAdSpendNGN: 70000, recommendedAdSpendUSD: 50, recommendedAdSpendPeriod: 'month',
       },
       {
         id: 'google-ads-growth', name: 'Growth', priceNGN: 85000, priceUSD: 61, billingType: 'monthly', delivery: 'Monthly management',
         description: 'For businesses that need stronger lead generation, testing, and a clearer view of what converts.',
-        features: ['Up to 2 active campaigns', 'Search plus Display or remarketing', 'Conversion tracking check', 'Ad copy and keyword testing', 'Negative-keyword management', 'Bi-weekly optimisation report', 'Monthly strategy recommendations', 'Google ad budget from ₦70,000/month, paid directly to Google'],
+        features: ['Up to 2 active campaigns', 'Search plus Display or remarketing', 'Conversion tracking check', 'Ad copy and keyword testing', 'Negative-keyword management', 'Bi-weekly optimisation report', 'Monthly strategy recommendations', 'Google media spend is paid directly to Google'],
+        recommendedAdSpendNGN: 70000, recommendedAdSpendUSD: 50, recommendedAdSpendPeriod: 'month',
         highlighted: true, badge: 'Most Popular',
       },
       {
         id: 'google-ads-scale', name: 'Scale', priceNGN: 150000, priceUSD: 107, billingType: 'monthly', delivery: 'Monthly management',
         description: 'For established businesses ready to run multiple acquisition campaigns and grow efficiently.',
-        features: ['Up to 4 active campaigns', 'Search, Display, YouTube or Shopping strategy', 'Remarketing audience setup', 'Landing-page conversion recommendations', 'Weekly optimisation', 'Monthly strategy call', 'Detailed monthly performance report', 'Google ad budget from ₦200,000/month, paid directly to Google'],
+        features: ['Up to 4 active campaigns', 'Search, Display, YouTube or Shopping strategy', 'Remarketing audience setup', 'Landing-page conversion recommendations', 'Weekly optimisation', 'Monthly strategy call', 'Detailed monthly performance report', 'Google media spend is paid directly to Google'],
+        recommendedAdSpendNGN: 200000, recommendedAdSpendUSD: 143, recommendedAdSpendPeriod: 'month',
       },
       {
         id: 'google-ads-business-pro', name: 'Business Pro', priceNGN: 250000, priceUSD: 179, billingType: 'monthly', delivery: 'Monthly management',
         description: 'For larger companies that need a hands-on acquisition programme across services, products, or locations.',
-        features: ['Multi-campaign account management', 'Multi-location or multi-product targeting', 'Shopping feed or YouTube campaign support', 'Advanced remarketing and audience strategy', 'Weekly optimisation and insights', 'Dedicated strategy session', 'Executive performance dashboard', 'Google ad budget from ₦500,000/month, paid directly to Google'],
+        features: ['Multi-campaign account management', 'Multi-location or multi-product targeting', 'Shopping feed or YouTube campaign support', 'Advanced remarketing and audience strategy', 'Weekly optimisation and insights', 'Dedicated strategy session', 'Executive performance dashboard', 'Google media spend is paid directly to Google'],
+        recommendedAdSpendNGN: 500000, recommendedAdSpendUSD: 357, recommendedAdSpendPeriod: 'month',
       },
       {
         id: 'google-ads-enterprise', name: 'Enterprise', priceNGN: 0, priceUSD: 0, billingType: 'custom', delivery: 'Custom scope and reporting',

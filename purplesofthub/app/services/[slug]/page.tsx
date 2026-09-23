@@ -7,6 +7,7 @@ import Reveal from "@/components/Reveal";
 import services, { getServiceBySlug, getRelatedServices } from "@/app/services/_data/services";
 import FaqAccordion from "@/app/services/_components/FaqAccordion";
 import ServicePricingCards from "@/components/services/ServicePricingCards";
+import RegionalServicePrice from "@/components/services/RegionalServicePrice";
 import { getServiceBySlug as getPaymentServiceBySlug } from "@/lib/payments/service-plans";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
@@ -170,11 +171,11 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg,${service.color},#a855f7)` }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "var(--accent)", textTransform: "uppercase", marginBottom: 10 }}>PRICING</p>
               <div style={{ fontFamily: "Outfit", fontSize: "clamp(26px,3vw,36px)", fontWeight: 900, background: "linear-gradient(135deg,#7c3aed,#a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 6 }}>
-                {isGoogleAds ? "From ₦15,000" : "Custom Quote"}
+                {isGoogleAds ? <>From <RegionalServicePrice amountNGN={15000} amountUSD={11} /></> : "Custom Quote"}
               </div>
               <p style={{ color: "var(--text-muted)", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
                 {isGoogleAds
-                  ? "Management starts with a weekly optimisation sprint. Google ad spend starts from ₦70,000 per month and is paid directly to Google."
+                  ? "Management starts with a weekly optimisation sprint. Your selected currency is used throughout the plan details; Google media spend is paid directly to Google."
                   : "Every project is unique. Tell us about your goals and we&apos;ll craft a tailored proposal with clear, transparent pricing."}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
@@ -206,7 +207,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               Choose the level of support your campaign needs
             </h2>
             <p style={{ fontSize: 16, color: "var(--text-secondary)", maxWidth: 620, margin: "0 auto", lineHeight: 1.7 }}>
-              Management fees are separate from Google advertising spend. Start with a minimum media budget of ₦70,000 per month, paid directly to Google.
+              Management fees are separate from Google advertising spend. Each plan shows its recommended media budget in your selected currency; that budget is paid directly to Google.
             </p>
           </div>
           <ServicePricingCards

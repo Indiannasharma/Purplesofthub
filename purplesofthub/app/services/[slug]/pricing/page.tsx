@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ServicePricingCards from '@/components/services/ServicePricingCards'
+import RegionalServicePrice from '@/components/services/RegionalServicePrice'
 import { getServiceBySlug } from '@/lib/payments/service-plans'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://purplesofthub.com'
@@ -56,16 +57,20 @@ export default async function ServicePricingPage({ params }: { params: Promise<{
       {isGoogleAds && (
         <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px 20px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden', background: 'var(--border)' }}>
-            {[
-              ['Management fee', 'Paid to PurpleSoftHub for campaign strategy and optimisation.'],
-              ['Media budget', 'From ₦70,000/month, paid directly to Google.'],
-              ['No false promises', 'We optimise toward qualified traffic, leads, and measurable growth.'],
-            ].map(([title, detail]) => (
-              <div key={title} style={{ padding: '20px', background: 'var(--bg-card)' }}>
-                <strong style={{ display: 'block', marginBottom: 6, color: 'var(--text-primary)', fontSize: 14 }}>{title}</strong>
-                <span style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>{detail}</span>
-              </div>
-            ))}
+            <div style={{ padding: '20px', background: 'var(--bg-card)' }}>
+              <strong style={{ display: 'block', marginBottom: 6, color: 'var(--text-primary)', fontSize: 14 }}>Management fee</strong>
+              <span style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>Paid to PurpleSoftHub for campaign strategy and optimisation.</span>
+            </div>
+            <div style={{ padding: '20px', background: 'var(--bg-card)' }}>
+              <strong style={{ display: 'block', marginBottom: 6, color: 'var(--text-primary)', fontSize: 14 }}>Media budget</strong>
+              <span style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>
+                From <RegionalServicePrice amountNGN={21000} amountUSD={15} plus /> / week for a short campaign, or <RegionalServicePrice amountNGN={70000} amountUSD={50} plus /> / month for monthly management. Paid directly to Google.
+              </span>
+            </div>
+            <div style={{ padding: '20px', background: 'var(--bg-card)' }}>
+              <strong style={{ display: 'block', marginBottom: 6, color: 'var(--text-primary)', fontSize: 14 }}>No false promises</strong>
+              <span style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.6 }}>We optimise toward qualified traffic, leads, and measurable growth.</span>
+            </div>
           </div>
         </section>
       )}

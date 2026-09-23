@@ -824,7 +824,7 @@ const services: Service[] = [
     faqs: [
       {
         q: "What budget do I need for Google Ads?",
-        a: "We recommend a minimum Google ad spend of $50 (about ₦70,000) per month to gather meaningful data. Our management fee is separate and is paid to PurpleSoftHub.",
+        a: "For a short weekly campaign, the minimum Google media budget is $15 per week. Monthly management plans start from $50 per month. Your selected currency is shown in pricing, and the media budget is paid directly to Google while management is paid to PurpleSoftHub.",
       },
       {
         q: "How quickly will I see results?",

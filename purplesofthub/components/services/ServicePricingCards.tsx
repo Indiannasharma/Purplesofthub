@@ -228,6 +228,26 @@ export default function ServicePricingCards({
               {plan.description}
             </p>
 
+            {plan.recommendedAdSpendNGN && plan.recommendedAdSpendUSD && (
+              <p
+                style={{
+                  fontSize: '12px',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.55,
+                  margin: '0 0 16px',
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  background: 'rgba(124,58,237,0.07)',
+                  border: '1px solid rgba(124,58,237,0.16)',
+                }}
+              >
+                <strong style={{ color: 'var(--text-primary)' }}>Recommended Google budget:</strong>{' '}
+                {formatRegionalPrice(plan.recommendedAdSpendNGN, plan.recommendedAdSpendUSD, currency)}+ / {plan.recommendedAdSpendPeriod ?? 'month'}
+                <br />
+                <span>Paid directly to Google.</span>
+              </p>
+            )}
+
             {/* Features */}
             <ul
               style={{
