@@ -150,7 +150,7 @@ async function notifyTeam(
   }
 }
 
-export async function POST(request: NextRequest) {
+async function handleRecoverySubmission(request: NextRequest) {
   // ── 1. Reject oversized bodies before buffering multipart data ──────────
   const declaredLength = Number(request.headers.get('content-length') ?? '0')
   if (Number.isFinite(declaredLength) && declaredLength > RECOVERY_REQUEST_MAX_BYTES) {
@@ -299,14 +299,22 @@ export async function POST(request: NextRequest) {
   }
 
   // Link the request to an existing account when the e-mail matches one.
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('email', values.email)
-    .maybeSingle()
+  // A lookup failure must not lose a legitimate submission.
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', values.email)
+      .maybeSingle()
 
-  if (profile?.id) {
-    payload.user_id = profile.id
+    if (profile?.id) {
+      payload.user_id = profile.id
+    }
+  } catch (error) {
+    console.warn(
+      '[account-recovery] profile link lookup failed:',
+      error instanceof Error ? error.message : 'unknown error'
+    )
   }
 
   const insertError = await insertRecoveryRequest(
@@ -329,4 +337,25 @@ export async function POST(request: NextRequest) {
 
   // The response deliberately contains neither object paths nor URLs.
   return NextResponse.json({ success: true }, { headers: { 'Cache-Control': 'no-store' } })
+}
+
+/**
+ * Thin wrapper around the handler above.
+ *
+ * Guarantees a JSON error response (with `Cache-Control: no-store`) instead of a
+ * bare framework 500 if something unexpected throws — an unreachable dependency,
+ * for example. This mirrors the outer guard used by the existing chat/contact
+ * routes. The recovery form must never crash on a dependency failure without a
+ * diagnosable, non-revealing response.
+ */
+export async function POST(request: NextRequest) {
+  try {
+    return await handleRecoverySubmission(request)
+  } catch (error) {
+    console.error(
+      '[account-recovery] unexpected failure:',
+      error instanceof Error ? error.message : 'unknown error'
+    )
+    return jsonError('We could not process this submission. Please try again.', 500)
+  }
 }

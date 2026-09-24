@@ -104,6 +104,24 @@ test('the recovery rate limiter exists and is keyed by a hashed identifier', () 
   assert.match(RATE_LIMIT, /prefix: 'rl:recovery'/)
 })
 
+test('an unavailable rate-limit backend cannot take the recovery endpoint down', () => {
+  // The shared helper must fail OPEN: a broken/misconfigured limiter backend
+  // (observed in production) may not turn a public form into a bare 500.
+  assert.match(
+    RATE_LIMIT,
+    /try \{\s*\n\s*const \{ success, remaining, reset \} = await limiter\.limit\(key\)/
+  )
+  assert.match(RATE_LIMIT, /catch \(error\) \{[\s\S]{0,500}return \{ ok: true, remaining: 999/)
+
+  // The public route additionally wraps the whole handler, so any unexpected
+  // throw is still reported as JSON with a non-revealing message.
+  assert.match(
+    PUBLIC_ROUTE,
+    /export async function POST\(request: NextRequest\) \{\s*\n\s*try \{\s*\n\s*return await handleRecoverySubmission\(request\)/
+  )
+  assert.match(PUBLIC_ROUTE, /catch \(error\) \{[\s\S]{0,400}jsonError\(/)
+})
+
 test('every admin recovery route authorises before using the service role', () => {
   for (const [name, source] of [
     ['requests/route.ts', ADMIN_LIST_ROUTE],

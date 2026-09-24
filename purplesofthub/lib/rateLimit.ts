@@ -59,8 +59,21 @@ export async function checkRateLimit(
   if (!limiter) {
     return { ok: true, remaining: 999, resetAt: Date.now() + 600000 }
   }
-  const { success, remaining, reset } = await limiter.limit(key)
-  return { ok: success, remaining, resetAt: reset }
+
+  try {
+    const { success, remaining, reset } = await limiter.limit(key)
+    return { ok: success, remaining, resetAt: reset }
+  } catch (error) {
+    // Fail OPEN. An unreachable or misconfigured rate-limit backend (for
+    // example placeholder Upstash credentials in the environment) must never
+    // take a public endpoint down with a 500. Callers still enforce schema,
+    // size, MIME/signature and CAPTCHA checks, and the failure is logged.
+    console.warn(
+      '[rateLimit] limiter unavailable — allowing request:',
+      error instanceof Error ? error.message : 'unknown error'
+    )
+    return { ok: true, remaining: 999, resetAt: Date.now() + 60000 }
+  }
 }
 
 export function getClientIp(headers: Headers): string {
