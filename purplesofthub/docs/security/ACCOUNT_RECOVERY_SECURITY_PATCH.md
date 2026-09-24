@@ -461,15 +461,87 @@ Two notes on honesty:
 
 ---
 
-## 12. Remaining risks and pending manual actions
+---
+
+## 12. Release record (2026-09-24) — committed, pushed and observed in production
+
+| Item | Value |
+|---|---|
+| Branch / remote | `main` → `origin` `https://github.com/Indiannasharma/Purplesofthub.git` |
+| Starting HEAD | `aca1359e61fcf1c27f50e7c8c1638ee22771a981` (origin/main identical, no divergence) |
+| Security patch commit | `298adc4e45b5fb20b3b28bf00fe62831ce1b1e83` — *fix(security): privatize account recovery documents and harden recovery APIs* (24 files, +3181/−337) |
+| Follow-up fix commit | `b225c2d9f0d1117cfd51d0be9ddfe7b6cd54c259` — *fix(security): keep recovery submissions working when the rate limiter is unavailable* (3 files, +71/−11) |
+| Push result | `aca1359e..298adc4e main -> main`, then `298adc4e..b225c2d9 main -> main` (fast-forward, no force) |
+| Remote main after push | `b225c2d9f0d1117cfd51d0be9ddfe7b6cd54c259` |
+| Vercel project | existing project `purplesofthub` (`prj_DQ7c9LYOt8mMfKsw064zPE07Fcz8`, org `team_eXhF9XLaeGODdjva6cZdQbQP`); no new project created |
+| Production Supabase project | `japscxueoenflsucqtry.supabase.co` (discovered from the deployed client bundle; the local `.env*` files contain placeholders and are gitignored) |
+| Vercel deployment ID / status | **NOT VERIFIED** — the Vercel CLI is not authenticated in this workspace and no `VERCEL_TOKEN` is available, so deployment metadata could not be read |
+
+### Why the follow-up fix was required
+
+Post-deploy, the public endpoint returned a bare `500` for every request. Probing
+the unmodified `/api/chat` (same `checkRateLimit` helper, wrapped in its own
+try/catch) returned its graceful 500, proving the **Upstash rate-limit backend is
+failing in production** and that the missing error guard in the new route turned
+that into an unhandled 500. The helper now fails **open** (logged) and the route
+has an outer try/catch, so a dependency outage can no longer take the recovery
+form down. Verified after redeploy: `/api/chat` returns `400 {"error":"Messages
+are required"}` instead of `500` (a pre-existing breakage fixed), and
+`POST /api/account-recovery` with a JSON body returns `400` instead of `500`.
+
+### Production observations (unauthenticated, read-only, from this workspace)
+
+| Probe | Result |
+|---|---|
+| `GET https://www.purplesofthub.com/` | `200` |
+| `GET https://purplesofthub.vercel.app/` | `200` |
+| `GET /api/admin/recovery/requests` | **`401`** (new guarded route deployed, unauthenticated) |
+| `GET /api/admin/recovery/{uuid}/documents/id_document/signed-url` | **`401`** |
+| `PATCH /api/admin/recovery/requests/{uuid}` | **`401`** |
+| `POST /api/account-recovery` with `admin_notes` | **`400`** `{"error":"This submission contains a field that is not accepted."}` — nothing persisted |
+| `POST /api/account-recovery` with a `.txt` attachment | **`415`** `{"error":"Unsupported file type. Upload a JPG, PNG or PDF."}` — nothing persisted |
+| Anonymous fetch of a recovery object (public and authenticated object routes) | **`404 {"error":"Bucket not found","code":"NoSuchBucket"}`** — anonymous document retrieval fails |
+| Anonymous `POST /storage/v1/object/list/account-recovery-documents` | `200 []` (RLS-filtered; no object names or contents returned) |
+| Anonymous `GET /rest/v1/account_recovery_requests` | `500 42P17` (see §14) |
+| `GET /api/contact` (empty body) | `400 {"error":"Name, email and message are required"}` — application healthy |
+
+**Containment status:** anonymous access to recovery documents is verified to
+fail in production. Whether the underlying bucket exists and is flagged private,
+or does not exist at all in this project, **could not be determined without
+credentials** (no public bucket exists in the project to serve as a comparison
+baseline; every probed bucket name returns `NoSuchBucket` anonymously). No
+production database or storage mutation was performed by this release.
+
+### Open production defects discovered during verification (pre-existing, not caused by this release)
+
+| # | Defect | Evidence | Owner action |
+|---|---|---|---|
+| D1 | `42P17 infinite recursion detected in policy for relation "profiles"`. Session-scoped reads of `account_recovery_requests`/`profiles` fail, and the recovery INSERT fails after ~6s (most likely the `notify_admin_on_recovery` trigger resolving the admin id through the recursive `profiles` policies). | anonymous `GET /rest/v1/account_recovery_requests` → `500 42P17`; `GET /rest/v1/profiles` → `500 42P17`; `POST /api/account-recovery` with valid fields and no attachment → `500 {"error":"We could not save your request…"}` after ~6s | **Requires production DB access and explicit authorisation.** Replace the self-referential admin policies on `profiles` (e.g. `EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')`, `lib/supabase/schema.sql:117`) with a `SECURITY DEFINER` helper such as `public.is_admin()`, then re-run the §3.4 checks. Not executed here. |
+| D2 | The Upstash rate-limit backend is unreachable/misconfigured in production. | `/api/chat` returned its 500 catch before the fix; the new recovery route returned bare 500s until the guard was added | Mitigated fail-open in code (this release); still verify the Upstash credentials in Vercel. |
+| D3 | Recovery document upload fails: `POST` with a valid synthetic PNG → Cloudflare `error code: 502` after ~5.5s (origin failed during the storage upload), while the same request without an attachment reaches the database step and returns our JSON error. | 3/3 identical 502s; `.txt` and `admin_notes` requests behave correctly (415/400) | **Requires Vercel function logs + Supabase dashboard access.** Confirm the bucket exists, confirm `SUPABASE_SERVICE_ROLE_KEY` in Vercel belongs to `japscxueoenflsucqtry`, then re-test with the synthetic PNG. |
+| D4 | The endpoint now reports honest failures where it previously returned a false `{"success":true}` while silently discarding the submission. | Behavioural change introduced deliberately (V8) | Not a defect; it means the recovery form is *visibly* broken while D1/D3 remain unfixed. |
+
+**Side effects of verification:** no synthetic recovery rows were persisted (every
+insert failed). At most two 135-byte synthetic PNG objects could exist under
+`recovery/<uuid>/` if an upload partially completed before the 502 — the operator
+should check and delete them. No real identity document was used, downloaded or
+exposed during verification.
+
+---
+
+## 13. Remaining risks and pending manual actions
 
 **Pending manual action (production):**
 
-1. Apply the containment migration / Dashboard steps and record the evidence
-   (§3). Until then the live bucket may still be public — this patch does not
-   change that.
-2. Verify in production that anonymous access fails and that legacy public URLs
-   return 400/404.
+1. Obtain credentialed confirmation of the storage configuration: anonymous
+   document retrieval is verified to fail, but whether
+   `account-recovery-documents` exists and is flagged private (versus not
+   existing at all) could not be established without Supabase access. If the
+   bucket does exist, apply §3.2/§3.3 only after that confirmation and after
+   taking the §7 evidence snapshot.
+2. Fix D1 (profiles RLS recursion) and D3 (document upload 502) with explicit
+   authorisation, then re-run the whole recovery workflow in production with
+   synthetic documents.
 3. Complete the §7 exposure inventory, evidence preservation and privacy
    assessment (notification duties, counsel involvement).
 4. Decide on `full_name NOT NULL` schema drift: the new insert supplies
