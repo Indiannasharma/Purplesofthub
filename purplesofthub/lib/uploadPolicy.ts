@@ -138,6 +138,123 @@ export function formatLimit(bytes: number): string {
   return `${(bytes / MB).toFixed(1)} MB`
 }
 
+/* -------------------------------------------------------------------------- */
+/* Account-recovery identity documents                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * MIME types accepted for the account-recovery identity documents that are
+ * stored in the private `account-recovery-documents` Supabase Storage bucket.
+ *
+ * Deliberately narrower than IMAGE_MIME_TYPES:
+ *  - no SVG (stored XSS), no GIF, no webp/avif (never required for scanned IDs),
+ *  - PDF stays because passport / NIN / licence scans are commonly PDFs.
+ */
+export const RECOVERY_DOCUMENT_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'application/pdf',
+] as const
+
+/** Maximum accepted size of a single recovery attachment. */
+export const RECOVERY_DOCUMENT_MAX_BYTES = 5 * MB
+
+/** Maximum accepted number of attachments for one recovery submission. */
+export const RECOVERY_DOCUMENT_MAX_ATTACHMENTS = 2
+
+/** Maximum accepted size of a whole recovery submission request body. */
+export const RECOVERY_REQUEST_MAX_BYTES = 12 * MB
+
+/**
+ * Storage extension for a validated MIME type.
+ * The extension is always derived from the validated MIME type — never from
+ * the client-supplied filename.
+ */
+export function extensionForMimeType(mimeType: string): string | null {
+  switch (mimeType) {
+    case 'application/pdf':
+      return 'pdf'
+    case 'image/jpeg':
+      return 'jpg'
+    case 'image/png':
+      return 'png'
+    default:
+      return null
+  }
+}
+
+export type RecoveryDocumentValidation =
+  | { ok: true; mimeType: string; extension: string; size: number }
+  | { ok: false; status: 400 | 413 | 415; error: string }
+
+/**
+ * Validate one recovery attachment: size, declared MIME type (strict
+ * allowlist) *and* the actual leading bytes of the file.
+ *
+ * The browser's `File.type` and the file extension are attacker-controlled, so
+ * neither is trusted on its own: the declared type must be in the allowlist and
+ * the sniffed signature must match that declared type.
+ */
+export function validateRecoveryDocument(
+  file: { type?: string | null; size?: number | null },
+  buffer: Buffer
+): RecoveryDocumentValidation {
+  const declared = (file.type ?? '').toLowerCase().split(';')[0].trim()
+  const size = typeof file.size === 'number' && file.size > 0 ? file.size : buffer.length
+
+  if (size <= 0 || buffer.length === 0) {
+    return { ok: false, status: 400, error: 'The uploaded file is empty.' }
+  }
+
+  if (size > RECOVERY_DOCUMENT_MAX_BYTES) {
+    return {
+      ok: false,
+      status: 413,
+      error: `File is too large. Maximum size is ${formatLimit(RECOVERY_DOCUMENT_MAX_BYTES)}.`,
+    }
+  }
+
+  const supported = (RECOVERY_DOCUMENT_MIME_TYPES as readonly string[]).includes(declared)
+  const extension = supported ? extensionForMimeType(declared) : null
+
+  if (!supported || !extension) {
+    return {
+      ok: false,
+      status: 415,
+      error: 'Unsupported file type. Upload a JPG, PNG or PDF.',
+    }
+  }
+
+  if (!matchesFileSignature(buffer, declared)) {
+    return {
+      ok: false,
+      status: 415,
+      error: 'File contents do not match the declared file type.',
+    }
+  }
+
+  return { ok: true, mimeType: declared, extension, size }
+}
+
+/**
+ * Produce a short, safe *display* name for the database record.
+ *
+ * This value is metadata only — it is never used to build a storage path and
+ * never used to build a signed URL.
+ */
+export function sanitizeDisplayFileName(name: string | null | undefined): string | null {
+  if (!name) return null
+
+  const base = name.split(/[\\/]/).pop() ?? ''
+  const cleaned = base
+    .replace(/[\u0000-\u001f\u007f<>:"|?*]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!cleaned || cleaned === '.' || cleaned === '..') return null
+  return cleaned.slice(0, 120)
+}
+
 /**
  * Verify the leading bytes of an upload match the declared MIME type.
  * Only the formats with a strict allowlist are sniffed; unknown / broad

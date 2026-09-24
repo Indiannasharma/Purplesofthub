@@ -9,7 +9,6 @@ interface RecoveryRequest {
   handle: string | null
   support_type: string | null
   status: string
-  admin_notes: string | null
   created_at: string
   amount_paid: number | null
 }
@@ -46,9 +45,11 @@ export default function DashboardRecoveryPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    // Explicit column list: internal admin notes and document references are
+    // not readable by client sessions (see the recovery security migration).
     const { data, error } = await supabase
       .from('account_recovery_requests')
-      .select('*')
+      .select('id, platform, handle, support_type, status, amount_paid, created_at')
       .eq('email', user.email)
       .order('created_at', { ascending: false })
 
@@ -257,39 +258,6 @@ export default function DashboardRecoveryPage() {
                           {statusLabels[request.status]}
                         </span>
                       </div>
-                      {request.admin_notes && (
-                        <div style={{
-                          marginTop: '8px',
-                          background: 'rgba(245,158,11,0.08)',
-                          border: '1px solid rgba(245,158,11,0.25)',
-                          borderRadius: '10px',
-                          padding: '14px 16px',
-                        }}>
-                          <p style={{ 
-                            fontSize: '11px', 
-                            fontWeight: 700, 
-                            color: '#d97706', 
-                            textTransform: 'uppercase', 
-                            letterSpacing: '0.07em', 
-                            margin: '0 0 8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px'
-                          }}>
-                            📌 Admin Notes (Internal)
-                          </p>
-                          <p style={{ 
-                            fontSize: '14px', 
-                            color: 'var(--cmd-heading)', 
-                            margin: 0,
-                            lineHeight: '1.6',
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-word'
-                          }}>
-                            {request.admin_notes}
-                          </p>
-                        </div>
-                      )}
                     </div>
 
                     <div style={{

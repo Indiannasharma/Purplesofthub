@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
 interface RecoveryRequest {
@@ -17,8 +16,9 @@ interface RecoveryRequest {
   payment_status: string | null
   amount_paid: number | null
   payment_method: string | null
-  id_document_url: string | null
-  screenshot_url: string | null
+  /** True when a private document exists — paths never reach the browser. */
+  has_id_document: boolean
+  has_screenshot: boolean
   admin_notes: string | null
   appeal_message: string | null
   created_at: string
@@ -56,6 +56,7 @@ export default function RecoveryRequestsPage() {
   const [noteText, setNoteText] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [creatingRequest, setCreatingRequest] = useState(false)
+  const [openingDocument, setOpeningDocument] = useState<string | null>(null)
   const [newRequest, setNewRequest] = useState({
     email: '',
     first_name: '',
@@ -75,41 +76,89 @@ export default function RecoveryRequestsPage() {
   }, [])
 
   const loadRequests = async () => {
-    const supabase = createClient()
-    const { data, error } = await supabase
-      .from('account_recovery_requests')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      const res = await fetch('/api/admin/recovery/requests', { cache: 'no-store' })
+      const payload = await res.json().catch(() => ({}))
 
-    if (error) {
+      if (!res.ok) {
+        console.error('Recovery requests error:', payload.error || res.status)
+        setRequests([])
+        return
+      }
+
+      setRequests(Array.isArray(payload.requests) ? payload.requests : [])
+    } catch (error) {
       console.error('Recovery requests error:', error)
+      setRequests([])
+    } finally {
+      setLoading(false)
     }
-    setRequests(data || [])
-    setLoading(false)
   }
 
   const updateStatus = async (id: string, status: string) => {
-    const supabase = createClient()
-    await supabase
-      .from('account_recovery_requests')
-      .update({ status })
-      .eq('id', id)
+    try {
+      const res = await fetch(`/api/admin/recovery/requests/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) throw new Error('Status update failed')
+    } catch (error) {
+      console.error('Status update failed:', error)
+      alert('Failed to update the status. Please try again.')
+      return
+    }
     setRequests(p => p.map(r => 
       r.id === id ? { ...r, status } : r
     ))
   }
 
   const saveNote = async (id: string) => {
-    const supabase = createClient()
-    await supabase
-      .from('account_recovery_requests')
-      .update({ admin_notes: noteText })
-      .eq('id', id)
+    try {
+      const res = await fetch(`/api/admin/recovery/requests/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ admin_notes: noteText }),
+      })
+      if (!res.ok) throw new Error('Note save failed')
+    } catch (error) {
+      console.error('Admin note save failed:', error)
+      alert('Failed to save the note. Please try again.')
+      return
+    }
     setRequests(p => p.map(r =>
       r.id === id ? { ...r, admin_notes: noteText } : r
     ))
     setUpdatingNote(null)
     setNoteText('')
+  }
+
+  /**
+   * Documents are private. A short-lived signed URL is requested on demand,
+   * used once to open the document, and never persisted in component state,
+   * localStorage or the database.
+   */
+  const viewDocument = async (id: string, documentId: 'id_document' | 'screenshot') => {
+    const key = `${id}:${documentId}`
+    setOpeningDocument(key)
+    try {
+      const res = await fetch(`/api/admin/recovery/${id}/documents/${documentId}/signed-url`, {
+        cache: 'no-store',
+      })
+      const payload = await res.json().catch(() => ({}))
+
+      if (!res.ok || typeof payload.url !== 'string') {
+        alert(payload.error || 'Could not open the document.')
+        return
+      }
+
+      window.open(payload.url, '_blank', 'noopener,noreferrer')
+    } catch (error) {
+      console.error('Document access failed:', error)
+      alert('Could not open the document.')
+    } finally {
+      setOpeningDocument(null)
+    }
   }
 
   const filtered = requests.filter(r => {
@@ -138,86 +187,50 @@ export default function RecoveryRequestsPage() {
     setCreatingRequest(true)
     
     try {
-      const supabase = createClient()
+      const formData = new FormData()
     
-    // Upload files first if they exist
-    let idDocumentUrl = null
-    let screenshotUrl = null
+      // Documents and internal notes are handled by the guarded admin route:
+      // the private bucket, the unpredictable object paths and the internal
+      // fields never depend on what this browser sends.
+      formData.append('email', newRequest.email)
+      formData.append('first_name', newRequest.first_name)
+      if (newRequest.last_name) formData.append('last_name', newRequest.last_name)
+      if (newRequest.phone) formData.append('phone', newRequest.phone)
+      formData.append('platform', newRequest.platform)
+      if (newRequest.handle) formData.append('handle', newRequest.handle)
+      formData.append('issueType', newRequest.issueType)
+      formData.append('appeal_message', newRequest.appeal_message)
+      if (newRequest.admin_notes) formData.append('admin_notes', newRequest.admin_notes)
+      if (newRequest.idFile) formData.append('idFile', newRequest.idFile)
+      if (newRequest.screenshotFile) formData.append('screenshotFile', newRequest.screenshotFile)
 
-    if (newRequest.idFile) {
-      const idFileName = `id_${Date.now()}_${newRequest.idFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
-      const { data, error } = await supabase.storage
-        .from('account-recovery-documents')
-        .upload(idFileName, newRequest.idFile, {
-          cacheControl: '3600',
-          upsert: false,
-        })
-
-      if (!error) {
-        const { data: urlData } = supabase.storage
-          .from('account-recovery-documents')
-          .getPublicUrl(idFileName)
-        idDocumentUrl = urlData.publicUrl
-      }
-    }
-
-    if (newRequest.screenshotFile) {
-      const screenshotFileName = `screenshot_${Date.now()}_${newRequest.screenshotFile.name.replace(/[^a-zA-Z0-9]/g, '_')}`
-      const { data, error } = await supabase.storage
-        .from('account-recovery-documents')
-        .upload(screenshotFileName, newRequest.screenshotFile, {
-          cacheControl: '3600',
-          upsert: false,
-        })
-
-      if (!error) {
-        const { data: urlData } = supabase.storage
-          .from('account-recovery-documents')
-          .getPublicUrl(screenshotFileName)
-        screenshotUrl = urlData.publicUrl
-      }
-    }
-
-    // Insert request into database
-    const { error } = await supabase
-      .from('account_recovery_requests')
-      .insert({
-        email: newRequest.email,
-        first_name: newRequest.first_name,
-        last_name: newRequest.last_name || null,
-        phone: newRequest.phone || null,
-        platform: newRequest.platform,
-        handle: newRequest.handle || null,
-        support_type: newRequest.issueType,
-        appeal_message: newRequest.appeal_message || null,
-        admin_notes: newRequest.admin_notes || null,
-        id_document_url: idDocumentUrl,
-        screenshot_url: screenshotUrl,
-        status: 'pending',
-        created_at: new Date().toISOString(),
+      const res = await fetch('/api/admin/recovery/requests', {
+        method: 'POST',
+        body: formData,
       })
+      const payload = await res.json().catch(() => ({}))
 
-    if (error) {
-      console.error('Error creating recovery request:', error)
-      alert(`Failed to create request: ${error.message}`)
-    } else {
-      setShowForm(false)
-      loadRequests()
-      setNewRequest({
-        email: '',
-        first_name: '',
-        last_name: '',
-        phone: '',
-        platform: 'facebook',
-        handle: '',
-        issueType: 'hacked',
-        appeal_message: '',
-        admin_notes: '',
-        idFile: null,
-        screenshotFile: null,
-      })
-      alert('✅ Recovery request created successfully!')
-    }
+      if (!res.ok) {
+        console.error('Error creating recovery request:', payload.error)
+        alert(`Failed to create request: ${payload.error || 'Unknown error'}`)
+      } else {
+        setShowForm(false)
+        setNewRequest({
+          email: '',
+          first_name: '',
+          last_name: '',
+          phone: '',
+          platform: 'facebook',
+          handle: '',
+          issueType: 'hacked',
+          appeal_message: '',
+          admin_notes: '',
+          idFile: null,
+          screenshotFile: null,
+        })
+        await loadRequests()
+        alert('✅ Recovery request created successfully!')
+      }
     
   } catch (err: any) {
     console.error('Exception creating recovery request:', err)
@@ -536,7 +549,7 @@ export default function RecoveryRequestsPage() {
               }}>
                 <input
                   type="file"
-                  accept="image/*,.pdf"
+                  accept="image/jpeg,image/png,application/pdf"
                   onChange={e => {
                     const file = e.target.files?.[0]
                     if (file) setNewRequest(p => ({ ...p, idFile: file }))
@@ -560,7 +573,7 @@ export default function RecoveryRequestsPage() {
                         Click to upload or drag and drop
                       </p>
                       <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
-                        PNG, JPG, PDF (max 10MB)
+                        PNG, JPG, PDF (max 5MB)
                       </p>
                     </div>
                   )}
@@ -582,7 +595,7 @@ export default function RecoveryRequestsPage() {
               }}>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png"
                   onChange={e => {
                     const file = e.target.files?.[0]
                     if (file) setNewRequest(p => ({ ...p, screenshotFile: file }))
@@ -606,7 +619,7 @@ export default function RecoveryRequestsPage() {
                         Click to upload or drag and drop
                       </p>
                       <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
-                        PNG, JPG, GIF (max 5MB)
+                        PNG, JPG (max 5MB)
                       </p>
                     </div>
                   )}
@@ -925,25 +938,37 @@ export default function RecoveryRequestsPage() {
                     )}
 
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                      {request.id_document_url && (
-                        <a href={request.id_document_url} target="_blank" rel="noopener noreferrer" style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '6px',
-                          padding: '8px 16px', background: 'rgba(124,58,237,0.1)',
-                          border: '1px solid rgba(124,58,237,0.2)', color: '#a855f7',
-                          textDecoration: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
-                        }}>
-                          🪪 View ID Document
-                        </a>
+                      {request.has_id_document && (
+                        <button
+                          type="button"
+                          onClick={() => viewDocument(request.id, 'id_document')}
+                          disabled={openingDocument === `${request.id}:id_document`}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            padding: '8px 16px', background: 'rgba(124,58,237,0.1)',
+                            border: '1px solid rgba(124,58,237,0.2)', color: '#a855f7',
+                            borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+                            cursor: 'pointer', fontFamily: 'inherit',
+                          }}
+                        >
+                          {openingDocument === `${request.id}:id_document` ? '⏳ Opening…' : '🪪 View ID Document'}
+                        </button>
                       )}
-                      {request.screenshot_url && (
-                        <a href={request.screenshot_url} target="_blank" rel="noopener noreferrer" style={{
-                          display: 'inline-flex', alignItems: 'center', gap: '6px',
-                          padding: '8px 16px', background: 'rgba(34,211,238,0.08)',
-                          border: '1px solid rgba(34,211,238,0.2)', color: '#22d3ee',
-                          textDecoration: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
-                        }}>
-                          📸 View Screenshot
-                        </a>
+                      {request.has_screenshot && (
+                        <button
+                          type="button"
+                          onClick={() => viewDocument(request.id, 'screenshot')}
+                          disabled={openingDocument === `${request.id}:screenshot`}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            padding: '8px 16px', background: 'rgba(34,211,238,0.08)',
+                            border: '1px solid rgba(34,211,238,0.2)', color: '#22d3ee',
+                            borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+                            cursor: 'pointer', fontFamily: 'inherit',
+                          }}
+                        >
+                          {openingDocument === `${request.id}:screenshot` ? '⏳ Opening…' : '📸 View Screenshot'}
+                        </button>
                       )}
                     </div>
 

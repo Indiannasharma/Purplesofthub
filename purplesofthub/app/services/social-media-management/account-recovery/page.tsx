@@ -321,7 +321,7 @@ function RecoveryForm({
           <p style={{ fontSize: '12px', color: '#9d8fd4', margin: '0 0 10px' }}>
             Accepted: Digital NIN, International Passport, National ID, Driver's License
           </p>
-          <input ref={fileRef} type="file" onChange={handleFile} accept="image/*,.pdf" style={{ display: 'none' }} />
+          <input ref={fileRef} type="file" onChange={handleFile} accept="image/jpeg,image/png,application/pdf" style={{ display: 'none' }} />
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
@@ -362,7 +362,7 @@ function RecoveryForm({
           <p style={{ fontSize: '12px', color: '#9d8fd4', margin: '0 0 10px' }}>
             Screenshot of the disabled, suspended or hacked account error page. Speeds up recovery.
           </p>
-          <input ref={screenshotRef} type="file" onChange={handleScreenshot} accept="image/*" style={{ display: 'none' }} />
+          <input ref={screenshotRef} type="file" onChange={handleScreenshot} accept="image/jpeg,image/png" style={{ display: 'none' }} />
           <button
             type="button"
             onClick={() => screenshotRef.current?.click()}

@@ -1,5 +1,13 @@
 # Database Setup Scripts
 
+> **Security notice (2026-09-24).** The account-recovery identity documents live
+> in the **private** Supabase Storage bucket `account-recovery-documents`. Never
+> make that bucket public and never add a public/anon storage policy for it. The
+> scripts below have been updated to match; see
+> `docs/security/ACCOUNT_RECOVERY_SECURITY_PATCH.md` and
+> `supabase/migrations/20260924000000_privatize_account_recovery_documents.sql`
+> for existing deployments.
+
 ## Account Recovery Table Setup
 
 To enable the Account Recovery service form to store submissions in your Supabase database:
@@ -24,6 +32,11 @@ To enable the Account Recovery service form to store submissions in your Supabas
    - Go to "Table Editor" in the left sidebar
    - You should see a new `account_recovery_requests` table
 
+5. **Verify the storage bucket is private**
+   - Storage → `account-recovery-documents` → the bucket must be marked **Private**
+   - `SELECT id, public FROM storage.buckets WHERE id = 'account-recovery-documents';`
+     must return `public = false`
+
 ### What Gets Created:
 
 - **Table**: `account_recovery_requests` with fields:
@@ -37,9 +50,13 @@ To enable the Account Recovery service form to store submissions in your Supabas
   - `status` (defaults to "pending_payment")
   - `created_at`, `updated_at` (timestamps)
 
-- **RLS Policies**: Allow anonymous form submissions while protecting data access
+- **RLS Policies**: administrators may manage all requests; a signed-in client may
+  read only their own submissions. There is deliberately **no** anonymous INSERT
+  policy — public submissions go through the service-role API route, which
+  validates the payload and rejects internal fields such as `admin_notes`.
+- **Storage**: `account-recovery-documents` (private, service-role access only)
 - **Indices**: For fast queries on email, status, platform, and date
 
 ### Testing:
 
-After setup, the account recovery form at `/services/social-media-management/account-recovery` will automatically save submissions to this table.
+After setup, the account recovery form at `/services/social-media-management/account-recovery` will automatically save submissions to this table. Identity documents are uploaded to the private bucket and are only reachable by administrators through short-lived signed URLs.

@@ -8,6 +8,7 @@ type RateLimiters = {
   chatLead?: Ratelimit
   newsletter?: Ratelimit
   authNotifications?: Ratelimit
+  recovery?: Ratelimit
 }
 
 const rateLimiters: RateLimiters = {}
@@ -37,6 +38,14 @@ if (redis) {
     redis,
     limiter: Ratelimit.slidingWindow(5, '10 m'),
     prefix: 'rl:authNotifications',
+  })
+  // Account-recovery submissions: a legitimate applicant needs one submission
+  // (maybe a retry). The key is a salted hash of the client IP — the raw
+  // address is never stored or logged.
+  rateLimiters.recovery = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(3, '1 h'),
+    prefix: 'rl:recovery',
   })
 }
 
