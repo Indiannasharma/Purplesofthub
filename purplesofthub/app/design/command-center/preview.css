@@ -1,0 +1,16 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Phase 1 design-preview ONLY rules.
+
+   These intentionally hide global product chrome while the isolated
+   prototype is on screen. They must NOT be imported by the production
+   Admin shell — in /admin, Nova, toasts and dialog overlays are real
+   production UI and stay visible.
+   ═══════════════════════════════════════════════════════════════════ */
+
+body:has(.cc-root) .nova-shell,
+body:has(.cc-root) [data-sonner-toaster],
+body:has(.cc-root) button[aria-label="Scroll to top"],
+.cc-root ~ .nova-shell,
+.cc-root ~ [data-sonner-toaster] {
+  display: none !important;
+}

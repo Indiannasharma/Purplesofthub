@@ -19,13 +19,18 @@ export const metadata = { title: "Overview" };
 /**
  * PurpleSoftHub Admin Overview.
  *
- * Composition: a quiet, typography-led operations page. Hairline rules and
- * whitespace group information — not card chrome. The work queue ("Needs
- * attention") leads the left column; money, leads and projects form a compact
- * right rail; growth renders only when real signups exist.
+ * Composition: the Phase 1 Command Center layout — greeting + KPI strip first,
+ * then a 7/5 column grid of panels (attention queue and activity on the left;
+ * money, leads, projects and signals on the right), with quick actions last.
+ * Surfaces are `.cc-panel` cards divided by hairlines, all driven by `--cc-*`
+ * tokens from app/styles/command-center.css.
+ *
+ * The root carries `cc-overview`, which is the scope for the narrow
+ * `!important` restorations that keep globals.css's marketing rules from
+ * flattening these panels.
  *
  * Server Component: all data is fetched server-side inside the authenticated
- * admin context (lib/admin/dashboard.ts — unchanged).
+ * admin context (lib/admin/dashboard.ts).
  */
 export default async function AdminOverviewPage() {
   const auth = await getAuthenticatedProfile();
@@ -42,7 +47,7 @@ export default async function AdminOverviewPage() {
   const firstName = auth.fullName?.split(" ")[0] || "there";
 
   return (
-    <AdminPage className="gap-6">
+    <AdminPage className="cc-overview gap-6">
       <CommandHeader
         title={`${greeting}, ${firstName}`}
         generatedAt={dashboard.generatedAt}
@@ -50,14 +55,14 @@ export default async function AdminOverviewPage() {
 
       <MetricsStrip data={dashboard} />
 
-      <div className="grid grid-cols-1 gap-x-12 gap-y-9 xl:grid-cols-12">
-        <div className="flex min-w-0 flex-col gap-9 xl:col-span-7">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-7">
           <Priorities attention={dashboard.attention} />
           <GrowthSection clients={dashboard.clients} />
           <ActivityPanel activity={dashboard.recentActivity} />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-9 xl:col-span-5">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-5">
           <MoneyPanel finance={dashboard.finance} />
           <LeadsPanel leads={dashboard.leads} />
           <ProjectsPanel projects={dashboard.projects} />

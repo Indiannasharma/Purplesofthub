@@ -119,7 +119,15 @@ export type FinanceData = {
   overdueCount: number
   cancelledCount: number
   outstanding: CurrencyTotal[]
+  /** Paid in the current calendar month, per currency. */
   paidThisMonth: CurrencyTotal[]
+  /**
+   * All-time settled invoice amounts, per currency. Money that invoice records
+   * mark as paid — explicitly NOT a payment-provider revenue figure.
+   */
+  collected: CurrencyTotal[]
+  /** All-time non-cancelled invoice amounts, per currency. */
+  invoiced: CurrencyTotal[]
   overdueInvoices: OverdueInvoice[]
 }
 
@@ -662,6 +670,8 @@ const EMPTY_FINANCE: FinanceData = {
   cancelledCount: 0,
   outstanding: [],
   paidThisMonth: [],
+  collected: [],
+  invoiced: [],
   overdueInvoices: [],
 }
 
@@ -693,6 +703,8 @@ async function fetchFinance(supabase: SupabaseClient, now: Date): Promise<Financ
   const monthStart = startOfMonth(now)
   const outstandingTotals = new Map<string, number>()
   const paidTotals = new Map<string, number>()
+  const collectedTotals = new Map<string, number>()
+  const invoicedTotals = new Map<string, number>()
   const overdueInvoices: OverdueInvoice[] = []
 
   let paidCount = 0
@@ -717,8 +729,13 @@ async function fetchFinance(supabase: SupabaseClient, now: Date): Promise<Financ
       return
     }
 
+    // Every non-cancelled invoice contributes to the invoiced total, whether
+    // or not it has been settled.
+    addToTotals(invoicedTotals, currency, amount)
+
     if (isPaid) {
       paidCount += 1
+      addToTotals(collectedTotals, currency, amount)
       const paidAt = toDate(row.paid_at) ?? toDate(row.created_at)
       if (paidAt && paidAt >= monthStart) addToTotals(paidTotals, currency, amount)
       return
@@ -751,6 +768,8 @@ async function fetchFinance(supabase: SupabaseClient, now: Date): Promise<Financ
     cancelledCount,
     outstanding: toCurrencyTotals(outstandingTotals),
     paidThisMonth: toCurrencyTotals(paidTotals),
+    collected: toCurrencyTotals(collectedTotals),
+    invoiced: toCurrencyTotals(invoicedTotals),
     overdueInvoices: overdueInvoices.slice(0, 5),
   }
 }

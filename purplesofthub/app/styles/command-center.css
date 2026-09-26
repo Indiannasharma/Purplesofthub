@@ -1,0 +1,368 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PurpleSoftHub Command Center — shared design tokens & primitives.
+
+   Single source of truth for the Command Center visual language. Consumers:
+     • app/admin/**              → production Admin shell + Overview
+     • app/design/command-center → isolated Phase 1 design preview
+
+   Everything is namespaced under `.cc-root`, so the public marketing site,
+   the client dashboard and auth forms are never affected.
+
+   Theme activation (two independent mechanisms, deliberately):
+     • `.cc-root[data-cc-theme="dark"]` — the self-contained design preview,
+       which owns its own local toggle.
+     • `html.dark .cc-root.cc-theme-site` — the production Admin shell, which
+       follows the single site theme managed by next-themes.
+
+   Portal note: Radix portals (dialog / sheet / dropdown) render into
+   <body>, i.e. OUTSIDE `.cc-root`. The same tokens are therefore declared
+   for `body:has(.admin-shell)` as well, so overlays resolve `--cc-*` in both
+   themes. `:has()` is already relied upon by app/globals.css.
+
+   Deliberately NO `!important` and no universal `*` reset here: the Admin
+   content area is full of existing module pages that must keep their own
+   utilities and borders. Component surfaces are declared explicitly.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.cc-root,
+body:has(.admin-shell) {
+  /* Surfaces */
+  --cc-canvas: #fafafc;
+  --cc-surface: #ffffff;
+  --cc-subtle: #f4f4f7;
+  --cc-inset: #efeff4;
+  /* Borders */
+  --cc-border: #e8e8ef;
+  --cc-border-strong: #d6d6e0;
+  /* Text */
+  --cc-text: #16121f;
+  --cc-text-secondary: #4a4557;
+  --cc-text-muted: #716b80;
+  /* Accent */
+  --cc-accent: #6d28d9;
+  --cc-accent-hover: #5b21b6;
+  --cc-accent-soft: #f3eefc;
+  --cc-accent-ring: rgba(109, 40, 217, 0.35);
+  --cc-on-accent: #ffffff;
+  /* Semantic */
+  --cc-success: #039855;
+  --cc-success-soft: #ecfdf3;
+  --cc-warning: #b54708;
+  --cc-warning-soft: #fffaeb;
+  --cc-error: #d92d20;
+  --cc-error-soft: #fef3f2;
+  --cc-info: #2563eb;
+  --cc-info-soft: #eff6ff;
+  /* Charts */
+  --cc-chart-1: #7c3aed;
+  --cc-chart-2: #14b8a6;
+  --cc-chart-3: #f59e0b;
+  /* Elevation */
+  --cc-shadow-1: 0 1px 2px rgba(16, 18, 31, 0.05);
+  --cc-shadow-2: 0 12px 32px rgba(16, 18, 31, 0.14);
+  /* Type */
+  --cc-font-display: var(--font-cc-display), "Space Grotesk", sans-serif;
+  --cc-font-body: var(--font-cc-body), "Inter", sans-serif;
+}
+
+.cc-root[data-cc-theme="dark"],
+html.dark .cc-root.cc-theme-site,
+html.dark body:has(.admin-shell) {
+  --cc-canvas: #0c0912;
+  --cc-surface: #14101e;
+  --cc-subtle: #1b1628;
+  --cc-inset: #241d36;
+  --cc-border: rgba(255, 255, 255, 0.08);
+  --cc-border-strong: rgba(255, 255, 255, 0.14);
+  --cc-text: #f4f2fa;
+  --cc-text-secondary: #c6c0d6;
+  --cc-text-muted: #8d87a0;
+  --cc-accent: #a78bfa;
+  --cc-accent-hover: #c4b5fd;
+  --cc-accent-soft: rgba(167, 139, 250, 0.12);
+  --cc-accent-ring: rgba(167, 139, 250, 0.45);
+  --cc-on-accent: #1b1030;
+  --cc-success: #34d399;
+  --cc-success-soft: rgba(52, 211, 153, 0.12);
+  --cc-warning: #fbbf24;
+  --cc-warning-soft: rgba(251, 191, 36, 0.12);
+  --cc-error: #f87171;
+  --cc-error-soft: rgba(248, 113, 113, 0.12);
+  --cc-info: #60a5fa;
+  --cc-info-soft: rgba(96, 165, 250, 0.12);
+  --cc-chart-1: #a78bfa;
+  --cc-chart-2: #2dd4bf;
+  --cc-chart-3: #fbbf24;
+  --cc-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --cc-shadow-2: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.cc-root[data-cc-theme="dark"],
+html.dark .cc-root.cc-theme-site {
+  color-scheme: dark;
+}
+
+/* ── Type helpers ─────────────────────────────────────────────────── */
+
+.cc-display {
+  font-family: var(--cc-font-display);
+  letter-spacing: -0.01em;
+}
+
+.cc-tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ── Reusable primitives ──────────────────────────────────────────── */
+
+.cc-panel {
+  background: var(--cc-surface);
+  border: 1px solid var(--cc-border);
+  border-radius: 12px;
+  box-shadow: var(--cc-shadow-1);
+}
+
+.cc-hairline-top {
+  border-top: 1px solid var(--cc-border);
+}
+
+.cc-hairline-bottom {
+  border-bottom: 1px solid var(--cc-border);
+}
+
+.cc-root {
+  color-scheme: light;
+  background: var(--cc-canvas);
+  color: var(--cc-text);
+  font-family: var(--cc-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+
+.cc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-family: var(--cc-font-body);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.cc-btn-primary {
+  background: var(--cc-accent);
+  color: var(--cc-on-accent);
+}
+
+.cc-btn-primary:hover {
+  background: var(--cc-accent-hover);
+}
+
+.cc-btn-ghost {
+  background: transparent;
+  color: var(--cc-text-secondary);
+  border-color: var(--cc-border);
+}
+
+.cc-btn-ghost:hover {
+  background: var(--cc-subtle);
+  color: var(--cc-text);
+}
+
+.cc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: var(--cc-text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.cc-icon-btn:hover {
+  background: var(--cc-subtle);
+  color: var(--cc-text);
+}
+
+/* Compact variant: the Admin topbar is only 48px tall. */
+.cc-icon-btn-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.cc-btn:focus-visible,
+.cc-icon-btn:focus-visible,
+.cc-nav-item:focus-visible,
+.cc-focusable:focus-visible {
+  outline: 2px solid var(--cc-accent);
+  outline-offset: 2px;
+}
+
+.cc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.cc-pill-success {
+  background: var(--cc-success-soft);
+  color: var(--cc-success);
+}
+
+.cc-pill-warning {
+  background: var(--cc-warning-soft);
+  color: var(--cc-warning);
+}
+
+.cc-pill-error {
+  background: var(--cc-error-soft);
+  color: var(--cc-error);
+}
+
+.cc-pill-info {
+  background: var(--cc-info-soft);
+  color: var(--cc-info);
+}
+
+.cc-pill-accent {
+  background: var(--cc-accent-soft);
+  color: var(--cc-accent);
+}
+
+.cc-pill-muted {
+  background: var(--cc-subtle);
+  color: var(--cc-text-muted);
+}
+
+.cc-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cc-text-secondary);
+  position: relative;
+  transition: background-color 120ms ease, color 120ms ease;
+  cursor: pointer;
+}
+
+.cc-nav-item:hover {
+  background: var(--cc-subtle);
+  color: var(--cc-text);
+}
+
+.cc-nav-item[data-active="true"] {
+  background: var(--cc-accent-soft);
+  color: var(--cc-text);
+  font-weight: 600;
+}
+
+.cc-nav-item[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--cc-accent);
+}
+
+.cc-nav-item[data-active="true"] .cc-nav-icon {
+  color: var(--cc-accent);
+}
+
+.cc-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cc-border-strong) transparent;
+}
+
+.cc-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.cc-scroll::-webkit-scrollbar-thumb {
+  background: var(--cc-border-strong);
+  border-radius: 999px;
+}
+
+.cc-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cc-subtle);
+  overflow: hidden;
+}
+
+.cc-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--cc-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-root *,
+  .cc-root *::before,
+  .cc-root *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   ADMIN CONTENT-AREA INTEGRATION (production Admin shell only)
+
+   app/globals.css contains `!important` rules written for the PUBLIC
+   marketing pages, e.g.:
+     • `html:not(.dark) main section { background: transparent !important }`
+     • `html:not(.dark) main h1..h4 { color: var(--text-primary) !important }`
+     • `.admin-shell .admin-content section { padding: 0 !important }`
+     • `html:not(.dark) main { background: var(--bg-primary) !important }`
+
+   Those rules are correct for the site and are NOT edited here. These
+   narrow, namespaced rules simply give the Command Center Overview back
+   its own surfaces/typography. They touch nothing except `.cc-overview`
+   (the Overview page root) and the Admin shell's own scroll container, so
+   every not-yet-upgraded module page keeps the styling it has today.
+
+   They are intentionally the ONLY `!important` rules in this file.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.admin-shell main#admin-main {
+  background: var(--cc-canvas) !important;
+}
+
+/* `.admin-content section` in globals.css is (0,3,1), so these must be at
+   least (0,4,0) to win — hence the explicit `.admin-content` hop. */
+.admin-shell .admin-content .cc-overview .cc-panel {
+  background: var(--cc-surface) !important;
+}
+
+.admin-shell .admin-content .cc-overview :is(h1, h2, h3, h4) {
+  color: var(--cc-text) !important;
+}

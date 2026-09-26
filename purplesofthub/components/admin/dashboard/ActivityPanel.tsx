@@ -1,6 +1,7 @@
 import type { ActivityData } from "@/lib/admin/dashboard";
+import { Panel, PanelHeader } from "@/components/command-center/primitives";
 
-import { EmptyLine, SectionTitle, UnavailableLine } from "./shared";
+import { EmptyLine, UnavailableLine } from "./shared";
 
 function formatWhen(iso: string): string {
   const date = new Date(iso);
@@ -16,45 +17,69 @@ function formatWhen(iso: string): string {
   return date.toLocaleDateString("en-NG", { day: "numeric", month: "short" });
 }
 
+/** Marker colour per notification type — presentation only. */
+const TYPE_COLOR: Record<string, string> = {
+  payment: "var(--cc-success)",
+  signup: "var(--cc-accent)",
+  recovery: "var(--cc-warning)",
+  project: "var(--cc-info)",
+  music_campaign: "var(--cc-chart-3)",
+};
+
 /**
- * Recent activity — the real notifications feed, rendered as a quiet log.
- * No icon tiles; the text and timestamp carry the information.
+ * Recent activity — the real notifications feed rendered as a quiet timeline.
+ * Timestamps come from the row's own `created_at`; nothing is synthesised.
  */
 export function ActivityPanel({ activity }: { activity: ActivityData }) {
   return (
-    <section aria-labelledby="activity-title">
-      <SectionTitle id="activity-title" title="Recent activity" />
+    <Panel labelledBy="activity-title">
+      <PanelHeader id="activity-title" title="Recent activity" subtitle="Studio-wide events" />
 
-      <div className="mt-3 border-t border-border/70 pt-3">
+      <div className="border-t border-[var(--cc-border)] px-5 py-4">
         {activity.status === "unavailable" ? (
           <UnavailableLine label="Activity" />
         ) : activity.items.length === 0 ? (
           <EmptyLine>No recent activity.</EmptyLine>
         ) : (
-          <ul className="divide-y divide-border/60">
-            {activity.items.map((item) => (
-              <li key={item.id} className="flex items-baseline justify-between gap-4 py-2.5">
-                <span className="min-w-0">
-                  <span className="text-[13px] font-medium leading-5 text-foreground">
-                    {item.title}
-                  </span>
+          <ol>
+            {activity.items.map((item, index) => (
+              <li key={item.id} className="relative flex gap-3.5 pb-4 last:pb-0">
+                {index < activity.items.length - 1 ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-[5px] top-4 h-full w-px bg-[var(--cc-border)]"
+                  />
+                ) : null}
+
+                <span
+                  aria-hidden="true"
+                  className="mt-1.5 h-[11px] w-[11px] shrink-0 rounded-full border-2 border-[var(--cc-surface)]"
+                  style={{ background: TYPE_COLOR[item.type] ?? "var(--cc-text-muted)" }}
+                />
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="truncate text-[13px] font-medium text-[var(--cc-text)]">
+                      {item.title}
+                    </p>
+                    <time
+                      dateTime={item.createdAt}
+                      className="cc-tnum shrink-0 text-[11px] text-[var(--cc-text-muted)]"
+                    >
+                      {formatWhen(item.createdAt)}
+                    </time>
+                  </div>
                   {item.message ? (
-                    <span className="block truncate text-xs leading-4 text-muted-foreground">
+                    <p className="mt-0.5 truncate text-xs text-[var(--cc-text-muted)]">
                       {item.message}
-                    </span>
+                    </p>
                   ) : null}
-                </span>
-                <time
-                  dateTime={item.createdAt}
-                  className="shrink-0 text-[11px] tabular-nums text-muted-foreground"
-                >
-                  {formatWhen(item.createdAt)}
-                </time>
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
       </div>
-    </section>
+    </Panel>
   );
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Inter, Space_Grotesk } from "next/font/google";
-import "./command-center.css";
+import { ccFontVariables } from "@/components/command-center/fonts";
+import "@/app/styles/command-center.css";
+import "./preview.css";
 
 /**
  * Phase 1 — isolated Command Center design preview.
@@ -10,20 +11,10 @@ import "./command-center.css";
  *  - Never linked from product navigation.
  *  - noindex/nofollow.
  *  - Returns 404 in production unless DESIGN_PREVIEW_ENABLED=true is set.
- *  - Zero edits to globals.css: all tokens are scoped under `.cc-root`.
+ *  - Zero edits to globals.css: all tokens are scoped under `.cc-root`
+ *    (shared with the production Admin shell in app/styles/command-center.css).
+ *  - Only this layout loads ./preview.css, which hides global product chrome.
  */
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-cc-body",
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-cc-display",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Command Center — Design Preview",
@@ -42,9 +33,5 @@ export default function CommandCenterPreviewLayout({
     notFound();
   }
 
-  return (
-    <div className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      {children}
-    </div>
-  );
+  return <div className={ccFontVariables}>{children}</div>;
 }

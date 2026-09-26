@@ -21,11 +21,15 @@ function AdminShellFrame({ children, profile }: AdminShellProps) {
      * a fixed, full-viewport frame) so every existing admin page keeps the
      * scroll behaviour it was built against — including the global
      * `.admin-main main { overflow: auto }` rule in app/globals.css.
+     * `.cc-root .cc-theme-site` activates the shared Command Center tokens
+     * (app/styles/command-center.css) and follows the single site theme
+     * managed by next-themes (`html.dark`), so there is exactly one theme
+     * source of truth inside /admin.
      */
-    <div className="admin-shell fixed inset-0 flex overflow-hidden bg-background text-foreground">
+    <div className="admin-shell cc-root cc-theme-site fixed inset-0 flex overflow-hidden">
       <a
         href="#admin-main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:shadow"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-[var(--cc-surface)] focus:px-3 focus:py-2 focus:shadow"
       >
         Skip to content
       </a>
@@ -37,7 +41,7 @@ function AdminShellFrame({ children, profile }: AdminShellProps) {
 
         <main
           id="admin-main"
-          className="admin-content min-h-0 flex-1"
+          className="admin-content cc-scroll min-h-0 flex-1"
         >
           {children}
         </main>

@@ -11,8 +11,9 @@ function formatUpdatedAt(value: string): string {
 }
 
 /**
- * Compact command header. The greeting is a page title, not a hero — roughly
- * body-scale, with context kept on one inline muted row.
+ * Command header — greeting at Command Center display scale (22–26px), with
+ * the generated timestamp on one quiet muted row beneath it. The header stays
+ * un-panelled so the KPI strip below is the first surface.
  */
 export function CommandHeader({
   title,
@@ -22,14 +23,16 @@ export function CommandHeader({
   generatedAt: string;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">
-        <h1 className="text-[15px] font-semibold tracking-tight text-foreground">
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+      <div className="min-w-0">
+        <h1 className="cc-display text-[22px] font-semibold leading-8 text-[var(--cc-text)] sm:text-[26px]">
           {title}
         </h1>
-        <p className="text-xs text-muted-foreground">
+        <p className="mt-0.5 text-[13px] text-[var(--cc-text-muted)]">
           Studio overview ·{" "}
-          <time dateTime={generatedAt}>{formatUpdatedAt(generatedAt)}</time>
+          <time className="cc-tnum" dateTime={generatedAt}>
+            {formatUpdatedAt(generatedAt)}
+          </time>
         </p>
       </div>
 

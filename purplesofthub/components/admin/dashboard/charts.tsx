@@ -8,9 +8,10 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false })
 export type ChartPoint = { label: string; value: number };
 
 /**
- * Theme-aware area chart. Colors resolve from the existing shadcn CSS tokens
- * (reads custom properties at runtime), so light/dark both work without any
- * hardcoded hex values.
+ * Theme-aware area chart. Colors resolve from the Command Center `--cc-chart-*`
+ * / `--cc-border` / `--cc-text-muted` custom properties at runtime (through
+ * `.admin-shell`, where the tokens are declared), so light and dark both work
+ * without hardcoded hex values.
  */
 export function AreaChart({
   data,
@@ -22,9 +23,9 @@ export function AreaChart({
   height?: number;
 }) {
   const { resolvedTheme } = useTheme();
-  const primary = resolveToken("--primary", "#7c3aed");
-  const border = resolveToken("--border", "#e5e7eb");
-  const muted = resolveToken("--muted-foreground", "#6b7280");
+  const primary = resolveToken("--cc-chart-1", "#7c3aed");
+  const border = resolveToken("--cc-border", "#e5e7eb");
+  const muted = resolveToken("--cc-text-muted", "#6b7280");
 
   const options = {
     chart: {
@@ -93,14 +94,16 @@ export function AreaChart({
  * is never conveyed by the chart alone.
  */
 export function DonutChart({ data }: { data: ChartPoint[] }) {
-  const primary = resolveToken("--primary", "#7c3aed");
-  const muted = resolveToken("--muted-foreground", "#6b7280");
-  const card = resolveToken("--card", "#ffffff");
+  const primary = resolveToken("--cc-chart-1", "#7c3aed");
+  const muted = resolveToken("--cc-text-muted", "#6b7280");
+  const card = resolveToken("--cc-surface", "#ffffff");
 
   const options = {
     chart: { type: "donut" as const, fontFamily: "inherit" },
     labels: data.map((point) => point.label),
-    colors: ["#8b5cf6", "#22c55e", "#3b82f6", "#f59e0b", "#94a3b8", "#ef4444"],
+    colors: ["--cc-chart-1", "--cc-chart-2", "--cc-chart-3", "--cc-accent", "--cc-info", "--cc-error"].map(
+      (token) => resolveToken(token, "#7c3aed")
+    ),
     dataLabels: { enabled: false },
     legend: {
       position: "bottom" as const,

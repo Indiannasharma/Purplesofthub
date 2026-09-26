@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { Bell } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// --- Types -------------------------------------------------------------------
 
 interface Notification {
   id: string
@@ -15,14 +16,14 @@ interface Notification {
   created_at: string
 }
 
-// ─── Per-type icon / colour config ───────────────────────────────────────────
+// --- Per-type icon / tint config ---------------------------------------------
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string; border: string }> = {
-  signup:         { icon: '👤', color: '#a855f7', bg: 'rgba(168,85,247,0.12)',  border: 'rgba(168,85,247,0.25)' },
-  recovery:       { icon: '🔐', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.25)'  },
-  payment:        { icon: '💳', color: '#10b981', bg: 'rgba(16,185,129,0.1)',   border: 'rgba(16,185,129,0.25)'  },
-  project:        { icon: '📁', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)',    border: 'rgba(6,182,212,0.25)'   },
-  music_campaign: { icon: '🎵', color: '#ec4899', bg: 'rgba(236,72,153,0.1)',   border: 'rgba(236,72,153,0.25)'  },
+  signup:         { icon: '👤', color: '#a855f7', bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.25)' },
+  recovery:       { icon: '🔐', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.25)'  },
+  payment:        { icon: '💳', color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.25)'  },
+  project:        { icon: '📁', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)',   border: 'rgba(6,182,212,0.25)'   },
+  music_campaign: { icon: '🎵', color: '#ec4899', bg: 'rgba(236,72,153,0.1)',  border: 'rgba(236,72,153,0.25)'  },
   general:        { icon: '🔔', color: '#9d8fd4', bg: 'rgba(157,143,212,0.1)', border: 'rgba(157,143,212,0.2)'  },
 }
 const fallbackCfg = TYPE_CONFIG.general
@@ -31,7 +32,7 @@ function cfg(type: string) {
   return TYPE_CONFIG[type] ?? fallbackCfg
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// --- Helpers -----------------------------------------------------------------
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -43,12 +44,21 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(h / 24)}d ago`
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// --- Component ---------------------------------------------------------------
 
 interface Props {
   adminId: string
 }
 
+/**
+ * Admin notification bell — Command Center presentation.
+ *
+ * Behaviour is unchanged from the previous admin shell: initial 30-row fetch,
+ * Supabase Realtime INSERT subscription, click-outside dismissal, per-item
+ * mark-as-read and mark-all-read. Only the presentation moved from hardcoded
+ * dark hex values to the shared `--cc-*` tokens, so the panel is legible in
+ * BOTH light and dark themes (the old panel was dark in light mode too).
+ */
 export default function NotificationBell({ adminId }: Props) {
   const [open,          setOpen]          = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -59,7 +69,7 @@ export default function NotificationBell({ adminId }: Props) {
   const dropRef  = useRef<HTMLDivElement>(null)
   const supabase = createClient()
 
-  // ── Initial load ────────────────────────────────────────────────────────────
+  // -- Initial load -----------------------------------------------------------
   const loadNotifications = useCallback(async () => {
     setLoading(true)
     const { data } = await supabase
@@ -80,7 +90,7 @@ export default function NotificationBell({ adminId }: Props) {
     if (adminId) loadNotifications()
   }, [adminId, loadNotifications])
 
-  // ── Supabase Realtime ───────────────────────────────────────────────────────
+  // -- Supabase Realtime ------------------------------------------------------
   useEffect(() => {
     if (!adminId) return
 
@@ -98,7 +108,6 @@ export default function NotificationBell({ adminId }: Props) {
           const n = payload.new as Notification
           setNotifications(prev => [n, ...prev].slice(0, 30))
           setUnread(prev => prev + 1)
-          // Ring animation
           setRinging(true)
           setTimeout(() => setRinging(false), 900)
         }
@@ -108,7 +117,7 @@ export default function NotificationBell({ adminId }: Props) {
     return () => { supabase.removeChannel(channel) }
   }, [adminId])
 
-  // ── Click-outside to close ──────────────────────────────────────────────────
+  // -- Click-outside to close -------------------------------------------------
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
@@ -119,7 +128,7 @@ export default function NotificationBell({ adminId }: Props) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  // ── Actions ─────────────────────────────────────────────────────────────────
+  // -- Actions ----------------------------------------------------------------
   const markRead = async (id: string) => {
     await supabase.from('notifications').update({ is_read: true }).eq('id', id)
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
@@ -136,259 +145,148 @@ export default function NotificationBell({ adminId }: Props) {
     setUnread(0)
   }
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // -- Render -----------------------------------------------------------------
   return (
-    <div ref={dropRef} style={{ position: 'relative' }}>
-
-      {/* ── Bell button ── */}
+    <div ref={dropRef} className="relative">
       <button
+        type="button"
         onClick={() => setOpen(o => !o)}
         title="Notifications"
-        style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '8px',
-          border: open
-            ? '1px solid rgba(124,58,237,0.45)'
-            : '1px solid rgba(124,58,237,0.15)',
-          background: open ? 'rgba(124,58,237,0.12)' : 'transparent',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: open ? '#a855f7' : '#9d8fd4',
-          position: 'relative',
-          transition: 'all 0.2s',
-          flexShrink: 0,
-        }}
+        aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
+        aria-expanded={open}
+        aria-haspopup="true"
+        className={`cc-icon-btn cc-icon-btn-sm relative ${
+          open ? 'bg-[var(--cc-subtle)] text-[var(--cc-text)]' : ''
+        }`}
       >
-        <svg
-          width="16" height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+        <Bell
+          className="h-[18px] w-[18px]"
+          aria-hidden="true"
           style={{
             transform: ringing ? 'rotate(20deg)' : 'rotate(0deg)',
             transition: 'transform 0.1s ease',
           }}
-        >
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
+        />
 
-        {/* Unread badge */}
         {unread > 0 && (
           <span
-            style={{
-              position: 'absolute',
-              top: '-3px',
-              right: '-3px',
-              minWidth: '16px',
-              height: '16px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg,#ef4444,#dc2626)',
-              color: '#fff',
-              fontSize: '9px',
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0 3px',
-              boxShadow: '0 0 8px rgba(239,68,68,0.6)',
-              lineHeight: 1,
-              animation: 'notif-badge-pulse 2s ease-in-out infinite',
-            }}
+            className="cc-tnum absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--cc-error)] px-1 text-[9px] font-extrabold leading-none text-white"
+            style={{ animation: 'notif-badge-pulse 2s ease-in-out infinite' }}
           >
             {unread > 99 ? '99+' : unread}
           </span>
         )}
       </button>
 
-      {/* ── Dropdown panel ── */}
       {open && (
         <div
+          role="region"
+          aria-label="Recent notifications"
+          className="absolute right-0 top-full z-50 mt-2 flex w-[min(340px,calc(100vw_-_24px))] max-w-[calc(100vw_-_24px)] flex-col overflow-hidden rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] shadow-xl"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            right: 0,
-            width: 'min(340px, calc(100vw - 24px))',
-            maxWidth: 'calc(100vw - 24px)',
             maxHeight: 'min(500px, calc(100vh - 120px))',
-            background: 'rgba(11,9,22,0.97)',
-            border: '1px solid rgba(124,58,237,0.22)',
-            borderRadius: '16px',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(124,58,237,0.08), 0 0 40px rgba(124,58,237,0.08)',
-            backdropFilter: 'blur(24px)',
-            zIndex: 2000,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
             animation: 'notif-panel-in 0.18s ease',
             transformOrigin: 'top right',
           }}
         >
-          {/* Top accent line */}
-          <div style={{
-            position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-            background: 'linear-gradient(90deg,transparent,#7c3aed,#a855f7,#7c3aed,transparent)',
-          }} />
-
-          {/* ── Header ── */}
-          <div style={{
-            padding: '14px 16px 12px',
-            borderBottom: '1px solid rgba(124,58,237,0.12)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexShrink: 0,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#e2d9f3', letterSpacing: '-0.2px' }}>
-                Notifications
-              </span>
+          <div className="cc-hairline-bottom flex shrink-0 items-center justify-between gap-2 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-semibold text-[var(--cc-text)]">Notifications</span>
               {unread > 0 && (
-                <span style={{
-                  fontSize: '10px', fontWeight: 700,
-                  background: 'rgba(124,58,237,0.18)',
-                  border: '1px solid rgba(124,58,237,0.35)',
-                  color: '#a855f7', padding: '2px 7px', borderRadius: 100,
-                }}>
+                <span className="cc-tnum rounded-full bg-[var(--cc-accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--cc-accent)]">
                   {unread} new
                 </span>
               )}
             </div>
             {unread > 0 && (
               <button
+                type="button"
                 onClick={markAllRead}
-                style={{
-                  fontSize: '11px', fontWeight: 600, color: '#a855f7',
-                  cursor: 'pointer', background: 'none', border: 'none',
-                  padding: 0, fontFamily: 'inherit',
-                  opacity: 0.85,
-                  transition: 'opacity 0.15s',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
+                className="text-[11px] font-semibold text-[var(--cc-accent)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)]"
               >
                 Mark all read
               </button>
             )}
           </div>
 
-          {/* ── List ── */}
-          <div style={{ overflowY: 'auto', flex: 1 }}>
+
+          <div className="cc-scroll min-h-0 flex-1 overflow-y-auto">
             {loading ? (
-              /* Skeleton shimmer */
-              <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[1,2,3].map(i => (
-                  <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(124,58,237,0.08)', flexShrink: 0, animation: 'notif-shimmer 1.4s infinite' }} />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <div style={{ height: 11, borderRadius: 6, background: 'rgba(124,58,237,0.08)', width: '70%', animation: 'notif-shimmer 1.4s infinite' }} />
-                      <div style={{ height: 9, borderRadius: 6, background: 'rgba(124,58,237,0.05)', width: '90%', animation: 'notif-shimmer 1.4s infinite' }} />
+              <div className="flex flex-col gap-2.5 p-4" aria-hidden="true">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <div
+                      className="h-9 w-9 shrink-0 rounded-lg bg-[var(--cc-subtle)]"
+                      style={{ animation: 'notif-shimmer 1.4s infinite' }}
+                    />
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <div
+                        className="h-2.5 w-[70%] rounded-md bg-[var(--cc-subtle)]"
+                        style={{ animation: 'notif-shimmer 1.4s infinite' }}
+                      />
+                      <div
+                        className="h-2 w-[90%] rounded-md bg-[var(--cc-subtle)]"
+                        style={{ animation: 'notif-shimmer 1.4s infinite' }}
+                      />
                     </div>
                   </div>
                 ))}
               </div>
             ) : notifications.length === 0 ? (
-              <div style={{ padding: '44px 16px', textAlign: 'center' }}>
-                <div style={{ fontSize: '36px', marginBottom: 10 }}>🔔</div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#4b4270', marginBottom: 4 }}>
+              <div className="px-4 py-11 text-center">
+                <p className="text-3xl" aria-hidden="true">🔔</p>
+                <p className="mt-2.5 text-[13px] font-semibold text-[var(--cc-text-secondary)]">
                   All caught up!
-                </div>
-                <div style={{ fontSize: '11px', color: '#3d3560' }}>
+                </p>
+                <p className="mt-1 text-[11px] text-[var(--cc-text-muted)]">
                   New activity will appear here in real-time
-                </div>
+                </p>
               </div>
             ) : (
-              notifications.map((n, idx) => {
+              notifications.map((n) => {
                 const c = cfg(n.type)
                 return (
                   <div
                     key={n.id}
                     onClick={() => !n.is_read && markRead(n.id)}
-                    style={{
-                      padding: '11px 16px',
-                      borderBottom: idx < notifications.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none',
-                      display: 'flex',
-                      gap: 11,
-                      cursor: n.is_read ? 'default' : 'pointer',
-                      background: n.is_read
-                        ? 'transparent'
-                        : 'rgba(124,58,237,0.04)',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!n.is_read) (e.currentTarget as HTMLDivElement).style.background = 'rgba(124,58,237,0.08)'
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.background = n.is_read ? 'transparent' : 'rgba(124,58,237,0.04)'
-                    }}
+                    className={`cc-hairline-bottom flex gap-2.5 px-4 py-3 transition-colors last:border-b-0 ${
+                      n.is_read ? '' : 'cursor-pointer bg-[var(--cc-accent-soft)]'
+                    }`}
                   >
-                    {/* Icon box */}
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 10,
-                      background: c.bg,
-                      border: `1px solid ${c.border}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 16, flexShrink: 0,
-                    }}>
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-base"
+                      style={{ background: c.bg, border: `1px solid ${c.border}` }}
+                      aria-hidden="true"
+                    >
                       {c.icon}
                     </div>
 
-                    {/* Text */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        gap: 6,
-                        marginBottom: 3,
-                      }}>
-                        <span style={{
-                          fontSize: '12px',
-                          fontWeight: n.is_read ? 500 : 700,
-                          color: n.is_read ? '#7b6fa8' : '#ddd6fe',
-                          lineHeight: 1.3,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-1.5">
+                        <span
+                          className={`truncate text-xs leading-4 ${
+                            n.is_read
+                              ? 'font-medium text-[var(--cc-text-muted)]'
+                              : 'font-semibold text-[var(--cc-text)]'
+                          }`}
+                        >
                           {n.title}
                         </span>
-                        <span style={{
-                          fontSize: '10px',
-                          color: '#4b4270',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                        }}>
+                        <span className="cc-tnum shrink-0 text-[10px] text-[var(--cc-text-muted)]">
                           {timeAgo(n.created_at)}
                         </span>
                       </div>
-                      <p style={{
-                        fontSize: '11px',
-                        color: '#5a5080',
-                        margin: 0,
-                        lineHeight: 1.5,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical' as const,
-                      } as React.CSSProperties}>
+                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-[var(--cc-text-muted)]">
                         {n.message}
                       </p>
                     </div>
 
-                    {/* Unread dot */}
                     {!n.is_read && (
-                      <div style={{
-                        width: 7, height: 7, borderRadius: '50%',
-                        background: c.color,
-                        flexShrink: 0, marginTop: 5,
-                        boxShadow: `0 0 6px ${c.color}`,
-                      }} />
+                      <span
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ background: c.color }}
+                        aria-hidden="true"
+                      />
                     )}
                   </div>
                 )
@@ -396,15 +294,10 @@ export default function NotificationBell({ adminId }: Props) {
             )}
           </div>
 
-          {/* ── Footer ── */}
+
           {!loading && notifications.length > 0 && (
-            <div style={{
-              padding: '10px 16px',
-              borderTop: '1px solid rgba(124,58,237,0.1)',
-              textAlign: 'center',
-              flexShrink: 0,
-            }}>
-              <span style={{ fontSize: '11px', color: '#3d3560' }}>
+            <div className="cc-hairline-top shrink-0 px-4 py-2.5 text-center">
+              <span className="cc-tnum text-[11px] text-[var(--cc-text-muted)]">
                 Showing {notifications.length} most recent · updates in real-time
               </span>
             </div>
@@ -412,7 +305,6 @@ export default function NotificationBell({ adminId }: Props) {
         </div>
       )}
 
-      {/* ── CSS animations ── */}
       <style>{`
         @keyframes notif-panel-in {
           from { opacity: 0; transform: translateY(-8px) scale(0.97); }

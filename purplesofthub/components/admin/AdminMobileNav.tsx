@@ -22,7 +22,10 @@ export function AdminMobileNav({ children }: { children: React.ReactNode }) {
 
   return (
     <Sheet open={isMobileNavOpen} onOpenChange={setMobileNavOpen}>
-      <SheetContent side="left" className="w-[288px] max-w-[85vw] p-0">
+      <SheetContent
+        side="left"
+        className="w-[288px] max-w-[85vw] border-r border-[var(--cc-border)] bg-[var(--cc-surface)] p-0 text-[var(--cc-text)]"
+      >
         <SheetTitle className="sr-only">Admin navigation</SheetTitle>
         <SheetDescription className="sr-only">
           Navigate the PurpleSoftHub admin sections

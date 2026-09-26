@@ -3,10 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
+import { LogOut, Settings, UserRound } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +36,10 @@ function initialsOf(value: string) {
 /**
  * Profile menu driven by the real authenticated profile (no hardcoded names).
  * Sign-out reuses the existing Supabase client sign-out flow.
+ *
+ * Presentation: Command Center (`--cc-*` tokens). The dropdown is portalled
+ * into <body>, so it relies on the body-level token declaration in
+ * app/styles/command-center.css rather than on `.cc-root` ancestry.
  */
 export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
   const router = useRouter();
@@ -60,57 +62,67 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          className="h-9 gap-2 rounded-lg px-1.5 sm:px-2"
           aria-label="Open account menu"
+          className="flex items-center gap-2 rounded-lg p-1 transition-colors hover:bg-[var(--cc-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)]"
         >
-          <Avatar className="h-7 w-7">
-            <AvatarFallback className="bg-primary/10 text-[11px] font-semibold text-primary">
-              {initialsOf(displayName)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="hidden max-w-[140px] truncate text-sm font-medium lg:inline-flex">
+          <span
+            aria-hidden="true"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--cc-accent-soft)] text-[11px] font-semibold text-[var(--cc-accent)]"
+          >
+            {initialsOf(displayName)}
+          </span>
+          <span className="hidden max-w-[140px] truncate text-xs font-semibold text-[var(--cc-text)] sm:inline-flex">
             {displayName}
           </span>
-          <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground lg:block" aria-hidden="true" />
-        </Button>
+        </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent
+        align="end"
+        className="w-64 border-[var(--cc-border)] bg-[var(--cc-surface)] text-[var(--cc-text)]"
+      >
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-                {initialsOf(displayName)}
-              </AvatarFallback>
-            </Avatar>
+            <span
+              aria-hidden="true"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cc-accent-soft)] text-xs font-semibold text-[var(--cc-accent)]"
+            >
+              {initialsOf(displayName)}
+            </span>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{displayName}</p>
-              <p className="truncate text-xs text-muted-foreground">{profile.email}</p>
+              <p className="truncate text-xs text-[var(--cc-text-muted)]">{profile.email}</p>
             </div>
           </div>
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[var(--cc-subtle)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--cc-text-muted)]">
             <UserRound className="h-3 w-3" aria-hidden="true" />
             {profile.role === "admin" ? "Administrator" : "Client"}
           </p>
         </DropdownMenuLabel>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-[var(--cc-border)]" />
 
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem
+          asChild
+          className="focus:bg-[var(--cc-subtle)] focus:text-[var(--cc-text)]"
+        >
           <Link href="/admin/settings">
             <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
             Admin settings
           </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-[var(--cc-border)]" />
 
-        <DropdownMenuItem onSelect={handleSignOut} disabled={signingOut}>
+        <DropdownMenuItem
+          onSelect={handleSignOut}
+          disabled={signingOut}
+          className="text-[var(--cc-error)] focus:bg-[var(--cc-subtle)] focus:text-[var(--cc-error)]"
+        >
           <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
-          {signingOut ? "Signing out…" : "Sign out"}
+          {signingOut ? "Signing out..." : "Sign out"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

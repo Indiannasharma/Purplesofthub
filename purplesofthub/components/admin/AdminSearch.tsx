@@ -4,7 +4,6 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { CornerDownLeft, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -26,30 +25,28 @@ export function AdminSearchTrigger() {
 
   return (
     <>
-      <Button
+      <button
         type="button"
-        variant="ghost"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="hidden h-8 w-[200px] justify-start gap-2 px-2.5 text-xs font-normal text-muted-foreground xl:inline-flex"
+        className="hidden h-8 items-center gap-2 rounded-lg border border-[var(--cc-border)] bg-[var(--cc-subtle)] px-2.5 text-xs text-[var(--cc-text-muted)] transition-colors hover:border-[var(--cc-border-strong)] hover:text-[var(--cc-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)] xl:inline-flex"
       >
         <Search className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-        <span className="truncate">Search…</span>
-        <kbd className="ml-auto shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium tracking-widest text-muted-foreground">
-          Ctrl K
+        <span className="truncate">Search or jump to…</span>
+        <kbd className="ml-2 inline-flex shrink-0 items-center gap-0.5 rounded border border-[var(--cc-border)] bg-[var(--cc-surface)] px-1 py-0.5 text-[10px] font-medium">
+          Ctrl
+          <span aria-hidden="true">K</span>
         </kbd>
-      </Button>
+      </button>
 
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="h-8 w-8 xl:hidden"
+        className="cc-icon-btn cc-icon-btn-sm xl:hidden"
       >
         <Search className="h-4 w-4" aria-hidden="true" />
-      </Button>
+      </button>
     </>
   );
 }
@@ -75,16 +72,24 @@ export function AdminSearchDialog() {
       key={item.id}
       value={`${item.title} ${item.href}`}
       onSelect={() => go(item.href)}
+      className="text-[var(--cc-text-secondary)] aria-selected:bg-[var(--cc-subtle)] aria-selected:text-[var(--cc-text)]"
     >
       <item.icon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
       <span className="truncate">{item.title}</span>
-      <span className="ml-auto truncate text-[11px] text-muted-foreground">{item.href}</span>
+      <span className="ml-auto truncate text-[11px] text-[var(--cc-text-muted)]">{item.href}</span>
     </CommandItem>
   );
 
   return (
-    <CommandDialog open={isSearchOpen} onOpenChange={setSearchOpen}>
-      <CommandInput placeholder="Jump to an admin section or action…" />
+    <CommandDialog
+      open={isSearchOpen}
+      onOpenChange={setSearchOpen}
+      contentClassName="border-[var(--cc-border)] bg-[var(--cc-surface)] text-[var(--cc-text)]"
+    >
+      <CommandInput
+        placeholder="Jump to an admin section or action…"
+        className="text-[var(--cc-text)] placeholder:text-[var(--cc-text-muted)]"
+      />
       <CommandList>
         <CommandEmpty>No matching section.</CommandEmpty>
 
@@ -99,11 +104,13 @@ export function AdminSearchDialog() {
         </CommandGroup>
       </CommandList>
 
-      <div className="flex items-center gap-2 border-t px-3 py-2 text-[11px] text-muted-foreground">
+      <div className="flex items-center gap-2 border-t border-[var(--cc-border)] px-3 py-2 text-[11px] text-[var(--cc-text-muted)]">
         <CornerDownLeft className="h-3 w-3" aria-hidden="true" />
         Open
-        <span className="mx-1 text-border">·</span>
-        <kbd className="rounded border border-border bg-muted px-1 py-0.5">Esc</kbd>
+        <span className="mx-1 text-[var(--cc-border-strong)]">·</span>
+        <kbd className="rounded border border-[var(--cc-border)] bg-[var(--cc-subtle)] px-1 py-0.5">
+          Esc
+        </kbd>
         Close
       </div>
     </CommandDialog>
