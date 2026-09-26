@@ -27,6 +27,7 @@ const KIND_LABEL: Record<AttentionItem["kind"], string> = {
  * module that owns the item.
  */
 export function Priorities({ attention }: { attention: AttentionData }) {
+  const visibleItems = attention.items.slice(0, 5);
   const heading =
     attention.items.length > 0
       ? `Needs attention · ${attention.items.length}${attention.truncated ? "+" : ""}`
@@ -34,14 +35,14 @@ export function Priorities({ attention }: { attention: AttentionData }) {
 
   return (
     <Panel labelledBy="priorities-title">
-      <PanelHeader id="priorities-title" title={heading} subtitle="Real queue, newest first" />
+      <PanelHeader id="priorities-title" title={heading} subtitle="Actionable studio work" />
 
       <div className="border-t border-[var(--cc-border)] px-5 py-4">
         {attention.items.length === 0 ? (
           <EmptyLine>Nothing needs attention right now.</EmptyLine>
         ) : (
           <ul className="divide-y divide-[var(--cc-border)]">
-            {attention.items.map((item) => (
+            {visibleItems.map((item) => (
               <li key={item.id}>
                 <Link
                   href={item.href}
@@ -69,6 +70,11 @@ export function Priorities({ attention }: { attention: AttentionData }) {
             ))}
           </ul>
         )}
+        {attention.items.length > visibleItems.length ? (
+          <p className="mt-3 text-[11px] text-[var(--cc-text-muted)]">
+            Showing {visibleItems.length} of {attention.items.length}{attention.truncated ? "+" : ""} priorities.
+          </p>
+        ) : null}
       </div>
     </Panel>
   );

@@ -11,7 +11,6 @@ import { GrowthSection } from "@/components/admin/dashboard/GrowthSection";
 import { MoneyPanel } from "@/components/admin/dashboard/MoneyPanel";
 import { LeadsPanel } from "@/components/admin/dashboard/LeadsPanel";
 import { ProjectsPanel } from "@/components/admin/dashboard/ProjectsPanel";
-import { Signals } from "@/components/admin/dashboard/Signals";
 import { QuickActions } from "@/components/admin/dashboard/QuickActions";
 
 export const metadata = { title: "Overview" };
@@ -55,22 +54,39 @@ export default async function AdminOverviewPage() {
 
       <MetricsStrip data={dashboard} />
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-        <div className="flex min-w-0 flex-col gap-6 xl:col-span-7">
-          <Priorities attention={dashboard.attention} />
+      <section aria-label="Executive analytics" className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-8">
           <GrowthSection clients={dashboard.clients} />
+        </div>
+        <div className="min-w-0 xl:col-span-4">
+          <Priorities attention={dashboard.attention} />
+        </div>
+      </section>
+
+      <section aria-label="Operational insights" className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="md:col-span-2 xl:col-span-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--cc-text-muted)]">
+            Operational health
+          </p>
+          <h2 className="cc-display mt-1 text-lg font-semibold tracking-[-0.02em] text-[var(--cc-text)]">
+            Studio operations at a glance
+          </h2>
+        </div>
+        <LeadsPanel leads={dashboard.leads} />
+        <ProjectsPanel projects={dashboard.projects} />
+        <div className="md:col-span-2 xl:col-span-1">
+          <MoneyPanel finance={dashboard.finance} />
+        </div>
+      </section>
+
+      <section aria-label="Activity and shortcuts" className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-8">
           <ActivityPanel activity={dashboard.recentActivity} />
         </div>
-
-        <div className="flex min-w-0 flex-col gap-6 xl:col-span-5">
-          <MoneyPanel finance={dashboard.finance} />
-          <LeadsPanel leads={dashboard.leads} />
-          <ProjectsPanel projects={dashboard.projects} />
-          <Signals insights={dashboard.insights} />
+        <div className="min-w-0 xl:col-span-4">
+          <QuickActions />
         </div>
-      </div>
-
-      <QuickActions />
+      </section>
     </AdminPage>
   );
 }

@@ -686,14 +686,33 @@ const EMPTY_FINANCE: FinanceData = {
  * is unverified, and the existing protected APIs expose no aggregate that this
  * dashboard could reuse safely.
  */
-async function fetchFinance(supabase: SupabaseClient, now: Date): Promise<FinanceData> {
-  const paged = await fetchPaged<InvoiceRow>((from, to) =>
-    supabase
+async function fetchFinance(
+  session: SupabaseClient,
+  privileged: SupabaseClient | null,
+  now: Date
+): Promise<FinanceData> {
+  const primary = privileged ?? session
+  const query = (client: SupabaseClient) =>
+    fetchPaged<InvoiceRow>((from, to) =>
+      client
       .from('invoices')
       .select('id, amount, currency, status, due_date, paid_at, created_at')
       .order('created_at', { ascending: false })
       .range(from, to)
-  )
+    )
+
+  let paged = await query(primary)
+  if ((paged.error || !paged.data) && primary !== session) {
+    const fallback = await query(session)
+    if (!fallback.error && fallback.data) paged = fallback
+    else {
+      console.error('[admin-dashboard] invoices unavailable:', {
+        privileged: paged.error,
+        session: fallback.error,
+      })
+      return EMPTY_FINANCE
+    }
+  }
 
   if (paged.error || !paged.data) {
     console.error('[admin-dashboard] invoices unavailable:', paged.error)
@@ -900,14 +919,33 @@ const EMPTY_PROJECTS: ProjectsData = {
  * Deadlines are only reported when `end_date` genuinely exists; the section is
  * omitted rather than fabricated when it does not.
  */
-async function fetchProjects(supabase: SupabaseClient, now: Date): Promise<ProjectsResult> {
-  const paged = await fetchPaged<ProjectRow>((from, to) =>
-    supabase
+async function fetchProjects(
+  session: SupabaseClient,
+  privileged: SupabaseClient | null,
+  now: Date
+): Promise<ProjectsResult> {
+  const primary = privileged ?? session
+  const query = (client: SupabaseClient) =>
+    fetchPaged<ProjectRow>((from, to) =>
+      client
       .from('projects')
       .select('id, title, status, end_date, created_at')
       .order('created_at', { ascending: false })
       .range(from, to)
-  )
+    )
+
+  let paged = await query(primary)
+  if ((paged.error || !paged.data) && primary !== session) {
+    const fallback = await query(session)
+    if (!fallback.error && fallback.data) paged = fallback
+    else {
+      console.error('[admin-dashboard] projects unavailable:', {
+        privileged: paged.error,
+        session: fallback.error,
+      })
+      return { data: EMPTY_PROJECTS }
+    }
+  }
 
   if (paged.error || !paged.data) {
     console.error('[admin-dashboard] projects unavailable:', paged.error)
@@ -986,23 +1024,36 @@ async function fetchActivity(
   privileged: SupabaseClient | null,
   adminId: string
 ): Promise<ActivityData> {
-  const client = privileged ?? session
+  const primary = privileged ?? session
+  const query = (client: SupabaseClient) =>
+    client
+      .from('notifications')
+      .select('id, title, message, type, created_at')
+      .eq('admin_id', adminId)
+      .order('created_at', { ascending: false })
+      .limit(RECENT_LIMIT)
 
-  const { data, error } = await client
-    .from('notifications')
-    .select('id, title, message, type, created_at')
-    .eq('admin_id', adminId)
-    .order('created_at', { ascending: false })
-    .limit(RECENT_LIMIT)
+  let result = await query(primary)
+  if ((result.error || !result.data) && primary !== session) {
+    const fallback = await query(session)
+    if (!fallback.error && fallback.data) result = fallback
+    else {
+      console.error('[admin-dashboard] activity unavailable:', {
+        privileged: result.error,
+        session: fallback.error,
+      })
+      return EMPTY_ACTIVITY
+    }
+  }
 
-  if (error || !data) {
-    console.error('[admin-dashboard] activity unavailable:', error)
+  if (result.error || !result.data) {
+    console.error('[admin-dashboard] activity unavailable:', result.error)
     return EMPTY_ACTIVITY
   }
 
   return {
     status: 'ok',
-    items: (data as NotificationRow[]).map((row) => ({
+    items: (result.data as NotificationRow[]).map((row) => ({
       id: String(row.id),
       title: (row.title || '').trim() || 'Notification',
       message: (row.message || '').trim(),
@@ -1266,9 +1317,9 @@ export async function getAdminDashboardData(adminId: string): Promise<AdminDashb
 
   const [clientsResult, projectsResult, leadsResult, finance, activity] = await Promise.all([
     fetchClients(session, privileged, now),
-    fetchProjects(session, now),
+    fetchProjects(session, privileged, now),
     fetchLeads(session, privileged, now),
-    fetchFinance(privileged ?? session, now),
+    fetchFinance(session, privileged, now),
     fetchActivity(session, privileged, adminId),
   ])
 

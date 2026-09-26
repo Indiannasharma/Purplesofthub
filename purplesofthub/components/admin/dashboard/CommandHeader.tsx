@@ -28,7 +28,7 @@ export function CommandHeader({
         <h1 className="cc-display text-[22px] font-semibold leading-8 text-[var(--cc-text)] sm:text-[26px]">
           {title}
         </h1>
-        <p className="mt-0.5 text-[13px] text-[var(--cc-text-muted)]">
+        <p className="mt-1 text-[13px] text-[var(--cc-text-muted)]">
           Studio overview ·{" "}
           <time className="cc-tnum" dateTime={generatedAt}>
             {formatUpdatedAt(generatedAt)}
