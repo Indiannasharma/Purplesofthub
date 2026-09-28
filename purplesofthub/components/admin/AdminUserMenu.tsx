@@ -65,7 +65,7 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
         <button
           type="button"
           aria-label="Open account menu"
-          className="flex items-center gap-2 rounded-lg p-1 transition-colors hover:bg-[var(--cc-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)]"
+          className="flex max-w-[168px] items-center gap-2 rounded-lg px-1 py-1 transition-colors hover:bg-[var(--cc-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)] sm:max-w-[190px]"
         >
           <span
             aria-hidden="true"
@@ -73,7 +73,7 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
           >
             {initialsOf(displayName)}
           </span>
-          <span className="hidden max-w-[140px] truncate text-xs font-semibold text-[var(--cc-text)] sm:inline-flex">
+          <span className="hidden min-w-0 truncate text-xs font-semibold text-[var(--cc-text)] sm:inline-block">
             {displayName}
           </span>
         </button>
@@ -81,36 +81,39 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
 
       <DropdownMenuContent
         align="end"
-        className="w-64 border-[var(--cc-border)] bg-[var(--cc-surface)] text-[var(--cc-text)]"
+        sideOffset={8}
+        className="w-[min(300px,calc(100vw-24px))] rounded-xl border-[var(--cc-border)] bg-[var(--cc-surface)] p-1.5 text-[var(--cc-text)] shadow-xl"
       >
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex items-center gap-3">
+        <DropdownMenuLabel className="px-2.5 py-2 font-normal">
+          <div className="flex min-w-0 items-start gap-3">
             <span
               aria-hidden="true"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cc-accent-soft)] text-xs font-semibold text-[var(--cc-accent)]"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--cc-accent-soft)] text-xs font-semibold text-[var(--cc-accent)]"
             >
               {initialsOf(displayName)}
             </span>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">{displayName}</p>
-              <p className="truncate text-xs text-[var(--cc-text-muted)]">{profile.email}</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13px] font-semibold leading-5 text-[var(--cc-text)]">
+                {displayName}
+              </p>
+              <p className="truncate text-xs leading-5 text-[var(--cc-text-muted)]">{profile.email}</p>
+              <p className="mt-1 inline-flex max-w-full items-center gap-1.5 rounded-full bg-[var(--cc-subtle)] px-2 py-0.5 text-[10px] font-semibold uppercase leading-4 tracking-[0.12em] text-[var(--cc-text-muted)]">
+                <UserRound className="h-3 w-3 shrink-0" aria-hidden="true" />
+                <span className="truncate">{profile.role === "admin" ? "Administrator" : "Client"}</span>
+              </p>
             </div>
           </div>
-          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[var(--cc-subtle)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--cc-text-muted)]">
-            <UserRound className="h-3 w-3" aria-hidden="true" />
-            {profile.role === "admin" ? "Administrator" : "Client"}
-          </p>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator className="bg-[var(--cc-border)]" />
 
         <DropdownMenuItem
           asChild
-          className="focus:bg-[var(--cc-subtle)] focus:text-[var(--cc-text)]"
+          className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium text-[var(--cc-text-secondary)] focus:bg-[var(--cc-subtle)] focus:text-[var(--cc-text)]"
         >
           <Link href="/admin/settings">
-            <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
-            Admin settings
+            <Settings className="h-4 w-4 shrink-0 text-[var(--cc-text-muted)]" aria-hidden="true" />
+            <span className="min-w-0 truncate">Admin settings</span>
           </Link>
         </DropdownMenuItem>
 
@@ -119,10 +122,10 @@ export function AdminUserMenu({ profile }: { profile: AdminShellProfile }) {
         <DropdownMenuItem
           onSelect={handleSignOut}
           disabled={signingOut}
-          className="text-[var(--cc-error)] focus:bg-[var(--cc-subtle)] focus:text-[var(--cc-error)]"
+          className="cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium text-[var(--cc-error)] focus:bg-[var(--cc-subtle)] focus:text-[var(--cc-error)]"
         >
-          <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
-          {signingOut ? "Signing out..." : "Sign out"}
+          <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="min-w-0 truncate">{signingOut ? "Signing out..." : "Sign out"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

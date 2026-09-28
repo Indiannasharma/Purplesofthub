@@ -12,6 +12,7 @@ import { MoneyPanel } from "@/components/admin/dashboard/MoneyPanel";
 import { LeadsPanel } from "@/components/admin/dashboard/LeadsPanel";
 import { ProjectsPanel } from "@/components/admin/dashboard/ProjectsPanel";
 import { QuickActions } from "@/components/admin/dashboard/QuickActions";
+import { Signals } from "@/components/admin/dashboard/Signals";
 
 export const metadata = { title: "Overview" };
 
@@ -58,8 +59,9 @@ export default async function AdminOverviewPage() {
         <div className="min-w-0 xl:col-span-8">
           <GrowthSection clients={dashboard.clients} />
         </div>
-        <div className="min-w-0 xl:col-span-4">
+        <div className="grid min-w-0 gap-4 xl:col-span-4">
           <Priorities attention={dashboard.attention} />
+          <Signals insights={dashboard.insights} />
         </div>
       </section>
 

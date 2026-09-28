@@ -1,32 +1,32 @@
 import type { BusinessInsight } from "@/lib/admin/dashboard";
 
-import { SectionTitle } from "./shared";
+import { Panel, PanelHeader } from "@/components/command-center/primitives";
 
 /**
  * Signals — deterministic one-line observations from current data. Rendered as
  * plain sentences with a quiet dot marker; omitted entirely when there is
  * nothing to say. Never AI-generated.
  *
- * Deliberately NOT a panel: the Overview already has enough surface area, and
- * this reads better as a quiet footnote in the right rail.
+ * Rendered as a compact panel in the executive right rail so the overview has
+ * an immediate "what changed / what matters" surface without inventing data.
  */
 export function Signals({ insights }: { insights: BusinessInsight[] }) {
   if (insights.length === 0) return null;
 
   return (
-    <section aria-labelledby="signals-title">
-      <SectionTitle id="signals-title" title="Signals" />
-      <ul className="cc-hairline-top mt-3 grid gap-1.5 pt-3">
+    <Panel labelledBy="signals-title">
+      <PanelHeader id="signals-title" title="Signals" subtitle="Calculated from current records" />
+      <ul className="cc-hairline-top grid gap-2.5 px-5 py-4">
         {insights.slice(0, 3).map((insight) => (
-          <li key={insight.id} className="flex items-baseline gap-2.5 text-xs leading-5">
+          <li key={insight.id} className="flex items-start gap-2.5 text-xs leading-5">
             <span
               aria-hidden="true"
-              className="relative top-[-1px] h-1.5 w-1.5 shrink-0 self-center rounded-full bg-[var(--cc-chart-2)]"
+              className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cc-chart-2)]"
             />
-            <span className="min-w-0 text-[var(--cc-text-muted)]">{insight.text}</span>
+            <span className="min-w-0 text-[var(--cc-text-secondary)]">{insight.text}</span>
           </li>
         ))}
       </ul>
-    </section>
+    </Panel>
   );
 }
