@@ -37,9 +37,7 @@ export const TRUST_CLIENTS = [
   { name: 'AfroBeats Festival', emoji: '🎵' },
   { name: 'EduBridge', emoji: '🎓' },
   { name: 'CloudMetrics', emoji: '📊' },
-  { name: 'Healthcare Plus', emoji: '🩺' },
   { name: 'Luxe Hair Co.', emoji: '💇' },
-  { name: 'BuildRight', emoji: '🏗️' },
 ]
 
 export const TIMELINE_STEPS = [

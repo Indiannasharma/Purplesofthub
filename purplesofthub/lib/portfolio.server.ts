@@ -1,4 +1,5 @@
 import { createClient as createServerClient } from '@/lib/supabase/server'
+import { excludeRemovedDemoPortfolioProjects, isRemovedDemoPortfolioProject } from '@/lib/portfolio-demo-projects'
 import { toSlug } from '@/lib/portfolio'
 import type { PortfolioProject, PortfolioCategory, PortfolioIndustry, PortfolioService, PortfolioClient, PortfolioTestimonial, MediaItem } from '@/types/portfolio'
 
@@ -13,7 +14,7 @@ export async function getPublishedProjects() {
     .eq('status', 'published')
     .order('created_at', { ascending: false })
   if (error) { console.error('[portfolio] getPublishedProjects:', error.message); return [] }
-  return (data || []) as PortfolioProject[]
+  return excludeRemovedDemoPortfolioProjects((data || []) as PortfolioProject[])
 }
 
 export async function getProjectBySlug(slug: string) {
@@ -25,7 +26,7 @@ export async function getProjectBySlug(slug: string) {
     .eq('status', 'published')
     .maybeSingle()
   if (error) { console.error('[portfolio] getProjectBySlug:', error.message); return null }
-  return data as PortfolioProject | null
+  return data && !isRemovedDemoPortfolioProject(data) ? data as PortfolioProject : null
 }
 
 export async function getAdminProjects() {
@@ -35,7 +36,7 @@ export async function getAdminProjects() {
     .select('*')
     .order('created_at', { ascending: false })
   if (error) { console.error('[portfolio] getAdminProjects:', error.message); return [] }
-  return (data || []) as PortfolioProject[]
+  return excludeRemovedDemoPortfolioProjects((data || []) as PortfolioProject[])
 }
 
 export async function getFeaturedProjects() {

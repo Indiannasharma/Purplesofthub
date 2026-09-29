@@ -11,6 +11,7 @@ import ProjectMedia from "../_components/ProjectMedia";
 import CaseStudyGallery from "../_components/CaseStudyGallery";
 import CaseStudyToc, { type CaseStudySection } from "../_components/CaseStudyToc";
 import { getProjectBySlug } from "@/lib/portfolio.server";
+import { isRemovedDemoPortfolioProject } from "@/lib/portfolio-demo-projects";
 import { authoredContentMap, normalizeProject } from "@/lib/portfolio-normalize";
 import { PORTFOLIO_PROJECTS, RAW_PROJECTS } from "../_data/portfolio";
 import {
@@ -41,12 +42,13 @@ interface LoadedProject {
  * this page never presents a draft as project fact.
  */
 async function loadProject(slug: string): Promise<LoadedProject | null> {
+  if (isRemovedDemoPortfolioProject({ slug })) return null;
   const remote = await getProjectBySlug(slug);
   if (remote) {
     return { project: normalizeProject(remote), raw: remote as unknown as Record<string, unknown> };
   }
 
-  const seed = RAW_PROJECTS.find((project) => project.slug === slug);
+  const seed = RAW_PROJECTS.find((project) => project.slug === slug && !isRemovedDemoPortfolioProject(project));
   if (!seed) return null;
   return { project: normalizeProject(seed), raw: seed as unknown as Record<string, unknown> };
 }

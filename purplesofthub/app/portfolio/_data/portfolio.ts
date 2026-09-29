@@ -1,5 +1,6 @@
 import type { PortfolioProject as TypesPortfolioProject, RawPortfolioProject } from "@/types/portfolio";
 import { normalizeProjects } from "@/lib/portfolio-normalize";
+import { excludeRemovedDemoPortfolioProjects } from "@/lib/portfolio-demo-projects";
 
 // Re-export for backward compatibility
 export interface PortfolioProject extends TypesPortfolioProject {}
@@ -1510,7 +1511,7 @@ export const RAW_PROJECTS: RawPortfolioProject[] = [
   },
 ];
 
-export const PORTFOLIO_PROJECTS: PortfolioProject[] = normalizeProjects(RAW_PROJECTS);
+export const PORTFOLIO_PROJECTS: PortfolioProject[] = excludeRemovedDemoPortfolioProjects(normalizeProjects(RAW_PROJECTS));
 
 export const TESTIMONIALS: Testimonial[] = [
   {
@@ -1536,14 +1537,6 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     review:
       "The team at PurpleSoftHub exceeded our expectations. From the AI-powered marketing campaign to the event branding, everything was executed flawlessly. They're not just a service provider — they're a true creative partner.",
-  },
-  {
-    name: "Fatima Bello",
-    company: "Healthcare Plus",
-    photo: "",
-    rating: 5,
-    review:
-      "PurpleSoftHub delivered a corporate profile that perfectly captures our brand's values and professionalism. The design is elegant, the content is compelling, and the response from our clients has been overwhelmingly positive.",
   },
   {
     name: "James Okafor",

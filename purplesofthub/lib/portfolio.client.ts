@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { excludeRemovedDemoPortfolioProjects } from '@/lib/portfolio-demo-projects'
 import type { PortfolioProject, PortfolioCategory, PortfolioIndustry, PortfolioService, PortfolioClient, PortfolioTestimonial, MediaItem } from '@/types/portfolio'
 
 export function getBrowserClient() { return createClient() }
@@ -7,14 +8,14 @@ export async function fetchPublishedProjectsClient() {
   const supabase = createClient()
   const { data, error } = await supabase.from('portfolio_projects').select('*').eq('status', 'published').order('created_at', { ascending: false })
   if (error) { console.error('[portfolio] fetchPublishedProjectsClient:', error.message); return [] }
-  return (data || []) as PortfolioProject[]
+  return excludeRemovedDemoPortfolioProjects((data || []) as PortfolioProject[])
 }
 
 export async function fetchFeaturedProjectsClient() {
   const supabase = createClient()
   const { data, error } = await supabase.from('portfolio_projects').select('*').eq('status', 'published').eq('featured', true).order('created_at', { ascending: false }).limit(6)
   if (error) { console.error('[portfolio] fetchFeaturedProjectsClient:', error.message); return [] }
-  return (data || []) as PortfolioProject[]
+  return excludeRemovedDemoPortfolioProjects((data || []) as PortfolioProject[])
 }
 
 export async function fetchCategoriesClient() {

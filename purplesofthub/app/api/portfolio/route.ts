@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
 import { toSlug } from '@/lib/portfolio'
+import { excludeRemovedDemoPortfolioProjects } from '@/lib/portfolio-demo-projects'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,7 +40,9 @@ export async function GET(request: NextRequest) {
       console.error('[portfolio] GET failed:', error.code, error.message)
       return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 })
     }
-    return NextResponse.json({ data, count })
+    const publicProjects = excludeRemovedDemoPortfolioProjects(data || [])
+    const removedFromPage = (data || []).length - publicProjects.length
+    return NextResponse.json({ data: publicProjects, count: count === null ? null : count - removedFromPage })
   } catch (error) {
     console.error('[portfolio] GET failed:', error)
     return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 })
