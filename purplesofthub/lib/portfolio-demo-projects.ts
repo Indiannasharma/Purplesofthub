@@ -7,6 +7,18 @@ export const REMOVED_DEMO_PORTFOLIO_SLUGS = new Set([
   "fashion-retail-product-catalogue", "tech-products-catalogue",
   "real-estate-business-proposal", "annual-report-2025", "education-partnership-deck",
   "investment-presentation", "music-festival-event-branding", "corporate-conference-branding",
+  "product-launch-event", "product-launch-event-branding", "instagram-campaign-fashion",
+  "holiday-campaign-social", "product-launch-social", "product-launch-social-campaign",
+  "restaurant-social-media", "restaurant-social-media-package", "healthcare-website",
+  "healthcare-website-design", "education-platform", "education-platform-website",
+  "restaurant-website", "restaurant-website-design", "banking-app", "banking-app-ui-ux",
+  "ecommerce-ui", "ecommerce-ui-ux", "saas-dashboard-ui", "saas-dashboard-ui-ux",
+  "fitness-app", "fitness-tracking-app", "delivery-app", "food-delivery-app",
+  "youtube-channel-branding", "podcast-cover-design", "youtube-shorts-graphics",
+  "youtube-short-graphics", "corporate-video-production", "event-video-highlights",
+  "product-promo-video", "motion-graphics-brand", "motion-graphics-brand-package",
+  "ai-product-visuals", "ai-video-campaign", "ai-marketing-concepts", "magazine-design",
+  "brochure-design", "corporate-brochure-design", "poster-series", "poster-series-design",
 ]);
 
 const REMOVED_DEMO_PORTFOLIO_TITLES = new Set([
@@ -16,6 +28,15 @@ const REMOVED_DEMO_PORTFOLIO_TITLES = new Set([
   "fashion retail product catalogue", "tech products catalogue", "real estate business proposal",
   "annual report 2025", "education partnership deck", "investment presentation",
   "music festival event branding", "corporate conference branding",
+  "product launch event branding", "instagram campaign — fashion", "instagram campaign fashion",
+  "holiday campaign social media", "holiday campaign social", "product launch social campaign",
+  "restaurant social media package", "healthcare website design", "education platform website",
+  "restaurant website design", "banking app ui/ux", "e-commerce ui/ux", "saas dashboard ui/ux",
+  "fitness tracking app", "food delivery app", "youtube channel branding", "podcast cover design",
+  "youtube shorts graphics", "youtube short graphics", "corporate video production",
+  "event video highlights", "product promo video", "motion graphics brand package",
+  "ai product visuals", "ai video campaign", "ai marketing concepts", "magazine design",
+  "corporate brochure design", "poster series design",
 ]);
 
 export function isRemovedDemoPortfolioProject(project: ProjectIdentity): boolean {
