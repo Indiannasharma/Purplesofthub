@@ -12,7 +12,6 @@ interface CaseStudyTocProps {
   sections: CaseStudySection[];
   title: string;
   eyebrow: string;
-  year?: string | null;
 }
 
 /**
@@ -22,7 +21,7 @@ interface CaseStudyTocProps {
  * affordances: a reading-progress line and scroll-spy highlighting, so a long case study
  * stays navigable without a permanent sidebar on mobile.
  */
-export default function CaseStudyToc({ sections, title, eyebrow, year }: CaseStudyTocProps) {
+export default function CaseStudyToc({ sections, title, eyebrow }: CaseStudyTocProps) {
   const [active, setActive] = useState(sections[0]?.id ?? "");
   const [progress, setProgress] = useState(0);
   const frame = useRef<number | null>(null);
@@ -106,7 +105,6 @@ export default function CaseStudyToc({ sections, title, eyebrow, year }: CaseStu
 
         <span className="pf-cs-toc-meta">
           {eyebrow}
-          {year ? ` · ${year}` : ""}
         </span>
       </div>
 

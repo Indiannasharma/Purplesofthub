@@ -432,7 +432,6 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
         sections={sections}
         title={project.title}
         eyebrow={project.category || "Selected work"}
-        year={project.year}
       />
 
       <article className="pf-cs">

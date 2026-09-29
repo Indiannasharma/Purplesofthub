@@ -90,7 +90,6 @@ export default function PortfolioPage() {
       { value: `${published.length}`, label: "Case studies" },
       { value: `${industries.size}`, label: "Industries served" },
       { value: deliverables ? `${deliverables}+` : "End-to-end", label: "Assets delivered" },
-      { value: span, label: "Years of practice" },
     ];
   }, [published]);
 
