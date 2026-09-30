@@ -5,8 +5,13 @@ import type { PortfolioProject } from "@/types/portfolio";
 
 export default function HomePortfolio({ projects }: { projects: PortfolioProject[] }) {
   const published = projects.filter((p) => p.status !== "archived");
-  const featured = published.filter((p) => p.featured);
-  const visible = (featured.length ? featured : published).slice(0, 6);
+  const withoutNova = published.filter((p) => !/nova ai brand launch/i.test(p.title));
+  const featured = withoutNova.filter((p) => p.featured);
+  const legjit = withoutNova.find((p) => p.slug === "legjit-baby-food");
+  const selected = featured.length ? featured : withoutNova;
+  const visible = [legjit, ...selected.filter((p) => p.slug !== "legjit-baby-food")]
+    .filter((p): p is PortfolioProject => Boolean(p))
+    .slice(0, 6);
 
   if (!visible.length) return null;
 

@@ -71,25 +71,18 @@ export default function PortfolioPage() {
   );
 
   const counts = useMemo(
-    () => FILTERS.map((item) => ({ item, count: published.filter((p) => matches(p, item)).length })),
+    () => FILTERS.map((item) => ({ item, count: published.filter((p) => matches(p, item)).length })).filter(({ item, count }) => item === "All" || count > 0),
     [published]
   );
 
   const stats = useMemo(() => {
     const industries = new Set(published.map((p) => p.industry).filter(Boolean));
-    const deliverables = published.reduce(
-      (total, p) => total + (p.deliverablesCount ?? p.deliverables?.length ?? 0),
-      0
-    );
-    const years = published
-      .map((p) => Number(p.year))
-      .filter((year) => Number.isFinite(year) && year > 2000);
-    const span = years.length ? `${Math.min(...years)}—${Math.max(...years)}` : "Ongoing";
+    const disciplines = new Set(published.map((p) => p.category || p.service).filter(Boolean));
 
     return [
       { value: `${published.length}`, label: "Case studies" },
       { value: `${industries.size}`, label: "Industries served" },
-      { value: deliverables ? `${deliverables}+` : "End-to-end", label: "Assets delivered" },
+      { value: `${disciplines.size}`, label: "Disciplines" },
     ];
   }, [published]);
 
@@ -116,8 +109,8 @@ export default function PortfolioPage() {
               Work we are <span>proud of.</span>
             </h1>
             <p className="pf-hero-copy">
-              Brands, platforms, and campaigns designed and shipped for clients across Africa and
-              beyond — each one built to earn attention and turn it into measurable growth.
+              Brands, platforms and digital experiences created for businesses and creators across
+              Africa and beyond.
             </p>
           </Reveal>
 
@@ -164,9 +157,6 @@ export default function PortfolioPage() {
               </button>
             ))}
           </nav>
-          <p className="pf-result-count">
-            Showing <strong>{visible.length}</strong> of {published.length} projects
-          </p>
         </div>
       </div>
 <section className="pf-section">
