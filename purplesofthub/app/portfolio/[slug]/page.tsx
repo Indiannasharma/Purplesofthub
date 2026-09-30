@@ -347,7 +347,6 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
     project.service && project.service !== project.category
       ? { label: "Service", value: project.service }
       : null,
-    project.year ? { label: "Year", value: project.year } : null,
     authored.projectDuration && project.projectDuration
       ? { label: "Duration", value: project.projectDuration }
       : null,
@@ -355,7 +354,6 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
   ].filter((facet): facet is { label: string; value: string } => Boolean(facet && facet.value));
 
   const stats = [
-    project.year ? { label: "Year", value: project.year } : null,
     deliverables.length ? { label: "Deliverables", value: String(deliverables.length) } : null,
     project.industry ? { label: "Industry", value: project.industry } : null,
     project.category ? { label: "Discipline", value: project.category } : null,
@@ -383,24 +381,10 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
   const sections: CaseStudySection[] = [];
   if (project.challenge) sections.push({ id: "challenge", label: "Challenge" });
   if (project.finalSolution) sections.push({ id: "outcome", label: "Outcome" });
-  sections.push({ id: "visuals", label: gallery.length ? "Visuals" : "Visual system" });
-  if (authored.research || authored.strategy) sections.push({ id: "approach", label: "Approach" });
-  if (authored.creativeDirection || authored.moodboard || authored.wireframes) {
-    sections.push({ id: "direction", label: "Direction" });
-  }
-  if (typeSpec.length || swatches.length || gridSpec) {
-    sections.push({ id: "system", label: "Design system" });
-  }
+  sections.push({ id: "visuals", label: "Visuals" });
   if (deliverables.length) sections.push({ id: "delivery", label: "Delivered" });
-  sections.push(
-    timeline.length ? { id: "timeline", label: "Timeline" } : { id: "process", label: "Process" }
-  );
   if (tools.length) sections.push({ id: "tools", label: "Tools" });
-  if (authored.results) sections.push({ id: "impact", label: "Impact" });
-  if (project.clientFeedback) sections.push({ id: "feedback", label: "Feedback" });
-  if (mockups.length || videos.length) sections.push({ id: "mockups", label: "Mockups" });
-  if (awards.length) sections.push({ id: "recognition", label: "Recognition" });
-  if (documents.length) sections.push({ id: "documents", label: "Documents" });
+  if (authored.results) sections.push({ id: "impact", label: "Outcome" });
   sections.push({ id: "related", label: "Related work" });
 
   const feedbackQuote = project.clientFeedback ? splitFeedback(project.clientFeedback) : null;
@@ -498,7 +482,7 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
               >
                 <ProjectMedia project={project} className="pf-cs-hero-media" showCategory={false} eager />
                 <div className="pf-cs-hero-overlay">
-                  <span className="pf-cs-hero-chip">{project.year || "Case study"}</span>
+                  <span className="pf-cs-hero-chip">{project.category || "Case study"}</span>
                   <span className="pf-cs-hero-chip is-quiet">
                     {gallery.length ? `${gallery.length} visuals` : `${deliverables.length} deliverables`}
                   </span>
@@ -548,7 +532,7 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
             <Block
               id="visuals"
               kicker={gallery.length ? "Selected visuals" : "Visual identity"}
-              title={gallery.length ? "The work" : "Visual system"}
+              title={gallery.length ? "The work" : "Project visual"}
             >
               {gallery.length ? (
                 <CaseStudyGallery
@@ -600,7 +584,7 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
                     </div>
                     <div className="pf-cs-tile">
                       <span className="pf-cs-tile-label">Delivered</span>
-                      <span className="pf-cs-tile-value">{project.year || "Ongoing"}</span>
+                      <span className="pf-cs-tile-value">{deliverables.length || "—"}</span>
                     </div>
                   </div>
 
@@ -997,7 +981,6 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
                 <span className="pf-cs-nav-title">{previous.title}</span>
                 <span className="pf-cs-nav-meta">
                   {previous.category}
-                  {previous.year ? ` · ${previous.year}` : ""}
                 </span>
               </Link>
             ) : null}
@@ -1007,7 +990,6 @@ export default async function PortfolioProjectPage({ params }: { params: Promise
                 <span className="pf-cs-nav-title">{next.title}</span>
                 <span className="pf-cs-nav-meta">
                   {next.category}
-                  {next.year ? ` · ${next.year}` : ""}
                 </span>
               </Link>
             ) : null}

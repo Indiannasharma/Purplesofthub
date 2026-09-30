@@ -20,12 +20,9 @@ export default function ProjectSpotlight({ project }: ProjectSpotlightProps) {
     project.deliverablesCount ?? (project.deliverables?.length ? project.deliverables.length : 0);
 
   const meta = [
-    project.industry ? { label: "Industry", value: project.industry } : null,
-    project.year ? { label: "Year", value: project.year } : null,
     project.service || project.category
       ? { label: "Service", value: project.service || project.category || "" }
       : null,
-    deliverableCount ? { label: "Deliverables", value: `${deliverableCount}` } : null,
   ].filter((item): item is { label: string; value: string } => item !== null);
 
   return (

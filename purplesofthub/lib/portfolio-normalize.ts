@@ -68,7 +68,7 @@ export function normalizeProject(input: RawPortfolioProject | PortfolioProject |
   const servicesUsed = asStringArray(pick(raw, 'servicesUsed', 'services_used'))
   const tags = asStringArray(pick(raw, 'tags'))
   const softwareUsed = asStringArray(pick(raw, 'softwareUsed', 'software_used', 'tech'))
-  const year = asNullable(pick(raw, 'year')) || '2025'
+  const year = asNullable(pick(raw, 'year')) || ''
   const color = asString(pick(raw, 'color'), '#7c3aed')
 
   const projectSeed = { title, industry, category, clientName, overview, challenge }
