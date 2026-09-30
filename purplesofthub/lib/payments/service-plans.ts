@@ -1,5 +1,10 @@
 export type BillingType = 'one-time' | 'weekly' | 'monthly' | 'yearly' | 'custom'
 
+import {
+  ACCOUNT_RECOVERY_PRICE_NGN,
+  ACCOUNT_RECOVERY_PRICE_USD,
+} from '@/lib/pricing/account-recovery'
+
 export type ServiceCategory =
   | 'development'
   | 'marketing'
@@ -815,16 +820,16 @@ export const SERVICES: Service[] = [
     description: 'Specialist recovery service for suspended, hacked, or disabled social media accounts. We use official appeal processes with high success rates. Full refund if unsuccessful.',
     category: 'support',
     icon: '🔐',
-    startingPriceNGN: 42000,
-    startingPriceUSD: 30,
+    startingPriceNGN: ACCOUNT_RECOVERY_PRICE_NGN,
+    startingPriceUSD: ACCOUNT_RECOVERY_PRICE_USD,
     billingType: 'one-time',
     payOnline: true,
     plans: [
       {
         id: 'recovery-facebook',
         name: 'Facebook Recovery',
-        priceNGN: 42000,
-        priceUSD: 30,
+        priceNGN: ACCOUNT_RECOVERY_PRICE_NGN,
+        priceUSD: ACCOUNT_RECOVERY_PRICE_USD,
         billingType: 'one-time',
         delivery: '14-30 business days',
         description: 'Recover hacked or disabled Facebook account or page',
@@ -842,8 +847,8 @@ export const SERVICES: Service[] = [
       {
         id: 'recovery-instagram',
         name: 'Instagram Recovery',
-        priceNGN: 75000,
-        priceUSD: 53,
+        priceNGN: ACCOUNT_RECOVERY_PRICE_NGN,
+        priceUSD: ACCOUNT_RECOVERY_PRICE_USD,
         billingType: 'one-time',
         delivery: '14-30 business days',
         description: 'Recover hacked or disabled Instagram account',
@@ -861,8 +866,8 @@ export const SERVICES: Service[] = [
       {
         id: 'recovery-tiktok',
         name: 'TikTok Recovery',
-        priceNGN: 75000,
-        priceUSD: 53,
+        priceNGN: ACCOUNT_RECOVERY_PRICE_NGN,
+        priceUSD: ACCOUNT_RECOVERY_PRICE_USD,
         billingType: 'one-time',
         delivery: '14-30 business days',
         description: 'Recover banned or disabled TikTok account',

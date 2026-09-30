@@ -11,6 +11,7 @@ import {
   newRecoveryDocumentPath,
 } from '@/lib/recovery/documents'
 import { insertRecoveryRequest, removeRecoveryObjects } from '@/lib/recovery/persistence'
+import { getAccountRecoveryPriceNGN } from '@/lib/pricing/account-recovery'
 import {
   RECOVERY_DOCUMENT_MAX_ATTACHMENTS,
   RECOVERY_REQUEST_MAX_BYTES,
@@ -195,7 +196,14 @@ async function handleRecoverySubmission(request: NextRequest) {
     return jsonError(parsed.error, parsed.status)
   }
 
-  const values = parsed.value
+  const submittedValues = parsed.value
+  const canonicalAmount = getAccountRecoveryPriceNGN(submittedValues.platform)
+  const values = {
+    ...submittedValues,
+    // The browser can display and submit only the published service price; do
+    // not persist a caller-provided amount for one of the three paid services.
+    amount: canonicalAmount ?? submittedValues.amount,
+  }
 
   // ── 5. Attachments — count, allowlist, size and magic-byte checks ───────
   const attachments: Array<{

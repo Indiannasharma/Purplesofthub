@@ -6,7 +6,11 @@ import Checkbox from '@/components/form/input/Checkbox'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCurrency } from '@/context/CurrencyContext'
-import { formatRegionalPrice } from '@/lib/pricing/currency'
+import {
+  ACCOUNT_RECOVERY_PRICE_NGN,
+  ACCOUNT_RECOVERY_PRICE_USD,
+  formatAccountRecoveryPrice,
+} from '@/lib/pricing/account-recovery'
 
 const PLATFORMS = [
   {
@@ -17,8 +21,8 @@ const PLATFORMS = [
     gradient: 'linear-gradient(135deg, #1877F2, #0d65d9)',
     bg: 'rgba(24,119,242,0.08)',
     border: 'rgba(24,119,242,0.25)',
-    price_ngn: 42000,
-    price_usd: 30,
+    price_ngn: ACCOUNT_RECOVERY_PRICE_NGN,
+    price_usd: ACCOUNT_RECOVERY_PRICE_USD,
   },
   {
     id: 'instagram',
@@ -28,8 +32,8 @@ const PLATFORMS = [
     gradient: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
     bg: 'rgba(225,48,108,0.08)',
     border: 'rgba(225,48,108,0.25)',
-    price_ngn: 75000,
-    price_usd: 50,
+    price_ngn: ACCOUNT_RECOVERY_PRICE_NGN,
+    price_usd: ACCOUNT_RECOVERY_PRICE_USD,
   },
   {
     id: 'tiktok',
@@ -39,8 +43,8 @@ const PLATFORMS = [
     gradient: 'linear-gradient(135deg, #010101, #69C9D0)',
     bg: 'rgba(105,201,208,0.08)',
     border: 'rgba(105,201,208,0.25)',
-    price_ngn: 75000,
-    price_usd: 50,
+    price_ngn: ACCOUNT_RECOVERY_PRICE_NGN,
+    price_usd: ACCOUNT_RECOVERY_PRICE_USD,
   },
 ]
 
@@ -132,20 +136,18 @@ interface RecoveryFormProps {
   submitting: boolean
   isValid: () => boolean
   handleSubmitAndPay: () => void
-  priceNGN: number
-  priceUSD: number
 }
 
 function RecoveryForm({
   platform, form, update, fileRef, screenshotRef,
   handleFile, handleScreenshot, paymentMethod, setPaymentMethod,
   agreed, setAgreed, submitError, submitting, isValid,
-  handleSubmitAndPay, priceNGN, priceUSD,
+  handleSubmitAndPay,
 }: RecoveryFormProps) {
   const config = PLATFORM_CONFIG[platform]
   const consentId = useId()
   const { currency } = useCurrency()
-  const displayPrice = formatRegionalPrice(priceNGN, priceUSD, currency)
+  const displayPrice = formatAccountRecoveryPrice(currency)
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -319,7 +321,7 @@ function RecoveryForm({
         <div>
           <label style={labelStyle} className="dark:text-gray-300">Upload Means of Identification *</label>
           <p style={{ fontSize: '12px', color: '#9d8fd4', margin: '0 0 10px' }}>
-            Accepted: Digital NIN, International Passport, National ID, Driver's License
+            Accepted: Digital NIN, International Passport, National ID, Driver&apos;s License
           </p>
           <input ref={fileRef} type="file" onChange={handleFile} accept="image/jpeg,image/png,application/pdf" style={{ display: 'none' }} />
           <button
@@ -595,6 +597,7 @@ export default function AccountRecoveryPage() {
 
     const fullName = `${form.firstName} ${form.lastName}`.trim()
     const priceNGN = activePlatform.price_ngn
+    const checkoutPlanName = `${activePlatform.name} Recovery`
 
     try {
       const formData = new FormData()
@@ -618,6 +621,8 @@ export default function AccountRecoveryPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: form.email,
+            serviceId: 'account-recovery',
+            planName: checkoutPlanName,
             amount: priceNGN,
             currency: 'NGN',
             metadata: { service: 'account-recovery', platform: activeTab, fullName, phone: form.phone, payment_method: 'paystack' },
@@ -636,6 +641,8 @@ export default function AccountRecoveryPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: form.email,
+            serviceId: 'account-recovery',
+            planName: checkoutPlanName,
             amount: priceNGN,
             currency: 'NGN',
             name: fullName,
@@ -717,7 +724,7 @@ export default function AccountRecoveryPage() {
                 color: activeTab === p.id ? p.color : '#9d8fd4',
                 padding: '2px 8px', borderRadius: '100px',
               }}>
-                {formatRegionalPrice(p.price_ngn, p.price_usd, currency)}
+                {formatAccountRecoveryPrice(currency)}
               </span>
             </button>
           ))}
@@ -738,7 +745,6 @@ export default function AccountRecoveryPage() {
                 agreed={agreed} setAgreed={setAgreed}
                 submitError={submitError} submitting={submitting}
                 isValid={isValid} handleSubmitAndPay={handleSubmitAndPay}
-                priceNGN={42000} priceUSD={30}
               />
             )}
             {activeTab === 'instagram' && (
@@ -751,7 +757,6 @@ export default function AccountRecoveryPage() {
                 agreed={agreed} setAgreed={setAgreed}
                 submitError={submitError} submitting={submitting}
                 isValid={isValid} handleSubmitAndPay={handleSubmitAndPay}
-                priceNGN={75000} priceUSD={50}
               />
             )}
             {activeTab === 'tiktok' && (
@@ -764,7 +769,6 @@ export default function AccountRecoveryPage() {
                 agreed={agreed} setAgreed={setAgreed}
                 submitError={submitError} submitting={submitting}
                 isValid={isValid} handleSubmitAndPay={handleSubmitAndPay}
-                priceNGN={75000} priceUSD={50}
               />
             )}
           </div>
@@ -776,7 +780,7 @@ export default function AccountRecoveryPage() {
             <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(168,85,247,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '20px', padding: '24px' }} className="dark:bg-purple-900/10 dark:border-purple-800/30">
               <p style={{ fontSize: '12px', fontWeight: 700, color: '#9d8fd4', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px' }}>Service Fee</p>
               <p style={{ fontSize: '36px', fontWeight: 900, color: '#7c3aed', margin: '0 0 4px', lineHeight: 1 }}>
-                {formatRegionalPrice(activePlatform.price_ngn, activePlatform.price_usd, currency)}
+                {formatAccountRecoveryPrice(currency)}
               </p>
               <p style={{ fontSize: '14px', color: '#9d8fd4', margin: '0 0 20px' }}>One-time payment. Checkout is processed in NGN.</p>
               <div style={{ display: 'grid', gap: '10px' }}>
@@ -813,7 +817,7 @@ export default function AccountRecoveryPage() {
                     <span style={{ fontSize: '13px', fontWeight: 600, color: activeTab === p.id ? p.color : '#6b5fa0' }} className="dark:text-gray-400">{p.name}</span>
                   </div>
                   <span style={{ fontSize: '12px', fontWeight: 700, color: activeTab === p.id ? p.color : '#9d8fd4' }}>
-                    {formatRegionalPrice(p.price_ngn, p.price_usd, currency)}
+                    {formatAccountRecoveryPrice(currency)}
                   </span>
                 </button>
               ))}

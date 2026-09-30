@@ -36,7 +36,7 @@ PurpleSoftHub services and starting prices:
 - Video Content Creation: short-form and brand video content from $35.
 - Music Distribution: singles, albums, EPs, artist plans from $10.
 - Music Promotion: Spotify, Apple Music, TikTok, Reels, playlist and campaign support from $21.
-- Account Recovery: Facebook, Instagram, TikTok, X, Gmail recovery support from $30.
+- Account Recovery: Facebook, Instagram, and TikTok recovery support is $99 per recovery. Ask the team about X or Gmail recovery.
 
 Process: discovery, strategy, design, build, launch, support.
 Primary contact: hello@purplesofthub.com.
