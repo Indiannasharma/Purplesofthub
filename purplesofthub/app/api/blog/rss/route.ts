@@ -23,8 +23,8 @@ export async function GET() {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.purplesofthub.com'
     const items = (posts || [])
-      .filter((p: any) => p.slug && p.title)
-      .map((post: any) => {
+      .filter((p) => p.slug && p.title)
+      .map((post) => {
         const postUrl = `${baseUrl}/blog/${post.slug}`
         const pubDate = new Date(post.published_at || post.created_at).toUTCString()
         return `
@@ -45,7 +45,7 @@ export async function GET() {
   <channel>
     <title>PurpleSoftHub Blog</title>
     <link>${baseUrl}/blog</link>
-    <description>Insights on web development, digital marketing, music and tech from Africa's Digital Innovation Studio.</description>
+    <description>Insights on web development, digital marketing, music and tech from PurpleSoftHub, a Digital Innovation Studio.</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${baseUrl}/api/blog/rss" rel="self" type="application/rss+xml" />

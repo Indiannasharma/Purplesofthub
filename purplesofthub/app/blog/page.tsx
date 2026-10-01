@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Blog | PurpleSoftHub',
   description:
-    "Insights on web development, digital marketing, music and tech from Africa's Digital Innovation Studio.",
+    "Insights on web development, digital marketing, music and tech from PurpleSoftHub, a Digital Innovation Studio.",
 }
 
 // Reading time estimator

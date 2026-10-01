@@ -299,7 +299,7 @@ export default async function Home() {
       {/* ── BRANDS TYPEWRITER ── */}
       <section style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(60px, 8vw, 100px) 24px', textAlign: 'center' }}>
         <p style={{ fontSize: '14px', fontWeight: 700, color: '#a855f7', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>
-          Trusted by businesses across Africa
+          Digital innovation for businesses, brands and creators worldwide
         </p>
         <h2 style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 900, color: 'var(--cyber-heading)', margin: '0 0 8px', lineHeight: 1.15 }}>
           We Work With
@@ -395,7 +395,7 @@ export default async function Home() {
                 Our <span className="grad-text">Success Stories</span>
               </h2>
               <p style={{ fontSize: 15, color: "var(--cyber-body)", maxWidth: 440, margin: "0 auto", lineHeight: 1.7 }}>
-                Real clients, real results — here's what we've helped build.
+                Real clients, real results — here&apos;s what we&apos;ve helped build.
               </p>
             </div>
           </Reveal>
@@ -672,7 +672,7 @@ export default async function Home() {
           </Reveal>
           {trendingPosts.length > 0 ? (
             <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
-              {trendingPosts.map((post: any) => (
+              {trendingPosts.map((post) => (
                 <StaggerItem key={post.id}>
                   <Link href={`/blog/${post.slug}`}>
                     <div className="cyber-card" style={{ padding: "28px 24px", position: "relative", overflow: "hidden", cursor: "pointer", transition: "all 0.3s ease" }}>
@@ -707,7 +707,7 @@ export default async function Home() {
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.16) 0%,transparent 65%)", pointerEvents: "none" }} />
         <FadeInUp>
           <div style={{ position: "relative", zIndex: 2, maxWidth: 680, margin: "0 auto" }}>
-            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 2, color: "#a855f7", textTransform: "uppercase", marginBottom: 20 }}>→ Let's Build Your Next Project ←</div>
+            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 2, color: "#a855f7", textTransform: "uppercase", marginBottom: 20 }}>→ Let&apos;s Build Your Next Project ←</div>
             <h2 style={{ fontFamily: "Outfit", fontSize: "clamp(32px,5vw,62px)", fontWeight: 900, color: "var(--cyber-heading)", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 20 }}>
               Ready to Build Something <span className="grad-text">Extraordinary?</span>
             </h2>

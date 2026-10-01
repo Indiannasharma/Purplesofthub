@@ -95,9 +95,9 @@ const academyStats = [
   },
   {
     value: null,
-    text: "Africa",
-    label: "Market focus",
-    detail: "Built around local opportunities with global standards",
+    text: "Build",
+    label: "Practical skills",
+    detail: "Real projects for modern careers and creative businesses",
     icon: Globe2,
     accent: "#f472b6",
   },
@@ -163,7 +163,7 @@ export default function AcademyPage() {
           <div className="academy-hero-copy">
             <span className="academy-kicker">
               <GraduationCap size={16} aria-hidden="true" />
-              Practical digital skills
+              Build real-world digital skills
             </span>
 
             <h1>
@@ -172,7 +172,7 @@ export default function AcademyPage() {
             </h1>
 
             <p className="academy-lead">
-              Build practical skills in tech, design, AI, and creative business. Learn through real projects for modern careers and African businesses.
+              Build practical skills in tech, design, AI, and creative business. Learn through real projects for modern careers and businesses worldwide.
             </p>
 
             <div className="academy-actions">

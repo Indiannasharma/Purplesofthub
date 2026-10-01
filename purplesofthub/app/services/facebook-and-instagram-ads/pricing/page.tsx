@@ -34,7 +34,7 @@ export default function FacebookAdsPricingPage() {
               Choose Your Perfect Plan
             </p>
             <p style={{ color: "var(--text-secondary)", fontSize: 15, maxWidth: 500, margin: "0 auto 32px" }}>
-              Professional Facebook & Instagram Ads management for businesses in Nigeria and worldwide.
+              Professional Facebook & Instagram Ads management to reach your audience and grow your business.
               All packages include strategy, creative direction, optimization, and performance reporting.
               Ad spend is paid directly to Meta (Facebook/Instagram).
             </p>

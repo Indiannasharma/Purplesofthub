@@ -5,7 +5,7 @@ export const PREMIUM_RESOURCES: PremiumResource[] = [
     id: "capability-statement",
     title: "PurpleSoftHub Capability Statement",
     slug: "capability-statement",
-    description: "A concise overview of our services, process, selected work, and how we partner with growing African businesses.",
+    description: "A concise overview of our services, process, selected work, and how we partner with growing businesses across markets.",
     category: "Capability Statement",
     version: "2026.1",
     tags: ["Agency", "Services", "Pitch"],

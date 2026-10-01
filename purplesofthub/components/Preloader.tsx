@@ -16,7 +16,7 @@ export default function Preloader() {
 
     if (hasVisited) return
 
-    setVisible(true)
+    const showTimer = setTimeout(() => setVisible(true), 0)
 
     // Phase: hold after logo appears
     const holdTimer = setTimeout(() => {
@@ -37,6 +37,7 @@ export default function Preloader() {
     }, 1900)
 
     return () => {
+      clearTimeout(showTimer)
       clearTimeout(holdTimer)
       clearTimeout(outTimer)
       clearTimeout(removeTimer)
@@ -201,7 +202,7 @@ export default function Preloader() {
             animationDelay: '0.85s',
             opacity: 0,
           }}>
-            Africa&apos;s Digital Innovation Studio
+            Digital Innovation Studio
           </p>
         </div>
 

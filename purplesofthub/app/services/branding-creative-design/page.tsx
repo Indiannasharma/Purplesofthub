@@ -7,7 +7,7 @@ import RegionalPrice from '@/components/pricing/RegionalPrice'
 
 export const metadata: Metadata = {
   title: 'Branding & Creative Design | PurpleSoftHub',
-  description: 'Full-service branding and creative design. Logo, brand guidelines, color systems, and complete visual identity. African market expertise.',
+  description: 'Full-service branding and creative design. Logo, brand guidelines, color systems, and complete visual identity. Brand identities shaped around your audience and market.',
 }
 
 export default function BrandingPage() {
@@ -45,7 +45,7 @@ export default function BrandingPage() {
                 { icon: '💡', title: 'Original Concepts', desc: 'Fresh, creative ideas tailored to your business.' },
                 { icon: '📋', title: 'Complete System', desc: 'Logo, colors, fonts, imagery style, and brand voice.' },
                 { icon: '↔️', title: 'Scalable Design', desc: 'Works perfectly at any size, on any medium.' },
-                { icon: '🌍', title: 'African Expertise', desc: 'We understand markets and cultures across Africa.' },
+                { icon: '🌍', title: 'Audience-led Design', desc: 'Brand identities shaped around your audience, culture, and market.' },
                 { icon: '🤝', title: 'Ongoing Support', desc: 'Brand guidelines and implementation support included.' },
               ].map(item => (
                 <div key={item.title} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
@@ -60,7 +60,7 @@ export default function BrandingPage() {
           </div>
           <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(34,211,238,0.05))', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '24px', padding: 'clamp(32px, 4vw, 48px)', textAlign: 'center' }}>
             <h2 style={{ fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: 900, color: 'var(--cyber-heading, #1a1a2e)', margin: '0 0 12px' }}>Ready to Build Your Brand?</h2>
-            <p style={{ fontSize: '15px', color: 'var(--cyber-body, #4a3f6b)', margin: '0 0 28px', lineHeight: 1.7 }}>Let's create a brand that tells your story and resonates with your audience.</p>
+            <p style={{ fontSize: '15px', color: 'var(--cyber-body, #4a3f6b)', margin: '0 0 28px', lineHeight: 1.7 }}>Let&apos;s create a brand that tells your story and resonates with your audience.</p>
             <a href="https://wa.me/2348167593393" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '13px 28px', borderRadius: '12px', textDecoration: 'none', fontWeight: 800, fontSize: '15px' }}>💬 Chat on WhatsApp</a>
           </div>
         </div>

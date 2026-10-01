@@ -12,16 +12,22 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.purplesofthub.com'),
   title: {
-    default: "PurpleSoftHub — Africa's Digital Innovation Studio",
+    default: "PurpleSoftHub — Digital Innovation Studio",
     template: '%s | PurpleSoftHub',
   },
-  description: "PurpleSoftHub is Africa's leading digital innovation studio. We build world-class websites, mobile apps, SaaS platforms, run digital marketing campaigns, promote music globally and train the next generation of African tech talent. Serving clients across Africa, UK, USA, Canada and beyond.",
+  description: "PurpleSoftHub is a Digital Innovation Studio building websites, mobile apps, SaaS platforms, brands and marketing campaigns for businesses and creators worldwide. Explore music distribution and practical digital skills training.",
   keywords: [
     // Brand
     "PurpleSoftHub",
     "Purplesoft Nigeria",
-    "Africa digital innovation studio",
+    "Digital Innovation Studio",
+    "digital product development",
     // Core services
+    "web development",
+    "mobile app development",
+    "digital marketing",
+    "brand design",
+    "SaaS development",
     "web development Africa",
     "mobile app development Africa",
     "digital marketing Africa",
@@ -29,11 +35,11 @@ export const metadata: Metadata = {
     "SaaS development Africa",
     "music promotion Africa",
     // Global reach
-    "African digital agency",
+    "digital agency for businesses",
     "digital agency Nigeria",
-    "African tech studio",
+    "creative technology studio",
     "web development Nigeria",
-    "digital innovation Africa",
+    "digital innovation services",
     // Academy
     "tech academy Africa",
     "learn web development Africa",
@@ -44,7 +50,7 @@ export const metadata: Metadata = {
     "account recovery Nigeria",
     "social media management Africa",
     // Global
-    "African startup studio",
+    "startup product development",
     "digital agency for global brands",
   ],
   authors: [{ name: 'PurpleSoftHub', url: 'https://www.purplesofthub.com' }],
@@ -55,14 +61,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://www.purplesofthub.com',
     siteName: 'PurpleSoftHub',
-    title: "PurpleSoftHub — Africa's Digital Innovation Studio",
-    description: "Building world-class digital products for businesses, startups and creators across Africa and beyond. Web · Mobile · Marketing · Music · Academy.",
+    title: "PurpleSoftHub — Digital Innovation Studio",
+    description: "Digital products, brands and creative experiences for businesses and creators worldwide. Technology · Creative · Marketing · Media.",
     images: [
       {
         url: 'https://www.purplesofthub.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: "PurpleSoftHub — Africa's Digital Innovation Studio",
+        alt: "PurpleSoftHub — Digital Innovation Studio",
         type: 'image/png',
       },
     ],
@@ -71,8 +77,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@purplesofthub',
     creator: '@purplesofthub',
-    title: "PurpleSoftHub — Africa's Digital Innovation Studio",
-    description: "Building world-class digital products across Africa and beyond. Web · Mobile · Marketing · Music · Academy.",
+    title: "PurpleSoftHub — Digital Innovation Studio",
+    description: "Digital innovation for businesses, brands and creators worldwide. Technology · Creative · Marketing · Media.",
     images: ['https://www.purplesofthub.com/og-image.png'],
   },
   icons: {
@@ -120,10 +126,10 @@ export const metadata: Metadata = {
     'og:image:width': '1200',
     'og:image:height': '630',
     'og:image:type': 'image/png',
-    'og:image:alt': "PurpleSoftHub — Africa's Digital Innovation Studio",
+    'og:image:alt': "PurpleSoftHub — Digital Innovation Studio",
     'twitter:card': 'summary_large_image',
     'twitter:image': 'https://www.purplesofthub.com/opengraph-image',
-    'twitter:image:alt': "PurpleSoftHub — Africa's Digital Innovation Studio",
+    'twitter:image:alt': "PurpleSoftHub — Digital Innovation Studio",
   },
 };
 

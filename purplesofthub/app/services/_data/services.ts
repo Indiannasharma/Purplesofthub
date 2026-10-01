@@ -83,10 +83,11 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["ui-ux-design", "seo", "ecommerce-development"],
-    metaTitle: "Web Development — Africa | PurpleSoftHub",
+    metaTitle: "Web Development — PurpleSoftHub",
     metaDescription:
-      "Professional web development services across Africa and globally. Business websites, SaaS platforms, e-commerce stores and custom dashboards built to convert.",
+      "Professional web development services for businesses worldwide. Business websites, SaaS platforms, e-commerce stores and custom dashboards built to convert.",
     keywords: [
+      "web development services",
       "web development Africa",
       "web development agency Lagos",
       "custom website development Nigeria",
@@ -145,10 +146,11 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["web-development", "ui-ux-design", "saas-development"],
-    metaTitle: "Mobile App Development — Africa | PurpleSoftHub",
+    metaTitle: "Mobile App Development — PurpleSoftHub",
     metaDescription:
-      "Cross-platform mobile app development across Africa. Flutter and React Native apps for iOS and Android.",
+      "Cross-platform mobile app development for businesses and startups. Flutter and React Native apps for iOS and Android.",
     keywords: [
+      "mobile app development",
       "mobile app development Africa",
       "Flutter app development Nigeria",
       "React Native development Africa",
@@ -207,10 +209,11 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["seo", "social-media-management", "branding-design"],
-    metaTitle: "Digital Marketing Agency — Africa | PurpleSoftHub",
+    metaTitle: "Digital Marketing Agency — PurpleSoftHub",
     metaDescription:
-      "Results-driven digital marketing across Africa. Facebook Ads, Google Ads, TikTok Ads, SEO and social media management for businesses worldwide.",
+      "Digital marketing built around your audience and business goals. Facebook Ads, Google Ads, TikTok Ads, SEO and social media management for businesses worldwide.",
     keywords: [
+      "digital marketing services",
       "digital marketing Africa",
       "Facebook ads agency Nigeria",
       "Google ads management Africa",
@@ -393,10 +396,12 @@ const services: Service[] = [
       },
     ],
     relatedServices: ["content-creation", "social-media-management", "facebook-and-instagram-ads"],
-    metaTitle: "Music Distribution & Promotion — Africa | PurpleSoftHub",
+    metaTitle: "Music Distribution & Promotion — PurpleSoftHub",
     metaDescription:
-      "Distribute your music to 150+ platforms globally. Professional music promotion and artist branding across Africa and worldwide.",
+      "Distribute your music to 150+ platforms globally. Music promotion and artist branding to reach listeners worldwide.",
     keywords: [
+      "music distribution",
+      "music promotion",
       "music distribution Africa",
       "music promotion Africa",
       "Spotify promotion Nigeria",
@@ -962,10 +967,11 @@ const services: Service[] = [
     relatedServices: ["social-media-management", "facebook-and-instagram-ads", "content-creation"],
     cta: "Start Account Recovery 🔐",
     ctaLink: "/services/social-media-management/account-recovery",
-    metaTitle: "Facebook & Instagram Account Recovery — Africa | PurpleSoftHub",
+    metaTitle: "Facebook & Instagram Account Recovery — PurpleSoftHub",
     metaDescription:
-      "Professional social media account recovery service across Africa. Recover hacked or disabled Facebook, Instagram and TikTok accounts. 14-30 business days.",
+      "Professional social media account recovery support for clients worldwide. Recover hacked or disabled Facebook, Instagram and TikTok accounts. 14-30 business days.",
     keywords: [
+      "social media account recovery",
       "account recovery Africa",
       "hacked account recovery Nigeria",
       "Facebook account recovery Africa",

@@ -109,8 +109,7 @@ export default function PortfolioPage() {
               Work we are <span>proud of.</span>
             </h1>
             <p className="pf-hero-copy">
-              Brands, platforms and digital experiences created for businesses and creators across
-              Africa and beyond.
+              Digital products, brands and creative experiences built for clients worldwide.
             </p>
           </Reveal>
 

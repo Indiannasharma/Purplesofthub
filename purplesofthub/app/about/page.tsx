@@ -9,12 +9,12 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com"
 export const metadata: Metadata = {
   title: "About Us — PurpleSoftHub",
   description:
-    "PurpleSoftHub is a digital innovation studio helping businesses, startups, and creators build powerful online experiences.",
+    "PurpleSoftHub is a Digital Innovation Studio bringing technology, creative design, marketing and media together for businesses and creators worldwide.",
   alternates: { canonical: `${SITE_URL}/about` },
   openGraph: {
     title: "About Us — PurpleSoftHub",
     description:
-      "PurpleSoftHub is a digital innovation studio helping businesses, startups, and creators build powerful online experiences.",
+      "PurpleSoftHub is a Digital Innovation Studio bringing technology, creative design, marketing and media together for businesses and creators worldwide.",
     url: `${SITE_URL}/about`,
     siteName: "PurpleSoftHub",
     type: "website",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Us — PurpleSoftHub",
     description:
-      "PurpleSoftHub is a digital innovation studio helping businesses, startups, and creators build powerful online experiences.",
+      "PurpleSoftHub is a Digital Innovation Studio bringing technology, creative design, marketing and media together for businesses and creators worldwide.",
   },
 };
 
@@ -63,9 +63,9 @@ export default function AboutPage() {
 
         <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%", textAlign: "center", position: "relative", zIndex: 2 }}>
           <Reveal>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 28, fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: 1 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,.12)", border: "1px solid rgba(168,85,247,.3)", borderRadius: 100, padding: "6px 16px", marginBottom: 28, fontSize: 12, fontWeight: 600, color: "var(--text-primary)", letterSpacing: 1 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 8px #a855f7", display: "inline-block" }} />
-              WHO WE ARE
+              ONE STUDIO. GLOBAL REACH.
             </div>
           </Reveal>
           <Reveal delay={0.1}>
@@ -75,7 +75,7 @@ export default function AboutPage() {
           </Reveal>
           <Reveal delay={0.2}>
             <p style={{ color: "var(--text-muted)", fontSize: 17, lineHeight: 1.85, maxWidth: 660, margin: "0 auto" }}>
-              PurpleSoftHub is a digital innovation studio focused on helping businesses, startups, and creators build powerful online experiences. We combine creativity, technology, and data-driven strategies to design and develop solutions that drive growth.
+              PurpleSoftHub is a Digital Innovation Studio serving businesses, brands, founders, and creators across the United States, Canada, United Kingdom, Africa, and beyond. We bring technology, creative design, marketing, and media together to help you build and grow.
             </p>
           </Reveal>
         </div>
