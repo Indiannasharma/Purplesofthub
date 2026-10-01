@@ -1,0 +1,133 @@
+/* Customer-only frame. Legacy module bodies retain their own styles and --cmd values. */
+body:has(.customer-shell) { padding-top: 0; }
+.customer-shell { position: fixed; inset: 0; display: grid; grid-template-columns: 256px minmax(0, 1fr); height: 100dvh; overflow: hidden; background: var(--cc-canvas); color: var(--cc-text); font-family: var(--cc-font-body); }
+.customer-shell .customer-sidebar { display: flex; flex-direction: column; min-height: 0; padding: 28px 16px 20px; border-right: 1px solid var(--cc-border); background: var(--cc-surface); overflow-y: auto; }
+.customer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 0 12px 24px; flex-shrink: 0; }
+.customer-brand img { width: 168px; height: 44px; object-fit: cover; object-position: center; }
+.customer-brand > span { color: var(--cc-text-muted); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; }
+.customer-navigation { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.customer-nav-group > p { padding: 0 12px 8px; color: var(--cc-text-muted); font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+.customer-navigation .ws-navigation a { min-height: 44px; padding: 11px 12px; font-size: 13px; gap: 12px; text-decoration: none; }
+.customer-navigation .ws-navigation a[aria-current="page"] { font-weight: 600; box-shadow: inset 3px 0 var(--cc-accent); }
+.customer-navigation .ws-navigation small { font-size: 10px; }
+.customer-support { display: flex; align-items: center; gap: 10px; padding: 14px 12px; border: 1px solid var(--cc-border); border-radius: 10px; color: var(--cc-text-secondary); font-size: 12px; }
+.customer-support > span { flex: 1; min-width: 0; }
+.customer-support small { display: block; margin-top: 4px; font-size: 10px; line-height: 1.5; color: var(--cc-text-muted); }
+.customer-sidebar-foot { margin-top: auto; padding: 26px 12px 0; font-size: 12px; color: var(--cc-text-secondary); }
+.customer-sidebar-foot small { display: block; margin-top: 4px; color: var(--cc-text-muted); font-size: 10px; }
+.customer-main-frame { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.customer-shell .customer-topbar { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; min-height: 72px; padding: 12px 32px; border-bottom: 1px solid var(--cc-border); background: var(--cc-surface); z-index: 30; }
+.customer-context { display: flex; align-items: center; gap: 12px; min-width: 0; font-size: 13px; }
+.customer-context-prefix { display: flex; align-items: center; gap: 12px; color: var(--cc-text-muted); }
+.customer-context-title { font-weight: 600; overflow-wrap: anywhere; }
+.customer-topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; position: relative; }
+.customer-topbar-actions > button { min-width: 40px; min-height: 40px; }
+.customer-shell .customer-mobile-trigger { display: none; }
+.customer-account { display: flex; align-items: center; gap: 8px; min-height: 40px; max-width: 220px; border-radius: 8px; padding: 0 6px; color: var(--cc-text); }
+.customer-avatar { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--cc-accent-soft); color: var(--cc-accent); font-size: 11px; font-weight: 600; }
+.customer-account-name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.customer-account-menu { width: min(300px, calc(100vw - 24px)); }
+.customer-account-menu [role="menuitem"] { gap: 10px; font-size: 13px; }
+.customer-account-menu [role="menuitem"]:focus { background: var(--cc-subtle); }
+.customer-account-menu [role="menuitem"]:last-child { color: var(--cc-error); }
+.customer-account-menu [data-radix-menu-content] { min-width: 0; }
+.customer-account-menu strong, .customer-account-menu [role="menuitem"] + span { display: block; }
+.customer-account-menu [data-slot], .customer-account-menu span { overflow-wrap: anywhere; }
+.customer-account-menu strong { font-size: 13px; }
+.customer-account-menu strong + span { display: block; padding-top: 4px; font-size: 12px; font-weight: 400; color: var(--cc-text-muted); }
+.customer-signout-error { position: absolute; top: 48px; right: 0; padding: 10px; width: 230px; background: var(--cc-surface); border: 1px solid var(--cc-error); font-size: 12px; color: var(--cc-error); }
+.customer-shell .customer-content { flex: 1; min-height: 0; min-width: 0; overflow-y: auto !important; overflow-x: hidden !important; overscroll-behavior: contain; padding: clamp(16px, 2vw, 28px); padding-bottom: 116px; -webkit-overflow-scrolling: touch; }
+.customer-shell .customer-content.customer-overview-content { padding: 0; background: var(--cc-canvas) !important; color: var(--cc-text) !important; }
+.customer-shell .customer-overview { max-width: 1200px; padding: 32px 32px 128px; gap: 24px; }
+.customer-overview .ws-page-header h1 { font-family: var(--cc-font-display); font-size: clamp(25px, 3vw, 32px); font-weight: 600; line-height: 1.25; }
+.customer-overview .ws-page-header p { margin-top: 8px; color: var(--cc-text-muted); font-size: 14px; line-height: 1.6; }
+.customer-shell .customer-overview :is(h1,h2,h3,h4) { color: var(--cc-text) !important; }
+.customer-shell .customer-overview :is(section.ws-card, .customer-next-step, .customer-help) { padding: 24px !important; background: var(--cc-surface) !important; border: 1px solid var(--cc-border); border-radius: 12px; min-width: 0; }
+.customer-shell .customer-overview .customer-next-step { display: flex; align-items: center; justify-content: space-between; gap: 24px; background: var(--cc-accent-soft) !important; border-color: var(--cc-border-strong); }
+.customer-next-step > div { min-width: 0; }
+.customer-next-step h2 { font-family: var(--cc-font-display); font-size: 21px; font-weight: 600; line-height: 1.35; margin: 8px 0; }
+.customer-next-step p:not(.customer-eyebrow) { max-width: 65ch; color: var(--cc-text-secondary); font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.customer-eyebrow { color: var(--cc-text-muted); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.customer-text-link { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; font-size: 12px; font-weight: 600; color: var(--cc-accent); text-decoration: none; overflow-wrap: anywhere; }
+.customer-text-link:hover { text-decoration: underline; }
+.customer-text-link svg { flex-shrink: 0; }
+.customer-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.customer-record-list { list-style: none; }
+.customer-record-list > li { display: flex; align-items: center; gap: 16px; padding: 18px 0; border-top: 1px solid var(--cc-border); min-width: 0; }
+.customer-record-icon { display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; border-radius: 9px; background: var(--cc-subtle); color: var(--cc-accent); }
+.customer-record-main { flex: 1; min-width: 0; }
+.customer-record-main h3 { font-size: 14px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.customer-record-main p { font-size: 12px; color: var(--cc-text-muted); line-height: 1.65; margin-top: 4px; overflow-wrap: anywhere; }
+.customer-record-main .cc-pill { margin-top: 10px; }
+.customer-project-state { display: grid; justify-items: end; gap: 10px; max-width: 180px; }
+.customer-project-state small { font-size: 11px; color: var(--cc-text-muted); }
+.customer-progress { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--cc-text-secondary); }
+.customer-progress [role="progressbar"] { width: 88px; height: 5px; border-radius: 5px; background: var(--cc-subtle); overflow: hidden; }
+.customer-progress [role="progressbar"] > span { display: block; height: 100%; background: var(--cc-accent); border-radius: inherit; }
+.customer-invoice-amount { max-width: 45%; font-size: 14px; font-weight: 600; line-height: 1.6; overflow-wrap: anywhere; text-align: right; }
+.customer-section-note { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 11px; color: var(--cc-text-muted); line-height: 1.5; }
+.customer-record-list .customer-music-row { align-items: flex-start; }
+.customer-discovery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.customer-discovery { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.customer-discovery > svg { color: var(--cc-accent); }
+.customer-discovery h2 { font-family: var(--cc-font-display); font-size: 18px; font-weight: 600; margin: 7px 0; }
+.customer-discovery div > p:last-child { font-size: 13px; color: var(--cc-text-muted); line-height: 1.65; }
+.customer-help { display: flex; align-items: center; gap: 16px; }
+.customer-help > svg { flex-shrink: 0; color: var(--cc-accent); }
+.customer-help > div { flex: 1; min-width: 0; }
+.customer-help h2 { font-size: 14px; font-weight: 600; line-height: 1.5; }
+.customer-help p { font-size: 12px; color: var(--cc-text-muted); line-height: 1.65; margin-top: 4px; }
+.customer-overview .cc-empty-state { min-height: 190px; padding: 24px 12px; }
+.customer-overview .cc-empty-state h2 { font-size: 15px; }
+.customer-overview .cc-error-state { min-height: 150px; }
+.customer-mobile-sheet { width: 310px; z-index: 10001; }
+.customer-mobile-sheet .customer-brand { padding: 24px 12px; }
+.customer-mobile-sheet > p { font-size: 12px; line-height: 1.6; margin-top: 6px; color: var(--cc-text-muted); }
+/* Keep the unchanged notification controller inside the viewport. */
+.customer-notifications button { min-width: 40px; min-height: 40px; }
+@media (max-width: 1023px) {
+  .customer-shell { grid-template-columns: minmax(0,1fr); }
+  .customer-shell .customer-sidebar { display: none; }
+  .customer-shell .customer-mobile-trigger { display: inline-flex; flex-shrink: 0; }
+  .customer-shell .customer-topbar { padding-inline: 20px; }
+}
+@media (max-width: 767px) {
+  .customer-shell .customer-topbar { min-height: 64px; padding-inline: 12px; gap: 6px; }
+  .customer-context { gap: 6px; }
+  .customer-context-prefix, .customer-account-name { display: none; }
+  .customer-context-title { font-size: 12px; }
+  .customer-topbar-actions { gap: 4px; }
+  .customer-account { padding: 0 2px; gap: 3px; }
+  .customer-shell .customer-overview { padding: 24px 16px 128px; gap: 20px; }
+  .customer-shell .customer-overview :is(section.ws-card, .customer-next-step, .customer-help) { padding: 20px !important; }
+  .customer-overview-grid, .customer-discovery-grid { grid-template-columns: minmax(0,1fr); gap: 20px; }
+  .customer-shell .customer-overview .customer-next-step { align-items: stretch; flex-direction: column; gap: 18px; }
+  .customer-record-list > li { gap: 12px; }
+  .customer-record-list .customer-project-row { flex-wrap: wrap; }
+  .customer-project-row .customer-record-main { flex-basis: calc(100% - 52px); }
+  .customer-project-state { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; max-width: none; width: 100%; padding-left: 50px; }
+  .customer-help { flex-wrap: wrap; }
+  .customer-help .customer-text-link { margin-left: 37px; }
+  .customer-notifications > div > div { position: fixed !important; top: 64px !important; right: 12px !important; width: min(320px,calc(100vw - 24px)) !important; }
+}
+/* Reserve the assistant gutter and hide only its launcher while a modal blocks the page.
+   Nova itself, requests and persistence are unchanged. */
+body:has(.customer-shell):has([role="dialog"][data-state="open"]) .nova-shell { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .customer-shell *, .customer-mobile-sheet * { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; } }
+
+/* Local visual QA route only; exercise the real global assistant without requests. */
+.customer-qa-controls { padding: 16px 24px; background: var(--cc-subtle); border-bottom: 1px solid var(--cc-border); }
+.customer-qa-controls strong { display: block; font-size: 12px; color: var(--cc-text-muted); margin-bottom: 10px; }
+.customer-qa-controls > div { display: flex; flex-wrap: wrap; gap: 8px; }
+body:has(.customer-qa-controls) .nova-shell { display: flex !important; flex-direction: column; align-items: flex-end; }
+
+/* A fixed, content-free assistant lane prevents the global launcher covering actions. */
+.customer-assistant-gutter { flex: 0 0 84px; display: flex; align-items: center; padding: 12px 160px 12px 32px; border-top: 1px solid var(--cc-border); color: var(--cc-text-muted); background: var(--cc-canvas); font-size: 11px; line-height: 1.5; }
+@media (max-width: 767px) { .customer-assistant-gutter { flex-basis: 76px; padding-left: 16px; padding-right: 136px; font-size: 10px; } }
+
+@media (max-width: 767px) {
+  .customer-shell .customer-overview .customer-help { display: grid; grid-template-columns: 21px minmax(0, 1fr); gap: 12px; }
+  .customer-help .customer-text-link { grid-column: 2; margin-left: 0; }
+  .customer-record-list .customer-invoice-row { flex-wrap: wrap; }
+  .customer-invoice-amount { max-width: 100%; flex-basis: 100%; text-align: left; }
+}

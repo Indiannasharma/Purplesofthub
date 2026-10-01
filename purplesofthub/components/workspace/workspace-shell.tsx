@@ -11,7 +11,7 @@ import { WorkspaceRoot, type WorkspaceKind } from "@/components/workspace/page";
 
 type NavigationLink = { id: string; title: string; href: string; icon: LucideIcon; note?: string };
 
-function Navigation({ items, pathname, rootHref, onNavigate }: { items: readonly NavigationLink[]; pathname: string; rootHref: string; onNavigate?: () => void }) {
+export function WorkspaceNavigation({ items, pathname, rootHref, onNavigate }: { items: readonly NavigationLink[]; pathname: string; rootHref: string; onNavigate?: () => void }) {
   return <nav className="ws-navigation" aria-label="Workspace sections">{items.map(item => {
     const active = isWorkspaceDestinationActive(pathname, item.href, rootHref);
     return <Link key={item.id} href={item.href} onClick={onNavigate} aria-current={active ? "page" : undefined}><item.icon size={16} aria-hidden="true" /><span>{item.title}{item.note ? <small>{item.note}</small> : null}</span></Link>;
@@ -27,7 +27,7 @@ export function WorkspaceShell({ kind, title, navigation, pathname, actions, mai
   return <WorkspaceRoot kind={kind}>
     <a href={"#" + mainId} className="ws-skip">Skip to content</a>
     <div className="ws-shell">
-      <aside className="ws-sidebar" aria-label="Workspace sidebar"><p className="mb-5 text-sm font-semibold">PurpleSoftHub</p><Navigation items={navigation} pathname={pathname} rootHref={kind === "admin" ? "/admin" : "/dashboard"} /></aside>
+      <aside className="ws-sidebar" aria-label="Workspace sidebar"><p className="mb-5 text-sm font-semibold">PurpleSoftHub</p><WorkspaceNavigation items={navigation} pathname={pathname} rootHref={kind === "admin" ? "/admin" : "/dashboard"} /></aside>
       <div className="min-w-0">
         <header className="ws-topbar">
           <div className="flex min-w-0 items-center gap-3">
@@ -35,7 +35,7 @@ export function WorkspaceShell({ kind, title, navigation, pathname, actions, mai
               <SheetTrigger asChild><Button type="button" variant="ghost" size="icon" className="ws-mobile-trigger" aria-label="Open workspace navigation"><Menu size={20} aria-hidden="true" /></Button></SheetTrigger>
               <WorkspaceSheetContent side="left" className="w-[288px]">
                 <SheetTitle>Workspace navigation</SheetTitle><SheetDescription className="mb-6 mt-2">Navigate the existing PurpleSoftHub experiences.</SheetDescription>
-                <Navigation items={navigation} pathname={pathname} rootHref={kind === "admin" ? "/admin" : "/dashboard"} onNavigate={() => setOpen(false)} />
+                <WorkspaceNavigation items={navigation} pathname={pathname} rootHref={kind === "admin" ? "/admin" : "/dashboard"} onNavigate={() => setOpen(false)} />
               </WorkspaceSheetContent>
             </Sheet>
             <span className="text-sm font-semibold">{title}</span>

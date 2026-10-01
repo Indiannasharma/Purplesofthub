@@ -11,27 +11,33 @@ export type CustomerNavItem = {
   note?: string;
 };
 
-/** Prepared for Phase 2; the current production dashboard shell is unchanged. */
+/** Current destinations only. Groups can grow without changing the shell or identity model. */
 export const customerNavigation: CustomerNavItem[] = [
   { id: "overview", title: "Overview", href: "/dashboard", icon: LayoutDashboard, destination: "workspace" },
   { id: "services", title: "Services", href: "/dashboard/services", icon: Wrench, destination: "workspace" },
   { id: "projects", title: "Projects", href: "/dashboard/projects", icon: FolderKanban, destination: "workspace" },
-  { id: "invoices", title: "Invoices / Payments", href: "/dashboard/invoices", icon: ReceiptText, destination: "workspace" },
+  { id: "invoices", title: "Invoices", href: "/dashboard/invoices", icon: ReceiptText, destination: "workspace" },
   { id: "files", title: "Files", href: "/dashboard/files", icon: FolderOpen, destination: "workspace" },
   { id: "advertising", title: "Advertising", href: "/dashboard/ads", icon: Megaphone, destination: "workspace" },
   { id: "music", title: "Music", href: "/dashboard/music", icon: Music4, destination: "workspace" },
-  { id: "academy", title: "Academy", href: "/academy", icon: GraduationCap, destination: "public", note: "Public courses and waitlist" },
+  { id: "academy", title: "Academy", href: "/academy", icon: GraduationCap, destination: "public", note: "Public tracks and waitlist" },
   { id: "recovery", title: "Account Recovery", href: "/dashboard/recovery", icon: ShieldCheck, destination: "workspace" },
   { id: "support", title: "Support", href: "https://wa.me/qr/L36LMHQ4RLP2B1", icon: MessagesSquare, destination: "external", note: "WhatsApp support" },
-  { id: "settings", title: "Settings / Account", href: "/dashboard/settings", icon: Settings, destination: "workspace" },
+  { id: "settings", title: "Settings", href: "/dashboard/settings", icon: Settings, destination: "workspace" },
 ];
 
-/** Existing advertising setup capability stays available during the later shell migration. */
+/** Manual advertising setup instructions; not a provider connection. */
 export const customerAdvertisingLinks: CustomerNavItem[] = [
-  { id: "connect-meta", title: "Connect Meta", href: "/dashboard/connect-meta", icon: Link2, destination: "workspace" },
+  { id: "connect-meta", title: "Meta access guide", href: "/dashboard/connect-meta", icon: Link2, destination: "workspace" },
 ];
 
 export function isCustomerNavItemActive(pathname: string | null | undefined, item: CustomerNavItem): boolean {
   if (item.destination === "external") return false;
   return isWorkspaceDestinationActive(pathname, item.href, "/dashboard");
 }
+
+export const customerNavigationGroups = [
+  { title: "Your workspace", ids: ["overview", "projects", "invoices", "files"] },
+  { title: "Grow with us", ids: ["services", "advertising", "music", "recovery"] },
+  { title: "Explore & account", ids: ["academy", "settings"] },
+] as const;
