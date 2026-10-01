@@ -1,0 +1,108 @@
+/* Opt-in shared application styling. No public variables or legacy selectors are reset. */
+.workspace-root,
+.workspace-overlay {
+  --background: var(--cc-canvas);
+  --foreground: var(--cc-text);
+  --card: var(--cc-surface);
+  --card-foreground: var(--cc-text);
+  --popover: var(--cc-surface);
+  --popover-foreground: var(--cc-text);
+  --primary: var(--cc-accent);
+  --primary-foreground: var(--cc-on-accent);
+  --secondary: var(--cc-subtle);
+  --secondary-foreground: var(--cc-text-secondary);
+  --muted: var(--cc-subtle);
+  --muted-foreground: var(--cc-text-muted);
+  --accent: var(--cc-accent-soft);
+  --accent-foreground: var(--cc-accent);
+  --destructive: var(--cc-error);
+  --destructive-foreground: var(--cc-on-accent);
+  --border: var(--cc-border);
+  --input: var(--cc-border-strong);
+  --ring: var(--cc-accent);
+  --ws-card-padding: 20px;
+  --ws-section-gap: 16px;
+}
+.workspace-root[data-workspace-kind="customer"] {
+  --ws-card-padding: 24px;
+  --ws-section-gap: 24px;
+}
+.workspace-root { min-width: 0; }
+.workspace-overlay { color: var(--cc-text); color-scheme: light; font-family: var(--cc-font-body, system-ui, sans-serif); }
+html.dark .workspace-overlay { color-scheme: dark; }
+.workspace-root .ws-page { display: flex; flex-direction: column; width: 100%; min-width: 0; gap: var(--ws-section-gap); margin-inline: auto; padding: 24px 24px 96px; }
+.workspace-root .ws-page-customer { max-width: 1152px; }
+.workspace-root .ws-card { min-width: 0; padding: var(--ws-card-padding); background: var(--cc-surface); border-color: var(--cc-border); border-radius: 12px; box-shadow: var(--cc-shadow-1); }
+.workspace-root .ws-page-header :is(h1, p), .workspace-root .ws-section-header :is(h2, p) { overflow-wrap: anywhere; }
+.workspace-root .ws-section-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.workspace-root .ws-section-header h2 { color: var(--cc-text); font-family: var(--cc-font-display); font-size: 18px; font-weight: 600; line-height: 1.4; }
+.workspace-root .ws-section-header p { margin-top: 4px; max-width: 65ch; color: var(--cc-text-muted); font-size: 13px; line-height: 1.6; }
+.workspace-root .ws-field { min-width: 0; }
+.workspace-root .ws-field :is(input, textarea, select) { color: var(--cc-text); background: var(--cc-surface); }
+.workspace-root .ws-actions { min-width: 0; }
+.workspace-root .ws-actions > * { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.ws-dialog { width: calc(100vw - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; overflow-wrap: anywhere; border-radius: 12px; background: var(--cc-surface); }
+.ws-sheet { max-width: calc(100vw - 32px); max-height: 100dvh; overflow-y: auto; overflow-wrap: anywhere; background: var(--cc-surface); }
+.workspace-root .ws-skip { position: absolute; top: 8px; left: 8px; z-index: 60; padding: 10px 16px; border-radius: 8px; background: var(--cc-surface); color: var(--cc-text); transform: translateY(-160%); }
+.workspace-root .ws-skip:focus { transform: translateY(0); }
+.workspace-root .ws-shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100dvh; }
+.workspace-root .ws-sidebar { min-width: 0; padding: 24px 16px; border-right: 1px solid var(--cc-border); background: var(--cc-surface); }
+.ws-navigation { display: grid; gap: 4px; }
+.ws-navigation a { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 10px; border-radius: 8px; color: var(--cc-text-secondary); font-size: 13px; }
+.ws-navigation a[aria-current="page"] { background: var(--cc-accent-soft); color: var(--cc-accent); }
+.ws-navigation a:hover { background: var(--cc-subtle); }
+.ws-navigation svg { flex: none; }
+.ws-navigation small { display: block; margin-top: 2px; color: var(--cc-text-muted); font-size: 11px; }
+.workspace-root .ws-topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; padding: 12px 24px; border-bottom: 1px solid var(--cc-border); background: var(--cc-surface); }
+.workspace-root .ws-mobile-trigger { display: none; }
+.workspace-root .ws-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ws-section-gap); }
+.workspace-root .ws-stack { display: grid; gap: 20px; }
+.workspace-root .ws-preview-note { color: var(--cc-text-muted); font-size: 13px; line-height: 1.6; }
+.workspace-root :is(a, button, input, textarea, select, [tabindex]):focus-visible,
+.workspace-overlay :is(a, button, input, textarea, select, [tabindex]):focus-visible,
+.workspace-overlay:focus-visible { outline: 2px solid var(--cc-accent); outline-offset: 3px; }
+@media (max-width: 1023px) {
+  .workspace-root .ws-shell { grid-template-columns: minmax(0, 1fr); }
+  .workspace-root .ws-sidebar { display: none; }
+  .workspace-root .ws-mobile-trigger { display: inline-flex; }
+}
+@media (max-width: 767px) {
+  .workspace-root .ws-page { padding: 20px 16px 96px; }
+  .workspace-root .ws-grid { grid-template-columns: minmax(0, 1fr); }
+  .workspace-root .ws-topbar { padding-inline: 16px; }
+  .workspace-root .ws-card { padding: 20px; }
+  .workspace-root .ws-page-header { align-items: stretch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-root *, .workspace-overlay, .workspace-overlay * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+.workspace-root .cc-pill { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+
+/* The unlayered legacy global reset beats utility padding; opt-in controls need an
+   unlayered scoped bridge. Existing UI behavior and all legacy consumers are retained. */
+body:has(.workspace-root .ws-shell) { padding-top: 0; }
+.workspace-root .admin-page { padding: 20px 16px 96px; }
+.workspace-root .ws-field :is(input, textarea) { padding: 8px 12px; }
+.workspace-root .ws-field select { padding: 8px 32px 8px 12px; }
+.workspace-root .ws-field :is(input, select) { min-height: 40px; }
+.ws-dialog, .ws-sheet { padding: 24px; }
+.workspace-overlay[role="menu"] { padding: 4px; max-width: calc(100vw - 24px); }
+.workspace-overlay [role="menuitem"] { min-height: 36px; padding: 8px 12px; }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="default"] { background: var(--cc-accent); color: var(--cc-on-accent); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="default"]:hover { background: var(--cc-accent-hover); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="outline"] { background: var(--cc-surface); color: var(--cc-text-secondary); border-color: var(--cc-border-strong); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="secondary"] { background: var(--cc-subtle); color: var(--cc-text); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="ghost"] { background: transparent; color: var(--cc-text-secondary); }
+:is(.workspace-root, .workspace-overlay) .ws-button:is([data-workspace-variant="outline"], [data-workspace-variant="secondary"], [data-workspace-variant="ghost"]):hover { background: var(--cc-subtle); color: var(--cc-text); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="destructive"] { background: var(--cc-error); color: var(--cc-on-accent); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="link"] { background: transparent; color: var(--cc-accent); }
+:is(.workspace-root, .workspace-overlay) .ws-button[data-workspace-variant="link"]:hover { text-decoration: underline; }
+.ws-button[data-workspace-size="sm"] { min-height: 36px; padding-inline: 12px; }
+.ws-button[data-workspace-size="lg"] { min-height: 44px; padding-inline: 24px; }
+.ws-button[data-workspace-size="icon"] { width: 40px; height: 40px; padding: 0; }
+.ws-button:disabled { cursor: not-allowed; opacity: .5; }
+.ws-dialog > button.absolute, .ws-sheet > button.absolute { display: grid; place-items: center; min-width: 32px; min-height: 32px; }
+@media (min-width: 640px) { .workspace-root .admin-page { padding: 24px 24px 96px; } }
+@media (min-width: 1024px) { .workspace-root .admin-page { padding-inline: 32px; } }
+@media (max-width: 767px) { .ws-dialog, .ws-sheet { padding: 20px; } }

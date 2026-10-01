@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Settings,
   FolderPlus,
+  GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,7 +27,8 @@ import type { BreadcrumbItem } from "@/lib/workspace";
  * Single authoritative navigation configuration for the Admin shell.
  *
  * Rules:
- *  - Only routes that actually exist under `app/admin/**` may be listed here.
+ *  - Only implemented routes may be listed. Academy is explicitly the public
+ *    experience; no LMS management route exists. Promotions remains pending.
  *  - Navigation visibility is presentation only. Server-side authorization
  *    lives in `app/admin/layout.tsx` (see `getAuthenticatedProfile`).
  */
@@ -46,92 +48,32 @@ export type AdminNavSection = {
 };
 
 export const adminNavigationSections: AdminNavSection[] = [
-  {
-    id: "overview",
-    title: "Overview",
-    items: [
-      {
-        id: "dashboard",
-        title: "Dashboard",
-        href: "/admin",
-        icon: LayoutDashboard,
-      },
-    ],
-  },
-  {
-    id: "business",
-    title: "Business",
-    items: [
-      { id: "clients", title: "Clients", href: "/admin/clients", icon: Users },
-      { id: "leads", title: "Leads", href: "/admin/leads", icon: Inbox },
-      {
-        id: "projects",
-        title: "Projects",
-        href: "/admin/projects",
-        icon: FolderKanban,
-      },
-      { id: "services", title: "Services", href: "/admin/services", icon: Wrench },
-      {
-        id: "invoices",
-        title: "Invoices",
-        href: "/admin/invoices",
-        icon: ReceiptText,
-      },
-      {
-        id: "payments",
-        title: "Payments",
-        href: "/admin/payments",
-        icon: CreditCard,
-      },
-    ],
-  },
-  {
-    id: "content",
-    title: "Content",
-    items: [
-      { id: "portfolio", title: "Portfolio", href: "/admin/portfolio", icon: Palette },
-      { id: "blog", title: "Blog", href: "/admin/blog", icon: PenLine },
-      {
-        id: "comments",
-        title: "Comments",
-        href: "/admin/comments",
-        icon: MessagesSquare,
-      },
-      { id: "resources", title: "Resources", href: "/admin/resources", icon: FolderOpen },
-    ],
-  },
-  {
-    id: "marketing",
-    title: "Marketing",
-    items: [
-      { id: "ads", title: "Ads", href: "/admin/ads", icon: Megaphone },
-      { id: "subscribers", title: "Subscribers", href: "/admin/subscribers", icon: Mail },
-      { id: "music", title: "Music", href: "/admin/music", icon: Music4 },
-      {
-        id: "promotions",
-        title: "Promotions",
-        href: "/admin/promotions",
-        icon: BadgePercent,
-      },
-    ],
-  },
-  {
-    id: "operations",
-    title: "Operations",
-    items: [
-      {
-        id: "recovery",
-        title: "Account Recovery",
-        href: "/admin/recovery",
-        icon: ShieldCheck,
-      },
-    ],
-  },
-  {
-    id: "system",
-    title: "System",
-    items: [{ id: "settings", title: "Settings", href: "/admin/settings", icon: Settings }],
-  },
+  { id: "overview", title: "Overview", items: [{ id: "dashboard", title: "Dashboard", href: "/admin", icon: LayoutDashboard }] },
+  { id: "business", title: "Business", items: [
+    { id: "clients", title: "Clients", href: "/admin/clients", icon: Users },
+    { id: "leads", title: "Leads", href: "/admin/leads", icon: Inbox },
+    { id: "projects", title: "Projects", href: "/admin/projects", icon: FolderKanban },
+    { id: "services", title: "Services", href: "/admin/services", icon: Wrench },
+    { id: "invoices", title: "Invoices", href: "/admin/invoices", icon: ReceiptText },
+    { id: "payments", title: "Payments", href: "/admin/payments", icon: CreditCard },
+  ] },
+  { id: "marketing-operations", title: "Marketing / Operations", items: [
+    { id: "ads", title: "Advertising", href: "/admin/ads", icon: Megaphone },
+    { id: "music", title: "Music", href: "/admin/music", icon: Music4 },
+    { id: "academy", title: "Academy", href: "/academy", icon: GraduationCap, badge: "Public" },
+    { id: "subscribers", title: "Subscribers", href: "/admin/subscribers", icon: Mail },
+    { id: "recovery", title: "Account Recovery", href: "/admin/recovery", icon: ShieldCheck },
+  ] },
+  { id: "content", title: "Content", items: [
+    { id: "portfolio", title: "Portfolio", href: "/admin/portfolio", icon: Palette },
+    { id: "blog", title: "Blog", href: "/admin/blog", icon: PenLine },
+    { id: "comments", title: "Comments", href: "/admin/comments", icon: MessagesSquare },
+    { id: "resources", title: "Resources", href: "/admin/resources", icon: FolderOpen },
+  ] },
+  { id: "pending", title: "Pending definition", items: [
+    { id: "promotions", title: "Promotions", href: "/admin/promotions", icon: BadgePercent, badge: "Pending" },
+  ] },
+  { id: "system", title: "System", items: [{ id: "settings", title: "Settings", href: "/admin/settings", icon: Settings }] },
 ];
 
 /**

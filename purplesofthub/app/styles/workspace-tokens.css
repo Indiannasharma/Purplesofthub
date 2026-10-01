@@ -1,0 +1,76 @@
+/* Command Center semantic values: one owner, unchanged for legacy consumers.
+   Explicit portal opt-in avoids touching public marketing variables. */
+.cc-root,
+.workspace-overlay,
+body:has(.admin-shell) {
+  /* Surfaces */
+  --cc-canvas: #fafafc;
+  --cc-surface: #ffffff;
+  --cc-subtle: #f4f4f7;
+  --cc-inset: #efeff4;
+  /* Borders */
+  --cc-border: #e8e8ef;
+  --cc-border-strong: #d6d6e0;
+  /* Text */
+  --cc-text: #16121f;
+  --cc-text-secondary: #4a4557;
+  --cc-text-muted: #716b80;
+  /* Accent */
+  --cc-accent: #6d28d9;
+  --cc-accent-hover: #5b21b6;
+  --cc-accent-soft: #f3eefc;
+  --cc-accent-ring: rgba(109, 40, 217, 0.35);
+  --cc-on-accent: #ffffff;
+  /* Semantic */
+  --cc-success: #039855;
+  --cc-success-soft: #ecfdf3;
+  --cc-warning: #b54708;
+  --cc-warning-soft: #fffaeb;
+  --cc-error: #d92d20;
+  --cc-error-soft: #fef3f2;
+  --cc-info: #2563eb;
+  --cc-info-soft: #eff6ff;
+  /* Charts */
+  --cc-chart-1: #7c3aed;
+  --cc-chart-2: #14b8a6;
+  --cc-chart-3: #f59e0b;
+  /* Elevation */
+  --cc-shadow-1: 0 1px 2px rgba(16, 18, 31, 0.05);
+  --cc-shadow-2: 0 12px 32px rgba(16, 18, 31, 0.14);
+  /* Type */
+  --cc-font-display: var(--font-cc-display), "Space Grotesk", sans-serif;
+  --cc-font-body: var(--font-cc-body), "Inter", sans-serif;
+}
+
+.cc-root[data-cc-theme="dark"],
+html.dark .cc-root.cc-theme-site,
+html.dark .workspace-overlay,
+html.dark body:has(.admin-shell) {
+  --cc-canvas: #0c0912;
+  --cc-surface: #14101e;
+  --cc-subtle: #1b1628;
+  --cc-inset: #241d36;
+  --cc-border: rgba(255, 255, 255, 0.08);
+  --cc-border-strong: rgba(255, 255, 255, 0.14);
+  --cc-text: #f4f2fa;
+  --cc-text-secondary: #c6c0d6;
+  --cc-text-muted: #8d87a0;
+  --cc-accent: #a78bfa;
+  --cc-accent-hover: #c4b5fd;
+  --cc-accent-soft: rgba(167, 139, 250, 0.12);
+  --cc-accent-ring: rgba(167, 139, 250, 0.45);
+  --cc-on-accent: #1b1030;
+  --cc-success: #34d399;
+  --cc-success-soft: rgba(52, 211, 153, 0.12);
+  --cc-warning: #fbbf24;
+  --cc-warning-soft: rgba(251, 191, 36, 0.12);
+  --cc-error: #f87171;
+  --cc-error-soft: rgba(248, 113, 113, 0.12);
+  --cc-info: #60a5fa;
+  --cc-info-soft: rgba(96, 165, 250, 0.12);
+  --cc-chart-1: #a78bfa;
+  --cc-chart-2: #2dd4bf;
+  --cc-chart-3: #fbbf24;
+  --cc-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --cc-shadow-2: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
