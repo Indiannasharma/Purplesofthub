@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import "./academy.css";
 import {
   ArrowRight,
   Award,
@@ -26,7 +27,6 @@ import {
   PenTool,
   Phone,
   ShieldCheck,
-  Sparkles,
   Target,
   Users,
   Wand2,
@@ -58,6 +58,15 @@ const categoryCounts = academyCategories.reduce(
   },
   {} as Record<AcademyCategory, number>
 );
+
+const disciplines = [
+  { label: "Code", detail: "Web & mobile", icon: Code2, track: "web-development" },
+  { label: "Design", detail: "Interfaces & identity", icon: PenTool, track: "ui-ux-design" },
+  { label: "AI", detail: "Productivity & automation", icon: Bot, track: "ai-productivity" },
+  { label: "Marketing", detail: "Strategy & growth", icon: Megaphone, track: "digital-marketing" },
+  { label: "Media", detail: "Content & video", icon: Film, track: "content-creation-video-editing" },
+  { label: "Music", detail: "Business & distribution", icon: Music2, track: "music-business-distribution" },
+];
 
 const academyStats = [
   {
@@ -149,50 +158,73 @@ export default function AcademyPage() {
       <Navbar />
 
       <section className="academy-hero">
-        <div className="grid-bg academy-grid-bg" />
+        <div className="grid-bg academy-grid-bg" aria-hidden="true" />
         <div className="academy-hero-inner">
-          <FadeInUp className="academy-hero-copy">
+          <div className="academy-hero-copy">
             <span className="academy-kicker">
-              <Sparkles size={15} />
-              Practical digital skills for African learners
+              <GraduationCap size={16} aria-hidden="true" />
+              Practical digital skills
             </span>
 
             <h1>
-              PurpleSoftHub <span className="grad-text">Academy</span>
+              <span className="academy-brand-word">PurpleSoftHub</span>
+              <span className="academy-title-accent">Academy</span>
             </h1>
 
             <p className="academy-lead">
-              Learn web, mobile, design, marketing, AI, music business, and automation skills through hands-on projects built around real business needs.
+              Build practical skills in tech, design, AI, and creative business. Learn through real projects for modern careers and African businesses.
             </p>
 
             <div className="academy-actions">
               <a className="btn-main academy-primary" href="#courses">
                 View Courses
-                <ArrowRight size={18} />
+                <ArrowRight size={17} aria-hidden="true" />
               </a>
               <a className="academy-secondary" href="#waitlist">
                 Join Waitlist
               </a>
             </div>
-          </FadeInUp>
+          </div>
 
-          <FadeInUp className="academy-visual" delay={0.12}>
-            <Image
-              src="/images/logo/purplesoft-logo-main.png"
-              alt="PurpleSoftHub"
-              width={210}
-              height={72}
-              priority
-              className="academy-logo"
-            />
-            <div className="academy-map">
-              {["Tech", "Design", "Marketing", "Music", "Youth"].map((item, index) => (
-                <span key={item} style={{ "--i": index } as React.CSSProperties}>
-                  {item}
-                </span>
+          <div className="academy-visual" aria-label="Academy learning ecosystem">
+            <div className="academy-visual-topline">
+              <span>Learning ecosystem</span>
+              <span>01 — 06</span>
+            </div>
+            <div className="academy-identity">
+              <div className="academy-logo-frame"><Image
+                src="/images/logo/purplesoft-logo-main.png"
+                alt="PurpleSoftHub"
+                width={170}
+                height={58}
+                priority
+                className="academy-logo"
+              /></div>
+              <span>Academy</span>
+            </div>
+            <div className="academy-connections" aria-hidden="true"><i /><i /><i /></div>
+            <div className="academy-disciplines">
+              {disciplines.map((item, index) => (
+                <a
+                  key={item.label}
+                  href="#waitlist"
+                  onClick={() => setSelectedTrack(item.track)}
+                  style={{ "--i": index } as React.CSSProperties}
+                  aria-label={`Join ${item.label} waitlist`}
+                >
+                  <item.icon size={19} aria-hidden="true" />
+                  <span><strong>{item.label}</strong><small>{item.detail}</small></span>
+                  <ArrowRight size={14} aria-hidden="true" />
+                </a>
               ))}
             </div>
-          </FadeInUp>
+            <div className="academy-visual-foot">
+              <span>Learn</span><i aria-hidden="true" />
+              <span>Build</span><i aria-hidden="true" />
+              <span>Launch</span>
+              <span>Project-based learning</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -252,17 +284,18 @@ export default function AcademyPage() {
             <Filter size={15} />
             Course catalog
           </span>
-          <h2>Choose a track that matches the learner's goal.</h2>
+          <h2>Choose a track that matches the learner&apos;s goal.</h2>
           <p>
             Each course is designed to end with a useful project, not just lesson notes.
           </p>
         </FadeInUp>
 
-        <div className="academy-filters" role="tablist" aria-label="Course categories">
+        <div className="academy-filters" role="group" aria-label="Course categories">
           {academyCategories.map((category) => (
             <button
               key={category}
               type="button"
+              aria-pressed={activeCategory === category}
               className={activeCategory === category ? "active" : ""}
               onClick={() => setActiveCategory(category)}
             >
@@ -358,7 +391,7 @@ export default function AcademyPage() {
           </span>
           <h2>Built to support African youth, not just sell courses.</h2>
           <p>
-            The Academy can connect directly to PurpleSoftHub's donation mission: scholarships, laptops, internet access, mentorship, and local learning hubs for young people who need a real path into tech and digital creativity.
+            The Academy can connect directly to PurpleSoftHub&apos;s donation mission: scholarships, laptops, internet access, mentorship, and local learning hubs for young people who need a real path into tech and digital creativity.
           </p>
         </div>
         <Link href="/donate" className="academy-donate-link">
@@ -439,185 +472,11 @@ export default function AcademyPage() {
       <Footer />
 
       <style>{`
-        .academy-page {
-          min-height: 100vh;
-          background: var(--cyber-bg);
-          color: var(--cyber-heading);
-          overflow-x: hidden;
-          overflow-wrap: break-word;
-        }
-
-        .academy-hero {
-          position: relative;
-          padding: 132px 5% 72px;
-          overflow: hidden;
-          background:
-            linear-gradient(135deg, rgba(124,58,237,0.16), transparent 38%),
-            linear-gradient(225deg, rgba(6,182,212,0.12), transparent 36%),
-            var(--cyber-bg);
-        }
-
-        .academy-grid-bg {
-          position: absolute;
-          inset: 0;
-          opacity: 0.42;
-          pointer-events: none;
-          animation: academy-grid-drift 16s ease-in-out infinite alternate;
-        }
-
-        .academy-hero-inner,
-        .academy-section,
         .academy-stats {
           width: min(1120px, 100%);
           margin: 0 auto;
           position: relative;
           z-index: 1;
-        }
-
-        .academy-hero-inner {
-          display: grid;
-          grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
-          gap: clamp(32px, 5vw, 64px);
-          align-items: center;
-        }
-
-        .academy-kicker,
-        .academy-label {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          width: fit-content;
-          color: var(--accent);
-          background: rgba(124,58,237,0.11);
-          border: 1px solid rgba(168,85,247,0.24);
-          border-radius: 999px;
-          padding: 7px 13px;
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 0.04em;
-          line-height: 1.35;
-          text-transform: uppercase;
-        }
-
-        .academy-hero h1 {
-          margin: 22px 0 18px;
-          max-width: 780px;
-          font-family: Outfit, Inter, sans-serif;
-          font-size: clamp(42px, 7vw, 82px);
-          line-height: 0.98;
-          font-weight: 900;
-          letter-spacing: 0;
-        }
-
-        .academy-lead,
-        .academy-section-head p,
-        .academy-support p {
-          color: var(--text-muted);
-          font-size: clamp(16px, 2vw, 19px);
-          line-height: 1.75;
-        }
-
-        .academy-lead {
-          max-width: 680px;
-          margin: 0 0 30px;
-        }
-
-        .academy-actions,
-        .course-actions,
-        .academy-donate-link {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-
-        .academy-primary {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 9px;
-          text-decoration: none;
-          border-radius: 8px;
-          text-align: center;
-        }
-
-        .academy-secondary,
-        .course-actions a,
-        .academy-donate-link {
-          min-height: 44px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 12px 18px;
-          border-radius: 8px;
-          border: 1px solid rgba(6,182,212,0.34);
-          color: #67e8f9;
-          text-decoration: none;
-          font-weight: 800;
-          text-align: center;
-          transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-        }
-
-        .academy-secondary:hover,
-        .course-actions a:hover,
-        .academy-donate-link:hover {
-          transform: translateY(-2px);
-          border-color: rgba(6,182,212,0.7);
-          background: rgba(6,182,212,0.08);
-        }
-
-        .academy-visual {
-          border: 1px solid var(--cyber-border);
-          border-radius: 8px;
-          padding: clamp(22px, 4vw, 34px);
-          background: color-mix(in srgb, var(--cyber-card) 86%, transparent);
-          box-shadow: 0 24px 80px rgba(4, 8, 28, 0.18);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .academy-visual::before {
-          content: "";
-          position: absolute;
-          width: 220px;
-          height: 220px;
-          right: -84px;
-          top: -86px;
-          background: radial-gradient(circle, rgba(6,182,212,0.24), transparent 68%);
-          animation: academy-orbit-glow 7s ease-in-out infinite;
-          pointer-events: none;
-        }
-
-        .academy-logo {
-          width: min(210px, 100%);
-          height: auto;
-          margin-bottom: 26px;
-          object-fit: contain;
-        }
-
-        .academy-map {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
-        }
-
-        .academy-map span {
-          min-height: 78px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid rgba(124,58,237,0.18);
-          border-radius: 8px;
-          color: var(--cyber-heading);
-          font-weight: 900;
-          background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(6,182,212,0.05));
-          animation: academy-card-float 4.6s ease-in-out infinite;
-          animation-delay: calc(var(--i) * 120ms);
-        }
-
-        .academy-map span:nth-child(5) {
-          grid-column: 1 / -1;
         }
 
         .academy-stats {
