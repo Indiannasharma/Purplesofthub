@@ -6,16 +6,12 @@ import { WorkspacePageHeader } from "@/components/workspace/page-header";
 import { WorkspaceButton as Button } from "@/components/workspace/button";
 import { WorkspaceEmptyState } from "@/components/workspace/empty-state";
 import { WorkspaceErrorState } from "@/components/workspace/error-state";
-import { WorkspaceStatusBadge } from "@/components/workspace/status-badge";
+import { CustomerRecordStatus as Status } from "@/components/workspace/customer-record-status";
 import { WorkspaceLoadingState } from "@/components/workspace/loading-state";
 import { nextOverviewAction, invoiceAmount, overviewDate, projectProgress, type CustomerOverviewData, type OverviewSection } from "@/lib/customer-overview";
 
 function ActionLink({ href, children }: { href: string; children: ReactNode }) {
   return <Link className="customer-text-link" href={href}>{children}<ArrowRight size={15} aria-hidden="true" /></Link>;
-}
-function Status({ value }: { value: string | null }) {
-  const tone = value === "in_progress" ? "info" : value === "overdue" ? "error" : value === "sent" ? "warning" : undefined;
-  return <WorkspaceStatusBadge status={value?.replace(/_/g, " ") || "Status unavailable"} tone={tone} />;
 }
 function SectionState<T>({ section, emptyTitle, description, action, children }: { section: OverviewSection<T>; emptyTitle: string; description: string; action?: ReactNode; children: ReactNode }) {
   if (section.state !== "ready") return <WorkspaceErrorState title={section.state === "unauthorized" ? "Access unavailable" : section.state === "unavailable" ? "This information is unavailable" : "Could not load this information"} description={section.state === "unauthorized" ? "Your current session cannot read this information. Try signing in again or contact the team." : section.state === "unavailable" ? "This section is unavailable right now. Contact the team if you need help." : "Refresh this page to try again. Your other workspace sections are still available."} />;

@@ -25,7 +25,7 @@ export function overviewDate(value: string | null): string {
   return Number.isNaN(date.getTime()) ? "Date unavailable" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(date);
 }
 export function invoiceAmount(amount: OverviewInvoice["amount"], currency: string | null): string {
-  if (amount === null || amount === "" || !Number.isFinite(Number(amount))) return "Amount unavailable";
+  if (amount === null || (typeof amount === "string" && !amount.trim()) || !Number.isFinite(Number(amount))) return "Amount unavailable";
   const number = Number(amount);
   if (!currency || !/^[A-Za-z]{3}$/.test(currency)) return "Currency unavailable";
   try { return new Intl.NumberFormat("en", { style: "currency", currency: currency.toUpperCase(), currencyDisplay: "code" }).format(number); }
