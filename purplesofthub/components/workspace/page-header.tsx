@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import type { BreadcrumbItem } from "@/lib/workspace";
 
 type WorkspacePageHeaderProps = {
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   /**
    * Optional breadcrumb trail. Keep it lightweight — derive it from the pathname;
    * never query the database for it.

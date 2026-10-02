@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { AdminErrorState } from "@/components/admin/AdminErrorState";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 interface RecoveryRequest {
   id: string
@@ -49,6 +51,7 @@ const platformColors: Record<string, {
 export default function RecoveryRequestsPage() {
   const [requests, setRequests] = useState<RecoveryRequest[]>([])
   const [loading, setLoading] = useState(true)
+  const [readError, setReadError] = useState(false)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
   const [expanded, setExpanded] = useState<string | null>(null)
@@ -71,16 +74,16 @@ export default function RecoveryRequestsPage() {
     screenshotFile: null as File | null,
   })
 
-  useEffect(() => {
-    loadRequests()
-  }, [])
 
-  const loadRequests = async () => {
+
+  async function loadRequests() {
+    setReadError(false)
     try {
       const res = await fetch('/api/admin/recovery/requests', { cache: 'no-store' })
       const payload = await res.json().catch(() => ({}))
 
       if (!res.ok) {
+        setReadError(true)
         console.error('Recovery requests error:', payload.error || res.status)
         setRequests([])
         return
@@ -108,7 +111,7 @@ export default function RecoveryRequestsPage() {
       alert('Failed to update the status. Please try again.')
       return
     }
-    setRequests(p => p.map(r => 
+    setRequests(p => p.map(r =>
       r.id === id ? { ...r, status } : r
     ))
   }
@@ -162,13 +165,13 @@ export default function RecoveryRequestsPage() {
   }
 
   const filtered = requests.filter(r => {
-    const matchSearch = 
+    const matchSearch =
       r.first_name?.toLowerCase().includes(search.toLowerCase()) ||
       r.email?.toLowerCase().includes(search.toLowerCase()) ||
       r.handle?.toLowerCase().includes(search.toLowerCase()) ||
       r.platform?.toLowerCase().includes(search.toLowerCase())
-    const matchFilter = 
-      filter === 'all' || 
+    const matchFilter =
+      filter === 'all' ||
       r.status === filter ||
       r.platform === filter
     return matchSearch && matchFilter
@@ -183,12 +186,12 @@ export default function RecoveryRequestsPage() {
       alert('Please fill in required fields: Email, First Name, and Appeal Message')
       return
     }
-    
+
     setCreatingRequest(true)
-    
+
     try {
       const formData = new FormData()
-    
+
       // Documents and internal notes are handled by the guarded admin route:
       // the private bucket, the unpredictable object paths and the internal
       // fields never depend on what this browser sends.
@@ -231,10 +234,10 @@ export default function RecoveryRequestsPage() {
         await loadRequests()
         alert('✅ Recovery request created successfully!')
       }
-    
-  } catch (err: any) {
+
+  } catch (err: unknown) {
     console.error('Exception creating recovery request:', err)
-    alert(`Failed to create request: ${err.message || 'Unknown error'}`)
+    alert(`Failed to create request: ${(err && typeof err === 'object' && 'message' in err ? String(err.message) : 'Unknown error')}`)
   } finally {
     setCreatingRequest(false)
   }
@@ -246,16 +249,16 @@ export default function RecoveryRequestsPage() {
     borderRadius: '12px',
     border: '1.5px solid rgba(124,58,237,0.25)',
     background: 'rgba(124,58,237,0.08)',
-    color: 'var(--cmd-heading)',
+    color: "var(--cc-text)",
     fontSize: '14px',
     outline: 'none',
     fontFamily: 'inherit',
     boxSizing: 'border-box' as const,
     transition: 'all 0.2s ease',
-    WebkitAppearance: 'none' as any,
+    WebkitAppearance: 'none' as const,
   }
 
-  const selectStyle = {
+  const selectStyle: React.CSSProperties = {
     ...inputStyle,
     appearance: 'none',
     backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(124,58,237,0.6)' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
@@ -268,59 +271,32 @@ export default function RecoveryRequestsPage() {
   const labelStyle = {
     fontSize: '12px',
     fontWeight: 700,
-    color: 'var(--cmd-body)',
+    color: "var(--cc-text-secondary)",
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
     marginBottom: '8px',
     display: 'block',
   }
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    loadRequests()
+      })
+  }, [])
+
+  if (readError) return <AdminPage className="cc-module"><AdminErrorState onRetry={() => window.location.reload()} /></AdminPage>
+
   return (
-    <div style={{ maxWidth: '1100px' }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
 
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '28px',
-        flexWrap: 'wrap',
-        gap: '16px',
-      }}>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '10px',
-            border: 'none',
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-            color: '#fff',
-            fontSize: '13px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
-          }}
-        >
-          + New Request
-        </button>
-
-        <div>
-          <h1 style={{
-            fontSize: '24px',
-            fontWeight: 900,
-            color: 'var(--cmd-heading)',
-            margin: '0 0 4px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}>
-            Recovery Requests 🔐
+      <AdminPageHeader title={<>Recovery Requests 🔐
             {newCount > 0 && (
               <span style={{
                 fontSize: '13px',
-                fontWeight: 700,
-                color: '#f59e0b',
+                fontWeight: 600,
+                color: "var(--cc-warning)",
                 background: 'rgba(245,158,11,0.15)',
                 border: '1px solid rgba(245,158,11,0.3)',
                 padding: '2px 10px',
@@ -328,17 +304,23 @@ export default function RecoveryRequestsPage() {
               }}>
                 {newCount} new
               </span>
-            )}
-          </h1>
-          <p style={{
-            fontSize: '14px',
-            color: 'var(--cmd-body)',
-            margin: 0,
-          }}>
-            {requests.length} total requests
-          </p>
-        </div>
-      </div>
+            )}</>} description={<>{requests.length} total requests</>} actions={<button
+          onClick={() => setShowForm(!showForm)}
+          style={{
+            padding: '10px 20px',
+            borderRadius: '10px',
+            border: 'none',
+            background: "var(--cc-accent)",
+            color: "var(--cc-on-accent)",
+            fontSize: '13px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: "none",
+          }}
+        >
+          + New Request
+        </button>} />
 
       {/* Stats */}
       <div style={{
@@ -371,7 +353,7 @@ export default function RecoveryRequestsPage() {
             </div>
             <p style={{
               fontSize: '20px',
-              fontWeight: 900,
+              fontWeight: 600,
               color: stat.color,
               margin: '0 0 1px',
               lineHeight: 1,
@@ -380,7 +362,7 @@ export default function RecoveryRequestsPage() {
             </p>
             <p style={{
               fontSize: '11px',
-              color: 'var(--cmd-body)',
+              color: "var(--cc-text-secondary)",
               margin: 0,
             }}>
               {stat.label}
@@ -397,13 +379,13 @@ export default function RecoveryRequestsPage() {
           borderRadius: '18px',
           padding: '32px',
           marginBottom: '28px',
-          boxShadow: '0 8px 32px rgba(124,58,237,0.08)',
+          boxShadow: "none",
         }}>
           <div style={{ marginBottom: '24px' }}>
             <h3 style={{
               fontSize: '18px',
-              fontWeight: 900,
-              color: 'var(--cmd-heading)',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               margin: '0 0 8px',
               display: 'flex',
               alignItems: 'center',
@@ -413,7 +395,7 @@ export default function RecoveryRequestsPage() {
             </h3>
             <p style={{
               fontSize: '13px',
-              color: 'var(--cmd-muted)',
+              color: "var(--cc-text-muted)",
               margin: 0,
             }}>
               Fill in the details below to create a new account recovery request
@@ -422,56 +404,56 @@ export default function RecoveryRequestsPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
             <div>
-              <label style={labelStyle}>Client Email *</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-1">Client Email *</label>
               <input
                 type="email"
                 value={newRequest.email}
                 onChange={e => setNewRequest(p => ({ ...p, email: e.target.value }))}
                 placeholder="client@example.com"
                 style={inputStyle}
-              />
+                id="admin-recoverypagetsx-1"/>
             </div>
 
             <div>
-              <label style={labelStyle}>First Name *</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-2">First Name *</label>
               <input
                 type="text"
                 value={newRequest.first_name}
                 onChange={e => setNewRequest(p => ({ ...p, first_name: e.target.value }))}
                 placeholder="John"
                 style={inputStyle}
-              />
+                id="admin-recoverypagetsx-2"/>
             </div>
 
             <div>
-              <label style={labelStyle}>Last Name</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-3">Last Name</label>
               <input
                 type="text"
                 value={newRequest.last_name}
                 onChange={e => setNewRequest(p => ({ ...p, last_name: e.target.value }))}
                 placeholder="Doe"
                 style={inputStyle}
-              />
+                id="admin-recoverypagetsx-3"/>
             </div>
 
             <div>
-              <label style={labelStyle}>Phone</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-4">Phone</label>
               <input
                 type="tel"
                 value={newRequest.phone}
                 onChange={e => setNewRequest(p => ({ ...p, phone: e.target.value }))}
                 placeholder="+234 906 446 1786"
                 style={inputStyle}
-              />
+                id="admin-recoverypagetsx-4"/>
             </div>
 
             <div>
-              <label style={labelStyle}>Platform</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-5">Platform</label>
               <select
                 value={newRequest.platform}
                 onChange={e => setNewRequest(p => ({ ...p, platform: e.target.value }))}
-                style={selectStyle as any}
-              >
+                style={selectStyle as React.CSSProperties}
+                id="admin-recoverypagetsx-5">
                 <option value="">Select a platform...</option>
                 <option value="facebook">📘 Facebook</option>
                 <option value="instagram">📸 Instagram</option>
@@ -483,23 +465,23 @@ export default function RecoveryRequestsPage() {
             </div>
 
             <div>
-              <label style={labelStyle}>Username / Handle</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-6">Username / Handle</label>
               <input
                 type="text"
                 value={newRequest.handle}
                 onChange={e => setNewRequest(p => ({ ...p, handle: e.target.value }))}
                 placeholder="@username"
-                style={inputStyle as any}
-              />
+                style={inputStyle as React.CSSProperties}
+                id="admin-recoverypagetsx-6"/>
             </div>
 
             <div>
-              <label style={labelStyle}>Issue Type</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-7">Issue Type</label>
               <select
                 value={newRequest.issueType}
                 onChange={e => setNewRequest(p => ({ ...p, issueType: e.target.value }))}
-                style={selectStyle as any}
-              >
+                style={selectStyle as React.CSSProperties}
+                id="admin-recoverypagetsx-7">
                 <option value="">Select an issue type...</option>
                 <option value="hacked">🔓 Account Hacked</option>
                 <option value="disabled">🚫 Account Disabled</option>
@@ -513,26 +495,26 @@ export default function RecoveryRequestsPage() {
 
             {/* Appeal Message */}
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Appeal Message *</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-8">Appeal Message *</label>
               <textarea
                 value={newRequest.appeal_message}
                 onChange={e => setNewRequest(p => ({ ...p, appeal_message: e.target.value }))}
                 placeholder="Describe when you lost access, what happened, any details that could help recover the account faster..."
                 rows={5}
-                style={{ ...inputStyle, resize: 'vertical', minHeight: '120px', fontFamily: 'inherit' } as any}
-              />
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '120px', fontFamily: 'inherit' } as React.CSSProperties}
+                id="admin-recoverypagetsx-8"/>
             </div>
 
             {/* Admin Notes */}
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Admin Notes (Internal - Optional)</label>
+              <label style={labelStyle} htmlFor="admin-recoverypagetsx-9">Admin Notes (Internal - Optional)</label>
               <textarea
                 value={newRequest.admin_notes}
                 onChange={e => setNewRequest(p => ({ ...p, admin_notes: e.target.value }))}
                 placeholder="Internal admin notes (not visible to client when created)..."
                 rows={3}
-                style={{ ...inputStyle, resize: 'vertical', minHeight: '100px', background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)', fontFamily: 'inherit' } as any}
-              />
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '100px', background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)', fontFamily: 'inherit' } as React.CSSProperties}
+                id="admin-recoverypagetsx-9"/>
             </div>
 
             {/* ID Upload */}
@@ -560,19 +542,19 @@ export default function RecoveryRequestsPage() {
                 <label htmlFor="idFile" style={{ cursor: 'pointer', display: 'block' }}>
                   {newRequest.idFile ? (
                     <div>
-                      <p style={{ fontSize: '13px', color: '#10b981', margin: '0 0 4px', fontWeight: 600 }}>
+                      <p style={{ fontSize: '13px', color: "var(--cc-success)", margin: '0 0 4px', fontWeight: 600 }}>
                         ✓ File selected
                       </p>
-                      <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+                      <p style={{ fontSize: '12px', color: "var(--cc-text-secondary)", margin: 0 }}>
                         {newRequest.idFile.name}
                       </p>
                     </div>
                   ) : (
                     <div>
-                      <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 4px', fontWeight: 600 }}>
+                      <p style={{ fontSize: '13px', color: "var(--cc-text-secondary)", margin: '0 0 4px', fontWeight: 600 }}>
                         Click to upload or drag and drop
                       </p>
-                      <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                      <p style={{ fontSize: '11px', color: "var(--cc-text-muted)", margin: 0 }}>
                         PNG, JPG, PDF (max 5MB)
                       </p>
                     </div>
@@ -606,19 +588,19 @@ export default function RecoveryRequestsPage() {
                 <label htmlFor="screenshotFile" style={{ cursor: 'pointer', display: 'block' }}>
                   {newRequest.screenshotFile ? (
                     <div>
-                      <p style={{ fontSize: '13px', color: '#10b981', margin: '0 0 4px', fontWeight: 600 }}>
+                      <p style={{ fontSize: '13px', color: "var(--cc-success)", margin: '0 0 4px', fontWeight: 600 }}>
                         ✓ File selected
                       </p>
-                      <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+                      <p style={{ fontSize: '12px', color: "var(--cc-text-secondary)", margin: 0 }}>
                         {newRequest.screenshotFile.name}
                       </p>
                     </div>
                   ) : (
                     <div>
-                      <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 4px', fontWeight: 600 }}>
+                      <p style={{ fontSize: '13px', color: "var(--cc-text-secondary)", margin: '0 0 4px', fontWeight: 600 }}>
                         Click to upload or drag and drop
                       </p>
-                      <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                      <p style={{ fontSize: '11px', color: "var(--cc-text-muted)", margin: 0 }}>
                         PNG, JPG (max 5MB)
                       </p>
                     </div>
@@ -639,9 +621,9 @@ export default function RecoveryRequestsPage() {
                 background: creatingRequest
                   ? 'rgba(124,58,237,0.4)'
                   : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
-                color: '#fff',
+                color: "var(--cc-on-accent)",
                 fontSize: '14px',
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: creatingRequest ? 'not-allowed' : 'pointer',
                 fontFamily: 'inherit',
                 transition: 'all 0.2s ease',
@@ -657,7 +639,7 @@ export default function RecoveryRequestsPage() {
                 borderRadius: '12px',
                 border: '1.5px solid rgba(124,58,237,0.25)',
                 background: 'transparent',
-                color: 'var(--cmd-body)',
+                color: "var(--cc-text-secondary)",
                 fontSize: '14px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -690,8 +672,8 @@ export default function RecoveryRequestsPage() {
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          background: 'var(--cmd-card)',
-          border: '1px solid rgba(124,58,237,0.2)',
+          background: "var(--cc-surface)",
+          border: "1px solid var(--cc-border)",
           borderRadius: '10px',
           padding: '10px 14px',
           flex: 1,
@@ -710,12 +692,12 @@ export default function RecoveryRequestsPage() {
               background: 'transparent',
               border: 'none',
               outline: 'none',
-              color: 'var(--cmd-heading)',
+              color: "var(--cc-text)",
               fontSize: '13px',
               width: '100%',
               fontFamily: 'inherit',
             }}
-          />
+           aria-label="Search by name, email, handle..."/>
         </div>
 
         {['all', 'pending', 'in_progress', 'completed', 'facebook', 'instagram', 'tiktok'].map(f => (
@@ -744,27 +726,27 @@ export default function RecoveryRequestsPage() {
       {/* Requests List */}
       {loading ? (
         <div style={{
-          background: 'var(--cmd-card)',
-          borderRadius: '20px',
+          background: "var(--cc-surface)",
+          borderRadius: 12,
           padding: '40px',
           textAlign: 'center',
-          color: 'var(--cmd-body)',
+          color: "var(--cc-text-secondary)",
         }}>
           Loading requests...
         </div>
       ) : filtered.length === 0 ? (
         <div style={{
-          background: 'var(--cmd-card)',
-          border: '1px solid rgba(124,58,237,0.12)',
-          borderRadius: '20px',
+          background: "var(--cc-surface)",
+          border: "1px solid var(--cc-border)",
+          borderRadius: 12,
           padding: '60px 24px',
           textAlign: 'center',
         }}>
           <p style={{ fontSize: '40px', margin: '0 0 12px' }}>🔐</p>
-          <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 6px' }}>
+          <p style={{ fontSize: '16px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 6px' }}>
             {search ? 'No requests found' : 'No recovery requests yet'}
           </p>
-          <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: "var(--cc-text-secondary)", margin: 0 }}>
             {search ? 'Try a different search' : 'Requests from the account recovery page will appear here'}
           </p>
         </div>
@@ -778,9 +760,9 @@ export default function RecoveryRequestsPage() {
               <div
                 key={request.id}
                 style={{
-                  background: 'var(--cmd-card)',
-                  border: '1px solid rgba(124,58,237,0.12)',
-                  borderRadius: '16px',
+                  background: "var(--cc-surface)",
+                  border: "1px solid var(--cc-border)",
+                  borderRadius: 12,
                   overflow: 'hidden',
                 }}
               >
@@ -813,10 +795,10 @@ export default function RecoveryRequestsPage() {
                     </div>
 
                     <div>
-                      <p style={{ fontSize: '15px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 3px' }}>
+                      <p style={{ fontSize: '15px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 3px' }}>
                         {request.first_name} {request.last_name || ''}
                       </p>
-                      <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: '0 0 2px' }}>
+                      <p style={{ fontSize: '12px', color: "var(--cc-text-secondary)", margin: '0 0 2px' }}>
                         {request.email}{request.phone && ` · ${request.phone}`}
                       </p>
                       {request.handle && (
@@ -830,7 +812,7 @@ export default function RecoveryRequestsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                     <span style={{
                       fontSize: '11px',
-                      fontWeight: 700,
+                      fontWeight: 600,
                       color: platform.color,
                       background: platform.bg,
                       padding: '3px 10px',
@@ -842,7 +824,7 @@ export default function RecoveryRequestsPage() {
 
                     <span style={{
                       fontSize: '11px',
-                      fontWeight: 700,
+                      fontWeight: 600,
                       color: request.status === 'completed' ? '#10b981' :
                              request.status === 'in_progress' ? '#3b82f6' : '#f59e0b',
                       background: request.status === 'completed' ? 'rgba(16,185,129,0.1)' :
@@ -861,17 +843,17 @@ export default function RecoveryRequestsPage() {
                     </span>
 
                     {request.amount_paid && (
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#10b981' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: "var(--cc-success)" }}>
                         ₦{request.amount_paid.toLocaleString()}
                       </span>
                     )}
 
-                    <span style={{ fontSize: '11px', color: 'var(--cmd-muted)' }}>
+                    <span style={{ fontSize: '11px', color: "var(--cc-text-muted)" }}>
                       {new Date(request.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}
                     </span>
 
                     <span style={{
-                      color: 'var(--cmd-muted)',
+                      color: "var(--cc-text-muted)",
                       fontSize: '18px',
                       transform: isExpanded ? 'rotate(180deg)' : 'none',
                       transition: 'transform 0.2s',
@@ -894,10 +876,10 @@ export default function RecoveryRequestsPage() {
                   }}>
                     {request.support_type && (
                       <div>
-                        <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--cmd-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 6px' }}>
+                        <p style={{ fontSize: '11px', fontWeight: 600, color: "var(--cc-text-muted)", textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 6px' }}>
                           Issue Type
                         </p>
-                        <p style={{ fontSize: '14px', color: 'var(--cmd-heading)', margin: 0, textTransform: 'capitalize' }}>
+                        <p style={{ fontSize: '14px', color: "var(--cc-text)", margin: 0, textTransform: 'capitalize' }}>
                           {request.support_type.replace('_', ' ')}
                         </p>
                       </div>
@@ -913,7 +895,7 @@ export default function RecoveryRequestsPage() {
                       }}>
                         <p style={{
                           fontSize: '11px',
-                          fontWeight: 700,
+                          fontWeight: 600,
                           color: '#22d3ee',
                           textTransform: 'uppercase',
                           letterSpacing: '0.07em',
@@ -926,7 +908,7 @@ export default function RecoveryRequestsPage() {
                         </p>
                         <p style={{
                           fontSize: '14px',
-                          color: 'var(--cmd-heading)',
+                          color: "var(--cc-text)",
                           lineHeight: 1.6,
                           margin: 0,
                           whiteSpace: 'pre-wrap',
@@ -946,7 +928,7 @@ export default function RecoveryRequestsPage() {
                           style={{
                             display: 'inline-flex', alignItems: 'center', gap: '6px',
                             padding: '8px 16px', background: 'rgba(124,58,237,0.1)',
-                            border: '1px solid rgba(124,58,237,0.2)', color: '#a855f7',
+                            border: "1px solid var(--cc-border)", color: "var(--cc-accent)",
                             borderRadius: '8px', fontSize: '13px', fontWeight: 600,
                             cursor: 'pointer', fontFamily: 'inherit',
                           }}
@@ -973,7 +955,7 @@ export default function RecoveryRequestsPage() {
                     </div>
 
                     <div>
-                      <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--cmd-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 8px' }}>
+                      <p style={{ fontSize: '11px', fontWeight: 600, color: "var(--cc-text-muted)", textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 8px' }}>
                         Admin Notes
                       </p>
                       {updatingNote === request.id ? (
@@ -986,23 +968,23 @@ export default function RecoveryRequestsPage() {
                               width: '100%', padding: '10px', borderRadius: '8px',
                               border: '1px solid rgba(124,58,237,0.25)',
                               background: 'rgba(124,58,237,0.06)',
-                              color: 'var(--cmd-heading)', fontFamily: 'inherit',
+                              color: "var(--cc-text)", fontFamily: 'inherit',
                               fontSize: '13px', outline: 'none', resize: 'vertical',
                               boxSizing: 'border-box',
                             }}
-                          />
+                           aria-label="noteText"/>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <button onClick={() => saveNote(request.id)} style={{
                               padding: '7px 16px', borderRadius: '8px', border: 'none',
-                              background: '#7c3aed', color: '#fff', fontSize: '12px',
-                              fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                              background: '#7c3aed', color: "var(--cc-text)", fontSize: '12px',
+                              fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                             }}>
                               Save Note
                             </button>
                             <button onClick={() => setUpdatingNote(null)} style={{
                               padding: '7px 14px', borderRadius: '8px',
-                              border: '1px solid rgba(124,58,237,0.2)',
-                              background: 'transparent', color: 'var(--cmd-body)',
+                              border: "1px solid var(--cc-border)",
+                              background: 'transparent', color: "var(--cc-text-secondary)",
                               fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit',
                             }}>
                               Cancel
@@ -1036,7 +1018,7 @@ export default function RecoveryRequestsPage() {
                       display: 'flex', gap: '8px', flexWrap: 'wrap',
                       paddingTop: '8px', borderTop: '1px solid rgba(124,58,237,0.1)',
                     }}>
-                      <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-muted)', margin: '0 8px 0 0', alignSelf: 'center' }}>
+                      <p style={{ fontSize: '12px', fontWeight: 600, color: "var(--cc-text-muted)", margin: '0 8px 0 0', alignSelf: 'center' }}>
                         Update Status:
                       </p>
                       {[
@@ -1066,7 +1048,7 @@ export default function RecoveryRequestsPage() {
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: '6px',
                           padding: '7px 14px', background: 'rgba(124,58,237,0.1)',
-                          border: '1px solid rgba(124,58,237,0.2)', color: '#a855f7',
+                          border: "1px solid var(--cc-border)", color: "var(--cc-accent)",
                           textDecoration: 'none', borderRadius: '8px',
                           fontSize: '12px', fontWeight: 600, marginLeft: 'auto',
                         }}>
@@ -1146,6 +1128,6 @@ export default function RecoveryRequestsPage() {
           margin-right: 12px;
         }
       `}</style>
-    </div>
+    </AdminPage>
   )
 }

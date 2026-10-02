@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import { AdminErrorState } from "@/components/admin/AdminErrorState";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
@@ -27,6 +30,7 @@ const calculateWordCount = (text: string) => text.split(/\s+/).filter(Boolean).l
 export default function BlogManager() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [readError, setReadError] = useState(false);
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all')
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
@@ -48,7 +52,7 @@ export default function BlogManager() {
 
   // Filtered and sorted posts
   const filtered = useMemo(() => {
-    let result = posts.filter(p => {
+    const result = posts.filter(p => {
       const matchesFilter = filter === 'all' || p.status === filter
       const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
                           p.excerpt.toLowerCase().includes(search.toLowerCase())
@@ -71,24 +75,25 @@ export default function BlogManager() {
     return result
   }, [posts, filter, search, categoryFilter, sortBy])
 
-  useEffect(() => {
-    fetchPosts()
-  }, [])
 
-  const fetchPosts = async () => {
+
+  async function fetchPosts() {
+    try {
+      setReadError(false);
+
     setLoading(true)
     const supabase = createClient()
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .order('created_at', { ascending: false })
+      if (error) throw error;
 
-    if (error) {
-      console.error('[BlogManager] fetchPosts error:', error.message, error.details)
-    }
 
     setPosts(data || [])
     setLoading(false)
+
+    } catch { setReadError(true); } finally { setLoading(false); }
   }
 
   const deletePost = async (id: string) => {
@@ -114,37 +119,21 @@ export default function BlogManager() {
     setPosts(p => p.map(pp => pp.id === post.id ? { ...pp, status: newStatus } : pp))
   }
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    fetchPosts()
+      })
+  }, [])
+
+  if (readError) return <AdminPage className="cc-module"><AdminErrorState title="Could not load these records" description="Refresh to try again. No record counts are shown while the read has failed." onRetry={() => window.location.reload()} /></AdminPage>;
+
   return (
-    <div style={{ background: 'var(--cmd-bg)', minHeight: '100vh', padding: '24px' }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
 
         {/* ── HEADER ── */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '32px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: 'clamp(24px, 5vw, 32px)',
-              fontWeight: 900,
-              color: 'var(--cmd-heading)',
-              margin: '0 0 6px',
-            }}>
-              📚 Blog Manager
-            </h1>
-            <p style={{
-              fontSize: '14px',
-              color: 'var(--cmd-body)',
-              margin: 0,
-            }}>
-              Create, manage, and organize your blog posts
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <AdminPageHeader title={<>📚 Blog Manager</>} description={<>Create, manage, and organize your blog posts</>} actions={<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <button
               onClick={fetchPosts}
               disabled={loading}
@@ -154,7 +143,7 @@ export default function BlogManager() {
                 borderRadius: '12px',
                 border: '1px solid rgba(124,58,237,0.3)',
                 background: 'transparent',
-                color: '#a855f7',
+                color: "var(--cc-accent)",
                 fontWeight: 600,
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
@@ -170,14 +159,14 @@ export default function BlogManager() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                color: '#fff',
+                background: "var(--cc-accent)",
+                color: "var(--cc-on-accent)",
                 padding: '12px 28px',
                 borderRadius: '12px',
                 textDecoration: 'none',
-                fontWeight: 700,
+                fontWeight: 600,
                 fontSize: 'clamp(13px, 2vw, 15px)',
-                boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
+                boxShadow: "none",
                 whiteSpace: 'nowrap',
                 transition: 'all 0.2s',
               }}
@@ -186,8 +175,7 @@ export default function BlogManager() {
             >
               ✍️ New Post
             </Link>
-          </div>
-        </div>
+          </div>} />
 
         {/* ── STATS ── */}
         <div style={{
@@ -202,9 +190,9 @@ export default function BlogManager() {
             { label: 'Drafts', value: stats.drafts, icon: '💾', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
           ].map(stat => (
             <div key={stat.label} style={{
-              background: 'var(--cmd-card)',
+              background: "var(--cc-surface)",
               border: `1px solid ${stat.bg}`,
-              borderRadius: '14px',
+              borderRadius: 12,
               padding: '20px',
               display: 'flex',
               alignItems: 'center',
@@ -223,10 +211,10 @@ export default function BlogManager() {
                 {stat.icon}
               </div>
               <div>
-                <p style={{ fontSize: '12px', color: 'var(--cmd-muted)', margin: 0, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <p style={{ fontSize: '12px', color: "var(--cc-text-muted)", margin: 0, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {stat.label}
                 </p>
-                <p style={{ fontSize: '28px', fontWeight: 900, color: stat.color, margin: '4px 0 0' }}>
+                <p style={{ fontSize: '28px', fontWeight: 600, color: stat.color, margin: '4px 0 0' }}>
                   {stat.value}
                 </p>
               </div>
@@ -236,9 +224,9 @@ export default function BlogManager() {
 
         {/* ── CONTROLS ── */}
         <div style={{
-          background: 'var(--cmd-card)',
-          border: '1px solid rgba(124,58,237,0.15)',
-          borderRadius: '14px',
+          background: "var(--cc-surface)",
+          border: "1px solid var(--cc-border)",
+          borderRadius: 12,
           padding: '20px',
           marginBottom: '28px',
         }}>
@@ -249,11 +237,11 @@ export default function BlogManager() {
               alignItems: 'center',
               gap: '8px',
               background: 'rgba(124,58,237,0.06)',
-              border: '1px solid rgba(124,58,237,0.2)',
+              border: "1px solid var(--cc-border)",
               borderRadius: '10px',
               padding: '10px 14px',
             }}>
-              <span style={{ color: '#6b5fa0' }}>🔍</span>
+              <span style={{ color: "var(--cc-text-muted)" }}>🔍</span>
               <input
                 type="text"
                 value={search}
@@ -264,11 +252,11 @@ export default function BlogManager() {
                   background: 'transparent',
                   border: 'none',
                   outline: 'none',
-                  color: 'var(--cmd-heading)',
+                  color: "var(--cc-text)",
                   fontSize: '14px',
                   fontFamily: 'inherit',
                 }}
-              />
+               aria-label="Search posts by title or content..."/>
             </div>
           </div>
 
@@ -282,8 +270,8 @@ export default function BlogManager() {
             <div>
               <label style={{
                 fontSize: '11px',
-                fontWeight: 700,
-                color: 'var(--cmd-muted)',
+                fontWeight: 600,
+                color: "var(--cc-text-muted)",
                 display: 'block',
                 marginBottom: '6px',
                 textTransform: 'uppercase',
@@ -295,7 +283,7 @@ export default function BlogManager() {
                 {['all', 'published', 'draft'].map(f => (
                   <button
                     key={f}
-                    onClick={() => setFilter(f as any)}
+                    onClick={() => setFilter(f as typeof filter)}
                     style={{
                       padding: '8px 14px',
                       borderRadius: '8px',
@@ -324,13 +312,13 @@ export default function BlogManager() {
               <div>
                 <label style={{
                   fontSize: '11px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-muted)',
+                  fontWeight: 600,
+                  color: "var(--cc-text-muted)",
                   display: 'block',
                   marginBottom: '6px',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                }}>
+                }} htmlFor="admin-blogpagetsx-1">
                   Category
                 </label>
                 <select
@@ -340,14 +328,14 @@ export default function BlogManager() {
                     width: '100%',
                     padding: '8px 10px',
                     borderRadius: '8px',
-                    border: '1px solid rgba(124,58,237,0.2)',
+                    border: "1px solid var(--cc-border)",
                     background: 'rgba(124,58,237,0.06)',
-                    color: 'var(--cmd-heading)',
+                    color: "var(--cc-text)",
                     fontSize: '12px',
                     fontFamily: 'inherit',
                     cursor: 'pointer',
                   }}
-                >
+                  id="admin-blogpagetsx-1">
                   <option value="">All Categories</option>
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -360,30 +348,30 @@ export default function BlogManager() {
             <div>
               <label style={{
                 fontSize: '11px',
-                fontWeight: 700,
-                color: 'var(--cmd-muted)',
+                fontWeight: 600,
+                color: "var(--cc-text-muted)",
                 display: 'block',
                 marginBottom: '6px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
-              }}>
+              }} htmlFor="admin-blogpagetsx-2">
                 Sort By
               </label>
               <select
                 value={sortBy}
-                onChange={e => setSortBy(e.target.value as any)}
+                onChange={e => setSortBy(e.target.value as typeof sortBy)}
                 style={{
                   width: '100%',
                   padding: '8px 10px',
                   borderRadius: '8px',
-                  border: '1px solid rgba(124,58,237,0.2)',
+                  border: "1px solid var(--cc-border)",
                   background: 'rgba(124,58,237,0.06)',
-                  color: 'var(--cmd-heading)',
+                  color: "var(--cc-text)",
                   fontSize: '12px',
                   fontFamily: 'inherit',
                   cursor: 'pointer',
                 }}
-              >
+                id="admin-blogpagetsx-2">
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
                 <option value="title">A-Z Title</option>
@@ -394,22 +382,22 @@ export default function BlogManager() {
 
         {/* ── POSTS ── */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--cmd-muted)' }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: "var(--cc-text-muted)" }}>
             Loading posts...
           </div>
         ) : filtered.length === 0 ? (
           <div style={{
             textAlign: 'center',
             padding: '60px 20px',
-            background: 'var(--cmd-card)',
-            borderRadius: '14px',
-            border: '1px solid rgba(124,58,237,0.15)',
+            background: "var(--cc-surface)",
+            borderRadius: 12,
+            border: "1px solid var(--cc-border)",
           }}>
             <p style={{ fontSize: '32px', margin: '0 0 12px' }}>📭</p>
-            <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 4px' }}>
+            <p style={{ fontSize: '16px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 4px' }}>
               No posts found
             </p>
-            <p style={{ fontSize: '14px', color: 'var(--cmd-muted)', margin: 0 }}>
+            <p style={{ fontSize: '14px', color: "var(--cc-text-muted)", margin: 0 }}>
               {search ? 'Try a different search' : 'Create your first blog post!'}
             </p>
           </div>
@@ -429,9 +417,9 @@ export default function BlogManager() {
                 <div
                   key={post.id}
                   style={{
-                    background: 'var(--cmd-card)',
-                    border: '1px solid rgba(124,58,237,0.15)',
-                    borderRadius: '14px',
+                    background: "var(--cc-surface)",
+                    border: "1px solid var(--cc-border)",
+                    borderRadius: 12,
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
@@ -456,7 +444,7 @@ export default function BlogManager() {
                       overflow: 'hidden',
                       background: 'rgba(124,58,237,0.08)',
                     }}>
-                      <img
+                      <Image unoptimized width={640} height={360}
                         src={post.featured_image}
                         alt={post.title}
                         style={{
@@ -484,7 +472,7 @@ export default function BlogManager() {
                     }}>
                       <span style={{
                         fontSize: '10px',
-                        fontWeight: 700,
+                        fontWeight: 600,
                         padding: '4px 10px',
                         borderRadius: '6px',
                         background: post.status === 'published' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
@@ -497,11 +485,11 @@ export default function BlogManager() {
                       {post.category && (
                         <span style={{
                           fontSize: '10px',
-                          fontWeight: 700,
+                          fontWeight: 600,
                           padding: '4px 10px',
                           borderRadius: '6px',
                           background: 'rgba(124,58,237,0.15)',
-                          color: '#a855f7',
+                          color: "var(--cc-accent)",
                           textTransform: 'capitalize',
                         }}>
                           {post.category}
@@ -512,8 +500,8 @@ export default function BlogManager() {
                     {/* Title */}
                     <h3 style={{
                       fontSize: '16px',
-                      fontWeight: 800,
-                      color: 'var(--cmd-heading)',
+                      fontWeight: 600,
+                      color: "var(--cc-text)",
                       margin: '0 0 8px',
                       lineHeight: '1.4',
                       overflow: 'hidden',
@@ -527,7 +515,7 @@ export default function BlogManager() {
                     {/* Excerpt */}
                     <p style={{
                       fontSize: '13px',
-                      color: 'var(--cmd-body)',
+                      color: "var(--cc-text-secondary)",
                       margin: '0 0 12px',
                       lineHeight: '1.5',
                       overflow: 'hidden',
@@ -554,7 +542,7 @@ export default function BlogManager() {
                               fontSize: '10px',
                               padding: '3px 8px',
                               background: 'rgba(124,58,237,0.1)',
-                              color: '#a855f7',
+                              color: "var(--cc-accent)",
                               borderRadius: '4px',
                               whiteSpace: 'nowrap',
                             }}
@@ -570,7 +558,7 @@ export default function BlogManager() {
                       display: 'flex',
                       gap: '16px',
                       fontSize: '11px',
-                      color: 'var(--cmd-muted)',
+                      color: "var(--cc-text-muted)",
                       marginBottom: '14px',
                       paddingTop: '12px',
                       borderTop: '1px solid rgba(124,58,237,0.1)',
@@ -584,7 +572,7 @@ export default function BlogManager() {
                     {post.author_name && (
                       <p style={{
                         fontSize: '11px',
-                        color: 'var(--cmd-muted)',
+                        color: "var(--cc-text-muted)",
                         margin: '0 0 14px',
                         fontStyle: 'italic',
                       }}>
@@ -607,7 +595,7 @@ export default function BlogManager() {
                           borderRadius: '8px',
                           border: '1px solid rgba(124,58,237,0.3)',
                           background: 'transparent',
-                          color: '#a855f7',
+                          color: "var(--cc-accent)",
                           textDecoration: 'none',
                           fontSize: '12px',
                           fontWeight: 600,
@@ -656,7 +644,7 @@ export default function BlogManager() {
                           borderRadius: '8px',
                           border: '1px solid rgba(239,68,68,0.3)',
                           background: 'transparent',
-                          color: '#f87171',
+                          color: "var(--cc-error)",
                           fontSize: '12px',
                           fontWeight: 600,
                           cursor: deleting === post.id ? 'not-allowed' : 'pointer',
@@ -684,6 +672,6 @@ export default function BlogManager() {
           </div>
         )}
       </div>
-    </div>
+    </AdminPage>
   )
 }

@@ -1,0 +1,8 @@
+.ws-checkbox { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.ws-checkbox[data-disabled] { cursor: not-allowed; opacity: .6; }
+.ws-checkbox-control { position: relative; flex: 0 0 20px; width: 20px; height: 20px; margin-top: 2px; }
+.ws-checkbox-control input { appearance: none; display: block; width: 20px; height: 20px; margin: 0; padding: 0; border: 1px solid var(--cc-border-strong, var(--input)); border-radius: 5px; background: var(--cc-surface, var(--background)); cursor: inherit; }
+.ws-checkbox-control input:checked { background: var(--cc-accent, var(--primary)); border-color: var(--cc-accent, var(--primary)); }
+.ws-checkbox-control input:focus-visible { outline: 2px solid var(--cc-accent, var(--ring)); outline-offset: 3px; }
+.ws-checkbox-control svg { position: absolute; inset: 3px; pointer-events: none; color: var(--cc-on-accent, var(--primary-foreground)); }
+.ws-checkbox-label { color: var(--cc-text, var(--foreground)); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }

@@ -131,3 +131,11 @@ body:has(.customer-qa-controls) .nova-shell { display: flex !important; flex-dir
   .customer-record-list .customer-invoice-row { flex-wrap: wrap; }
   .customer-invoice-amount { max-width: 100%; flex-basis: 100%; text-align: left; }
 }
+
+/* Shell polish only: module query, ownership and mutation contracts remain unchanged. */
+.customer-shell :is(button,a,input,textarea,select):focus-visible { outline: 2px solid var(--cc-accent); outline-offset: 3px; }
+.customer-mobile-sheet { max-height: 100dvh; overflow-y: auto; overscroll-behavior: contain; }
+.customer-shell .customer-brand { gap: 6px; }
+.customer-shell .customer-topbar { min-height: 64px; }
+body:has(.customer-shell):has([role=dialog][data-state=open]) .nova-shell { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .customer-shell *, .customer-mobile-sheet * { transition-duration: .01ms !important; animation-duration: .01ms !important; } }

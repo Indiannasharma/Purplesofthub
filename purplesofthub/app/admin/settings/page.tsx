@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 export default function AdminSettingsPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState('')
@@ -38,14 +41,12 @@ export default function AdminSettingsPage() {
     confirmPassword: '',
   })
 
-  useEffect(() => {
-    loadUser()
-  }, [])
 
-  const loadUser = async () => {
+
+  const loadUser = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       router.push('/sign-in')
       return
@@ -54,7 +55,7 @@ export default function AdminSettingsPage() {
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', user.id)
+      .eq('id', user!.id)
       .single()
 
     setUser(user)
@@ -66,13 +67,15 @@ export default function AdminSettingsPage() {
       avatarUrl: profile?.avatar_url || '',
     })
     setLoading(false)
-  }
+  }, [router])
+
+
 
   const saveProfile = async () => {
     setSaving(true)
     setError('')
     const supabase = createClient()
-    
+
     const { error: profileError } = await supabase
       .from('profiles')
       .update({
@@ -80,7 +83,7 @@ export default function AdminSettingsPage() {
         phone: profileForm.phone,
         bio: profileForm.bio,
       })
-      .eq('id', user.id)
+      .eq('id', user!.id)
 
     if (profileError) {
       setError(profileError.message)
@@ -121,9 +124,9 @@ export default function AdminSettingsPage() {
     width: '100%',
     padding: '11px 14px',
     borderRadius: '10px',
-    border: '1.5px solid rgba(124,58,237,0.2)',
+    border: "1px solid var(--cc-border)",
     background: 'rgba(124,58,237,0.06)',
-    color: 'var(--cmd-heading)',
+    color: "var(--cc-text)",
     fontSize: '14px',
     outline: 'none',
     fontFamily: 'inherit',
@@ -135,14 +138,14 @@ export default function AdminSettingsPage() {
     display: 'block',
     fontSize: '12px',
     fontWeight: 700,
-    color: 'var(--cmd-body)',
+    color: "var(--cc-text-secondary)",
     textTransform: 'uppercase',
     letterSpacing: '0.06em',
     marginBottom: '7px',
   }
 
   const sectionStyle: React.CSSProperties = {
-    background: 'var(--cmd-card)',
+    background: "var(--cc-surface)",
     border: '1px solid rgba(124,58,237,0.15)',
     borderRadius: '16px',
     padding: '24px',
@@ -158,68 +161,61 @@ export default function AdminSettingsPage() {
     { id: 'notifications', label: '🔔 Notifications', icon: '🔔' },
   ]
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    loadUser()
+      })
+  }, [loadUser])
+
   if (loading) return (
     <div style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '400px',
-      color: 'var(--cmd-body)',
+      color: "var(--cc-text-secondary)",
     }}>
       Loading settings...
     </div>
   )
 
   return (
-    <div style={{ maxWidth: '800px' }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
 
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
-        <h1 style={{
-          fontSize: '24px',
-          fontWeight: 900,
-          color: 'var(--cmd-heading)',
-          margin: '0 0 4px',
-        }}>
-          Admin Settings ⚙️
-        </h1>
-        <p style={{
-          fontSize: '14px',
-          color: 'var(--cmd-body)',
-          margin: 0,
-        }}>
-          Manage your profile and agency settings
-        </p>
+        <AdminPageHeader title="Settings" description="Manage your account. Agency and notification fields are previews." />
       </div>
 
       {/* Alerts */}
       {error && (
         <div style={{
-          background: 'rgba(239,68,68,0.1)',
+          background: "var(--cc-error-soft)",
           border: '1px solid rgba(239,68,68,0.3)',
           borderRadius: '10px',
           padding: '12px 16px',
           marginBottom: '16px',
           fontSize: '13px',
-          color: '#ef4444',
+          color: "var(--cc-error)",
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
           ⚠️ {error}
-          <button onClick={() => setError('')} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '16px' }}>×</button>
+          <button onClick={() => setError('')} style={{ background: 'none', border: 'none', color: "var(--cc-error)", cursor: 'pointer', fontSize: '16px' }}>×</button>
         </div>
       )}
 
       {success && (
         <div style={{
-          background: 'rgba(16,185,129,0.1)',
+          background: "var(--cc-success-soft)",
           border: '1px solid rgba(16,185,129,0.3)',
           borderRadius: '10px',
           padding: '12px 16px',
           marginBottom: '16px',
           fontSize: '13px',
-          color: '#10b981',
+          color: "var(--cc-success)",
         }}>
           {success}
         </div>
@@ -230,16 +226,16 @@ export default function AdminSettingsPage() {
         display: 'flex',
         gap: '6px',
         marginBottom: '24px',
-        background: 'var(--cmd-card)',
+        background: "var(--cc-surface)",
         padding: '6px',
-        borderRadius: '14px',
-        border: '1px solid rgba(124,58,237,0.12)',
+        borderRadius: 12,
+        border: "1px solid var(--cc-border)",
         flexWrap: 'wrap',
       }}>
         {TABS.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as typeof activeTab)}
             style={{
               flex: 1,
               padding: '10px 16px',
@@ -274,66 +270,66 @@ export default function AdminSettingsPage() {
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '24px',
-              fontWeight: 900,
-              color: '#fff',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               flexShrink: 0,
-              boxShadow: '0 0 20px rgba(124,58,237,0.4)',
+              boxShadow: "none",
             }}>
               {profileForm.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'PS'}
             </div>
             <div>
-              <p style={{ fontSize: '18px', fontWeight: 800, color: 'var(--cmd-heading)', margin: '0 0 2px' }}>
+              <p style={{ fontSize: '18px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 2px' }}>
                 {profileForm.fullName || 'Admin User'}
               </p>
-              <p style={{ fontSize: '13px', color: '#a855f7', margin: 0, fontWeight: 600 }}>
+              <p style={{ fontSize: '13px', color: "var(--cc-accent)", margin: 0, fontWeight: 600 }}>
                 Administrator
               </p>
             </div>
           </div>
 
           <div>
-            <label style={labelStyle}>Full Name</label>
+            <label style={labelStyle} htmlFor="admin-settingspagetsx-1">Full Name</label>
             <input
               type="text"
               value={profileForm.fullName}
               onChange={e => setProfileForm(p => ({ ...p, fullName: e.target.value }))}
               style={inputStyle}
-            />
+              id="admin-settingspagetsx-1"/>
           </div>
 
           <div>
-            <label style={labelStyle}>Email Address</label>
+            <label style={labelStyle} htmlFor="admin-settingspagetsx-2">Email Address</label>
             <input
               type="email"
               value={profileForm.email}
               disabled
               style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }}
-            />
-            <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: '4px 0 0' }}>
+              id="admin-settingspagetsx-2"/>
+            <p style={{ fontSize: '11px', color: "var(--cc-text-muted)", margin: '4px 0 0' }}>
               Email cannot be changed here
             </p>
           </div>
 
           <div>
-            <label style={labelStyle}>Phone Number</label>
+            <label style={labelStyle} htmlFor="admin-settingspagetsx-3">Phone Number</label>
             <input
               type="tel"
               value={profileForm.phone}
               onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
               placeholder="+234 906 446 1786"
               style={inputStyle}
-            />
+              id="admin-settingspagetsx-3"/>
           </div>
 
           <div>
-            <label style={labelStyle}>Bio</label>
+            <label style={labelStyle} htmlFor="admin-settingspagetsx-4">Bio</label>
             <textarea
               value={profileForm.bio}
               onChange={e => setProfileForm(p => ({ ...p, bio: e.target.value }))}
               placeholder="Administrator at PurpleSoftHub..."
               rows={3}
               style={{ ...inputStyle, resize: 'vertical', minHeight: '80px' }}
-            />
+              id="admin-settingspagetsx-4"/>
           </div>
 
           <button
@@ -344,12 +340,12 @@ export default function AdminSettingsPage() {
               borderRadius: '10px',
               border: 'none',
               background: saving ? 'rgba(124,58,237,0.4)' : 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
+              color: "var(--cc-on-accent)",
               fontSize: '14px',
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: saving ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit',
-              boxShadow: '0 4px 16px rgba(124,58,237,0.3)',
+              boxShadow: "none",
             }}
           >
             {saving ? '⏳ Saving...' : '✅ Save Profile'}
@@ -360,7 +356,7 @@ export default function AdminSettingsPage() {
       {/* Agency Tab */}
       {activeTab === 'agency' && (
         <div style={sectionStyle}>
-          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cmd-heading)', margin: 0 }}>
+          <p style={{ fontSize: '14px', fontWeight: 600, color: "var(--cc-text)", margin: 0 }}>
             🏢 Agency Information
           </p>
 
@@ -373,102 +369,84 @@ export default function AdminSettingsPage() {
             { key: 'address', label: 'Address', type: 'text' },
           ].map(field => (
             <div key={field.key}>
-              <label style={labelStyle}>{field.label}</label>
+              <label style={labelStyle} htmlFor={"admin-settingspagetsx-5" + "-" + field.key}>{field.label}</label>
               <input
                 type={field.type}
                 value={agencyForm[field.key as keyof typeof agencyForm]}
                 onChange={e => setAgencyForm(p => ({ ...p, [field.key]: e.target.value }))}
                 style={inputStyle}
-              />
+                id={"admin-settingspagetsx-5" + "-" + field.key}/>
             </div>
           ))}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="admin-responsive-grid">
             <div>
-              <label style={labelStyle}>Default Currency</label>
+              <label style={labelStyle} htmlFor="admin-settingspagetsx-6">Default Currency</label>
               <select
                 value={agencyForm.currency}
                 onChange={e => setAgencyForm(p => ({ ...p, currency: e.target.value }))}
                 style={{ ...inputStyle, cursor: 'pointer' }}
-              >
+                id="admin-settingspagetsx-6">
                 <option value="NGN">NGN (₦)</option>
                 <option value="USD">USD ($)</option>
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Exchange Rate (₦ per $1)</label>
+              <label style={labelStyle} htmlFor="admin-settingspagetsx-7">Exchange Rate (₦ per $1)</label>
               <input
                 type="number"
                 value={agencyForm.exchangeRate}
                 onChange={e => setAgencyForm(p => ({ ...p, exchangeRate: e.target.value }))}
                 style={inputStyle}
-              />
+                id="admin-settingspagetsx-7"/>
             </div>
           </div>
 
           <div style={{
             background: 'rgba(124,58,237,0.06)',
-            border: '1px solid rgba(124,58,237,0.15)',
+            border: "1px solid var(--cc-border)",
             borderRadius: '10px',
             padding: '14px',
           }}>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-body)', margin: '0 0 4px' }}>
+            <p style={{ fontSize: '12px', fontWeight: 600, color: "var(--cc-text-secondary)", margin: '0 0 4px' }}>
               ℹ️ Note
             </p>
-            <p style={{ fontSize: '12px', color: 'var(--cmd-muted)', margin: 0, lineHeight: 1.5 }}>
-              Agency settings changes are saved locally for now. Full database sync coming soon.
+            <p style={{ fontSize: '12px', color: "var(--cc-text-muted)", margin: 0, lineHeight: 1.5 }}>
+              Agency fields are a preview for this visit. Changes are not saved or used for billing.
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              setSuccess('✅ Agency settings saved!')
-              setTimeout(() => setSuccess(''), 3000)
-            }}
-            style={{
-              padding: '12px',
-              borderRadius: '10px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
-              fontSize: '14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            ✅ Save Agency Settings
-          </button>
+
         </div>
       )}
 
       {/* Security Tab */}
       {activeTab === 'security' && (
         <div style={sectionStyle}>
-          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cmd-heading)', margin: 0 }}>
+          <p style={{ fontSize: '14px', fontWeight: 600, color: "var(--cc-text)", margin: 0 }}>
             🔐 Change Password
           </p>
 
           <div>
-            <label style={labelStyle}>New Password</label>
+            <label style={labelStyle} htmlFor="admin-settingspagetsx-8">New Password</label>
             <input
               type="password"
               value={passwordForm.newPassword}
               onChange={e => setPasswordForm(p => ({ ...p, newPassword: e.target.value }))}
               placeholder="Min 8 characters"
               style={inputStyle}
-            />
+              id="admin-settingspagetsx-8"/>
           </div>
 
           <div>
-            <label style={labelStyle}>Confirm New Password</label>
+            <label style={labelStyle} htmlFor="admin-settingspagetsx-9">Confirm New Password</label>
             <input
               type="password"
               value={passwordForm.confirmPassword}
               onChange={e => setPasswordForm(p => ({ ...p, confirmPassword: e.target.value }))}
               placeholder="Repeat password"
               style={inputStyle}
-            />
+              id="admin-settingspagetsx-9"/>
           </div>
 
           <button
@@ -479,9 +457,9 @@ export default function AdminSettingsPage() {
               borderRadius: '10px',
               border: 'none',
               background: saving ? 'rgba(124,58,237,0.4)' : 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
+              color: "var(--cc-on-accent)",
               fontSize: '14px',
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: saving ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit',
             }}
@@ -497,10 +475,10 @@ export default function AdminSettingsPage() {
             border: '1px solid rgba(239,68,68,0.2)',
             background: 'rgba(239,68,68,0.04)',
           }}>
-            <p style={{ fontSize: '14px', fontWeight: 800, color: '#ef4444', margin: '0 0 8px' }}>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: "var(--cc-error)", margin: '0 0 8px' }}>
               ⚠️ Danger Zone
             </p>
-            <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 14px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '13px', color: "var(--cc-text-secondary)", margin: '0 0 14px', lineHeight: 1.5 }}>
               Signing out will end your current session. You will need to log in again.
             </p>
             <button
@@ -514,9 +492,9 @@ export default function AdminSettingsPage() {
                 borderRadius: '8px',
                 border: '1px solid rgba(239,68,68,0.3)',
                 background: 'rgba(239,68,68,0.08)',
-                color: '#ef4444',
+                color: "var(--cc-error)",
                 fontSize: '13px',
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
@@ -530,8 +508,8 @@ export default function AdminSettingsPage() {
       {/* Notifications Tab */}
       {activeTab === 'notifications' && (
         <div style={sectionStyle}>
-          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cmd-heading)', margin: 0 }}>
-            🔔 Notification Preferences
+          <p style={{ fontSize: '14px', fontWeight: 600, color: "var(--cc-text)", margin: 0 }}>
+            Notification preferences — preview
           </p>
 
           {[
@@ -550,20 +528,21 @@ export default function AdminSettingsPage() {
                 justifyContent: 'space-between',
                 padding: '14px 16px',
                 background: 'rgba(124,58,237,0.04)',
-                border: '1px solid rgba(124,58,237,0.1)',
+                border: "1px solid var(--cc-border)",
                 borderRadius: '10px',
                 gap: '16px',
               }}
             >
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cmd-heading)', margin: '0 0 3px' }}>
+                <p style={{ fontSize: '14px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 3px' }}>
                   {notif.label}
                 </p>
-                <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+                <p style={{ fontSize: '12px', color: "var(--cc-text-secondary)", margin: 0 }}>
                   {notif.desc}
                 </p>
               </div>
 
+              <span className="admin-contract-note">Preview only · not saved</span>
               {/* Toggle */}
               <div
                 style={{
@@ -575,7 +554,7 @@ export default function AdminSettingsPage() {
                   cursor: 'pointer',
                   flexShrink: 0,
                   transition: 'all 0.2s',
-                  border: '1px solid rgba(124,58,237,0.2)',
+                  border: "1px solid var(--cc-border)",
                 }}
               >
                 <div style={{
@@ -593,27 +572,9 @@ export default function AdminSettingsPage() {
             </div>
           ))}
 
-          <button
-            onClick={() => {
-              setSuccess('✅ Notification preferences saved!')
-              setTimeout(() => setSuccess(''), 3000)
-            }}
-            style={{
-              padding: '12px',
-              borderRadius: '10px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
-              fontSize: '14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            ✅ Save Preferences
-          </button>
+
         </div>
       )}
-    </div>
+    </AdminPage>
   )
 }

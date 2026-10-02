@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { ccFontVariables } from "@/components/command-center/fonts";
 import { useRouter } from "next/navigation";
 import { CornerDownLeft, Search } from "lucide-react";
 
@@ -29,7 +30,7 @@ export function AdminSearchTrigger() {
         type="button"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="hidden h-8 items-center gap-2 rounded-lg border border-[var(--cc-border)] bg-[var(--cc-subtle)] px-2.5 text-xs text-[var(--cc-text-muted)] transition-colors hover:border-[var(--cc-border-strong)] hover:text-[var(--cc-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)] xl:inline-flex"
+        className="admin-search-expanded hidden h-8 items-center gap-2 rounded-lg border border-[var(--cc-border)] bg-[var(--cc-subtle)] px-2.5 text-xs text-[var(--cc-text-muted)] transition-colors hover:border-[var(--cc-border-strong)] hover:text-[var(--cc-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)] xl:inline-flex"
       >
         <Search className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         <span className="truncate">Search or jump to...</span>
@@ -43,7 +44,7 @@ export function AdminSearchTrigger() {
         type="button"
         onClick={() => setSearchOpen(true)}
         aria-label="Search admin sections"
-        className="cc-icon-btn cc-icon-btn-sm xl:hidden"
+        className="admin-search-compact cc-icon-btn cc-icon-btn-sm xl:hidden"
       >
         <Search className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -95,7 +96,8 @@ export function AdminSearchDialog() {
     <CommandDialog
       open={isSearchOpen}
       onOpenChange={setSearchOpen}
-      contentClassName="max-w-[min(760px,calc(100vw-32px))] rounded-2xl border-[var(--cc-border)] bg-[var(--cc-surface)] text-[var(--cc-text)] [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-[var(--cc-text-muted)] [&_[cmdk-input-wrapper]]:h-16 [&_[cmdk-input-wrapper]]:gap-3 [&_[cmdk-input-wrapper]]:border-[var(--cc-border)] [&_[cmdk-input-wrapper]]:px-4 [&_[cmdk-input-wrapper]_svg]:mr-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input-wrapper]_svg]:text-[var(--cc-text-muted)] [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2"
+      onCloseAutoFocus={event => { event.preventDefault(); const triggers = document.querySelectorAll<HTMLButtonElement>('[aria-label="Search admin sections"]'); [...triggers].find(trigger => trigger.getClientRects().length > 0)?.focus(); }}
+      contentClassName={ccFontVariables + " workspace-overlay admin-command-dialog max-w-[min(760px,calc(100vw-32px))] rounded-2xl border-[var(--cc-border)] bg-[var(--cc-surface)] text-[var(--cc-text)] [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-[var(--cc-text-muted)] [&_[cmdk-input-wrapper]]:h-16 [&_[cmdk-input-wrapper]]:gap-3 [&_[cmdk-input-wrapper]]:border-[var(--cc-border)] [&_[cmdk-input-wrapper]]:px-4 [&_[cmdk-input-wrapper]_svg]:mr-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input-wrapper]_svg]:text-[var(--cc-text-muted)] [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2"}
     >
       <CommandInput
         placeholder="Jump to an admin section or action..."

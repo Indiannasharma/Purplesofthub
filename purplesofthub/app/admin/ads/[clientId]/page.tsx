@@ -1,8 +1,14 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useState, use, useCallback } from 'react'
+import { AdminErrorState } from "@/components/admin/AdminErrorState";
+import { AdminPage } from "@/components/admin/AdminPage";
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+
+interface AdsClient { full_name: string | null; active_plan: string | null }
+interface AdsCampaign { id: string; platform: string; campaign_name: string; objective: string; status: string; budget_spent: number; budget_total: number }
+interface AdsStat { id: string; stat_date: string; platform: string; spend: number; reach: number; clicks: number; impressions: number; conversions: number; roas: number }
 
 interface Props {
   params: Promise<{ clientId: string }>
@@ -10,10 +16,11 @@ interface Props {
 
 export default function ClientAdsPage({ params }: Props) {
   const { clientId } = use(params)
-  const [client, setClient] = useState<any>(null)
-  const [campaigns, setCampaigns] = useState<any[]>([])
-  const [stats, setStats] = useState<any[]>([])
+  const [client, setClient] = useState<AdsClient | null>(null)
+  const [campaigns, setCampaigns] = useState<AdsCampaign[]>([])
+  const [stats, setStats] = useState<AdsStat[]>([])
   const [loading, setLoading] = useState(true)
+  const [readError, setReadError] = useState(false);
   const [showAddStats, setShowAddStats] = useState(false)
   const [selectedCampaign, setSelectedCampaign] = useState<string>('')
   const [statForm, setStatForm] = useState({
@@ -27,11 +34,12 @@ export default function ClientAdsPage({ params }: Props) {
     roas: '',
   })
 
-  useEffect(() => {
-    loadData()
-  }, [clientId])
 
-  const loadData = async () => {
+
+  const loadData = useCallback(async () => {
+    try {
+      setReadError(false);
+
     const supabase = createClient()
 
     const [profileRes, campaignsRes, statsRes] = await Promise.all([
@@ -40,11 +48,16 @@ export default function ClientAdsPage({ params }: Props) {
       supabase.from('ad_stats').select('*').eq('client_id', clientId).order('stat_date', { ascending: false }).limit(30),
     ])
 
+    if (profileRes.error || campaignsRes.error || statsRes.error) throw profileRes.error || campaignsRes.error || statsRes.error;
     setClient(profileRes.data)
     setCampaigns(campaignsRes.data || [])
     setStats(statsRes.data || [])
     setLoading(false)
-  }
+
+    } catch { setReadError(true); } finally { setLoading(false); }
+  }, [clientId])
+
+
 
   const addManualStats = async () => {
     if (!selectedCampaign) {
@@ -67,7 +80,7 @@ export default function ClientAdsPage({ params }: Props) {
         ? ((parseInt(statForm.clicks) / parseInt(statForm.impressions)) * 100)
         : 0,
     })
-    
+
     if (!error) {
       setShowAddStats(false)
       loadData()
@@ -90,13 +103,22 @@ export default function ClientAdsPage({ params }: Props) {
     loadData()
   }
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    loadData()
+      })
+  }, [loadData])
+
+  if (readError) return <AdminPage className="cc-module"><AdminErrorState title="Could not load these records" description="Refresh to try again. No record counts are shown while the read has failed." onRetry={() => window.location.reload()} /></AdminPage>;
+
   if (loading) return (
     <div style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '400px',
-      color: 'var(--cmd-body)',
+      color: "var(--cc-text-secondary)",
     }}>
       Loading client data...
     </div>
@@ -118,7 +140,7 @@ export default function ClientAdsPage({ params }: Props) {
     : 0
 
   return (
-    <div style={{ maxWidth: '1200px' }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
 
       {/* Header */}
       <div style={{
@@ -132,16 +154,16 @@ export default function ClientAdsPage({ params }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link href="/admin/ads" style={{
             fontSize: '13px',
-            color: 'var(--cmd-body)',
+            color: "var(--cc-text-secondary)",
             textDecoration: 'none',
           }}>
             ← Ads Manager
           </Link>
-          <span style={{ color: 'var(--cmd-muted)' }}>/</span>
+          <span style={{ color: "var(--cc-text-muted)" }}>/</span>
           <h1 style={{
             fontSize: '20px',
-            fontWeight: 900,
-            color: 'var(--cmd-heading)',
+            fontWeight: 600,
+            color: "var(--cc-text)",
             margin: 0,
           }}>
             {client?.full_name || 'Client Ads'}
@@ -149,12 +171,12 @@ export default function ClientAdsPage({ params }: Props) {
           {client?.active_plan && (
             <span style={{
               fontSize: '11px',
-              fontWeight: 700,
-              color: '#a855f7',
+              fontWeight: 600,
+              color: "var(--cc-accent)",
               background: 'rgba(124,58,237,0.1)',
               padding: '3px 10px',
               borderRadius: '100px',
-              border: '1px solid rgba(124,58,237,0.2)',
+              border: "1px solid var(--cc-border)",
             }}>
               {client.active_plan} Plan
             </span>
@@ -169,7 +191,7 @@ export default function ClientAdsPage({ params }: Props) {
               borderRadius: '10px',
               border: '1px solid rgba(124,58,237,0.3)',
               background: 'transparent',
-              color: '#a855f7',
+              color: "var(--cc-accent)",
               fontSize: '13px',
               fontWeight: 600,
               cursor: 'pointer',
@@ -184,13 +206,13 @@ export default function ClientAdsPage({ params }: Props) {
               padding: '10px 20px',
               borderRadius: '10px',
               border: 'none',
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
+              background: "var(--cc-accent)",
+              color: "var(--cc-on-accent)",
               fontSize: '13px',
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: 'pointer',
               fontFamily: 'inherit',
-              boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
+              boxShadow: "none",
             }}
           >
             + New Campaign
@@ -201,17 +223,17 @@ export default function ClientAdsPage({ params }: Props) {
       {/* Add Stats Form */}
       {showAddStats && (
         <div style={{
-          background: 'var(--cmd-card)',
-          border: '1px solid rgba(124,58,237,0.2)',
-          borderRadius: '16px',
+          background: "var(--cc-surface)",
+          border: "1px solid var(--cc-border)",
+          borderRadius: 12,
           padding: '24px',
           marginBottom: '24px',
           backdropFilter: 'blur(10px)',
         }}>
           <h3 style={{
             fontSize: '16px',
-            fontWeight: 800,
-            color: 'var(--cmd-heading)',
+            fontWeight: 600,
+            color: "var(--cc-text)",
             margin: '0 0 16px',
           }}>
             📊 Add Manual Stats
@@ -226,13 +248,13 @@ export default function ClientAdsPage({ params }: Props) {
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={{
                 fontSize: '11px',
-                fontWeight: 700,
-                color: 'var(--cmd-body)',
+                fontWeight: 600,
+                color: "var(--cc-text-secondary)",
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
                 display: 'block',
                 marginBottom: '6px',
-              }}>
+              }} htmlFor="admin-adsclientIdpagetsx-1">
                 Campaign *
               </label>
               <select
@@ -242,14 +264,14 @@ export default function ClientAdsPage({ params }: Props) {
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '10px',
-                  border: '1.5px solid rgba(124,58,237,0.2)',
+                  border: "1px solid var(--cc-border)",
                   background: 'rgba(124,58,237,0.06)',
-                  color: 'var(--cmd-heading)',
+                  color: "var(--cc-text)",
                   fontSize: '14px',
                   outline: 'none',
                   fontFamily: 'inherit',
                 }}
-              >
+                id="admin-adsclientIdpagetsx-1">
                 <option value="">Select campaign...</option>
                 {campaigns.map(c => (
                   <option key={c.id} value={c.id}>{c.campaign_name}</option>
@@ -270,8 +292,8 @@ export default function ClientAdsPage({ params }: Props) {
               <div key={field.key}>
                 <label style={{
                   fontSize: '11px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-body)',
+                  fontWeight: 600,
+                  color: "var(--cc-text-secondary)",
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
                   display: 'block',
@@ -287,14 +309,14 @@ export default function ClientAdsPage({ params }: Props) {
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '10px',
-                      border: '1.5px solid rgba(124,58,237,0.2)',
+                      border: "1px solid var(--cc-border)",
                       background: 'rgba(124,58,237,0.06)',
-                      color: 'var(--cmd-heading)',
+                      color: "var(--cc-text)",
                       fontSize: '13px',
                       outline: 'none',
                       fontFamily: 'inherit',
                     }}
-                  >
+                   aria-label="statForm[field.key as keyof typeof statForm]">
                     {field.options?.map(o => (
                       <option key={o} value={o}>{o.charAt(0).toUpperCase() + o.slice(1)}</option>
                     ))}
@@ -308,15 +330,15 @@ export default function ClientAdsPage({ params }: Props) {
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '10px',
-                      border: '1.5px solid rgba(124,58,237,0.2)',
+                      border: "1px solid var(--cc-border)",
                       background: 'rgba(124,58,237,0.06)',
-                      color: 'var(--cmd-heading)',
+                      color: "var(--cc-text)",
                       fontSize: '13px',
                       outline: 'none',
                       fontFamily: 'inherit',
                       boxSizing: 'border-box',
                     }}
-                  />
+                   aria-label="statForm[field.key as keyof typeof statForm]"/>
                 )}
               </div>
             ))}
@@ -329,10 +351,10 @@ export default function ClientAdsPage({ params }: Props) {
                 padding: '10px 24px',
                 borderRadius: '10px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                color: '#fff',
+                background: "var(--cc-accent)",
+                color: "var(--cc-on-accent)",
                 fontSize: '13px',
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
@@ -344,9 +366,9 @@ export default function ClientAdsPage({ params }: Props) {
               style={{
                 padding: '10px 20px',
                 borderRadius: '10px',
-                border: '1px solid rgba(124,58,237,0.2)',
+                border: "1px solid var(--cc-border)",
                 background: 'transparent',
-                color: 'var(--cmd-body)',
+                color: "var(--cc-text-secondary)",
                 fontSize: '13px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -390,7 +412,7 @@ export default function ClientAdsPage({ params }: Props) {
             </div>
             <p style={{
               fontSize: '20px',
-              fontWeight: 900,
+              fontWeight: 600,
               color: stat.color,
               margin: '0 0 2px',
               lineHeight: 1,
@@ -399,7 +421,7 @@ export default function ClientAdsPage({ params }: Props) {
             </p>
             <p style={{
               fontSize: '12px',
-              color: 'var(--cmd-body)',
+              color: "var(--cc-text-secondary)",
               margin: 0,
             }}>
               {stat.label}
@@ -410,9 +432,9 @@ export default function ClientAdsPage({ params }: Props) {
 
       {/* Campaigns */}
       <div style={{
-        background: 'var(--cmd-card)',
+        background: "var(--cc-surface)",
         border: '1px solid var(--cmd-border)',
-        borderRadius: '20px',
+        borderRadius: 12,
         overflow: 'hidden',
         marginBottom: '24px',
       }}>
@@ -426,8 +448,8 @@ export default function ClientAdsPage({ params }: Props) {
         }}>
           <h2 style={{
             fontSize: '16px',
-            fontWeight: 800,
-            color: 'var(--cmd-heading)',
+            fontWeight: 600,
+            color: "var(--cc-text)",
             margin: 0,
           }}>
             🚀 Campaigns ({campaigns.length})
@@ -438,7 +460,7 @@ export default function ClientAdsPage({ params }: Props) {
           <div style={{
             padding: '40px',
             textAlign: 'center',
-            color: 'var(--cmd-body)',
+            color: "var(--cc-text-secondary)",
             fontSize: '14px',
           }}>
             No campaigns yet. Create one above.
@@ -481,15 +503,15 @@ export default function ClientAdsPage({ params }: Props) {
                 <div>
                   <p style={{
                     fontSize: '14px',
-                    fontWeight: 700,
-                    color: 'var(--cmd-heading)',
+                    fontWeight: 600,
+                    color: "var(--cc-text)",
                     margin: '0 0 2px',
                   }}>
                     {campaign.campaign_name}
                   </p>
                   <p style={{
                     fontSize: '12px',
-                    color: 'var(--cmd-body)',
+                    color: "var(--cc-text-secondary)",
                     margin: 0,
                     textTransform: 'capitalize',
                   }}>
@@ -510,11 +532,11 @@ export default function ClientAdsPage({ params }: Props) {
                 </span>
                 <span style={{
                   fontSize: '13px',
-                  fontWeight: 700,
-                  color: '#f59e0b',
+                  fontWeight: 600,
+                  color: "var(--cc-warning)",
                 }}>
                   ₦{(campaign.budget_spent || 0).toLocaleString()}
-                  <span style={{ fontSize: '11px', color: 'var(--cmd-muted)', fontWeight: 400 }}>
+                  <span style={{ fontSize: '11px', color: "var(--cc-text-muted)", fontWeight: 400 }}>
                     {' '}/ ₦{(campaign.budget_total || 0).toLocaleString()}
                   </span>
                 </span>
@@ -526,9 +548,9 @@ export default function ClientAdsPage({ params }: Props) {
 
       {/* Recent Stats */}
       <div style={{
-        background: 'var(--cmd-card)',
+        background: "var(--cc-surface)",
         border: '1px solid var(--cmd-border)',
-        borderRadius: '20px',
+        borderRadius: 12,
         overflow: 'hidden',
       }}>
         <div style={{
@@ -538,8 +560,8 @@ export default function ClientAdsPage({ params }: Props) {
         }}>
           <h2 style={{
             fontSize: '16px',
-            fontWeight: 800,
-            color: 'var(--cmd-heading)',
+            fontWeight: 600,
+            color: "var(--cc-text)",
             margin: 0,
           }}>
             📈 Recent Performance
@@ -550,10 +572,10 @@ export default function ClientAdsPage({ params }: Props) {
           <div style={{
             padding: '40px',
             textAlign: 'center',
-            color: 'var(--cmd-body)',
+            color: "var(--cc-text-secondary)",
             fontSize: '14px',
           }}>
-            No stats yet. Click "Add Stats" to enter data.
+            No stats yet. Click &quot;Add Stats&quot; to enter data.
           </div>
         ) : (
           <>
@@ -564,12 +586,12 @@ export default function ClientAdsPage({ params }: Props) {
               padding: '12px 24px',
               borderBottom: '1px solid rgba(124,58,237,0.06)',
               background: 'rgba(124,58,237,0.02)',
-            }}>
+            }} className="admin-responsive-grid admin-grid-header">
               {['Date', 'Platform', 'Impressions', 'Reach', 'Clicks', 'Spend', 'Conv.', 'ROAS'].map(h => (
                 <p key={h} style={{
                   fontSize: '10px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-muted)',
+                  fontWeight: 600,
+                  color: "var(--cc-text-muted)",
                   textTransform: 'uppercase',
                   letterSpacing: '0.07em',
                   margin: 0,
@@ -582,7 +604,7 @@ export default function ClientAdsPage({ params }: Props) {
             {stats.slice(0, 10).map((stat, i) => (
               <div
                 key={stat.id}
-                className="cmd-table-row"
+                className="cmd-table-row admin-responsive-grid admin-grid-header"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '100px 100px 80px 80px 80px 80px 80px 80px',
@@ -594,7 +616,7 @@ export default function ClientAdsPage({ params }: Props) {
               >
                 <p style={{
                   fontSize: '12px',
-                  color: 'var(--cmd-body)',
+                  color: "var(--cc-text-secondary)",
                   margin: 0,
                   whiteSpace: 'nowrap',
                 }}>
@@ -638,6 +660,6 @@ export default function ClientAdsPage({ params }: Props) {
           </>
         )}
       </div>
-    </div>
+    </AdminPage>
   )
 }

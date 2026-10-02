@@ -2,7 +2,7 @@
 
 import { useId, useState, useRef } from 'react'
 import Link from 'next/link'
-import Checkbox from '@/components/form/input/Checkbox'
+import { WorkspaceCheckbox as Checkbox } from '@/components/workspace/checkbox'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCurrency } from '@/context/CurrencyContext'

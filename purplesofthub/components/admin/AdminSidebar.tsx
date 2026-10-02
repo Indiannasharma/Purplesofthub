@@ -26,7 +26,7 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "cc-hairline-bottom flex shrink-0 items-center",
+        "admin-brand cc-hairline-bottom flex shrink-0 items-center",
         collapsed ? "justify-center px-2 py-3" : "gap-2.5 px-4 py-3.5"
       )}
     >
@@ -39,13 +39,13 @@ export function AdminSidebarBrand({ collapsed }: { collapsed: boolean }) {
         )}
       >
         <Image
-          src={BRAND_LOGO}
+          src={collapsed ? "/android-chrome-192x192.png" : BRAND_LOGO}
           alt="PurpleSoftHub"
-          width={collapsed ? 36 : 118}
-          height={collapsed ? 36 : 34}
+          width={collapsed ? 36 : 144}
+          height={collapsed ? 36 : 40}
           className={cn(
             "object-contain",
-            collapsed ? "h-9 w-9 rounded-xl" : "h-7 w-auto"
+            collapsed ? "h-9 w-9 object-contain" : "h-10 w-36 object-contain"
           )}
           priority
         />
@@ -99,7 +99,7 @@ function AdminSidebarLink({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{row}</TooltipTrigger>
-      <TooltipContent side="right">{item.title}</TooltipContent>
+      <TooltipContent side="right" className="workspace-overlay">{item.title}</TooltipContent>
     </Tooltip>
   );
 }

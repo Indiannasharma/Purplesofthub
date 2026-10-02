@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import "@/app/styles/admin-sprint.css";
 
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
@@ -11,9 +12,10 @@ import type { AdminShellProfile } from "@/components/admin/AdminUserMenu";
 type AdminShellProps = {
   children: React.ReactNode;
   profile: AdminShellProfile;
+  notifications?: React.ReactNode;
 };
 
-function AdminShellFrame({ children, profile }: AdminShellProps) {
+function AdminShellFrame({ children, profile, notifications }: AdminShellProps) {
   return (
     /**
      * The admin frame deliberately fills the viewport and owns its own scroll
@@ -26,7 +28,7 @@ function AdminShellFrame({ children, profile }: AdminShellProps) {
      * managed by next-themes (`html.dark`), so there is exactly one theme
      * source of truth inside /admin.
      */
-    <div className="admin-shell cc-root cc-theme-site fixed inset-0 flex overflow-hidden">
+    <div data-workspace-kind="admin" className="admin-shell workspace-root cc-root cc-theme-site fixed inset-0 flex overflow-hidden">
       <a
         href="#admin-main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-[var(--cc-surface)] focus:px-3 focus:py-2 focus:shadow"
@@ -37,14 +39,16 @@ function AdminShellFrame({ children, profile }: AdminShellProps) {
       <AdminSidebar />
 
       <div className="admin-main flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <AdminTopbar profile={profile} />
+        <AdminTopbar profile={profile} notifications={notifications} />
 
         <main
           id="admin-main"
+          tabIndex={-1}
           className="admin-content cc-scroll min-h-0 flex-1"
         >
           {children}
         </main>
+        <div className="admin-assistant-gutter" aria-hidden="true" />
       </div>
 
       {/* Palette is mounted once for the whole shell (mobile included). */}
@@ -57,10 +61,10 @@ function AdminShellFrame({ children, profile }: AdminShellProps) {
  * Client-side composition layer for the Admin area.
  * Server-side authorization stays in app/admin/layout.tsx.
  */
-export default function AdminShell({ children, profile }: AdminShellProps) {
+export default function AdminShell({ children, profile, notifications }: AdminShellProps) {
   return (
     <AdminShellProvider>
-      <AdminShellFrame profile={profile}>{children}</AdminShellFrame>
+      <AdminShellFrame profile={profile} notifications={notifications}>{children}</AdminShellFrame>
     </AdminShellProvider>
   );
 }

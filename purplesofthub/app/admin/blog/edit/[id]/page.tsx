@@ -1,25 +1,19 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, use } from 'react'
+import Image from 'next/image'
+import { AdminPage } from "@/components/admin/AdminPage";
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-
-const toSlug = (title: string) =>
-  title.toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
-    .substring(0, 100)
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 14px',
   borderRadius: '10px',
-  border: '1.5px solid rgba(124,58,237,0.2)',
+  border: "1px solid var(--cc-border)",
   background: 'rgba(124,58,237,0.06)',
-  color: '#fff',
+  color: "var(--cc-text)",
   fontSize: '13px',
   outline: 'none',
   fontFamily: 'inherit',
@@ -30,7 +24,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: '11px',
   fontWeight: 700,
-  color: '#9d8fd4',
+  color: "var(--cc-text-secondary)",
   textTransform: 'uppercase',
   letterSpacing: '0.07em',
   marginBottom: '6px',
@@ -45,7 +39,7 @@ export default function EditBlogPost({
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  
+
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
@@ -70,24 +64,12 @@ export default function EditBlogPost({
   })
 
   // Load post on mount
-  useEffect(() => {
-    loadPost()
-    loadCategories()
-  }, [id])
+
 
   // Auto-save every 30 seconds
-  useEffect(() => {
-    if (!form.title && !form.content) return
-    if (autoSaveRef.current) clearTimeout(autoSaveRef.current)
-    autoSaveRef.current = setTimeout(() => {
-      autoSave()
-    }, 30000)
-    return () => {
-      if (autoSaveRef.current) clearTimeout(autoSaveRef.current)
-    }
-  }, [form])
 
-  const loadPost = async () => {
+
+  const loadPost = useCallback(async () => {
     const supabase = createClient()
     const { data, error } = await supabase
       .from('blog_posts')
@@ -118,9 +100,11 @@ export default function EditBlogPost({
       setImagePreview(data.featured_image)
     }
     setLoading(false)
-  }
+  }, [id])
 
-  const loadCategories = async () => {
+
+
+  async function loadCategories() {
     const supabase = createClient()
     const { data } = await supabase
       .from('blog_categories')
@@ -165,6 +149,17 @@ export default function EditBlogPost({
     setTimeout(() => setAutoSaveStatus('idle'), 3000)
   }, [form, id])
 
+  useEffect(() => {
+    if (!form.title && !form.content) return
+    if (autoSaveRef.current) clearTimeout(autoSaveRef.current)
+    autoSaveRef.current = setTimeout(() => {
+      autoSave()
+    }, 30000)
+    return () => {
+      if (autoSaveRef.current) clearTimeout(autoSaveRef.current)
+    }
+  }, [form, autoSave])
+
   const handleSave = async (
     status: 'draft' | 'published'
   ) => {
@@ -173,9 +168,8 @@ export default function EditBlogPost({
       return
     }
 
-    status === 'draft'
-      ? setSaving(true)
-      : setPublishing(true)
+    if (status === 'draft') setSaving(true)
+    else setPublishing(true)
     setError('')
 
     const supabase = createClient()
@@ -284,13 +278,21 @@ export default function EditBlogPost({
     setTimeout(() => textarea.focus(), 10)
   }
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    loadPost()
+    loadCategories()
+      })
+  }, [loadPost])
+
   if (loading) return (
     <div style={{
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '400px',
-      color: '#9d8fd4',
+      color: "var(--cc-text-secondary)",
       fontSize: '16px',
     }}>
       Loading post...
@@ -298,13 +300,7 @@ export default function EditBlogPost({
   )
 
   return (
-    <div style={{
-      maxWidth: '1400px',
-      width: '100%',
-      height: 'calc(100vh - 100px)',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
 
       {/* Header */}
       <div style={{
@@ -323,16 +319,16 @@ export default function EditBlogPost({
         }}>
           <Link href="/admin/blog" style={{
             fontSize: '13px',
-            color: '#9d8fd4',
+            color: "var(--cc-text-secondary)",
             textDecoration: 'none',
           }}>
             ← Blog
           </Link>
-          <span style={{ color: '#4b5563' }}>/</span>
+          <span style={{ color: "var(--cc-text-muted)" }}>/</span>
           <h1 style={{
             fontSize: '18px',
-            fontWeight: 900,
-            color: '#fff',
+            fontWeight: 600,
+            color: "var(--cc-text)",
             margin: 0,
           }}>
             Edit Post
@@ -354,7 +350,7 @@ export default function EditBlogPost({
           {/* Current status badge */}
           <span style={{
             fontSize: '11px',
-            fontWeight: 700,
+            fontWeight: 600,
             color: form.status === 'published'
               ? '#10b981' : '#f59e0b',
             background: form.status === 'published'
@@ -382,7 +378,7 @@ export default function EditBlogPost({
               borderRadius: '10px',
               border: '1.5px solid rgba(124,58,237,0.3)',
               background: 'transparent',
-              color: '#9d8fd4',
+              color: "var(--cc-text-secondary)",
               fontSize: '13px',
               fontWeight: 600,
               cursor: 'pointer',
@@ -404,11 +400,11 @@ export default function EditBlogPost({
               background: publishing
                 ? 'rgba(124,58,237,0.4)'
                 : 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              color: '#fff',
+              color: "var(--cc-on-accent)",
               fontSize: '13px',
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: publishing ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 16px rgba(124,58,237,0.35)',
+              boxShadow: "none",
               whiteSpace: 'nowrap',
             }}
           >
@@ -420,13 +416,13 @@ export default function EditBlogPost({
       {/* Alerts */}
       {error && (
         <div style={{
-          background: 'rgba(239,68,68,0.1)',
+          background: "var(--cc-error-soft)",
           border: '1px solid rgba(239,68,68,0.3)',
           borderRadius: '10px',
           padding: '12px 16px',
           marginBottom: '12px',
           fontSize: '13px',
-          color: '#ef4444',
+          color: "var(--cc-error)",
           flexShrink: 0,
           display: 'flex',
           justifyContent: 'space-between',
@@ -436,7 +432,7 @@ export default function EditBlogPost({
             style={{
               background: 'none',
               border: 'none',
-              color: '#ef4444',
+              color: "var(--cc-error)",
               cursor: 'pointer',
               fontSize: '16px',
             }}>×</button>
@@ -444,13 +440,13 @@ export default function EditBlogPost({
       )}
       {success && (
         <div style={{
-          background: 'rgba(16,185,129,0.1)',
+          background: "var(--cc-success-soft)",
           border: '1px solid rgba(16,185,129,0.3)',
           borderRadius: '10px',
           padding: '12px 16px',
           marginBottom: '12px',
           fontSize: '13px',
-          color: '#10b981',
+          color: "var(--cc-success)",
           flexShrink: 0,
         }}>
           {success}
@@ -466,7 +462,7 @@ export default function EditBlogPost({
         minHeight: 0,
         overflow: 'hidden',
       }}
-      className="blog-editor-grid">
+      className="blog-editor-grid admin-responsive-grid">
 
         {/* Left — editor */}
         <div style={{
@@ -479,9 +475,9 @@ export default function EditBlogPost({
         }}>
           {/* Title */}
           <div style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '14px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             padding: '18px 20px',
           }}>
             <input
@@ -495,20 +491,20 @@ export default function EditBlogPost({
                 border: 'none',
                 outline: 'none',
                 fontSize: '26px',
-                fontWeight: 900,
-                color: '#fff',
+                fontWeight: 600,
+                color: "var(--cc-text)",
                 fontFamily: 'inherit',
                 boxSizing: 'border-box',
               }}
-            />
+             aria-label="Post title..."/>
             {form.slug && (
               <p style={{
                 fontSize: '12px',
-                color: '#6b5fa0',
+                color: "var(--cc-text-muted)",
                 margin: '6px 0 0',
               }}>
                 🔗 purplesofthub.com/blog/
-                <span style={{ color: '#a855f7' }}>
+                <span style={{ color: "var(--cc-accent)" }}>
                   {form.slug}
                 </span>
               </p>
@@ -517,9 +513,9 @@ export default function EditBlogPost({
 
           {/* Editor */}
           <div style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '14px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             overflow: 'hidden',
             flex: 1,
             minHeight: '400px',
@@ -550,7 +546,7 @@ export default function EditBlogPost({
                 { label: '<>', format: 'code' },
                 { label: '🔗', format: 'link' },
               ].map((btn, i) =>
-                (btn as any).divider ? (
+                btn.divider ? (
                   <div key={i} style={{
                     width: '1px', height: '18px',
                     background: 'rgba(124,58,237,0.15)',
@@ -558,23 +554,23 @@ export default function EditBlogPost({
                   }}/>
                 ) : (
                   <button
-                    key={(btn as any).format}
-                    onClick={() => applyFormat((btn as any).format)}
+                    key={btn.format}
+                    onClick={() => applyFormat(btn.format ?? '')}
                     style={{
                       padding: '4px 8px',
                       borderRadius: '6px',
                       border: 'none',
                       background: 'transparent',
-                      color: '#9d8fd4',
-                      fontSize: (btn as any).label?.length > 2 ? '11px' : '13px',
-                      fontWeight: (btn as any).fw || 600,
-                      fontStyle: (btn as any).fi ? 'italic' : 'normal',
+                      color: "var(--cc-text-secondary)",
+                      fontSize: (btn.label?.length ?? 0) > 2 ? '11px' : '13px',
+                      fontWeight: btn.fw || 600,
+                      fontStyle: btn.fi ? 'italic' : 'normal',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {(btn as any).label}
+                    {btn.label}
                   </button>
                 )
               )}
@@ -592,7 +588,7 @@ export default function EditBlogPost({
                 background: 'transparent',
                 border: 'none',
                 outline: 'none',
-                color: '#e2e8f0',
+                color: "var(--cc-text)",
                 fontSize: '15px',
                 lineHeight: 1.8,
                 fontFamily: "'JetBrains Mono', monospace",
@@ -607,7 +603,7 @@ export default function EditBlogPost({
               padding: '6px 14px',
               borderTop: '1px solid rgba(124,58,237,0.08)',
               fontSize: '11px',
-              color: '#4b5563',
+              color: "var(--cc-text-muted)",
             }}>
               <span>{form.content.length} chars</span>
               <span>
@@ -630,15 +626,15 @@ export default function EditBlogPost({
 
           {/* Featured Image */}
           <div style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '14px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             padding: '18px',
           }}>
             <p style={{
               fontSize: '13px',
-              fontWeight: 700,
-              color: '#fff',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               margin: '0 0 12px',
             }}>
               🖼️ Featured Image
@@ -657,7 +653,7 @@ export default function EditBlogPost({
                 overflow: 'hidden',
                 marginBottom: '10px',
               }}>
-                <img
+                <Image unoptimized width={640} height={360}
                   src={imagePreview}
                   alt="Featured"
                   style={{
@@ -675,7 +671,7 @@ export default function EditBlogPost({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#fff',
+                    color: "var(--cc-on-accent)",
                     fontSize: '13px',
                     fontWeight: 600,
                   }}>
@@ -692,9 +688,9 @@ export default function EditBlogPost({
                     background: 'rgba(0,0,0,0.7)',
                     border: 'none',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: "var(--cc-on-accent)",
                     fontSize: '11px',
-                    fontWeight: 700,
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
@@ -723,8 +719,8 @@ export default function EditBlogPost({
                 <span style={{ fontSize: '28px' }}>🖼️</span>
                 <p style={{
                   fontSize: '12px',
-                  fontWeight: 700,
-                  color: '#a855f7',
+                  fontWeight: 600,
+                  color: "var(--cc-accent)",
                   margin: 0,
                 }}>
                   {uploading ? 'Uploading...' : 'Click to upload image'}
@@ -735,9 +731,9 @@ export default function EditBlogPost({
 
           {/* Post Settings */}
           <div style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '14px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             padding: '18px',
             display: 'flex',
             flexDirection: 'column',
@@ -745,21 +741,21 @@ export default function EditBlogPost({
           }}>
             <p style={{
               fontSize: '13px',
-              fontWeight: 700,
-              color: '#fff',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               margin: 0,
             }}>
               ⚙️ Post Settings
             </p>
 
             <div>
-              <label style={labelStyle}>URL Slug</label>
+              <label style={labelStyle} htmlFor="admin-blogeditidpagetsx-1">URL Slug</label>
               <input
                 type="text"
                 value={form.slug}
                 onChange={e => update('slug', e.target.value)}
                 style={inputStyle}
-              />
+                id="admin-blogeditidpagetsx-1"/>
             </div>
 
             <div>
@@ -771,7 +767,7 @@ export default function EditBlogPost({
                 maxHeight: '200px',
                 overflowY: 'auto',
               }}>
-                {['', ...categories].map((cat, i) => (
+                {['', ...categories].map((cat) => (
                   <div
                     key={cat || 'none'}
                     onClick={() => update('category', cat)}
@@ -801,7 +797,7 @@ export default function EditBlogPost({
             </div>
 
             <div>
-              <label style={labelStyle}>
+              <label style={labelStyle} htmlFor="admin-blogeditidpagetsx-2">
                 Tags (comma separated)
               </label>
               <input
@@ -810,21 +806,21 @@ export default function EditBlogPost({
                 onChange={e => update('tags', e.target.value)}
                 placeholder="nextjs, marketing, nigeria"
                 style={inputStyle}
-              />
+                id="admin-blogeditidpagetsx-2"/>
             </div>
           </div>
 
           {/* Excerpt */}
           <div style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '14px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             padding: '18px',
           }}>
             <p style={{
               fontSize: '13px',
-              fontWeight: 700,
-              color: '#fff',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               margin: '0 0 10px',
             }}>
               📝 Excerpt
@@ -840,7 +836,7 @@ export default function EditBlogPost({
                 resize: 'vertical',
                 minHeight: '80px',
               }}
-            />
+             aria-label="Brief description..."/>
             <p style={{
               fontSize: '11px',
               color: form.excerpt.length > 280 ? '#f59e0b' : '#4b5563',
@@ -853,9 +849,9 @@ export default function EditBlogPost({
 
           {/* SEO */}
           <div style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.15)',
-            borderRadius: '14px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             padding: '18px',
             display: 'flex',
             flexDirection: 'column',
@@ -863,21 +859,21 @@ export default function EditBlogPost({
           }}>
             <p style={{
               fontSize: '13px',
-              fontWeight: 700,
-              color: '#fff',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               margin: 0,
             }}>
               🔍 SEO Settings
             </p>
             <div>
-              <label style={labelStyle}>SEO Title</label>
+              <label style={labelStyle} htmlFor="admin-blogeditidpagetsx-3">SEO Title</label>
               <input
                 type="text"
                 value={form.seoTitle}
                 onChange={e => update('seoTitle', e.target.value)}
                 maxLength={60}
                 style={inputStyle}
-              />
+                id="admin-blogeditidpagetsx-3"/>
               <p style={{
                 fontSize: '10px',
                 color: form.seoTitle.length > 55 ? '#f59e0b' : '#4b5563',
@@ -888,17 +884,17 @@ export default function EditBlogPost({
               </p>
             </div>
             <div>
-              <label style={labelStyle}>Meta Description</label>
+              <label style={labelStyle} htmlFor="admin-blogeditidpagetsx-4">Meta Description</label>
               <textarea
                 value={form.seoDescription}
                 onChange={e => update('seoDescription', e.target.value)}
                 maxLength={160}
                 rows={3}
                 style={{ ...inputStyle, resize: 'none' }}
-              />
+                id="admin-blogeditidpagetsx-4"/>
               <p style={{
                 fontSize: '10px',
-                color: '#4b5563',
+                color: "var(--cc-text-muted)",
                 margin: '3px 0 0',
                 textAlign: 'right',
               }}>
@@ -929,6 +925,6 @@ export default function EditBlogPost({
           color: '#4b5563' !important;
         }
       `}</style>
-    </div>
+    </AdminPage>
   )
 }

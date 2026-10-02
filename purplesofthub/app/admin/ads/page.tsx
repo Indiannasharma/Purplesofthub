@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { AdminErrorState } from "@/components/admin/AdminErrorState";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
@@ -20,6 +23,7 @@ interface ClientAds {
 export default function AdsManagerPage() {
   const [clients, setClients] = useState<ClientAds[]>([])
   const [loading, setLoading] = useState(true)
+  const [readError, setReadError] = useState(false);
   const [stats, setStats] = useState({
     totalClients: 0,
     activeClients: 0,
@@ -27,31 +31,35 @@ export default function AdsManagerPage() {
     totalReach: 0,
   })
 
-  useEffect(() => {
-    loadData()
-  }, [])
 
-  const loadData = async () => {
+
+  async function loadData() {
+    try {
+      setReadError(false);
+
     const supabase = createClient()
 
-    const { data: profiles } = await supabase
+    const { data: profiles , error: readFailure1} = await supabase
       .from('profiles')
       .select('*')
       .not('active_plan', 'is', null)
       .order('created_at', { ascending: false })
+      if (readFailure1) throw readFailure1;
 
     if (profiles) {
       const enriched = await Promise.all(
         profiles.map(async profile => {
-          const { data: campaigns } = await supabase
+          const { data: campaigns , error: readFailure2} = await supabase
             .from('ad_campaigns')
             .select('id, status')
             .eq('client_id', profile.id)
+      if (readFailure2) throw readFailure2;
 
-          const { data: statsData } = await supabase
+          const { data: statsData , error: readFailure3} = await supabase
             .from('ad_stats')
             .select('spend, reach, clicks')
             .eq('client_id', profile.id)
+      if (readFailure3) throw readFailure3;
 
           const totalSpend = statsData?.reduce((s, r) => s + (r.spend || 0), 0) || 0
           const totalReach = statsData?.reduce((s, r) => s + (r.reach || 0), 0) || 0
@@ -77,57 +85,24 @@ export default function AdsManagerPage() {
       })
     }
     setLoading(false)
+
+    } catch { setReadError(true); } finally { setLoading(false); }
   }
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    loadData()
+      })
+  }, [])
+
+  if (readError) return <AdminPage className="cc-module"><AdminErrorState title="Could not load these records" description="Refresh to try again. No record counts are shown while the read has failed." onRetry={() => window.location.reload()} /></AdminPage>;
+
   return (
-    <div style={{ maxWidth: '1200px' }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
 
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '28px',
-        flexWrap: 'wrap',
-        gap: '16px',
-      }}>
-        <div>
-          <h1 style={{
-            fontSize: '24px',
-            fontWeight: 900,
-            color: 'var(--cmd-heading)',
-            margin: '0 0 4px',
-          }}>
-            Ads Manager 📊
-          </h1>
-          <p style={{
-            fontSize: '14px',
-            color: 'var(--cmd-body)',
-            margin: 0,
-          }}>
-            Manage all client ad campaigns
-          </p>
-        </div>
-        <Link
-          href="/admin/campaigns/new"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-            color: '#fff',
-            padding: '11px 24px',
-            borderRadius: '12px',
-            textDecoration: 'none',
-            fontWeight: 700,
-            fontSize: '14px',
-            boxShadow: '0 4px 16px rgba(124,58,237,0.3)',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          + New Campaign
-        </Link>
-      </div>
+      <AdminPageHeader title={<>Ads Manager</>} description={<>Select a client to manage campaigns and manually recorded advertising metrics.</>}  />
 
       {/* Stats */}
       <div style={{
@@ -190,7 +165,7 @@ export default function AdsManagerPage() {
               <div>
                 <p style={{
                   fontSize: '22px',
-                  fontWeight: 900,
+                  fontWeight: 600,
                   color: stat.color,
                   margin: '0 0 2px',
                   lineHeight: 1,
@@ -199,7 +174,7 @@ export default function AdsManagerPage() {
                 </p>
                 <p style={{
                   fontSize: '12px',
-                  color: 'var(--cmd-body)',
+                  color: "var(--cc-text-secondary)",
                   margin: 0,
                 }}>
                   {stat.label}
@@ -212,9 +187,9 @@ export default function AdsManagerPage() {
 
       {/* Clients table */}
       <div style={{
-        background: 'var(--cmd-card)',
+        background: "var(--cc-surface)",
         border: '1px solid var(--cmd-border)',
-        borderRadius: '20px',
+        borderRadius: 12,
         overflow: 'hidden',
         backdropFilter: 'blur(10px)',
       }}>
@@ -226,12 +201,12 @@ export default function AdsManagerPage() {
           padding: '14px 24px',
           borderBottom: '1px solid var(--cmd-border)',
           background: 'rgba(124,58,237,0.04)',
-        }}>
+        }} className="admin-responsive-grid admin-grid-header">
           {['Client', 'Plan', 'Status', 'Spend', 'Reach', 'Campaigns', 'Actions'].map(h => (
             <p key={h} style={{
               fontSize: '11px',
-              fontWeight: 700,
-              color: 'var(--cmd-muted)',
+              fontWeight: 600,
+              color: "var(--cc-text-muted)",
               textTransform: 'uppercase',
               letterSpacing: '0.07em',
               margin: 0,
@@ -245,7 +220,7 @@ export default function AdsManagerPage() {
           <div style={{
             padding: '40px',
             textAlign: 'center',
-            color: 'var(--cmd-body)',
+            color: "var(--cc-text-secondary)",
           }}>
             Loading clients...
           </div>
@@ -257,15 +232,15 @@ export default function AdsManagerPage() {
             <p style={{ fontSize: '40px', margin: '0 0 12px' }}>📊</p>
             <p style={{
               fontSize: '16px',
-              fontWeight: 700,
-              color: 'var(--cmd-heading)',
+              fontWeight: 600,
+              color: "var(--cc-text)",
               margin: '0 0 6px',
             }}>
               No ad clients yet
             </p>
             <p style={{
               fontSize: '13px',
-              color: 'var(--cmd-body)',
+              color: "var(--cc-text-secondary)",
               margin: 0,
             }}>
               Clients who purchase Meta Ads plans will appear here
@@ -275,7 +250,7 @@ export default function AdsManagerPage() {
           clients.map((client, i) => (
             <div
               key={client.id}
-              className="cmd-table-row"
+              className="cmd-table-row admin-responsive-grid admin-grid-record"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1fr 1fr 80px 80px 80px 120px',
@@ -288,18 +263,18 @@ export default function AdsManagerPage() {
               }}
             >
               {/* Client */}
-              <div>
+              <div data-label="Client">
                 <p style={{
                   fontSize: '14px',
-                  fontWeight: 700,
-                  color: 'var(--cmd-heading)',
+                  fontWeight: 600,
+                  color: "var(--cc-text)",
                   margin: '0 0 2px',
                 }}>
                   {client.full_name}
                 </p>
                 <p style={{
                   fontSize: '12px',
-                  color: 'var(--cmd-body)',
+                  color: "var(--cc-text-secondary)",
                   margin: '0 0 2px',
                 }}>
                   {client.email}
@@ -307,7 +282,7 @@ export default function AdsManagerPage() {
                 {client.business_name && (
                   <p style={{
                     fontSize: '11px',
-                    color: 'var(--cmd-muted)',
+                    color: "var(--cc-text-muted)",
                     margin: 0,
                   }}>
                     {client.business_name}
@@ -318,14 +293,14 @@ export default function AdsManagerPage() {
               {/* Plan */}
               <span style={{
                 fontSize: '12px',
-                fontWeight: 700,
-                color: '#a855f7',
+                fontWeight: 600,
+                color: "var(--cc-accent)",
                 background: 'rgba(124,58,237,0.1)',
                 padding: '3px 10px',
                 borderRadius: '100px',
                 display: 'inline-block',
                 whiteSpace: 'nowrap',
-              }}>
+              }} data-label="Plan">
                 {client.active_plan || '—'}
               </span>
 
@@ -334,26 +309,26 @@ export default function AdsManagerPage() {
                 client.plan_status === 'active'
                   ? 'cmd-badge-active'
                   : 'cmd-badge-pending'
-              }>
+              } data-label="Status">
                 {client.plan_status === 'active' ? '🟢 Active' : '⏳ Pending'}
               </span>
 
               {/* Spend */}
               <p style={{
                 fontSize: '13px',
-                fontWeight: 700,
-                color: '#f59e0b',
+                fontWeight: 600,
+                color: "var(--cc-warning)",
                 margin: 0,
-              }}>
+              }} data-label="Spend">
                 ₦{client.totalSpend.toLocaleString()}
               </p>
 
               {/* Reach */}
               <p style={{
                 fontSize: '13px',
-                color: 'var(--cmd-body)',
+                color: "var(--cc-text-secondary)",
                 margin: 0,
-              }}>
+              }} data-label="Reach">
                 {client.totalReach > 1000
                   ? `${(client.totalReach/1000).toFixed(1)}K`
                   : client.totalReach || '0'}
@@ -362,27 +337,27 @@ export default function AdsManagerPage() {
               {/* Campaigns */}
               <span style={{
                 fontSize: '12px',
-                fontWeight: 700,
+                fontWeight: 600,
                 color: '#22d3ee',
                 background: 'rgba(34,211,238,0.1)',
                 padding: '3px 10px',
                 borderRadius: '100px',
                 display: 'inline-block',
                 textAlign: 'center',
-              }}>
+              }} data-label="Campaigns">
                 {client.activeCampaigns}
               </span>
 
               {/* Actions */}
-              <div style={{ display: 'flex', gap: '6px' }}>
+              <div style={{ display: 'flex', gap: '6px' }} data-label="Actions">
                 <Link
                   href={`/admin/ads/${client.id}`}
                   style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: '#a855f7',
+                    color: "var(--cc-accent)",
                     background: 'rgba(124,58,237,0.1)',
-                    border: '1px solid rgba(124,58,237,0.2)',
+                    border: "1px solid var(--cc-border)",
                     padding: '5px 12px',
                     borderRadius: '8px',
                     textDecoration: 'none',
@@ -396,6 +371,6 @@ export default function AdsManagerPage() {
           ))
         )}
       </div>
-    </div>
+    </AdminPage>
   )
 }

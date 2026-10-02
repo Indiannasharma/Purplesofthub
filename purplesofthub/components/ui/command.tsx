@@ -25,15 +25,17 @@ Command.displayName = CommandPrimitive.displayName;
 const CommandDialog = ({
   children,
   contentClassName,
+  onCloseAutoFocus,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
   children: React.ReactNode;
   /** Optional surface override for the dialog shell (host app theming). */
   contentClassName?: string;
+  onCloseAutoFocus?: React.ComponentProps<typeof DialogContent>["onCloseAutoFocus"];
 }) => {
   return (
     <Dialog {...props}>
-      <DialogContent className={cn("overflow-hidden p-0 shadow-2xl", contentClassName)}>
+      <DialogContent onCloseAutoFocus={onCloseAutoFocus} className={cn("overflow-hidden p-0 shadow-2xl", contentClassName)}>
         <DialogTitle className="sr-only">Command palette</DialogTitle>
         <DialogDescription className="sr-only">
           Search platform modules and jump to a workspace

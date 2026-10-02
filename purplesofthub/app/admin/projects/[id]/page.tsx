@@ -1,4 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
+import { AdminPage } from "@/components/admin/AdminPage";
 import { redirect } from 'next/navigation'
 import { getAuthenticatedProfile } from '@/lib/auth'
 // TODO: Restore ProjectDetailClient component from git
@@ -30,20 +33,19 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
 
   if (!project) redirect('/admin/projects')
 
-  const { data: tasks } = await supabase.from('tasks').select('*').eq('project_id', id).order('order')
+  await supabase.from('tasks').select('*').eq('project_id', id).order('order')
 
-  const { data: updates } = await supabase
+  await supabase
     .from('project_updates')
     .select('*')
     .eq('project_id', id)
     .order('created_at', { ascending: false })
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">{project.name}</h1>
-      <p className="text-gray-600 mb-6">Project detail page is being restored. Please check back soon.</p>
+    <AdminPage className="cc-module admin-form admin-adopted">
+      <AdminPageHeader title={project.title || project.name || "Project"} description="Project details" /><AdminEmptyState title="Detail controls are under restoration" description="Project task and update controls are unavailable on this page. Return to Projects to review recorded status and progress." />
       {/* TODO: Restore ProjectDetailClient component from git */}
       {/* <ProjectDetailClient project={project} tasks={tasks || []} updates={updates || []} /> */}
-    </div>
+    </AdminPage>
   )
 }

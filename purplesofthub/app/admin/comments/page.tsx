@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { AdminErrorState } from "@/components/admin/AdminErrorState";
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { createClient } from '@/lib/supabase/client'
 
 interface Comment {
@@ -17,14 +20,16 @@ interface Comment {
 export default function CommentsPage() {
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
+  const [readError, setReadError] = useState(false);
 
-  useEffect(() => {
-    loadComments()
-  }, [])
 
-  const loadComments = async () => {
+
+  async function loadComments() {
+    try {
+      setReadError(false);
+
     const supabase = createClient()
-    const { data } = await supabase
+    const { data , error: readFailure1} = await supabase
       .from('blog_comments')
       .select(`
         *,
@@ -33,9 +38,13 @@ export default function CommentsPage() {
       .eq('is_deleted', false)
       .order('created_at', { ascending: false })
       .limit(100)
+      .returns<Comment[]>()
+      if (readFailure1) throw readFailure1;
 
-    setComments((data || []) as any)
+    setComments(data || [])
     setLoading(false)
+
+    } catch { setReadError(true); } finally { setLoading(false); }
   }
 
   const deleteComment = async (id: string) => {
@@ -51,39 +60,25 @@ export default function CommentsPage() {
     await loadComments()
   }
 
+  useEffect(() => {
+    // Resolve external reads in a callback after the committed render.
+    void Promise.resolve().then(async () => {
+    loadComments()
+      })
+  }, [])
+
+  if (readError) return <AdminPage className="cc-module"><AdminErrorState title="Could not load these records" description="Refresh to try again. No record counts are shown while the read has failed." onRetry={() => window.location.reload()} /></AdminPage>;
+
   return (
-    <div style={{ maxWidth: '1100px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              fontSize: '24px',
-              fontWeight: 900,
-              color: '#fff',
-              margin: '0 0 4px',
-            }}
-          >
-            Comments 💬
-          </h1>
-          <p style={{ fontSize: '14px', color: '#9d8fd4', margin: 0 }}>
-            {comments.length} total comments
-          </p>
-        </div>
-      </div>
+    <AdminPage className="cc-module admin-form admin-adopted">
+      <AdminPageHeader title={<>Comments</>} description={<>{comments.length} total comments</>} />
 
       {loading ? (
         <div
           style={{
             textAlign: 'center',
             padding: '40px',
-            color: '#9d8fd4',
+            color: "var(--cc-text-secondary)",
           }}
         >
           Loading...
@@ -91,18 +86,18 @@ export default function CommentsPage() {
       ) : comments.length === 0 ? (
         <div
           style={{
-            background: '#1a1f2e',
-            border: '1px solid rgba(124,58,237,0.12)',
-            borderRadius: '20px',
+            background: "var(--cc-surface)",
+            border: "1px solid var(--cc-border)",
+            borderRadius: 12,
             padding: '60px 24px',
             textAlign: 'center',
           }}
         >
           <p style={{ fontSize: '40px', margin: '0 0 12px' }}>💬</p>
-          <p style={{ fontSize: '16px', fontWeight: 700, color: '#fff', margin: '0 0 6px' }}>
+          <p style={{ fontSize: '16px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 6px' }}>
             No comments yet
           </p>
-          <p style={{ fontSize: '13px', color: '#9d8fd4', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: "var(--cc-text-secondary)", margin: 0 }}>
             Comments will appear here when readers engage with posts
           </p>
         </div>
@@ -112,9 +107,9 @@ export default function CommentsPage() {
             <div
               key={comment.id}
               style={{
-                background: '#1a1f2e',
-                border: '1px solid rgba(124,58,237,0.12)',
-                borderRadius: '14px',
+                background: "var(--cc-surface)",
+                border: "1px solid var(--cc-border)",
+                borderRadius: 12,
                 padding: '18px 20px',
               }}
             >
@@ -131,7 +126,7 @@ export default function CommentsPage() {
                   <p
                     style={{
                       fontSize: '11px',
-                      fontWeight: 700,
+                      fontWeight: 600,
                       color: '#22d3ee',
                       textTransform: 'uppercase',
                       letterSpacing: '0.06em',
@@ -160,22 +155,22 @@ export default function CommentsPage() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '11px',
-                        fontWeight: 800,
-                        color: '#fff',
+                        fontWeight: 600,
+                        color: "var(--cc-text)",
                         flexShrink: 0,
                       }}
                     >
                       {comment.author_name[0].toUpperCase()}
                     </div>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#fff' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: "var(--cc-text)" }}>
                       {comment.author_name}
                     </span>
                     {comment.guest_email && (
-                      <span style={{ fontSize: '12px', color: '#6b5fa0' }}>
+                      <span style={{ fontSize: '12px', color: "var(--cc-text-muted)" }}>
                         {comment.guest_email}
                       </span>
                     )}
-                    <span style={{ fontSize: '11px', color: '#4b5563' }}>
+                    <span style={{ fontSize: '11px', color: "var(--cc-text-muted)" }}>
                       {new Date(comment.created_at).toLocaleDateString('en-NG', {
                         day: 'numeric',
                         month: 'short',
@@ -184,7 +179,7 @@ export default function CommentsPage() {
                     </span>
                   </div>
 
-                  <p style={{ fontSize: '14px', color: '#9d8fd4', lineHeight: 1.6, margin: 0 }}>
+                  <p style={{ fontSize: '14px', color: "var(--cc-text-secondary)", lineHeight: 1.6, margin: 0 }}>
                     {comment.content}
                   </p>
                 </div>
@@ -197,7 +192,7 @@ export default function CommentsPage() {
                       borderRadius: '8px',
                       border: '1px solid rgba(16,185,129,0.3)',
                       background: comment.is_approved ? 'rgba(16,185,129,0.1)' : 'transparent',
-                      color: '#10b981',
+                      color: "var(--cc-success)",
                       fontSize: '12px',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -213,7 +208,7 @@ export default function CommentsPage() {
                       borderRadius: '8px',
                       border: '1px solid rgba(239,68,68,0.3)',
                       background: 'rgba(239,68,68,0.08)',
-                      color: '#ef4444',
+                      color: "var(--cc-error)",
                       fontSize: '12px',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -228,6 +223,6 @@ export default function CommentsPage() {
           ))}
         </div>
       )}
-    </div>
+    </AdminPage>
   )
 }

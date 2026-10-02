@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { AdminPage } from "@/components/admin/AdminPage";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toSlug } from "@/lib/portfolio"
@@ -11,9 +12,9 @@ const field: React.CSSProperties = {
   width: "100%",
   padding: "12px 14px",
   borderRadius: 12,
-  border: "1px solid rgba(124,58,237,0.18)",
+  border: "1px solid var(--cc-border)",
   background: "rgba(124,58,237,0.05)",
-  color: "#fff",
+  color: "var(--cc-text)",
   fontSize: 14,
   outline: "none",
   fontFamily: "inherit",
@@ -24,7 +25,7 @@ const label: React.CSSProperties = {
   display: "block",
   fontSize: 12,
   fontWeight: 700,
-  color: "#9d8fd4",
+  color: "var(--cc-text-secondary)",
   letterSpacing: "0.04em",
   marginBottom: 8,
 }
@@ -107,13 +108,13 @@ export default function ProjectForm({
   }
 
   return (
-    <div style={{ maxWidth: 720 }}>
+    <AdminPage className="cc-module admin-form admin-adopted">
       <div style={{ display: "flex", justifyContent: "space-between", gap: 16, marginBottom: 28, flexWrap: "wrap" }}>
         <div>
-          <Link href="/admin/portfolio" style={{ fontSize: 13, color: "#9d8fd4", textDecoration: "none" }}>
+          <Link href="/admin/portfolio" style={{ fontSize: 13, color: "var(--cc-text-secondary)", textDecoration: "none" }}>
             ← Work
           </Link>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#fff", margin: "10px 0 0" }}>
+          <h1 style={{ fontSize: 22, fontWeight: 600, color: "var(--cc-text)", margin: "10px 0 0" }}>
             {projectId ? "Edit project" : "New project"}
           </h1>
         </div>
@@ -122,12 +123,12 @@ export default function ProjectForm({
           onClick={save}
           disabled={saving}
           style={{
-            background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-            color: "#fff",
+            background: "var(--cc-accent)",
+            color: "var(--cc-on-accent)",
             border: "none",
             borderRadius: 12,
             padding: "11px 22px",
-            fontWeight: 700,
+            fontWeight: 600,
             cursor: saving ? "wait" : "pointer",
           }}
         >
@@ -141,44 +142,44 @@ export default function ProjectForm({
 
       <div style={{ display: "grid", gap: 18 }}>
         <div>
-          <label style={label}>Name</label>
-          <input value={form.title} onChange={(e) => set("title", e.target.value)} style={field} />
+          <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-1">Name</label>
+          <input value={form.title} onChange={(e) => set("title", e.target.value)} style={field}   id="admin-portfoliocomponentsProjectFormtsx-1"/>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="admin-responsive-grid">
           <div>
-            <label style={label}>Client</label>
-            <input value={form.client} onChange={(e) => set("client", e.target.value)} style={field} />
+            <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-2">Client</label>
+            <input value={form.client} onChange={(e) => set("client", e.target.value)} style={field}   id="admin-portfoliocomponentsProjectFormtsx-2"/>
           </div>
           <div>
-            <label style={label}>Year</label>
-            <input value={form.year} onChange={(e) => set("year", e.target.value)} style={field} />
+            <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-3">Year</label>
+            <input value={form.year} onChange={(e) => set("year", e.target.value)} style={field}   id="admin-portfoliocomponentsProjectFormtsx-3"/>
           </div>
         </div>
         <div>
-          <label style={label}>Category</label>
-          <select value={form.category} onChange={(e) => set("category", e.target.value)} style={{ ...field, cursor: "pointer" }}>
+          <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-4">Category</label>
+          <select value={form.category} onChange={(e) => set("category", e.target.value)} style={{ ...field, cursor: "pointer" }}  id="admin-portfoliocomponentsProjectFormtsx-4">
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
         <div>
-          <label style={label}>One line</label>
-          <input value={form.overview} onChange={(e) => set("overview", e.target.value)} placeholder="What you made, in one sentence" style={field} />
+          <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-5">One line</label>
+          <input value={form.overview} onChange={(e) => set("overview", e.target.value)} placeholder="What you made, in one sentence" style={field}   id="admin-portfoliocomponentsProjectFormtsx-5"/>
         </div>
         <div>
-          <label style={label}>Story</label>
-          <textarea value={form.body} onChange={(e) => set("body", e.target.value)} rows={6} style={{ ...field, resize: "vertical", minHeight: 140 }} />
+          <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-6">Story</label>
+          <textarea value={form.body} onChange={(e) => set("body", e.target.value)} rows={6} style={{ ...field, resize: "vertical", minHeight: 140 }}   id="admin-portfoliocomponentsProjectFormtsx-6"/>
         </div>
         <div>
-          <label style={label}>Cover image URL</label>
-          <input value={form.cover} onChange={(e) => set("cover", e.target.value)} placeholder="https://…" style={field} />
+          <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-7">Cover image URL</label>
+          <input value={form.cover} onChange={(e) => set("cover", e.target.value)} placeholder="https://…" style={field}   id="admin-portfoliocomponentsProjectFormtsx-7"/>
         </div>
         <div>
-          <label style={label}>YouTube (optional)</label>
-          <input value={form.youtube} onChange={(e) => set("youtube", e.target.value)} placeholder="https://youtube.com/watch?v=…" style={field} />
+          <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-8">YouTube (optional)</label>
+          <input value={form.youtube} onChange={(e) => set("youtube", e.target.value)} placeholder="https://youtube.com/watch?v=…" style={field}   id="admin-portfoliocomponentsProjectFormtsx-8"/>
         </div>
-        <div style={{ display: "flex", gap: 20, alignItems: "center", color: "#d6d3e8", fontSize: 14 }}>
+        <div style={{ display: "flex", gap: 20, alignItems: "center", color: "var(--cc-text-secondary)", fontSize: 14 }}>
           <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
             <input type="checkbox" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} />
             Featured on home
@@ -193,7 +194,7 @@ export default function ProjectForm({
           </label>
         </div>
       </div>
-    </div>
+    </AdminPage>
   )
 }
 

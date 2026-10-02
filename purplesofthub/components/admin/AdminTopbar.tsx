@@ -19,18 +19,18 @@ import { getAdminBreadcrumbs } from "@/lib/admin-navigation";
  * exposed; only its presentation and the theme control (single light/dark
  * toggle, matching the approved Command Center design) changed.
  */
-export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
+export function AdminTopbar({ profile, notifications }: { profile: AdminShellProfile; notifications?: React.ReactNode }) {
   const pathname = usePathname();
   const { isCollapsed, toggleCollapsed, setMobileNavOpen, isMobileNavOpen } = useAdminShell();
   const breadcrumbs = getAdminBreadcrumbs(pathname);
 
   return (
-    <header className="cc-hairline-bottom z-30 h-12 shrink-0 bg-[var(--cc-surface)]">
+    <header className="admin-topbar cc-hairline-bottom z-30 h-12 shrink-0 bg-[var(--cc-surface)]">
       <div className="mx-auto flex h-12 w-full max-w-[1400px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-1.5">
           <button
             type="button"
-            className="cc-icon-btn cc-icon-btn-sm lg:hidden"
+            className="admin-nav-open cc-icon-btn cc-icon-btn-sm lg:hidden"
             aria-label="Open admin navigation"
             aria-expanded={isMobileNavOpen}
             onClick={() => setMobileNavOpen(true)}
@@ -40,7 +40,7 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
 
           <button
             type="button"
-            className="cc-icon-btn cc-icon-btn-sm hidden lg:inline-flex"
+            className="admin-sidebar-toggle cc-icon-btn cc-icon-btn-sm hidden lg:inline-flex"
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-pressed={isCollapsed}
             onClick={toggleCollapsed}
@@ -52,15 +52,16 @@ export function AdminTopbar({ profile }: { profile: AdminShellProfile }) {
             )}
           </button>
 
-          <div className="hidden min-w-0 sm:block">
+          <div className="admin-breadcrumbs hidden min-w-0 sm:block">
             <Breadcrumbs items={breadcrumbs} />
           </div>
+          <span className="admin-mobile-context sm:hidden">{breadcrumbs.at(-1)?.label || "Overview"}</span>
         </div>
 
         <div className="flex min-w-0 shrink-0 items-center gap-0.5">
           <AdminSearchTrigger />
           <AdminThemeToggle />
-          <NotificationBell adminId={profile.userId} />
+          {notifications === undefined ? <NotificationBell adminId={profile.userId} /> : notifications}
           <span
             className="mx-1.5 hidden h-5 w-px bg-[var(--cc-border)] sm:block"
             aria-hidden="true"

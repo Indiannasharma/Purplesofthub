@@ -1,9 +1,7 @@
+import { AdminPage } from "@/components/admin/AdminPage";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
+import { BadgePercent } from "lucide-react";
 export default function AdminPromotions() {
-  return (
-    <div className="rounded-xl border border-stroke bg-white p-8 shadow-sm dark:border-strokedark dark:bg-boxdark text-center">
-      <p className="text-5xl mb-4">🚧</p>
-      <h5 className="font-semibold text-black dark:text-white mb-2 text-lg">Coming Soon</h5>
-      <p className="text-sm text-bodydark2">This page is being built. Check back soon!</p>
-    </div>
-  )
+ return <AdminPage className="cc-module"><AdminPageHeader title="Promotions" description="Pending product definition." /><AdminEmptyState title="Promotion management is not available" description="This area has no operational workflow yet." icon={BadgePercent} /></AdminPage>;
 }

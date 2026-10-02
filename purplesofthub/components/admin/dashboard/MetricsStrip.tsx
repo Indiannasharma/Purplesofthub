@@ -22,7 +22,7 @@ const TONE_CLASSES: Record<Metric["tone"], string> = {
   warning: "bg-[var(--cc-warning-soft)] text-[var(--cc-warning)]",
 };
 
-/** Four distinct executive KPI cards. Null is intentionally rendered as an em dash. */
+/** Four compact operational KPI cards. Null is intentionally rendered as an em dash. */
 export function MetricsStrip({ data }: { data: AdminDashboardData }) {
   const { overview } = data;
   const metrics: Metric[] = [
@@ -82,19 +82,19 @@ export function MetricsStrip({ data }: { data: AdminDashboardData }) {
           <Link
             key={metric.id}
             href={metric.href}
-            className="cc-panel group relative min-h-[142px] overflow-hidden p-5 transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-[var(--cc-border-strong)] hover:shadow-[var(--cc-shadow-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)]"
+            className="cc-panel group relative min-h-[116px] overflow-hidden p-4 transition-[border-color,box-shadow,transform] hover:border-[var(--cc-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cc-accent)]"
           >
             <span className={cn("flex h-9 w-9 items-center justify-center rounded-lg", TONE_CLASSES[metric.tone])}>
               <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
             </span>
             <ArrowUpRight className="absolute right-5 top-5 h-4 w-4 text-[var(--cc-text-muted)] opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
-            <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.11em] text-[var(--cc-text-muted)]">
+            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.11em] text-[var(--cc-text-muted)]">
               {metric.label}
             </p>
-            <p className="cc-display cc-tnum mt-1 text-[30px] font-semibold leading-8 tracking-[-0.035em] text-[var(--cc-text)]">
+            <p className="cc-display cc-tnum mt-1 text-[26px] font-semibold leading-8 tracking-[-0.035em] text-[var(--cc-text)]">
               {formatCount(metric.value)}
             </p>
-            <p className="mt-2 truncate text-xs text-[var(--cc-text-muted)]">{metric.note}</p>
+            <p className="mt-2 text-xs text-[var(--cc-text-muted)]">{metric.note}</p>
           </Link>
         );
       })}

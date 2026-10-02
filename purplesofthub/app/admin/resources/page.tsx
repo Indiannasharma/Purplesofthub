@@ -1,10 +1,17 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState, useSyncExternalStore } from 'react'
+import { AdminPage } from "@/components/admin/AdminPage";
 import { PREMIUM_RESOURCES } from '@/app/portfolio/_data/resources'
 import type { PremiumResource, ResourceCategory } from '@/types/portfolio'
 
 const ADMIN_KEY = 'psh-admin-resources'
+const emptyResources = () => '[]'
+const readResources = () => localStorage.getItem(ADMIN_KEY) || '[]'
+function subscribeResources(notify: () => void) {
+  window.addEventListener('storage', notify)
+  return () => window.removeEventListener('storage', notify)
+}
 const CATEGORIES: ResourceCategory[] = [
   'Company Profile',
   'Corporate Profile',
@@ -35,7 +42,12 @@ const emptyForm = {
 }
 
 export default function AdminResourcesPage() {
-  const [extras, setExtras] = useState<PremiumResource[]>([])
+  const [localExtras, setExtras] = useState<PremiumResource[] | null>(null)
+  const stored = useSyncExternalStore(subscribeResources, readResources, emptyResources)
+  const extras = useMemo(() => {
+    if (localExtras) return localExtras
+    try { return JSON.parse(stored) as PremiumResource[] } catch { return [] }
+  }, [localExtras, stored])
   const [form, setForm] = useState(emptyForm)
   const [uploading, setUploading] = useState('')
 
@@ -51,13 +63,6 @@ export default function AdminResourcesPage() {
     return json.secure_url || json.url || URL.createObjectURL(file)
   }
 
-  useEffect(() => {
-    try {
-      setExtras(JSON.parse(localStorage.getItem(ADMIN_KEY) || '[]'))
-    } catch {
-      setExtras([])
-    }
-  }, [])
 
   const all = useMemo(() => [...PREMIUM_RESOURCES, ...extras], [extras])
 
@@ -97,18 +102,18 @@ export default function AdminResourcesPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1100 }}>
-      <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', margin: '0 0 6px' }}>Resource Library</h1>
-      <p style={{ color: '#9d8fd4', margin: '0 0 24px' }}>Upload and manage company profiles, decks, guidelines, and other downloadable assets.</p>
+    <AdminPage className="cc-module admin-form admin-adopted">
+      <h1 style={{ fontSize: 24, fontWeight: 600, color: "var(--cc-text)", margin: '0 0 6px' }}>Resource Library</h1>
+      <p style={{ color: "var(--cc-text-secondary)", margin: '0 0 24px' }}>Built-in resources and additions saved only in this browser. Adding a resource here does not publish it to the public site.</p>
 
-      <form onSubmit={addResource} style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.12)', borderRadius: 14, padding: 20, marginBottom: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Title" required style={inputStyle} />
-        <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as ResourceCategory })} style={inputStyle}>
+      <form onSubmit={addResource} style={{ background: "var(--cc-surface)", border: "1px solid var(--cc-border)", borderRadius: 12, padding: 20, marginBottom: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} className="admin-responsive-grid">
+        <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Title" required style={inputStyle}   id="admin-resourcespagetsx-1"/>
+        <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as ResourceCategory })} style={inputStyle} aria-label="category">
           {CATEGORIES.map((item) => <option key={item}>{item}</option>)}
         </select>
-        <input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="Version" style={inputStyle} />
-        <input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="Tags, comma separated" style={inputStyle} />
-        <label style={{ ...inputStyle, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="Version" style={inputStyle}  aria-label="Version"/>
+        <input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="Tags, comma separated" style={inputStyle}  aria-label="Tags, comma separated"/>
+        <label style={{ ...inputStyle, display: 'flex', flexDirection: 'column', gap: 6 }} htmlFor="admin-resourcespagetsx-1">
           <span>PDF upload</span>
           <input type="file" accept="application/pdf" onChange={async (e) => {
             const file = e.target.files?.[0]
@@ -118,7 +123,7 @@ export default function AdminResourcesPage() {
             setForm((prev) => ({ ...prev, pdfUrl: url }))
             setUploading('')
           }} />
-          <span style={{ fontSize: 11, color: '#9d8fd4' }}>{uploading === 'pdf' ? 'Uploading…' : form.pdfUrl || 'No PDF yet'}</span>
+          <span style={{ fontSize: 11, color: "var(--cc-text-secondary)" }}>{uploading === 'pdf' ? 'Uploading…' : form.pdfUrl || 'No PDF yet'}</span>
         </label>
         <label style={{ ...inputStyle, display: 'flex', flexDirection: 'column', gap: 6 }}>
           <span>Cover image</span>
@@ -130,25 +135,25 @@ export default function AdminResourcesPage() {
             setForm((prev) => ({ ...prev, coverImage: url }))
             setUploading('')
           }} />
-          <span style={{ fontSize: 11, color: '#9d8fd4' }}>{uploading === 'cover' ? 'Uploading…' : form.coverImage || 'No cover yet'}</span>
+          <span style={{ fontSize: 11, color: "var(--cc-text-secondary)" }}>{uploading === 'cover' ? 'Uploading…' : form.coverImage || 'No cover yet'}</span>
         </label>
-        <input value={form.relatedServices} onChange={(e) => setForm({ ...form, relatedServices: e.target.value })} placeholder="Related services, comma separated" style={{ ...inputStyle, gridColumn: '1 / -1' }} />
-        <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" style={{ ...inputStyle, gridColumn: '1 / -1', minHeight: 90 }} />
-        <label style={{ color: '#d6d3e8', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <input value={form.relatedServices} onChange={(e) => setForm({ ...form, relatedServices: e.target.value })} placeholder="Related services, comma separated" style={{ ...inputStyle, gridColumn: '1 / -1' }}  aria-label="Related services, comma separated"/>
+        <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" style={{ ...inputStyle, gridColumn: '1 / -1', minHeight: 90 }}  aria-label="Description"/>
+        <label style={{ color: "var(--cc-text-secondary)", fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
           <input type="checkbox" checked={form.emailGate} onChange={(e) => setForm({ ...form, emailGate: e.target.checked })} />
           Require email before download
         </label>
-        <button type="submit" style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 16px', fontWeight: 700, cursor: 'pointer' }}>
-          Publish resource
+        <button type="submit" style={{ background: "var(--cc-accent)", color: "var(--cc-on-accent)", border: 'none', borderRadius: 10, padding: '12px 16px', fontWeight: 600, cursor: 'pointer' }}>
+          Add local resource
         </button>
       </form>
 
       <div style={{ display: 'grid', gap: 10 }}>
         {all.map((item) => (
-          <div key={item.id} style={{ background: '#1a1f2e', border: '1px solid rgba(124,58,237,0.12)', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
+          <div key={item.id} style={{ background: "var(--cc-surface)", border: "1px solid var(--cc-border)", borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
             <div>
-              <div style={{ color: '#fff', fontWeight: 700 }}>{item.title}</div>
-              <div style={{ color: '#9d8fd4', fontSize: 12 }}>{item.category} · v{item.version} · {item.downloadCount} downloads</div>
+              <div style={{ color: "var(--cc-text)", fontWeight: 600 }}>{item.title}</div>
+              <div style={{ color: "var(--cc-text-secondary)", fontSize: 12 }}>{item.category} · v{item.version} · {item.downloadCount} downloads</div>
             </div>
             {item.id.startsWith('admin-') && (
               <button onClick={() => removeResource(item.id)} style={{ background: 'transparent', color: '#fca5a5', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 8, padding: '8px 12px', cursor: 'pointer' }}>
@@ -158,14 +163,14 @@ export default function AdminResourcesPage() {
           </div>
         ))}
       </div>
-    </div>
+    </AdminPage>
   )
 }
 
 const inputStyle: React.CSSProperties = {
-  background: '#111827',
-  border: '1px solid rgba(124,58,237,0.2)',
-  color: '#fff',
+  background: "var(--cc-canvas)",
+  border: "1px solid var(--cc-border)",
+  color: "var(--cc-text)",
   borderRadius: 10,
   padding: '11px 12px',
   fontSize: 13,

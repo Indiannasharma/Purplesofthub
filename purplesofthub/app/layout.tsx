@@ -139,7 +139,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className="dark:bg-boxdark-2 dark:text-bodydark">
+      <body suppressHydrationWarning>
         <ThemeProvider>
           <Providers initialCountry={initialCountry}>
             {children}
@@ -152,13 +152,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
         {/* Payment Gateway Scripts */}
-        <Script 
-          src="https://js.paystack.co/v1/inline.js" 
-          strategy="afterInteractive" 
+        <Script
+          src="https://js.paystack.co/v1/inline.js"
+          strategy="afterInteractive"
         />
-        <Script 
-          src="https://checkout.flutterwave.com/v3.js" 
-          strategy="afterInteractive" 
+        <Script
+          src="https://checkout.flutterwave.com/v3.js"
+          strategy="afterInteractive"
         />
       </body>
     </html>

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { ccFontVariables } from "@/components/command-center/fonts";
 
 import {
   Sheet,
@@ -24,7 +25,9 @@ export function AdminMobileNav({ children }: { children: React.ReactNode }) {
     <Sheet open={isMobileNavOpen} onOpenChange={setMobileNavOpen}>
       <SheetContent
         side="left"
-        className="w-[288px] max-w-[85vw] border-r border-[var(--cc-border)] bg-[var(--cc-surface)] p-0 text-[var(--cc-text)]"
+        onOpenAutoFocus={event => { event.preventDefault(); document.querySelector<HTMLAnchorElement>(".admin-mobile-sheet a")?.focus(); }}
+        onCloseAutoFocus={(event) => { event.preventDefault(); document.querySelector<HTMLButtonElement>('[aria-label="Open admin navigation"]')?.focus(); }}
+        className={ccFontVariables + " workspace-overlay admin-mobile-sheet w-[288px] max-w-[85vw] border-r border-[var(--cc-border)] bg-[var(--cc-surface)] p-0 text-[var(--cc-text)]"}
       >
         <SheetTitle className="sr-only">Admin navigation</SheetTitle>
         <SheetDescription className="sr-only">
