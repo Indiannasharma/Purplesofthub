@@ -12,7 +12,7 @@ There were 41 Admin page entrypoints: 27 operational, partial or pending surface
 
 | Area | Retained routes | Classification / scope |
 | --- | --- | --- |
-| Overview | `/admin`, `/admin/dashboard` redirect | Active production. Real aggregation and ApexCharts retained; KPI presentation compacted. |
+| Overview | `/admin` | Active production. Real aggregation and ApexCharts retained; KPI presentation compacted. The legacy `/admin/dashboard` URL returns 404 in production; it is not an additional page entrypoint. |
 | Clients | `/admin/clients`, `/admin/clients/[id]` | Active production. Existing TanStack and details bodies retained; shared shell, spacing, focus and wrapping refined. |
 | Leads | `/admin/leads` | Active production. Existing TanStack body and API retained. |
 | Projects | `/admin/projects`, `/admin/projects/new`, `/admin/projects/[id]` | Active production list/create; detail controls remain under restoration. Lists use exact recorded statuses and genuine progress, including 0 and 100. |
@@ -113,6 +113,6 @@ Final checks on October 2, 2026:
 
 Screenshot and viewport evidence is saved in `C:/Users/HP/.codex/visualizations/2026/10/01/01a0f513-b343-7442-8b69-c1a5f3e089cf/` (`admin-sprint-matrix.json`, `customer-sprint-matrix.json`, `customer-sprint-overview-matrix.json` and matching PNGs). Final dependency/lint/preservation evidence is saved as `C:/Users/HP/AppData/Local/Temp/purplesofthub-uiux-final-evidence.json`.
 
-The guarded fixtures use synthetic records and preserve existing production preview restrictions. The local preview flag was process-only. Release uses the user's authorized normal commit and push on `main`; the final commit and Vercel deployment observations are reported in the completion message. A successful public/anonymous production smoke check cannot establish authenticated workflow correctness.
+The guarded fixtures use synthetic records and preserve existing production preview restrictions. The local preview flag was process-only. Implementation commit `ac2804f12704f7ada0bde6fea19401ae9747054a` was normally pushed to `main`; Vercel deployment `6805478155` reports success. Production `/` and `/sign-in` return 200; `/dashboard` and `/admin` return 307 to `/sign-in`; `/design/command-center/admin-sprint` returns 404. The legacy `/admin/dashboard` alias returns 404 and is accurately recorded as a limitation. A documentation-only follow-up records these observations; its final SHA/deployment result is reported in the completion message. Successful public/anonymous production checks cannot establish authenticated workflow correctness.
 
 Recommended next step: use an existing safe authenticated Admin/customer session for read-only operational smoke testing, then separately scope migration of the remaining legacy authentication presentation and audit the shared global compatibility CSS before claiming full TailAdmin retirement. Do not begin LMS or Marketplace work as part of this sprint.
