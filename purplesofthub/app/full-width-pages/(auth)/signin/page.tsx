@@ -1,11 +1,7 @@
-import SignInForm from "@/components/auth/SignInForm";
-import { Metadata } from "next";
+import AuthPage from "@/app/sign-in/page";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Sign In — PurpleSoftHub",
-  description: "Sign in to your PurpleSoftHub account and access premium digital solutions.",
-};
+export const metadata: Metadata = { title: "Sign In — PurpleSoftHub" };
 
-export default function SignIn() {
-  return <SignInForm />;
-}
+// Retained URL, shared working controller; no duplicate authentication implementation.
+export default function Page() { return <AuthPage />; }

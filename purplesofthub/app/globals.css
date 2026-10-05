@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import 'tailwindcss';
-@import "flatpickr/dist/flatpickr.css";
 @plugin "@tailwindcss/forms";
 
 /* ══════════════════════════════
-   TAILWIND V4 THEME — PurpleSoftHub Brand + TailAdmin Tokens
+   TAILWIND V4 THEME — PurpleSoftHub shared palette
 ══════════════════════════════ */
 @theme {
   --font-outfit: Outfit, sans-serif;
@@ -27,37 +26,9 @@
   --color-brand-900: #2e1065;
   --color-brand-950: #1a0533;
 
-  /* ─── TailAdmin Dark UI Tokens ─── */
-  --color-boxdark:   #24303F;
-  --color-boxdark-2: #1A222C;
-  --color-bodydark:  #AEB7C0;
-  --color-bodydark1: #DEE4EE;
-  --color-bodydark2: #8A99AF;
-  --color-graydark:  #333A48;
-  --color-gray-2:    #F7F9FC;
-  --color-gray-3:    #FAFAFA;
-  --color-whiten:    #F1F5F9;
-  --color-whiter:    #F5F7FD;
-  --color-blackho:   #3d2f60;
-  --color-black-2:   #010101;
-  --color-stroke:    rgba(124,58,237,0.18);
-  --color-strokedark: rgba(124,58,237,0.25);
-  --color-form:      #f0ebff;
-  --color-formdark:  #0d0820;
-
+  /* ─── Removed unused template palette ─── */
   /* ─── Meta Colors ─── */
-  --color-meta-1:  #DC3545;
-  --color-meta-2:  #EFF2F7;
-  --color-meta-3:  #10B981;
-  --color-meta-4:  #313D4A;
-  --color-meta-5:  #259AE6;
-  --color-meta-6:  #FFBA00;
-  --color-meta-7:  #FF6766;
-  --color-meta-8:  #F0950C;
-  --color-meta-9:  #E5E7EB;
-  --color-meta-10: #0FADCF;
-
-  /* ─── Grays (TailAdmin compatible) ─── */
+  /* ─── Shared public / shadcn grays ─── */
   --color-gray-25:  #fcfcfd;
   --color-gray-50:  #f9fafb;
   --color-gray-100: #f2f4f7;
@@ -303,7 +274,7 @@ section[aria-label^="Notifications"] > * {
 img { max-width: 100%; height: auto; }
 
 /* ══════════════════════════════
-   TAILADMIN DARK VARIANT
+   SHARED CLASS-BASED DARK VARIANT
 ══════════════════════════════ */
 @custom-variant dark (&:is(.dark *));
 
@@ -976,7 +947,7 @@ html:not(.dark) [style*="color:#5b4d8a"] { color: var(--text-muted) !important; 
 .mdx-body { color: var(--text-secondary); }
 .mdx-body h1, .mdx-body h2, .mdx-body h3 { color: var(--text-primary); }
 
-/* TailAdmin utilities for new dashboards */
+/* Shared border and interactive-control defaults */
 @layer base {
   *,
   ::after,
@@ -989,50 +960,6 @@ html:not(.dark) [style*="color:#5b4d8a"] { color: var(--text-muted) !important; 
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-}
-
-@utility menu-item {
-  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-sm;
-}
-
-@utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
-}
-
-@utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
-}
-
-@utility menu-item-icon {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
-}
-
-@utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
-}
-
-@utility menu-item-icon-inactive {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
-}
-
-@utility menu-dropdown-item {
-  @apply flex items-center justify-between px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
-}
-
-@utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
-}
-
-@utility menu-dropdown-badge {
-  @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded;
-}
-
-@utility menu-dropdown-badge-active {
-  @apply bg-brand-100 text-brand-700 dark:bg-brand-500/[0.2] dark:text-brand-300;
-}
-
-@utility menu-dropdown-badge-inactive {
-  @apply bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300;
 }
 
 @utility no-scrollbar {
