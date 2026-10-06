@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
-export default function ClientAdsDashboard() {
-  const [campaigns, setCampaigns] = useState<any[]>([])
-  const [stats, setStats] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<any>(null)
-  const [platform, setPlatform] = useState<'all' | 'facebook' | 'instagram'>('all')
+interface AdCampaign { id: string; platform: string; campaign_name: string; objective: string; status: string; budget_spent: number; budget_total: number }
+interface AdStat { id: string; stat_date: string; platform: string; spend: number; reach: number; clicks: number; impressions: number; conversions: number; roas: number }
+interface AdProfile { active_plan: string | null; meta_connected: boolean | null }
 
-  useEffect(() => {
-    loadData()
-  }, [])
+export default function ClientAdsDashboard() {
+  const [campaigns, setCampaigns] = useState<AdCampaign[]>([])
+  const [stats, setStats] = useState<AdStat[]>([])
+  const [loading, setLoading] = useState(true)
+  const [profile, setProfile] = useState<AdProfile | null>(null)
+  const [platform, setPlatform] = useState<'all' | 'facebook' | 'instagram'>('all')
 
   const loadData = async () => {
     const supabase = createClient()
@@ -31,6 +31,10 @@ export default function ClientAdsDashboard() {
     setStats(statsRes.data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+    void Promise.resolve().then(() => { loadData() })
+  }, [])
 
   const filteredStats = stats.filter(s =>
     platform === 'all' || s.platform === platform || s.platform === 'both'
@@ -71,14 +75,14 @@ export default function ClientAdsDashboard() {
           <h1 style={{
             fontSize: '24px',
             fontWeight: 900,
-            color: 'var(--cmd-heading)',
+            color: 'var(--cc-text)',
             margin: '0 0 4px',
           }}>
             Ads Performance 📊
           </h1>
           <p style={{
             fontSize: '14px',
-            color: 'var(--cmd-body)',
+            color: 'var(--cc-text-secondary)',
             margin: 0,
           }}>
             {profile?.active_plan} Plan · Facebook & Instagram
@@ -89,8 +93,8 @@ export default function ClientAdsDashboard() {
         <div style={{
           display: 'flex',
           gap: '8px',
-          background: 'var(--cmd-card)',
-          border: '1px solid var(--cmd-border)',
+          background: 'var(--cc-surface)',
+          border: '1px solid var(--cc-border)',
           borderRadius: '12px',
           padding: '4px',
         }}>
@@ -101,7 +105,7 @@ export default function ClientAdsDashboard() {
           ].map(p => (
             <button
               key={p.key}
-              onClick={() => setPlatform(p.key as any)}
+              onClick={() => setPlatform(p.key as typeof platform)}
               style={{
                 padding: '7px 14px',
                 borderRadius: '8px',
@@ -109,7 +113,7 @@ export default function ClientAdsDashboard() {
                 background: platform === p.key
                   ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
                   : 'transparent',
-                color: platform === p.key ? '#fff' : 'var(--cmd-body)',
+                color: platform === p.key ? '#fff' : 'var(--cc-text-secondary)',
                 fontSize: '13px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -149,7 +153,7 @@ export default function ClientAdsDashboard() {
             <p style={{
               fontSize: '14px',
               fontWeight: 700,
-              color: 'var(--cmd-heading)',
+              color: 'var(--cc-text)',
               margin: '0 0 2px',
             }}>
               {profile?.meta_connected
@@ -159,7 +163,7 @@ export default function ClientAdsDashboard() {
             </p>
             <p style={{
               fontSize: '12px',
-              color: 'var(--cmd-body)',
+              color: 'var(--cc-text-secondary)',
               margin: 0,
             }}>
               {profile?.meta_connected
@@ -209,7 +213,7 @@ export default function ClientAdsDashboard() {
           { label: 'Click Rate (CTR)', value: `${avgCtr}%`, icon: '📊', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
           { label: 'Return on Ads (ROAS)', value: `${avgRoas}x`, icon: '📈', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
         ].map(stat => (
-          <div key={stat.label} className="cmd-stat-card">
+          <div key={stat.label} className="cc-panel" style={{ padding: '20px 24px' }}>
             <div style={{
               width: '36px',
               height: '36px',
@@ -234,7 +238,7 @@ export default function ClientAdsDashboard() {
             </p>
             <p style={{
               fontSize: '11px',
-              color: 'var(--cmd-body)',
+              color: 'var(--cc-text-secondary)',
               margin: 0,
               lineHeight: 1.3,
             }}>
@@ -246,8 +250,8 @@ export default function ClientAdsDashboard() {
 
       {/* Active Campaigns */}
       <div style={{
-        background: 'var(--cmd-card)',
-        border: '1px solid var(--cmd-border)',
+        background: 'var(--cc-surface)',
+        border: '1px solid var(--cc-border)',
         borderRadius: '20px',
         overflow: 'hidden',
         marginBottom: '24px',
@@ -255,13 +259,13 @@ export default function ClientAdsDashboard() {
       }}>
         <div style={{
           padding: '18px 24px',
-          borderBottom: '1px solid var(--cmd-border)',
+          borderBottom: '1px solid var(--cc-border)',
           background: 'rgba(124,58,237,0.04)',
         }}>
           <h2 style={{
             fontSize: '16px',
             fontWeight: 800,
-            color: 'var(--cmd-heading)',
+            color: 'var(--cc-text)',
             margin: 0,
           }}>
             🚀 Your Campaigns
@@ -274,18 +278,18 @@ export default function ClientAdsDashboard() {
             <p style={{
               fontSize: '16px',
               fontWeight: 700,
-              color: 'var(--cmd-heading)',
+              color: 'var(--cc-text)',
               margin: '0 0 6px',
             }}>
               No campaigns yet
             </p>
             <p style={{
               fontSize: '13px',
-              color: 'var(--cmd-body)',
+              color: 'var(--cc-text-secondary)',
               margin: '0 0 20px',
             }}>
               Your account manager will set up your campaigns shortly.
-              You'll see live data here.
+              You&apos;ll see live data here.
             </p>
             <a
               href="https://wa.me/2348167593393"
@@ -311,7 +315,7 @@ export default function ClientAdsDashboard() {
           campaigns.map((campaign, i) => (
             <div
               key={campaign.id}
-              className="cmd-table-row"
+              className="hover:bg-[var(--cc-subtle)] transition-colors"
               style={{
                 padding: '16px 24px',
                 borderBottom: i < campaigns.length - 1
@@ -346,14 +350,14 @@ export default function ClientAdsDashboard() {
                   <p style={{
                     fontSize: '14px',
                     fontWeight: 700,
-                    color: 'var(--cmd-heading)',
+                    color: 'var(--cc-text)',
                     margin: '0 0 3px',
                   }}>
                     {campaign.campaign_name}
                   </p>
                   <p style={{
                     fontSize: '12px',
-                    color: 'var(--cmd-body)',
+                    color: 'var(--cc-text-secondary)',
                     margin: 0,
                     textTransform: 'capitalize',
                   }}>
@@ -366,7 +370,7 @@ export default function ClientAdsDashboard() {
                 {/* Budget bar */}
                 <div style={{ width: '100px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--cmd-muted)' }}>Budget</span>
+                    <span style={{ fontSize: '10px', color: 'var(--cc-text-muted)' }}>Budget</span>
                     <span style={{
                       fontSize: '10px',
                       fontWeight: 700,
@@ -394,7 +398,7 @@ export default function ClientAdsDashboard() {
                   </div>
                 </div>
 
-                <span className={campaign.status === 'active' ? 'cmd-badge-active' : 'cmd-badge-pending'}>
+                <span className={campaign.status === 'active' ? 'cc-pill cc-pill-success' : 'cc-pill cc-pill-warning'}>
                   {campaign.status === 'active' ? '🟢 Live' : campaign.status}
                 </span>
               </div>
@@ -406,15 +410,15 @@ export default function ClientAdsDashboard() {
       {/* Recent Stats Table */}
       {stats.length > 0 && (
         <div style={{
-          background: 'var(--cmd-card)',
-          border: '1px solid var(--cmd-border)',
+          background: 'var(--cc-surface)',
+          border: '1px solid var(--cc-border)',
           borderRadius: '20px',
           overflow: 'hidden',
           backdropFilter: 'blur(10px)',
         }}>
           <div style={{
             padding: '18px 24px',
-            borderBottom: '1px solid var(--cmd-border)',
+            borderBottom: '1px solid var(--cc-border)',
             background: 'rgba(124,58,237,0.04)',
             display: 'flex',
             alignItems: 'center',
@@ -423,12 +427,12 @@ export default function ClientAdsDashboard() {
             <h2 style={{
               fontSize: '16px',
               fontWeight: 800,
-              color: 'var(--cmd-heading)',
+              color: 'var(--cc-text)',
               margin: 0,
             }}>
               📅 Daily Performance
             </h2>
-            <span style={{ fontSize: '12px', color: 'var(--cmd-muted)' }}>Last 30 days</span>
+            <span style={{ fontSize: '12px', color: 'var(--cc-text-muted)' }}>Last 30 days</span>
           </div>
 
           <div style={{ overflowX: 'auto' }}>
@@ -440,7 +444,7 @@ export default function ClientAdsDashboard() {
                       padding: '10px 16px',
                       fontSize: '10px',
                       fontWeight: 700,
-                      color: 'var(--cmd-muted)',
+                      color: 'var(--cc-text-muted)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.07em',
                       textAlign: 'left',
@@ -453,8 +457,8 @@ export default function ClientAdsDashboard() {
               </thead>
               <tbody>
                 {filteredStats.slice(0, 14).map((stat, i) => (
-                  <tr key={stat.id} className="cmd-table-row" style={{ borderBottom: '1px solid rgba(124,58,237,0.04)' }}>
-                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--cmd-body)' }}>
+                  <tr key={stat.id} className="hover:bg-[var(--cc-subtle)] transition-colors" style={{ borderBottom: '1px solid rgba(124,58,237,0.04)' }}>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--cc-text-secondary)' }}>
                       {new Date(stat.stat_date).toLocaleDateString('en-NG', {
                         day: 'numeric',
                         month: 'short',
@@ -473,7 +477,7 @@ export default function ClientAdsDashboard() {
                         {stat.platform === 'facebook' ? '📘 Facebook' : '📸 Instagram'}
                       </span>
                     </td>
-                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--cmd-body)' }}>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--cc-text-secondary)' }}>
                       {(stat.reach || 0).toLocaleString()}
                     </td>
                     <td style={{ padding: '12px 16px', fontSize: '13px', color: '#7c3aed', fontWeight: 600 }}>

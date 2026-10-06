@@ -1,4 +1,4 @@
-/* Customer-only frame. Legacy module bodies retain their own styles and --cmd values. */
+/* Customer-only frame. Module bodies retain their layout and use shared application semantics. */
 body:has(.customer-shell) { padding-top: 0; }
 .customer-shell { position: fixed; inset: 0; display: grid; grid-template-columns: 256px minmax(0, 1fr); height: 100dvh; overflow: hidden; background: var(--cc-canvas); color: var(--cc-text); font-family: var(--cc-font-body); }
 .customer-shell .customer-sidebar { display: flex; flex-direction: column; min-height: 0; padding: 28px 16px 20px; border-right: 1px solid var(--cc-border); background: var(--cc-surface); overflow-y: auto; }

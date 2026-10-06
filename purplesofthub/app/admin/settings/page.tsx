@@ -242,7 +242,7 @@ export default function AdminSettingsPage() {
               borderRadius: '10px',
               border: 'none',
               background: activeTab === tab.id ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'transparent',
-              color: activeTab === tab.id ? '#fff' : 'var(--cmd-body)',
+              color: activeTab === tab.id ? '#fff' : 'var(--cc-text-secondary)',
               fontWeight: 600,
               fontSize: '13px',
               cursor: 'pointer',

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { getServiceBySlug, type Service, type ServicePlan } from "@/lib/payments/service-plans";
 import UniversalCheckoutModal from "@/components/checkout/UniversalCheckoutModal";
@@ -46,7 +47,7 @@ const PLAN_ICONS: Record<string, string> = {
 export default function ClientMusicPage() {
   const [campaigns, setCampaigns] = useState<MusicCampaign[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
@@ -118,9 +119,11 @@ export default function ClientMusicPage() {
       targetService.plans.find((plan) => !plan.isCustom);
 
     if (targetPlan) {
-      setSubmitPlan(targetPlan);
-      setSubmitPlanType(targetType);
-      setSubmitFormOpen(true);
+      void Promise.resolve().then(() => {
+        setSubmitPlan(targetPlan);
+        setSubmitPlanType(targetType);
+        setSubmitFormOpen(true);
+      });
     }
   }, [promotionService, distributionService]);
 
@@ -140,14 +143,14 @@ export default function ClientMusicPage() {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-[3px] border-brand-500/20 border-t-brand-600" />
-          <p className="text-[13px] text-[var(--cmd-muted)]">Loading your music campaigns...</p>
+          <p className="text-[13px] text-[var(--cc-text-muted)]">Loading your music campaigns...</p>
         </div>
       </div>
     );
   }
 
   if (!promotionService || !distributionService) {
-    return <div className="py-12 text-center text-[var(--cmd-muted)]">Music services not found</div>;
+    return <div className="py-12 text-center text-[var(--cc-text-muted)]">Music services not found</div>;
   }
 
   const planGroups = [
@@ -168,10 +171,10 @@ export default function ClientMusicPage() {
   return (
     <div style={{ width: "100%", minWidth: 0 }}>
       <div style={{ marginBottom: "28px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 900, color: "var(--cmd-heading)", margin: "0 0 4px", lineHeight: 1.2 }}>
+        <h1 style={{ fontSize: "24px", fontWeight: 900, color: "var(--cc-text)", margin: "0 0 4px", lineHeight: 1.2 }}>
           🎵 Music Dashboard
         </h1>
-        <p style={{ fontSize: "14px", color: "var(--cmd-body)", margin: 0, lineHeight: 1.6 }}>
+        <p style={{ fontSize: "14px", color: "var(--cc-text-secondary)", margin: 0, lineHeight: 1.6 }}>
           Submit artist, release, distribution, and promotion campaign data.
         </p>
         <div style={{ marginTop: "14px", width: "fit-content", maxWidth: "100%" }}>
@@ -182,10 +185,10 @@ export default function ClientMusicPage() {
       {planGroups.map((group) => (
         <div key={group.type} style={{ marginBottom: "36px", minWidth: 0 }}>
           <div style={{ marginBottom: "16px" }}>
-            <h2 style={{ fontSize: "18px", fontWeight: 900, color: "var(--cmd-heading)", margin: "0 0 4px" }}>
+            <h2 style={{ fontSize: "18px", fontWeight: 900, color: "var(--cc-text)", margin: "0 0 4px" }}>
               {group.title}
             </h2>
-            <p style={{ fontSize: "13px", color: "var(--cmd-body)", margin: 0, lineHeight: 1.6 }}>{group.desc}</p>
+            <p style={{ fontSize: "13px", color: "var(--cc-text-secondary)", margin: 0, lineHeight: 1.6 }}>{group.desc}</p>
           </div>
 
           <div style={{
@@ -198,7 +201,7 @@ export default function ClientMusicPage() {
               <article
                 key={plan.id}
                 style={{
-                  background: "var(--cmd-card)",
+                  background: "var(--cc-surface)",
                   border: "1px solid rgba(124,58,237,0.15)",
                   borderRadius: "16px",
                   padding: "22px",
@@ -252,10 +255,10 @@ export default function ClientMusicPage() {
                   {group.type}
                 </span>
 
-                <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--cmd-heading)", margin: "0 0 8px", lineHeight: 1.25 }}>
+                <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--cc-text)", margin: "0 0 8px", lineHeight: 1.25 }}>
                   {plan.name}
                 </h3>
-                <p style={{ fontSize: "13px", color: "var(--cmd-body)", lineHeight: 1.6, margin: "0 0 16px", flex: 1 }}>
+                <p style={{ fontSize: "13px", color: "var(--cc-text-secondary)", lineHeight: 1.6, margin: "0 0 16px", flex: 1 }}>
                   {plan.description}
                 </p>
                 <div style={{
@@ -265,7 +268,7 @@ export default function ClientMusicPage() {
                   gap: "12px",
                   marginBottom: "20px",
                   fontSize: "12px",
-                  color: "var(--cmd-muted)",
+                  color: "var(--cc-text-muted)",
                   flexWrap: "wrap",
                   minWidth: 0,
                 }}>
@@ -321,7 +324,7 @@ export default function ClientMusicPage() {
 
       {campaigns.length > 0 ? (
         <div style={{ marginTop: "4px" }}>
-          <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--cmd-heading)", margin: "0 0 16px" }}>
+          <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--cc-text)", margin: "0 0 16px" }}>
             My Music Campaigns
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -332,7 +335,7 @@ export default function ClientMusicPage() {
                 <article
                   key={campaign.id}
                   style={{
-                    background: "var(--cmd-card)",
+                    background: "var(--cc-surface)",
                     border: "1px solid rgba(124,58,237,0.12)",
                     borderRadius: "14px",
                     padding: "20px",
@@ -345,10 +348,10 @@ export default function ClientMusicPage() {
                   }}
                 >
                   <div style={{ minWidth: 0 }}>
-                    <h5 style={{ fontSize: "15px", fontWeight: 800, color: "var(--cmd-heading)", margin: "0 0 4px", overflowWrap: "anywhere" }}>
+                    <h5 style={{ fontSize: "15px", fontWeight: 800, color: "var(--cc-text)", margin: "0 0 4px", overflowWrap: "anywhere" }}>
                       {campaign.track_title}
                     </h5>
-                    <p style={{ fontSize: "13px", color: "var(--cmd-muted)", margin: "0 0 10px" }}>
+                    <p style={{ fontSize: "13px", color: "var(--cc-text-muted)", margin: "0 0 10px" }}>
                       {campaign.artist_name} · {campaign.plan_name || "Music campaign"}
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -378,7 +381,7 @@ export default function ClientMusicPage() {
                     }}>
                       {campaign.status.replace(/_/g, " ")}
                     </span>
-                    <p style={{ fontSize: "11px", color: "var(--cmd-muted)", margin: "8px 0 0" }}>
+                    <p style={{ fontSize: "11px", color: "var(--cc-text-muted)", margin: "8px 0 0" }}>
                       {format(new Date(campaign.created_at), "MMM d, yyyy")}
                     </p>
                   </div>
@@ -396,7 +399,7 @@ export default function ClientMusicPage() {
           padding: "32px",
           textAlign: "center",
         }}>
-          <p style={{ fontSize: "14px", color: "var(--cmd-muted)", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontSize: "14px", color: "var(--cc-text-muted)", margin: 0, lineHeight: 1.6 }}>
             No music campaigns yet. Pick a distribution or promotion plan to submit artist details.
           </p>
         </div>

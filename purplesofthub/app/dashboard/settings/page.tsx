@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import type { User } from '@supabase/supabase-js'
 
 export default function DashboardSettingsPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState('')
@@ -33,10 +34,6 @@ export default function DashboardSettingsPage() {
     smsAlerts: false,
   })
 
-  useEffect(() => {
-    loadUser()
-  }, [])
-
   const loadUser = async () => {
     const supabase = createClient()
     const { data: { user: u } } = await supabase.auth.getUser()
@@ -62,6 +59,10 @@ export default function DashboardSettingsPage() {
     setLoading(false)
   }
 
+  useEffect(() => {
+    void Promise.resolve().then(() => { loadUser() })
+  }, [])
+
   const saveProfile = async () => {
     setSaving(true)
     setError('')
@@ -74,7 +75,7 @@ export default function DashboardSettingsPage() {
         phone: profileForm.phone,
         bio: profileForm.bio,
       })
-      .eq('id', user.id)
+      .eq('id', user!.id)
 
     if (profileError) {
       setError(profileError.message)
@@ -124,7 +125,7 @@ export default function DashboardSettingsPage() {
         marketing_emails: notifications.marketingEmails,
         sms_notifications: notifications.smsAlerts,
       })
-      .eq('id', user.id)
+      .eq('id', user!.id)
 
     if (error) {
       setError(error.message)
@@ -141,7 +142,7 @@ export default function DashboardSettingsPage() {
     borderRadius: '10px',
     border: '1.5px solid rgba(124,58,237,0.2)',
     background: 'rgba(124,58,237,0.06)',
-    color: 'var(--cmd-heading)',
+    color: 'var(--cc-text)',
     fontSize: '14px',
     outline: 'none',
     fontFamily: 'inherit',
@@ -152,14 +153,14 @@ export default function DashboardSettingsPage() {
     display: 'block',
     fontSize: '12px',
     fontWeight: 700,
-    color: 'var(--cmd-body)',
+    color: 'var(--cc-text-secondary)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
     marginBottom: '7px',
   }
 
   const sectionStyle = {
-    background: 'var(--cmd-card)',
+    background: 'var(--cc-surface)',
     border: '1px solid rgba(124,58,237,0.15)',
     borderRadius: '16px',
     padding: '24px',
@@ -177,7 +178,7 @@ export default function DashboardSettingsPage() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '400px',
-      color: 'var(--cmd-body)',
+      color: 'var(--cc-text-secondary)',
     }}>
       Loading settings...
     </div>
@@ -191,14 +192,14 @@ export default function DashboardSettingsPage() {
         <h1 style={{
           fontSize: '24px',
           fontWeight: 900,
-          color: 'var(--cmd-heading)',
+          color: 'var(--cc-text)',
           margin: '0 0 4px',
         }}>
           Settings ⚙️
         </h1>
         <p style={{
           fontSize: '14px',
-          color: 'var(--cmd-body)',
+          color: 'var(--cc-text-secondary)',
           margin: 0,
         }}>
           Manage your account and preferences
@@ -243,7 +244,7 @@ export default function DashboardSettingsPage() {
         display: 'flex',
         gap: '6px',
         marginBottom: '24px',
-        background: 'var(--cmd-card)',
+        background: 'var(--cc-surface)',
         padding: '6px',
         borderRadius: '14px',
         border: '1px solid rgba(124,58,237,0.12)',
@@ -252,14 +253,14 @@ export default function DashboardSettingsPage() {
         {TABS.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as typeof activeTab)}
             style={{
               flex: 1,
               padding: '10px 16px',
               borderRadius: '10px',
               border: 'none',
               background: activeTab === tab.id ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'transparent',
-              color: activeTab === tab.id ? '#fff' : 'var(--cmd-body)',
+              color: activeTab === tab.id ? '#fff' : 'var(--cc-text-secondary)',
               fontWeight: 600,
               fontSize: '13px',
               cursor: 'pointer',
@@ -295,10 +296,10 @@ export default function DashboardSettingsPage() {
               {profileForm.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
             </div>
             <div>
-              <p style={{ fontSize: '18px', fontWeight: 800, color: 'var(--cmd-heading)', margin: '0 0 2px' }}>
+              <p style={{ fontSize: '18px', fontWeight: 800, color: 'var(--cc-text)', margin: '0 0 2px' }}>
                 {profileForm.fullName || 'User'}
               </p>
-              <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: 0 }}>
+              <p style={{ fontSize: '13px', color: 'var(--cc-text-secondary)', margin: 0 }}>
                 {profileForm.email}
               </p>
             </div>
@@ -323,7 +324,7 @@ export default function DashboardSettingsPage() {
                 disabled
                 style={{ ...inputStyle, opacity: 0.6, cursor: 'not-allowed' }}
               />
-              <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: '4px 0 0' }}>
+              <p style={{ fontSize: '11px', color: 'var(--cc-text-muted)', margin: '4px 0 0' }}>
                 Contact support to change your email
               </p>
             </div>
@@ -375,7 +376,7 @@ export default function DashboardSettingsPage() {
       {/* Security Tab */}
       {activeTab === 'security' && (
         <div style={sectionStyle}>
-          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 20px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cc-text)', margin: '0 0 20px' }}>
             🔐 Change Password
           </p>
 
@@ -432,7 +433,7 @@ export default function DashboardSettingsPage() {
             <p style={{ fontSize: '14px', fontWeight: 800, color: '#ef4444', margin: '0 0 8px' }}>
               ⚠️ Danger Zone
             </p>
-            <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: '0 0 14px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '13px', color: 'var(--cc-text-secondary)', margin: '0 0 14px', lineHeight: 1.5 }}>
               Signing out will end your current session. You will need to log in again.
             </p>
             <button
@@ -462,7 +463,7 @@ export default function DashboardSettingsPage() {
       {/* Notifications Tab */}
       {activeTab === 'notifications' && (
         <div style={sectionStyle}>
-          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 20px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cc-text)', margin: '0 0 20px' }}>
             🔔 Notification Preferences
           </p>
 
@@ -489,10 +490,10 @@ export default function DashboardSettingsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
                   <span style={{ fontSize: '20px' }}>{item.icon}</span>
                   <div>
-                    <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cmd-heading)', margin: '0 0 2px' }}>
+                    <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cc-text)', margin: '0 0 2px' }}>
                       {item.label}
                     </p>
-                    <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+                    <p style={{ fontSize: '12px', color: 'var(--cc-text-secondary)', margin: 0 }}>
                       {item.desc}
                     </p>
                   </div>

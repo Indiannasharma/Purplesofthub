@@ -1,4 +1,4 @@
-const animate = require("tailwindcss-animate")
+const animate = module.require("tailwindcss-animate")
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -14,7 +14,6 @@ module.exports = {
         current: 'currentColor',
         transparent: 'transparent',
         white: '#FFFFFF',
-        black: '#1C2434',
         brand: {
           25:  '#faf5ff',
           50:  '#f3e8ff',
@@ -27,26 +26,6 @@ module.exports = {
           700: '#5b21b6',
           800: '#4c1d95',
           900: '#2e1065',
-        },
-        boxdark: '#0a0618',
-        boxdark2: '#06030f',
-        bodydark: '#9d8fd4',
-        bodydark1: '#c084fc',
-        bodydark2: '#7c6fa8',
-        strokedark: 'rgba(124,58,237,0.2)',
-        stroke: 'rgba(124,58,237,0.15)',
-        graydark: '#1a0f35',
-        meta: {
-          1: '#DC3545',
-          2: '#EFF2F7',
-          3: '#10B981',
-          4: '#313D4A',
-          5: '#7c3aed',
-          6: '#a855f7',
-          7: '#FF6766',
-          8: '#F0950C',
-          9: '#E5E7EB',
-          10: '#c084fc',
         },
         purple: {
           950: "#06030f",

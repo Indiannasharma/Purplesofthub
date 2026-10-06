@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
  * Header refresh — revalidates server-rendered dashboard data via
  * router.refresh() (no full page reload, no new subscriptions).
  *
- * Styled with the shared `.cc-btn` / `.cc-btn-ghost` primitives instead of the
- * TailAdmin shadcn Button so it inherits Command Center tokens directly.
+ * Styled with the shared `.cc-btn` / `.cc-btn-ghost` primitives, inheriting
+ * Command Center tokens directly.
  */
 export function RefreshButton({ compact = false }: { compact?: boolean }) {
   const router = useRouter();

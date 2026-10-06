@@ -36,10 +36,6 @@ export default function DashboardRecoveryPage() {
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadRequests()
-  }, [])
-
   const loadRequests = async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -60,6 +56,10 @@ export default function DashboardRecoveryPage() {
     setLoading(false)
   }
 
+  useEffect(() => {
+    void Promise.resolve().then(() => { loadRequests() })
+  }, [])
+
   const statusLabels: Record<string, string> = {
     pending: '⏳ Pending Review',
     processing: '🔄 Processing',
@@ -77,14 +77,14 @@ export default function DashboardRecoveryPage() {
         <h1 style={{
           fontSize: '24px',
           fontWeight: 900,
-          color: 'var(--cmd-heading)',
+          color: 'var(--cc-text)',
           margin: '0 0 4px',
         }}>
           Account Recovery 🔐
         </h1>
         <p style={{
           fontSize: '14px',
-          color: 'var(--cmd-body)',
+          color: 'var(--cc-text-secondary)',
           margin: 0,
         }}>
           Track your recovery requests
@@ -104,10 +104,10 @@ export default function DashboardRecoveryPage() {
       }}>
         <span style={{ fontSize: '18px' }}>ℹ️</span>
         <div>
-          <p style={{ fontSize: '13px', color: 'var(--cmd-heading)', fontWeight: 600, margin: '0 0 4px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--cc-text)', fontWeight: 600, margin: '0 0 4px' }}>
             Need help recovering an account?
           </p>
-          <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0 }}>
+          <p style={{ fontSize: '12px', color: 'var(--cc-text-secondary)', margin: 0 }}>
             Our team handles recovery requests manually. If you need to submit a new request,{' '}
             <a href="https://www.purplesofthub.com/services/social-media-management/account-recovery" 
                target="_blank" 
@@ -122,28 +122,28 @@ export default function DashboardRecoveryPage() {
       {/* Requests List */}
       {loading ? (
         <div style={{
-          background: 'var(--cmd-card)',
+          background: 'var(--cc-surface)',
           borderRadius: '20px',
           padding: '40px',
           textAlign: 'center',
-          color: 'var(--cmd-body)',
+          color: 'var(--cc-text-secondary)',
         }}>
           Loading requests...
         </div>
       ) : requests.length === 0 ? (
         <div style={{
-          background: 'var(--cmd-card)',
+          background: 'var(--cc-surface)',
           border: '1px solid rgba(124,58,237,0.12)',
           borderRadius: '20px',
           padding: '60px 24px',
           textAlign: 'center',
         }}>
           <p style={{ fontSize: '40px', margin: '0 0 12px' }}>🔐</p>
-          <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 6px' }}>
+          <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cc-text)', margin: '0 0 6px' }}>
             No recovery requests
           </p>
-          <p style={{ fontSize: '13px', color: 'var(--cmd-body)', margin: 0 }}>
-            You haven't submitted any recovery requests yet
+          <p style={{ fontSize: '13px', color: 'var(--cc-text-secondary)', margin: 0 }}>
+            You haven&apos;t submitted any recovery requests yet
           </p>
         </div>
       ) : (
@@ -157,7 +157,7 @@ export default function DashboardRecoveryPage() {
               <div
                 key={request.id}
                 style={{
-                  background: 'var(--cmd-card)',
+                  background: 'var(--cc-surface)',
                   border: '1px solid rgba(124,58,237,0.12)',
                   borderRadius: '16px',
                   overflow: 'hidden',
@@ -192,10 +192,10 @@ export default function DashboardRecoveryPage() {
                     </div>
 
                     <div>
-                      <p style={{ fontSize: '15px', fontWeight: 700, color: 'var(--cmd-heading)', margin: '0 0 3px' }}>
+                      <p style={{ fontSize: '15px', fontWeight: 700, color: 'var(--cc-text)', margin: '0 0 3px' }}>
                         {request.handle || request.platform}
                       </p>
-                      <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0, textTransform: 'capitalize' }}>
+                      <p style={{ fontSize: '12px', color: 'var(--cc-text-secondary)', margin: 0, textTransform: 'capitalize' }}>
                         {request.support_type?.replace('_', ' ') || 'Account Recovery'}
                       </p>
                     </div>
@@ -214,7 +214,7 @@ export default function DashboardRecoveryPage() {
                       {statusLabels[request.status] || 'Pending'}
                     </span>
 
-                    <span style={{ fontSize: '11px', color: 'var(--cmd-muted)' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--cc-text-muted)' }}>
                       {new Date(request.created_at).toLocaleDateString('en-NG', {
                         day: 'numeric',
                         month: 'short',
@@ -223,7 +223,7 @@ export default function DashboardRecoveryPage() {
                     </span>
 
                     <span style={{
-                      color: 'var(--cmd-muted)',
+                      color: 'var(--cc-text-muted)',
                       fontSize: '18px',
                       transform: isExpanded ? 'rotate(180deg)' : 'none',
                       transition: 'transform 0.2s',
@@ -243,17 +243,17 @@ export default function DashboardRecoveryPage() {
                   }}>
                     <div style={{ display: 'grid', gap: '12px' }}>
                       <div style={{ display: 'flex', gap: '8px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-muted)', minWidth: '100px' }}>Platform:</span>
-                        <span style={{ fontSize: '14px', color: 'var(--cmd-heading)', textTransform: 'capitalize' }}>{request.platform}</span>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cc-text-muted)', minWidth: '100px' }}>Platform:</span>
+                        <span style={{ fontSize: '14px', color: 'var(--cc-text)', textTransform: 'capitalize' }}>{request.platform}</span>
                       </div>
                       {request.handle && (
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-muted)', minWidth: '100px' }}>Handle:</span>
-                          <span style={{ fontSize: '14px', color: 'var(--cmd-heading)' }}>@{request.handle}</span>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cc-text-muted)', minWidth: '100px' }}>Handle:</span>
+                          <span style={{ fontSize: '14px', color: 'var(--cc-text)' }}>@{request.handle}</span>
                         </div>
                       )}
                       <div style={{ display: 'flex', gap: '8px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-muted)', minWidth: '100px' }}>Status:</span>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cc-text-muted)', minWidth: '100px' }}>Status:</span>
                         <span style={{ fontSize: '14px', color: statusStyle.color, fontWeight: 600 }}>
                           {statusLabels[request.status]}
                         </span>
@@ -267,10 +267,10 @@ export default function DashboardRecoveryPage() {
                       border: '1px solid rgba(124,58,237,0.15)',
                       borderRadius: '10px',
                     }}>
-                      <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cmd-muted)', margin: '0 0 8px' }}>
+                      <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--cc-text-muted)', margin: '0 0 8px' }}>
                         📋 Timeline
                       </p>
-                      <div style={{ fontSize: '12px', color: 'var(--cmd-body)' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--cc-text-secondary)' }}>
                         <p style={{ margin: '4px 0' }}>
                           <strong>Submitted:</strong> {new Date(request.created_at).toLocaleString('en-NG', {
                             day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'

@@ -28,11 +28,11 @@ const shellStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: 20,
-  color: "var(--cmd-body)",
+  color: "var(--cc-text-secondary)",
 };
 
 const panelStyle: CSSProperties = {
-  background: "linear-gradient(180deg, rgba(26,31,46,0.96), rgba(15,18,32,0.96))",
+  background: "var(--cc-surface)",
   border: "1px solid rgba(124,58,237,0.16)",
   borderRadius: 20,
   boxShadow: "0 16px 40px rgba(0,0,0,0.24)",
@@ -132,7 +132,8 @@ export default function ClientFilesPage() {
       }
 
       setFiles((data?.files || []) as DashboardFile[]);
-    } catch (error: any) {
+    } catch (caught: unknown) {
+      const error = caught as { message?: string } | null | undefined;
       setFiles([]);
       setNotice({
         type: "error",
@@ -164,7 +165,8 @@ export default function ClientFilesPage() {
         }
 
         await refreshFiles();
-      } catch (error: any) {
+      } catch (caught: unknown) {
+      const error = caught as { message?: string } | null | undefined;
         if (!active) return;
         setNotice({
           type: "error",
@@ -247,7 +249,8 @@ export default function ClientFilesPage() {
       });
 
       await refreshFiles();
-    } catch (error: any) {
+    } catch (caught: unknown) {
+      const error = caught as { message?: string } | null | undefined;
       setNotice({
         type: "error",
         message: error?.message || "Upload failed.",
@@ -294,7 +297,8 @@ export default function ClientFilesPage() {
       });
 
       await refreshFiles();
-    } catch (error: any) {
+    } catch (caught: unknown) {
+      const error = caught as { message?: string } | null | undefined;
       setNotice({
         type: "error",
         message: error?.message || "Could not delete the file.",
@@ -366,7 +370,7 @@ export default function ClientFilesPage() {
                 style={{
                   fontSize: "clamp(24px, 4vw, 34px)",
                   lineHeight: 1.05,
-                  color: "var(--cmd-heading)",
+                  color: "var(--cc-text)",
                   margin: "0 0 8px",
                   fontWeight: 900,
                   letterSpacing: "-0.03em",
@@ -374,7 +378,7 @@ export default function ClientFilesPage() {
               >
                 My Files
               </h1>
-              <p style={{ fontSize: 14, color: "var(--cmd-body)", margin: 0, lineHeight: 1.6, maxWidth: 720 }}>
+              <p style={{ fontSize: 14, color: "var(--cc-text-secondary)", margin: 0, lineHeight: 1.6, maxWidth: 720 }}>
                 Upload briefs, reference assets, invoices, and deliverables. Your files are private to your account and ready to open from the dashboard.
               </p>
             </div>
@@ -404,7 +408,7 @@ export default function ClientFilesPage() {
                     boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
                   }}
                 >
-                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cmd-muted)", marginBottom: 6, fontWeight: 700 }}>
+                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cc-text-muted)", marginBottom: 6, fontWeight: 700 }}>
                     {item.label}
                   </div>
                   <div style={{ fontSize: 18, fontWeight: 900, color: item.color, lineHeight: 1 }}>
@@ -472,8 +476,8 @@ export default function ClientFilesPage() {
                 animation: "psh-spin 0.9s linear infinite",
               }}
             />
-            <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--cmd-heading)" }}>Checking your session...</p>
-            <p style={{ margin: "6px 0 0", fontSize: 13, color: "var(--cmd-muted)" }}>Preparing your dashboard files view.</p>
+            <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--cc-text)" }}>Checking your session...</p>
+            <p style={{ margin: "6px 0 0", fontSize: 13, color: "var(--cc-text-muted)" }}>Preparing your dashboard files view.</p>
           </div>
         </div>
       ) : !user ? (
@@ -485,8 +489,8 @@ export default function ClientFilesPage() {
           }}
         >
           <div style={{ fontSize: 54, marginBottom: 14 }}>🔒</div>
-          <h2 style={{ margin: "0 0 8px", color: "var(--cmd-heading)", fontSize: 22, fontWeight: 900 }}>Sign in required</h2>
-          <p style={{ margin: "0 auto 22px", maxWidth: 520, color: "var(--cmd-body)", fontSize: 14, lineHeight: 1.7 }}>
+          <h2 style={{ margin: "0 0 8px", color: "var(--cc-text)", fontSize: 22, fontWeight: 900 }}>Sign in required</h2>
+          <p style={{ margin: "0 auto 22px", maxWidth: 520, color: "var(--cc-text-secondary)", fontSize: 14, lineHeight: 1.7 }}>
             You need to be signed in to view and manage your uploaded files.
           </p>
           <Link
@@ -529,7 +533,7 @@ export default function ClientFilesPage() {
                 <p style={{ margin: "0 0 4px", fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#22d3ee" }}>
                   Upload files
                 </p>
-                <p style={{ margin: 0, fontSize: 13, color: "var(--cmd-body)" }}>
+                <p style={{ margin: 0, fontSize: 13, color: "var(--cc-text-secondary)" }}>
                   PDFs, images, documents, videos, and archives are supported.
                 </p>
               </div>
@@ -592,10 +596,10 @@ export default function ClientFilesPage() {
                   ⤴
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 800, color: "var(--cmd-heading)" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 800, color: "var(--cc-text)" }}>
                     Drop or select a file to upload
                   </p>
-                  <p style={{ margin: 0, fontSize: 13, color: "var(--cmd-muted)" }}>
+                  <p style={{ margin: 0, fontSize: 13, color: "var(--cc-text-muted)" }}>
                     We store the file in Cloudinary and save the metadata in Supabase.
                   </p>
                 </div>
@@ -638,10 +642,10 @@ export default function ClientFilesPage() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
               <div>
-                <h2 style={{ margin: "0 0 4px", color: "var(--cmd-heading)", fontSize: 18, fontWeight: 900 }}>
+                <h2 style={{ margin: "0 0 4px", color: "var(--cc-text)", fontSize: 18, fontWeight: 900 }}>
                   Your uploaded files
                 </h2>
-                <p style={{ margin: 0, color: "var(--cmd-muted)", fontSize: 13 }}>
+                <p style={{ margin: 0, color: "var(--cc-text-muted)", fontSize: 13 }}>
                   Open, download, or delete files you uploaded yourself.
                 </p>
               </div>
@@ -690,10 +694,10 @@ export default function ClientFilesPage() {
                 }}
               >
                 <div style={{ fontSize: 48, marginBottom: 12 }}>📁</div>
-                <p style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 800, color: "var(--cmd-heading)" }}>
+                <p style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 800, color: "var(--cc-text)" }}>
                   No files yet
                 </p>
-                <p style={{ margin: 0, fontSize: 13, color: "var(--cmd-muted)" }}>
+                <p style={{ margin: 0, fontSize: 13, color: "var(--cc-text-muted)" }}>
                   Upload your first file to begin building your asset library.
                 </p>
               </div>
@@ -745,7 +749,7 @@ export default function ClientFilesPage() {
                             margin: 0,
                             fontSize: 15,
                             fontWeight: 800,
-                            color: "var(--cmd-heading)",
+                            color: "var(--cc-text)",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
@@ -771,7 +775,7 @@ export default function ClientFilesPage() {
                         </span>
                       </div>
 
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "var(--cmd-muted)", fontSize: 12 }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "var(--cc-text-muted)", fontSize: 12 }}>
                         <span>Size: {formatBytes(file.file_size)}</span>
                         <span>Uploaded: {file.created_at ? format(new Date(file.created_at), "MMM d, yyyy") : "—"}</span>
                         <span>Type: {file.file_type || getExtension(file.file_name) || "—"}</span>

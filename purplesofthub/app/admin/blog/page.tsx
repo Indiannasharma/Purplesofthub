@@ -291,7 +291,7 @@ export default function BlogManager() {
                       background: filter === f
                         ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
                         : 'transparent',
-                      color: filter === f ? '#fff' : 'var(--cmd-body)',
+                      color: filter === f ? '#fff' : 'var(--cc-text-secondary)',
                       fontWeight: 600,
                       cursor: 'pointer',
                       fontSize: '12px',

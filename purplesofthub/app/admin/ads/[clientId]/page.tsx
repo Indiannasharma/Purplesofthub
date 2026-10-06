@@ -396,7 +396,7 @@ export default function ClientAdsPage({ params }: Props) {
           { label: 'Conversions', value: totalStats.conversions.toString(), icon: '🎯', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
           { label: 'Avg ROAS', value: `${avgRoas.toFixed(1)}x`, icon: '📈', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
         ].map(stat => (
-          <div key={stat.label} className="cmd-stat-card">
+          <div key={stat.label} className="cc-panel" style={{ padding: '20px 24px' }}>
             <div style={{
               width: '36px',
               height: '36px',
@@ -433,14 +433,14 @@ export default function ClientAdsPage({ params }: Props) {
       {/* Campaigns */}
       <div style={{
         background: "var(--cc-surface)",
-        border: '1px solid var(--cmd-border)',
+        border: '1px solid var(--cc-border)',
         borderRadius: 12,
         overflow: 'hidden',
         marginBottom: '24px',
       }}>
         <div style={{
           padding: '18px 24px',
-          borderBottom: '1px solid var(--cmd-border)',
+          borderBottom: '1px solid var(--cc-border)',
           background: 'rgba(124,58,237,0.04)',
           display: 'flex',
           alignItems: 'center',
@@ -469,7 +469,7 @@ export default function ClientAdsPage({ params }: Props) {
           campaigns.map((campaign, i) => (
             <div
               key={campaign.id}
-              className="cmd-table-row"
+              className="hover:bg-[var(--cc-subtle)] transition-colors"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -523,10 +523,10 @@ export default function ClientAdsPage({ params }: Props) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <span className={
                   campaign.status === 'active'
-                    ? 'cmd-badge-active'
+                    ? 'cc-pill cc-pill-success'
                     : campaign.status === 'paused'
-                    ? 'cmd-badge-pending'
-                    : 'cmd-badge-danger'
+                    ? 'cc-pill cc-pill-warning'
+                    : 'cc-pill cc-pill-error'
                 }>
                   {campaign.status === 'active' ? '🟢 Active' : campaign.status === 'paused' ? '⏸ Paused' : campaign.status}
                 </span>
@@ -549,13 +549,13 @@ export default function ClientAdsPage({ params }: Props) {
       {/* Recent Stats */}
       <div style={{
         background: "var(--cc-surface)",
-        border: '1px solid var(--cmd-border)',
+        border: '1px solid var(--cc-border)',
         borderRadius: 12,
         overflow: 'hidden',
       }}>
         <div style={{
           padding: '18px 24px',
-          borderBottom: '1px solid var(--cmd-border)',
+          borderBottom: '1px solid var(--cc-border)',
           background: 'rgba(124,58,237,0.04)',
         }}>
           <h2 style={{
@@ -604,7 +604,7 @@ export default function ClientAdsPage({ params }: Props) {
             {stats.slice(0, 10).map((stat, i) => (
               <div
                 key={stat.id}
-                className="cmd-table-row admin-responsive-grid admin-grid-header"
+                className="hover:bg-[var(--cc-subtle)] transition-colors admin-responsive-grid admin-grid-header"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '100px 100px 80px 80px 80px 80px 80px 80px',
@@ -648,7 +648,7 @@ export default function ClientAdsPage({ params }: Props) {
                   <p key={vi} style={{
                     fontSize: '12px',
                     fontWeight: vi === 3 ? 700 : 400,
-                    color: vi === 3 ? '#f59e0b' : vi === 5 ? '#10b981' : 'var(--cmd-body)',
+                    color: vi === 3 ? '#f59e0b' : vi === 5 ? '#10b981' : 'var(--cc-text-secondary)',
                     margin: 0,
                     whiteSpace: 'nowrap',
                   }}>

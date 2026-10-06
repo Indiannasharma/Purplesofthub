@@ -1,5 +1,8 @@
 'use client'
 
+import '@/app/styles/workspace-tokens.css'
+import '@/app/styles/workspace.css'
+
 import CheckoutModal from '@/app/services/_components/CheckoutModal'
 import type { Service, ServicePlan } from '@/lib/payments/service-plans'
 import { formatRegionalPrice } from '@/lib/pricing/currency'
@@ -61,7 +64,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
 
   if (showSuccess) {
     return (
-      <div style={overlayStyle} onClick={event => { if (event.target === event.currentTarget) onClose() }}>
+      <div className="workspace-overlay" style={overlayStyle} onClick={event => { if (event.target === event.currentTarget) onClose() }}>
         <div style={{ ...modalStyle, maxWidth: '480px', textAlign: 'center' }}>
           <div style={successIconStyle}>✓</div>
           <h2 style={titleStyle}>Payment Successful</h2>
@@ -95,7 +98,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
   }
 
   return (
-    <div style={overlayStyle} onClick={event => { if (event.target === event.currentTarget) onClose() }}>
+    <div className="workspace-overlay" style={overlayStyle} onClick={event => { if (event.target === event.currentTarget) onClose() }}>
       <div style={modalStyle}>
         <button onClick={onClose} style={closeButtonStyle} aria-label="Close service plans">
           ×
@@ -105,7 +108,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
             <div style={serviceIconStyle}>{service.icon}</div>
             <div>
-              <h2 style={titleStyle}>{service.name}</h2>
+              <h2 className="max-sm:max-w-[calc(100%_-_32px)]" style={titleStyle}>{service.name}</h2>
               <span style={categoryPillStyle}>{service.category}</span>
             </div>
           </div>
@@ -113,7 +116,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--cmd-heading)', margin: 0 }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--cc-text)', margin: 0 }}>
             Choose Your Plan
           </h3>
 
@@ -130,10 +133,10 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
               {plan.badge && <span style={badgeStyle}>{plan.badge}</span>}
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'flex-start' }}>
                 <div style={{ textAlign: 'left' }}>
-                  <h4 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--cmd-heading)', margin: '0 0 4px' }}>
+                  <h4 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--cc-text)', margin: '0 0 4px' }}>
                     {plan.name}
                   </h4>
-                  <p style={{ fontSize: '12px', color: 'var(--cmd-muted)', margin: 0 }}>
+                  <p style={{ fontSize: '12px', color: 'var(--cc-text-muted)', margin: 0 }}>
                     Delivery: {plan.delivery}
                   </p>
                 </div>
@@ -141,7 +144,7 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
                   <p style={{ fontSize: '22px', fontWeight: 900, color: '#a855f7', margin: '0 0 2px' }}>
                     {formatRegionalPrice(plan.priceNGN, plan.priceUSD, currency)}
                   </p>
-                  <p style={{ fontSize: '11px', color: 'var(--cmd-muted)', margin: 0 }}>
+                  <p style={{ fontSize: '11px', color: 'var(--cc-text-muted)', margin: 0 }}>
                     {getBillingLabel(plan)}
                   </p>
                 </div>
@@ -163,10 +166,10 @@ export default function ServicePlanModal({ service, onClose }: ServicePlanModalP
 
         {customPlans.length > 0 && (
           <div style={noteStyle}>
-            <p style={{ fontSize: '13px', color: 'var(--cmd-heading)', fontWeight: 800, margin: '0 0 4px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--cc-text)', fontWeight: 800, margin: '0 0 4px' }}>
               Need a custom plan?
             </p>
-            <p style={{ fontSize: '12px', color: 'var(--cmd-body)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '12px', color: 'var(--cc-text-secondary)', margin: 0, lineHeight: 1.5 }}>
               {customPlans.map(plan => plan.name).join(', ')} plans need a custom quote, so they are not sent to direct checkout.
             </p>
           </div>
@@ -189,7 +192,7 @@ const overlayStyle: React.CSSProperties = {
 }
 
 const modalStyle: React.CSSProperties = {
-  background: 'var(--cmd-card)',
+  background: 'var(--cc-surface)',
   border: '1px solid rgba(124,58,237,0.3)',
   borderRadius: '20px',
   width: '100%',
@@ -210,7 +213,7 @@ const closeButtonStyle: React.CSSProperties = {
   borderRadius: '50%',
   border: '1px solid rgba(124,58,237,0.2)',
   background: 'rgba(124,58,237,0.08)',
-  color: 'var(--cmd-body)',
+  color: 'var(--cc-text-secondary)',
   fontSize: '16px',
   cursor: 'pointer',
   display: 'flex',
@@ -235,7 +238,7 @@ const serviceIconStyle: React.CSSProperties = {
 const titleStyle: React.CSSProperties = {
   fontSize: '22px',
   fontWeight: 900,
-  color: 'var(--cmd-heading)',
+  color: 'var(--cc-text)',
   margin: '0 0 6px',
 }
 
@@ -252,7 +255,7 @@ const categoryPillStyle: React.CSSProperties = {
 
 const bodyTextStyle: React.CSSProperties = {
   fontSize: '14px',
-  color: 'var(--cmd-body)',
+  color: 'var(--cc-text-secondary)',
   lineHeight: 1.6,
   margin: 0,
 }
@@ -262,7 +265,7 @@ const planButtonStyle: React.CSSProperties = {
   padding: '20px',
   borderRadius: '16px',
   border: '1px solid rgba(124,58,237,0.15)',
-  background: 'var(--cmd-card)',
+  background: 'var(--cc-surface)',
   cursor: 'pointer',
   transition: 'all 0.2s',
   position: 'relative',
@@ -294,7 +297,7 @@ const featureListStyle: React.CSSProperties = {
 
 const featureItemStyle: React.CSSProperties = {
   fontSize: '12px',
-  color: 'var(--cmd-body)',
+  color: 'var(--cc-text-secondary)',
   display: 'flex',
   alignItems: 'center',
   gap: '4px',
@@ -343,7 +346,7 @@ const secondaryButtonStyle: React.CSSProperties = {
   borderRadius: '12px',
   border: '1px solid rgba(124,58,237,0.2)',
   background: 'transparent',
-  color: 'var(--cmd-body)',
+  color: 'var(--cc-text-secondary)',
   fontSize: '15px',
   fontWeight: 700,
   cursor: 'pointer',

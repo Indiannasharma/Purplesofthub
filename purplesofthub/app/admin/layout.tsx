@@ -11,9 +11,8 @@ import '@/app/styles/command-center.css'
  * non-admins are redirected before any Admin UI renders.
  *
  * Presentation: the Command Center shell (Phase 2). Its design tokens live in
- * app/styles/command-center.css, scoped under `.cc-root` so the public site is
- * untouched. The legacy TailAdmin classes/components are intentionally still
- * present for rollback.
+ * app/styles/workspace-tokens.css supplies the shared application semantics;
+ * app/styles/command-center.css owns the scoped Admin primitives.
  */
 export default async function AdminLayout({
   children,

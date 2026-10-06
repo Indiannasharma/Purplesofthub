@@ -337,7 +337,7 @@ export default function RecoveryRequestsPage() {
           { label: 'Facebook', value: requests.filter(r => r.platform === 'facebook').length, icon: '📘', color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
           { label: 'Instagram', value: requests.filter(r => r.platform === 'instagram').length, icon: '📸', color: '#ec4899', bg: 'rgba(236,72,153,0.1)' },
         ].map(stat => (
-          <div key={stat.label} className="cmd-stat-card">
+          <div key={stat.label} className="cc-panel" style={{ padding: '20px 24px' }}>
             <div style={{
               width: '36px',
               height: '36px',
@@ -709,7 +709,7 @@ export default function RecoveryRequestsPage() {
               borderRadius: '8px',
               border: filter === f ? 'none' : '1px solid rgba(124,58,237,0.2)',
               background: filter === f ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'transparent',
-              color: filter === f ? '#fff' : 'var(--cmd-body)',
+              color: filter === f ? '#fff' : 'var(--cc-text-secondary)',
               fontWeight: 600,
               fontSize: '11px',
               cursor: 'pointer',
@@ -1005,7 +1005,7 @@ export default function RecoveryRequestsPage() {
                           }}
                         >
                           <p style={{
-                            fontSize: '13px', color: request.admin_notes ? 'var(--cmd-body)' : 'var(--cmd-muted)',
+                            fontSize: '13px', color: request.admin_notes ? 'var(--cc-text-secondary)' : 'var(--cc-text-muted)',
                             margin: 0, fontStyle: request.admin_notes ? 'normal' : 'italic',
                           }}>
                             {request.admin_notes || 'Click to add notes...'}
@@ -1034,7 +1034,7 @@ export default function RecoveryRequestsPage() {
                             padding: '7px 14px', borderRadius: '8px',
                             border: request.status === btn.status ? 'none' : '1px solid rgba(124,58,237,0.2)',
                             background: request.status === btn.status ? btn.color : 'transparent',
-                            color: request.status === btn.status ? '#fff' : 'var(--cmd-body)',
+                            color: request.status === btn.status ? '#fff' : 'var(--cc-text-secondary)',
                             fontSize: '12px', fontWeight: 600,
                             cursor: 'pointer', fontFamily: 'inherit',
                             transition: 'all 0.2s',
@@ -1078,8 +1078,8 @@ export default function RecoveryRequestsPage() {
 
       <style>{`
         select option {
-          background: var(--cmd-card);
-          color: var(--cmd-heading);
+          background: var(--cc-surface);
+          color: var(--cc-text);
           padding: 12px 10px;
           border-bottom: 1px solid rgba(124,58,237,0.1);
           font-size: 14px;

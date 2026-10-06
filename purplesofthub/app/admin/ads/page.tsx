@@ -143,7 +143,7 @@ export default function AdsManagerPage() {
             bg: 'rgba(34,211,238,0.1)',
           },
         ].map(stat => (
-          <div key={stat.label} className="cmd-stat-card">
+          <div key={stat.label} className="cc-panel" style={{ padding: '20px 24px' }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -188,7 +188,7 @@ export default function AdsManagerPage() {
       {/* Clients table */}
       <div style={{
         background: "var(--cc-surface)",
-        border: '1px solid var(--cmd-border)',
+        border: '1px solid var(--cc-border)',
         borderRadius: 12,
         overflow: 'hidden',
         backdropFilter: 'blur(10px)',
@@ -199,7 +199,7 @@ export default function AdsManagerPage() {
           gridTemplateColumns: '2fr 1fr 1fr 80px 80px 80px 120px',
           gap: '16px',
           padding: '14px 24px',
-          borderBottom: '1px solid var(--cmd-border)',
+          borderBottom: '1px solid var(--cc-border)',
           background: 'rgba(124,58,237,0.04)',
         }} className="admin-responsive-grid admin-grid-header">
           {['Client', 'Plan', 'Status', 'Spend', 'Reach', 'Campaigns', 'Actions'].map(h => (
@@ -250,7 +250,7 @@ export default function AdsManagerPage() {
           clients.map((client, i) => (
             <div
               key={client.id}
-              className="cmd-table-row admin-responsive-grid admin-grid-record"
+              className="hover:bg-[var(--cc-subtle)] transition-colors admin-responsive-grid admin-grid-record"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1fr 1fr 80px 80px 80px 120px',
@@ -307,8 +307,8 @@ export default function AdsManagerPage() {
               {/* Status */}
               <span className={
                 client.plan_status === 'active'
-                  ? 'cmd-badge-active'
-                  : 'cmd-badge-pending'
+                  ? 'cc-pill cc-pill-success'
+                  : 'cc-pill cc-pill-warning'
               } data-label="Status">
                 {client.plan_status === 'active' ? '🟢 Active' : '⏳ Pending'}
               </span>

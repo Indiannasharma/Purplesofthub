@@ -47,14 +47,14 @@ export default function DashboardServicesPage() {
         <h1 style={{
           fontSize: '24px',
           fontWeight: 900,
-          color: 'var(--cmd-heading)',
+          color: 'var(--cc-text)',
           margin: '0 0 4px',
         }}>
           Our Services
         </h1>
         <p style={{
           fontSize: '14px',
-          color: 'var(--cmd-body)',
+          color: 'var(--cc-text-secondary)',
           margin: 0,
         }}>
           Choose a service to get started
@@ -81,7 +81,7 @@ export default function DashboardServicesPage() {
               background: selectedCategory === category
                 ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
                 : 'transparent',
-              color: selectedCategory === category ? '#fff' : 'var(--cmd-body)',
+              color: selectedCategory === category ? '#fff' : 'var(--cc-text-secondary)',
               fontWeight: 600,
               fontSize: '12px',
               cursor: 'pointer',
@@ -103,7 +103,7 @@ export default function DashboardServicesPage() {
           <div
             key={service.id}
             style={{
-              background: 'var(--cmd-card)',
+              background: 'var(--cc-surface)',
               border: '1px solid rgba(124,58,237,0.15)',
               borderRadius: '16px',
               padding: '24px',
@@ -166,7 +166,7 @@ export default function DashboardServicesPage() {
             <h3 style={{
               fontSize: '17px',
               fontWeight: 800,
-              color: 'var(--cmd-heading)',
+              color: 'var(--cc-text)',
               margin: '0 0 8px',
             }}>
               {service.name}
@@ -174,7 +174,7 @@ export default function DashboardServicesPage() {
 
             <p style={{
               fontSize: '13px',
-              color: 'var(--cmd-body)',
+              color: 'var(--cc-text-secondary)',
               lineHeight: 1.6,
               margin: '0 0 16px',
               minHeight: '62px',
@@ -187,7 +187,7 @@ export default function DashboardServicesPage() {
               gap: '16px',
               marginBottom: '20px',
               fontSize: '12px',
-              color: 'var(--cmd-muted)',
+              color: 'var(--cc-text-muted)',
             }}>
               <span>{service.plans[0]?.delivery || 'Custom timeline'}</span>
               <span style={{

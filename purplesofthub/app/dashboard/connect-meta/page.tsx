@@ -9,14 +9,14 @@ export default function ConnectMetaPage() {
       <h1 style={{
         fontSize: '24px',
         fontWeight: 900,
-        color: 'var(--cmd-heading)',
+        color: 'var(--cc-text)',
         margin: '0 0 8px',
       }}>
         Connect Meta Account 🔗
       </h1>
       <p style={{
         fontSize: '15px',
-        color: 'var(--cmd-body)',
+        color: 'var(--cc-text-secondary)',
         margin: '0 0 32px',
         lineHeight: 1.6,
       }}>
@@ -26,8 +26,8 @@ export default function ConnectMetaPage() {
 
       {/* How it works */}
       <div style={{
-        background: 'var(--cmd-card)',
-        border: '1px solid var(--cmd-border)',
+        background: 'var(--cc-surface)',
+        border: '1px solid var(--cc-border)',
         borderRadius: '20px',
         padding: '28px',
         marginBottom: '24px',
@@ -36,7 +36,7 @@ export default function ConnectMetaPage() {
         <h2 style={{
           fontSize: '16px',
           fontWeight: 800,
-          color: 'var(--cmd-heading)',
+          color: 'var(--cc-text)',
           margin: '0 0 20px',
         }}>
           How It Works
@@ -86,14 +86,14 @@ export default function ConnectMetaPage() {
               <p style={{
                 fontSize: '14px',
                 fontWeight: 700,
-                color: 'var(--cmd-heading)',
+                color: 'var(--cc-text)',
                 margin: '0 0 4px',
               }}>
                 {item.title}
               </p>
               <p style={{
                 fontSize: '13px',
-                color: 'var(--cmd-body)',
+                color: 'var(--cc-text-secondary)',
                 margin: 0,
                 lineHeight: 1.5,
               }}>
@@ -115,7 +115,7 @@ export default function ConnectMetaPage() {
         <h3 style={{
           fontSize: '14px',
           fontWeight: 800,
-          color: 'var(--cmd-heading)',
+          color: 'var(--cc-text)',
           margin: '0 0 8px',
           display: 'flex',
           alignItems: 'center',
@@ -125,7 +125,7 @@ export default function ConnectMetaPage() {
         </h3>
         <p style={{
           fontSize: '13px',
-          color: 'var(--cmd-body)',
+          color: 'var(--cc-text-secondary)',
           margin: '0 0 14px',
           lineHeight: 1.5,
         }}>
@@ -163,7 +163,7 @@ export default function ConnectMetaPage() {
       }}>
         <p style={{
           fontSize: '13px',
-          color: 'var(--cmd-body)',
+          color: 'var(--cc-text-secondary)',
           margin: '0 0 20px',
           lineHeight: 1.5,
         }}>
@@ -201,7 +201,7 @@ export default function ConnectMetaPage() {
 
         <p style={{
           fontSize: '11px',
-          color: 'var(--cmd-muted)',
+          color: 'var(--cc-text-muted)',
           margin: '12px 0 0',
         }}>
           🔒 We only read your ad data. We never post or make changes.
