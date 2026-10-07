@@ -43,7 +43,7 @@ export default async function BlogPage() {
   const { data: posts } = await supabase
     .from('blog_posts')
     .select(
-      'id, title, slug, excerpt, content, featured_image, category, author_name, published_at, created_at, tags, comment_count, likes_count'
+      'id, title, slug, excerpt, content, featured_image, featured_image_alt, category, author_name, published_at, created_at, tags, comment_count, likes_count'
     )
     .eq('status', 'published')
     .order('published_at',
@@ -293,7 +293,7 @@ export default async function BlogPage() {
                     ? (
                     <img
                       src={featuredPost.featured_image}
-                      alt={featuredPost.title}
+                      alt={featuredPost.featured_image_alt || featuredPost.title}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -548,7 +548,7 @@ export default async function BlogPage() {
                         {post.featured_image ? (
                           <img
                             src={post.featured_image}
-                            alt={post.title}
+                            alt={post.featured_image_alt || post.title}
                             style={{
                               width: '100%',
                               height: '100%',
@@ -918,7 +918,7 @@ export default async function BlogPage() {
                                 ? (
                                 <img
                                   src={post.featured_image}
-                                  alt={post.title}
+                                  alt={post.featured_image_alt || post.title}
                                   style={{
                                     width: '100%',
                                     height: '100%',

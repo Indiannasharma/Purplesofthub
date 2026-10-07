@@ -36,6 +36,7 @@ export default function BlogManager() {
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest')
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [actionError, setActionError] = useState('')
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -98,25 +99,25 @@ export default function BlogManager() {
 
   const deletePost = async (id: string) => {
     if (!confirm('Delete this post permanently?')) return
-    setDeleting(id)
-    const supabase = createClient()
-    await supabase.from('blog_posts').delete().eq('id', id)
-    setPosts(p => p.filter(post => post.id !== id))
-    setDeleting(null)
+    setDeleting(id); setActionError('')
+    try {
+      const response = await fetch('/api/admin/blog/publish?id=' + encodeURIComponent(id), { method: 'DELETE' })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Could not delete the post.')
+      setPosts(current => current.filter(post => post.id !== id))
+    } catch (error) { setActionError(error instanceof Error ? error.message : 'Could not delete the post.') }
+    finally { setDeleting(null) }
   }
 
   const toggleStatus = async (post: BlogPost) => {
-    const newStatus = post.status === 'published' ? 'draft' : 'published'
-    const supabase = createClient()
-    await supabase
-      .from('blog_posts')
-      .update({
-        status: newStatus,
-        published_at: newStatus === 'published' ? new Date().toISOString() : null,
-      })
-      .eq('id', post.id)
-
-    setPosts(p => p.map(pp => pp.id === post.id ? { ...pp, status: newStatus } : pp))
+    setActionError('')
+    try {
+      const response = await fetch('/api/admin/blog/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'update', id: post.id, status: post.status === 'published' ? 'draft' : 'published', expected_updated_at: post.updated_at }) })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Could not update the status.')
+      setPosts(current => current.map(item => item.id === post.id ? result.post : item))
+    } catch (error) { setActionError(error instanceof Error ? error.message : 'Could not update the status.') }
   }
 
   useEffect(() => {
@@ -130,6 +131,7 @@ export default function BlogManager() {
 
   return (
     <AdminPage className="cc-module admin-form admin-adopted">
+      {actionError && <p role="alert" style={{ color: "var(--cc-error)", padding: "12px" }}>{actionError}</p>}
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
 
         {/* ── HEADER ── */}

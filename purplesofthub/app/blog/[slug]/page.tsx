@@ -6,6 +6,8 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BlogReactions from '@/components/blog/BlogReactions'
 import BlogComments from '@/components/blog/BlogComments'
+import { renderBlogMarkdown } from '@/lib/blog/rendering'
+import { blogPosting, serializeBlogPosting } from '@/lib/blog/structured-data'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,7 +44,7 @@ async function getRelated(
   const { data } = await supabase
     .from('blog_posts')
     .select(
-      'id, title, slug, excerpt, featured_image, category, published_at'
+      'id, title, slug, excerpt, featured_image, featured_image_alt, category, published_at'
     )
     .eq('status', 'published')
     .eq('category', category)
@@ -83,6 +85,7 @@ export async function generateMetadata(
         url: ogImage,
         width: 1200,
         height: 630,
+        alt: post.featured_image_alt || post.title,
       }],
     },
     twitter: {
@@ -95,65 +98,6 @@ export async function generateMetadata(
   }
 }
 
-function renderMarkdown(text: string): string {
-  if (!text) return ''
-  return text
-    .replace(
-      /```[\w]*\n?([\s\S]*?)```/g,
-      '<pre class="code-block"><code>$1</code></pre>'
-    )
-    .replace(
-      /^### (.+)$/gm,
-      '<h3 class="article-h3">$1</h3>'
-    )
-    .replace(
-      /^## (.+)$/gm,
-      '<h2 class="article-h2">$1</h2>'
-    )
-    .replace(
-      /^# (.+)$/gm,
-      '<h1 class="article-h1">$1</h1>'
-    )
-    .replace(
-      /\*\*(.+?)\*\*/g,
-      '<strong class="article-strong">$1</strong>'
-    )
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/_(.+?)_/g, '<em>$1</em>')
-    .replace(
-      /`([^`]+)`/g,
-      '<code class="article-code">$1</code>'
-    )
-    .replace(
-      /^> (.+)$/gm,
-      '<blockquote class="article-quote">$1</blockquote>'
-    )
-    .replace(
-      /^---$/gm,
-      '<hr class="article-hr"/>'
-    )
-    .replace(
-      /^[\-\*] (.+)$/gm,
-      '<li class="article-li">$1</li>'
-    )
-    .replace(
-      /(<li[^>]*>.*<\/li>\n?)+/g,
-      '<ul class="article-ul">$&</ul>'
-    )
-    .replace(
-      /^\d+\. (.+)$/gm,
-      '<li class="article-li">$1</li>'
-    )
-    .replace(
-      /\[(.+?)\]\((.+?)\)/g,
-      '<a href="$2" class="article-link" target="_blank" rel="noopener">$1</a>'
-    )
-    .replace(
-      /\n\n+/g,
-      '</p><p class="article-p">'
-    )
-    .replace(/\n/g, '<br/>')
-}
 
 function readTime(content: string): string {
   const words = (content || '')
@@ -174,50 +118,23 @@ export default async function BlogPostPage(
     post.id
   )
 
-  const content = renderMarkdown(
+  const content = renderBlogMarkdown(
     post.content || ''
   )
-  const canonicalUrl = `${SITE_URL}/blog/${post.slug}`
-  const authorName = post.author_name || 'PurpleSoftHub Team'
+  const authorName = post.author_name || 'PurpleSoftHub'
   const featuredImageAlt = post.featured_image_alt || (
     post.slug === 'whatsapp-blocks-logins-outdated-software'
       ? 'WhatsApp login blocked on a smartphone because the device software needs updating.'
       : post.title
   )
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.seo_description || post.excerpt || undefined,
-    url: canonicalUrl,
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': canonicalUrl,
-    },
-    image: post.featured_image || undefined,
-    datePublished: post.published_at || post.created_at || undefined,
-    dateModified: post.updated_at || undefined,
-    author: {
-      '@type': authorName === 'PurpleSoftHub' ? 'Organization' : 'Person',
-      name: authorName,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'PurpleSoftHub',
-      url: SITE_URL,
-    },
-    articleSection: post.category || undefined,
-    keywords: Array.isArray(post.tags) && post.tags.length > 0
-      ? post.tags.join(', ')
-      : undefined,
-  }
+  const articleJsonLd = blogPosting(post)
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(articleJsonLd).replace(/</g, '\\u003c'),
+          __html: serializeBlogPosting(articleJsonLd),
         }}
       />
       <Navbar />
@@ -450,14 +367,14 @@ export default async function BlogPostPage(
                     color: 'var(--blog-heading)',
                     margin: '0 0 2px',
                   }}>
-                    PurpleSoftHub
+                    {authorName}
                   </p>
                   <p style={{
                     fontSize: '12px',
                     color: 'var(--blog-body)',
                     margin: 0,
                   }}>
-                    PurpleSoftHub Team
+                    PurpleSoftHub Blog
                   </p>
                 </div>
               </div>
@@ -585,10 +502,19 @@ export default async function BlogPostPage(
                 className="article-content"
                 dangerouslySetInnerHTML={{
                   __html: 
-                    `<p class="article-p">${content}</p>`,
+                    content,
                 }}
               />
             </div>
+
+            {post.source_urls?.length > 0 && (
+              <section style={{ marginBottom: '32px' }} aria-label="Article sources">
+                <h2 className="article-h2">Sources</h2>
+                <ul className="article-ul">{post.source_urls.map((url: string) => (
+                  <li key={url}><a className="article-link" href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>
+                ))}</ul>
+              </section>
+            )}
 
             {/* Tags */}
             {post.tags && 
@@ -790,7 +716,7 @@ export default async function BlogPostPage(
                         {rp.featured_image && (
                           <img
                             src={rp.featured_image}
-                            alt={rp.title}
+                            alt={rp.featured_image_alt || rp.title}
                             style={{
                               width: '100%',
                               height: '140px',
