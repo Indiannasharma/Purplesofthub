@@ -1,679 +1,89 @@
 'use client'
-
-import { useEffect, useState, useMemo } from 'react'
-import { AdminErrorState } from "@/components/admin/AdminErrorState";
-import { AdminPage } from "@/components/admin/AdminPage";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
-
-interface BlogPost {
-  id: string
-  title: string
-  slug: string
-  excerpt: string
-  content: string
-  featured_image: string | null
-  category: string | null
-  status: 'draft' | 'published'
-  author_name: string | null
-  published_at: string | null
-  created_at: string
-  updated_at: string | null
-  tags: string[] | null
-}
-
-const calculateReadTime = (text: string) => Math.max(1, Math.ceil(text.split(/\s+/).length / 200))
-const calculateWordCount = (text: string) => text.split(/\s+/).filter(Boolean).length
-
+import { CheckCircle2, ChevronLeft, ChevronRight, FileText, PencilLine, Plus, Tags, Eye, Trash2, Send, RefreshCw } from 'lucide-react'
+import { AdminPage } from '@/components/admin/AdminPage'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminEmptyState } from '@/components/admin/AdminEmptyState'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { ccFontVariables } from '@/components/command-center/fonts'
+import { editorialDate } from '@/lib/blog/queries'
+import type { BlogPost } from '@/lib/blog/publishing'
+import styles from '@/components/admin/blog-editorial.module.css'
+type Row=Omit<BlogPost,'content'|'seo_title'|'seo_description'|'author_id'|'author_type'|'source_urls'>
+type Data={posts:Row[];total:number;page:number;pageSize:number;stats:{total:number;published:number;drafts:number;categories:number};categories:{name:string;slug:string}[];authors:string[]}
 export default function BlogManager() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
-  const [readError, setReadError] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all')
-  const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest')
-  const [deleting, setDeleting] = useState<string | null>(null)
-  const [actionError, setActionError] = useState('')
-
-  // Get unique categories
-  const categories = useMemo(() => {
-    const cats = new Set(posts.filter(p => p.category).map(p => p.category!))
-    return Array.from(cats).sort()
-  }, [posts])
-
-  // Stats
-  const stats = useMemo(() => ({
-    total: posts.length,
-    published: posts.filter(p => p.status === 'published').length,
-    drafts: posts.filter(p => p.status === 'draft').length,
-  }), [posts])
-
-  // Filtered and sorted posts
-  const filtered = useMemo(() => {
-    const result = posts.filter(p => {
-      const matchesFilter = filter === 'all' || p.status === filter
-      const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
-                          p.excerpt.toLowerCase().includes(search.toLowerCase())
-      const matchesCategory = !categoryFilter || p.category === categoryFilter
-      return matchesFilter && matchesSearch && matchesCategory
-    })
-
-    // Sort
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        case 'oldest':
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        case 'title':
-          return a.title.localeCompare(b.title)
-      }
-    })
-
-    return result
-  }, [posts, filter, search, categoryFilter, sortBy])
-
-
-
-  async function fetchPosts() {
+  const [data,setData]=useState<Data|null>(null)
+  const [filters,setFilters]=useState({q:'',status:'all',category:'',author:'',sort:'newest',page:1})
+  const [loading,setLoading]=useState(true)
+  const [error,setError]=useState('')
+  const [feedback,setFeedback]=useState('')
+  const [busy,setBusy]=useState<string|null>(null)
+  const [target,setTarget]=useState<Row|null>(null)
+  const [version,setVersion]=useState(0)
+  const actionLock=useRef(false)
+  useEffect(()=>{
+    const controller=new AbortController()
+    const timer=setTimeout(async()=>{
+      setLoading(true);setError('')
+      try {
+        const params=new URLSearchParams(Object.entries(filters).map(([k,v])=>[k,String(v)]))
+        const response=await fetch('/api/admin/blog?'+params,{signal:controller.signal})
+        const result=await response.json()
+        if(!response.ok) throw new Error(result.error||'Could not load the articles.')
+        if(!controller.signal.aborted){setData(result);if(result.page!==filters.page)setFilters(current=>({...current,page:result.page}))}
+      } catch(error){if(!controller.signal.aborted)setError(error instanceof Error?error.message:'Could not load the articles.')}
+      finally{if(!controller.signal.aborted)setLoading(false)}
+    },filters.q||filters.author?250:0)
+    return()=>{clearTimeout(timer);controller.abort()}
+  },[filters,version])
+  function filter(key:string,value:string){setFilters(current=>({...current,[key]:value,page:1}))}
+  async function mutate(post:Row,operation:'status'|'delete') {
+    if(actionLock.current)return
+    actionLock.current=true;setBusy(post.id);setError('');setFeedback('')
     try {
-      setReadError(false);
-
-    setLoading(true)
-    const supabase = createClient()
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .order('created_at', { ascending: false })
-      if (error) throw error;
-
-
-    setPosts(data || [])
-    setLoading(false)
-
-    } catch { setReadError(true); } finally { setLoading(false); }
+      const response=await fetch('/api/admin/blog/publish'+(operation==='delete'?'?id='+post.id:''),operation==='delete'?{method:'DELETE'}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation:'update',id:post.id,status:post.status==='published'?'draft':'published',expected_updated_at:post.updated_at})})
+      const result=await response.json()
+      if(!response.ok) throw new Error(result.error||'Could not update the article.')
+      setTarget(null);setFeedback(operation==='delete'?'Article deleted.':post.status==='published'?'Article moved to drafts.':'Article published.')
+      setVersion(n=>n+1)
+    }catch(error){setError(error instanceof Error?error.message:'Could not update the article.')}
+    finally{actionLock.current=false;setBusy(null)}
   }
-
-  const deletePost = async (id: string) => {
-    if (!confirm('Delete this post permanently?')) return
-    setDeleting(id); setActionError('')
-    try {
-      const response = await fetch('/api/admin/blog/publish?id=' + encodeURIComponent(id), { method: 'DELETE' })
-      const result = await response.json()
-      if (!response.ok) throw new Error(result.error || 'Could not delete the post.')
-      setPosts(current => current.filter(post => post.id !== id))
-    } catch (error) { setActionError(error instanceof Error ? error.message : 'Could not delete the post.') }
-    finally { setDeleting(null) }
-  }
-
-  const toggleStatus = async (post: BlogPost) => {
-    setActionError('')
-    try {
-      const response = await fetch('/api/admin/blog/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ operation: 'update', id: post.id, status: post.status === 'published' ? 'draft' : 'published', expected_updated_at: post.updated_at }) })
-      const result = await response.json()
-      if (!response.ok) throw new Error(result.error || 'Could not update the status.')
-      setPosts(current => current.map(item => item.id === post.id ? result.post : item))
-    } catch (error) { setActionError(error instanceof Error ? error.message : 'Could not update the status.') }
-  }
-
-  useEffect(() => {
-    // Resolve external reads in a callback after the committed render.
-    void Promise.resolve().then(async () => {
-    fetchPosts()
-      })
-  }, [])
-
-  if (readError) return <AdminPage className="cc-module"><AdminErrorState title="Could not load these records" description="Refresh to try again. No record counts are shown while the read has failed." onRetry={() => window.location.reload()} /></AdminPage>;
-
-  return (
-    <AdminPage className="cc-module admin-form admin-adopted">
-      {actionError && <p role="alert" style={{ color: "var(--cc-error)", padding: "12px" }}>{actionError}</p>}
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-
-        {/* ── HEADER ── */}
-        <AdminPageHeader title={<>📚 Blog Manager</>} description={<>Create, manage, and organize your blog posts</>} actions={<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <button
-              onClick={fetchPosts}
-              disabled={loading}
-              title="Refresh posts"
-              style={{
-                padding: '12px 16px',
-                borderRadius: '12px',
-                border: '1px solid rgba(124,58,237,0.3)',
-                background: 'transparent',
-                color: "var(--cc-accent)",
-                fontWeight: 600,
-                cursor: loading ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                opacity: loading ? 0.6 : 1,
-                transition: 'all 0.2s',
-              }}
-            >
-              {loading ? '⏳' : '🔄'}
-            </button>
-            <Link
-              href="/admin/blog/create"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: "var(--cc-accent)",
-                color: "var(--cc-on-accent)",
-                padding: '12px 28px',
-                borderRadius: '12px',
-                textDecoration: 'none',
-                fontWeight: 600,
-                fontSize: 'clamp(13px, 2vw, 15px)',
-                boxShadow: "none",
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              ✍️ New Post
-            </Link>
-          </div>} />
-
-        {/* ── STATS ── */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px',
-          marginBottom: '32px',
-        }}>
-          {[
-            { label: 'Total Posts', value: stats.total, icon: '📝', color: '#7c3aed', bg: 'rgba(124,58,237,0.1)' },
-            { label: 'Published', value: stats.published, icon: '🚀', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
-            { label: 'Drafts', value: stats.drafts, icon: '💾', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-          ].map(stat => (
-            <div key={stat.label} style={{
-              background: "var(--cc-surface)",
-              border: `1px solid ${stat.bg}`,
-              borderRadius: 12,
-              padding: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-            }}>
-              <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '12px',
-                background: stat.bg,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-              }}>
-                {stat.icon}
-              </div>
-              <div>
-                <p style={{ fontSize: '12px', color: "var(--cc-text-muted)", margin: 0, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {stat.label}
-                </p>
-                <p style={{ fontSize: '28px', fontWeight: 600, color: stat.color, margin: '4px 0 0' }}>
-                  {stat.value}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* ── CONTROLS ── */}
-        <div style={{
-          background: "var(--cc-surface)",
-          border: "1px solid var(--cc-border)",
-          borderRadius: 12,
-          padding: '20px',
-          marginBottom: '28px',
-        }}>
-          {/* Search */}
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'rgba(124,58,237,0.06)',
-              border: "1px solid var(--cc-border)",
-              borderRadius: '10px',
-              padding: '10px 14px',
-            }}>
-              <span style={{ color: "var(--cc-text-muted)" }}>🔍</span>
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search posts by title or content..."
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: "var(--cc-text)",
-                  fontSize: '14px',
-                  fontFamily: 'inherit',
-                }}
-               aria-label="Search posts by title or content..."/>
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-            gap: '12px',
-          }}>
-            {/* Status filter */}
-            <div>
-              <label style={{
-                fontSize: '11px',
-                fontWeight: 600,
-                color: "var(--cc-text-muted)",
-                display: 'block',
-                marginBottom: '6px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }}>
-                Status
-              </label>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {['all', 'published', 'draft'].map(f => (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f as typeof filter)}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: '8px',
-                      border: filter === f ? 'none' : '1px solid rgba(124,58,237,0.2)',
-                      background: filter === f
-                        ? 'linear-gradient(135deg, #7c3aed, #a855f7)'
-                        : 'transparent',
-                      color: filter === f ? '#fff' : 'var(--cc-text-secondary)',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      transition: 'all 0.2s',
-                      textTransform: 'capitalize',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(124,58,237,0.4)'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)'}
-                  >
-                    {f === 'all' ? `All (${stats.total})` : f === 'published' ? `Published (${stats.published})` : `Drafts (${stats.drafts})`}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Category filter */}
-            {categories.length > 0 && (
-              <div>
-                <label style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: "var(--cc-text-muted)",
-                  display: 'block',
-                  marginBottom: '6px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                }} htmlFor="admin-blogpagetsx-1">
-                  Category
-                </label>
-                <select
-                  value={categoryFilter || ''}
-                  onChange={e => setCategoryFilter(e.target.value || null)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    border: "1px solid var(--cc-border)",
-                    background: 'rgba(124,58,237,0.06)',
-                    color: "var(--cc-text)",
-                    fontSize: '12px',
-                    fontFamily: 'inherit',
-                    cursor: 'pointer',
-                  }}
-                  id="admin-blogpagetsx-1">
-                  <option value="">All Categories</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Sort */}
-            <div>
-              <label style={{
-                fontSize: '11px',
-                fontWeight: 600,
-                color: "var(--cc-text-muted)",
-                display: 'block',
-                marginBottom: '6px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-              }} htmlFor="admin-blogpagetsx-2">
-                Sort By
-              </label>
-              <select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value as typeof sortBy)}
-                style={{
-                  width: '100%',
-                  padding: '8px 10px',
-                  borderRadius: '8px',
-                  border: "1px solid var(--cc-border)",
-                  background: 'rgba(124,58,237,0.06)',
-                  color: "var(--cc-text)",
-                  fontSize: '12px',
-                  fontFamily: 'inherit',
-                  cursor: 'pointer',
-                }}
-                id="admin-blogpagetsx-2">
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="title">A-Z Title</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* ── POSTS ── */}
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: "var(--cc-text-muted)" }}>
-            Loading posts...
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '60px 20px',
-            background: "var(--cc-surface)",
-            borderRadius: 12,
-            border: "1px solid var(--cc-border)",
-          }}>
-            <p style={{ fontSize: '32px', margin: '0 0 12px' }}>📭</p>
-            <p style={{ fontSize: '16px', fontWeight: 600, color: "var(--cc-text)", margin: '0 0 4px' }}>
-              No posts found
-            </p>
-            <p style={{ fontSize: '14px', color: "var(--cc-text-muted)", margin: 0 }}>
-              {search ? 'Try a different search' : 'Create your first blog post!'}
-            </p>
-          </div>
-        ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: '20px',
-          }}>
-            {filtered.map(post => {
-              const readTime = calculateReadTime(post.content)
-              const wordCount = calculateWordCount(post.content)
-              const publishDate = post.published_at ? new Date(post.published_at) : new Date(post.created_at)
-              const dateStr = publishDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-
-              return (
-                <div
-                  key={post.id}
-                  style={{
-                    background: "var(--cc-surface)",
-                    border: "1px solid var(--cc-border)",
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.35)'
-                    e.currentTarget.style.transform = 'translateY(-4px)'
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(124,58,237,0.15)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}
-                >
-                  {/* Featured Image */}
-                  {post.featured_image && (
-                    <div style={{
-                      width: '100%',
-                      height: '180px',
-                      overflow: 'hidden',
-                      background: 'rgba(124,58,237,0.08)',
-                    }}>
-                      <Image unoptimized width={640} height={360}
-                        src={post.featured_image}
-                        alt={post.title}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Content */}
-                  <div style={{
-                    padding: '18px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flex: 1,
-                  }}>
-                    {/* Status & Category */}
-                    <div style={{
-                      display: 'flex',
-                      gap: '8px',
-                      marginBottom: '10px',
-                      flexWrap: 'wrap',
-                    }}>
-                      <span style={{
-                        fontSize: '10px',
-                        fontWeight: 600,
-                        padding: '4px 10px',
-                        borderRadius: '6px',
-                        background: post.status === 'published' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
-                        color: post.status === 'published' ? '#10b981' : '#f59e0b',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                      }}>
-                        {post.status === 'published' ? '✓ Published' : '○ Draft'}
-                      </span>
-                      {post.category && (
-                        <span style={{
-                          fontSize: '10px',
-                          fontWeight: 600,
-                          padding: '4px 10px',
-                          borderRadius: '6px',
-                          background: 'rgba(124,58,237,0.15)',
-                          color: "var(--cc-accent)",
-                          textTransform: 'capitalize',
-                        }}>
-                          {post.category}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Title */}
-                    <h3 style={{
-                      fontSize: '16px',
-                      fontWeight: 600,
-                      color: "var(--cc-text)",
-                      margin: '0 0 8px',
-                      lineHeight: '1.4',
-                      overflow: 'hidden',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}>
-                      {post.title}
-                    </h3>
-
-                    {/* Excerpt */}
-                    <p style={{
-                      fontSize: '13px',
-                      color: "var(--cc-text-secondary)",
-                      margin: '0 0 12px',
-                      lineHeight: '1.5',
-                      overflow: 'hidden',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      flex: 1,
-                    }}>
-                      {post.excerpt}
-                    </p>
-
-                    {/* Tags */}
-                    {post.tags && post.tags.length > 0 && (
-                      <div style={{
-                        display: 'flex',
-                        gap: '6px',
-                        marginBottom: '12px',
-                        flexWrap: 'wrap',
-                      }}>
-                        {post.tags.slice(0, 3).map(tag => (
-                          <span
-                            key={tag}
-                            style={{
-                              fontSize: '10px',
-                              padding: '3px 8px',
-                              background: 'rgba(124,58,237,0.1)',
-                              color: "var(--cc-accent)",
-                              borderRadius: '4px',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Meta */}
-                    <div style={{
-                      display: 'flex',
-                      gap: '16px',
-                      fontSize: '11px',
-                      color: "var(--cc-text-muted)",
-                      marginBottom: '14px',
-                      paddingTop: '12px',
-                      borderTop: '1px solid rgba(124,58,237,0.1)',
-                    }}>
-                      <span>⏱️ {readTime}m read</span>
-                      <span>📊 {wordCount} words</span>
-                      <span>📅 {dateStr}</span>
-                    </div>
-
-                    {/* Author */}
-                    {post.author_name && (
-                      <p style={{
-                        fontSize: '11px',
-                        color: "var(--cc-text-muted)",
-                        margin: '0 0 14px',
-                        fontStyle: 'italic',
-                      }}>
-                        by {post.author_name}
-                      </p>
-                    )}
-
-                    {/* Actions */}
-                    <div style={{
-                      display: 'flex',
-                      gap: '8px',
-                      flexWrap: 'wrap',
-                    }}>
-                      <Link
-                        href={`/admin/blog/edit/${post.id}`}
-                        style={{
-                          flex: 1,
-                          minWidth: '80px',
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          border: '1px solid rgba(124,58,237,0.3)',
-                          background: 'transparent',
-                          color: "var(--cc-accent)",
-                          textDecoration: 'none',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          textAlign: 'center',
-                          transition: 'all 0.2s',
-                          cursor: 'pointer',
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = 'rgba(124,58,237,0.15)'
-                          e.currentTarget.style.borderColor = 'rgba(124,58,237,0.5)'
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = 'transparent'
-                          e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'
-                        }}
-                      >
-                        ✏️ Edit
-                      </Link>
-
-                      <button
-                        onClick={() => toggleStatus(post)}
-                        style={{
-                          flex: 1,
-                          minWidth: '80px',
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          border: 'none',
-                          background: post.status === 'published' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)',
-                          color: post.status === 'published' ? '#f59e0b' : '#10b981',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                      >
-                        {post.status === 'published' ? '🔒 Unpublish' : '🚀 Publish'}
-                      </button>
-
-                      <button
-                        onClick={() => deletePost(post.id)}
-                        disabled={deleting === post.id}
-                        style={{
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          border: '1px solid rgba(239,68,68,0.3)',
-                          background: 'transparent',
-                          color: "var(--cc-error)",
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          cursor: deleting === post.id ? 'not-allowed' : 'pointer',
-                          transition: 'all 0.2s',
-                          opacity: deleting === post.id ? 0.5 : 1,
-                        }}
-                        onMouseEnter={e => {
-                          if (deleting !== post.id) {
-                            e.currentTarget.style.background = 'rgba(239,68,68,0.15)'
-                            e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)'
-                          }
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = 'transparent'
-                          e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'
-                        }}
-                      >
-                        {deleting === post.id ? '⏳' : '🗑️'} Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+  function actions(post:Row){return <div className={styles.rowActions}>
+    <Link className={styles.button} href={'/admin/blog/edit/'+post.id}><PencilLine size={12} aria-hidden="true"/>Edit</Link>
+    <Link className={styles.button} href={post.status==='published'?'/blog/'+post.slug:'/admin/blog/preview/'+post.id} target="_blank" rel="noopener noreferrer"><Eye size={12} aria-hidden="true"/>{post.status==='published'?'View':'Preview'}</Link>
+    <button className={styles.button} type="button" disabled={Boolean(busy)} onClick={()=>mutate(post,'status')} aria-label={(post.status==='published'?'Unpublish ':'Publish ')+post.title}><Send size={12} aria-hidden="true"/>{post.status==='published'?'Unpublish':'Publish'}</button>
+    <button className={styles.button+' '+styles.danger} type="button" disabled={Boolean(busy)} onClick={()=>setTarget(post)} aria-label={'Delete '+post.title}><Trash2 size={12} aria-hidden="true"/></button>
+  </div>}
+  function identity(post:Row){return <div className={styles.postCell}><div className={styles.thumbnail}><Image src={post.featured_image||'/images/logo/purplesoft-logo-main.png'} alt={post.featured_image_alt||post.title} fill sizes="92px" unoptimized className={post.featured_image?'':styles.brand}/></div><div className={styles.postText}><Link href={'/admin/blog/edit/'+post.id} className={styles.postTitle}>{post.title}</Link><div className={styles.postMeta}>{post.category||'Uncategorized'} · {post.author_name?.trim()||'PurpleSoftHub'}</div>{post.tags&&post.tags.length>0&&<div className={styles.postTags}>{post.tags.slice(0,2).map(tag=><span className={styles.tag} key={tag}>{tag}</span>)}</div>}</div></div>}
+  function status(post:Row){return <span className={styles.badge+' '+(post.status==='published'?styles.published:'')}>{post.status==='published'?<CheckCircle2 size={11} aria-hidden="true"/>:<PencilLine size={11} aria-hidden="true"/>}{post.status==='published'?'Published':'Draft'}</span>}
+  const pages=Math.max(1,Math.ceil((data?.total||0)/12))
+  const active=filters.q||filters.status!=='all'||filters.category||filters.author
+  const stats=[{key:'total',label:'Total posts',icon:FileText},{key:'published',label:'Published',icon:CheckCircle2},{key:'drafts',label:'Drafts',icon:PencilLine},{key:'categories',label:'Categories',icon:Tags}] as const
+  return <AdminPage className={'cc-module '+styles.dashboard}>
+    <AdminPageHeader title="Blog Management" description="Create, manage and publish PurpleSoftHub insights." breadcrumbs={[{label:'Editorial'},{label:'Blog Management'}]} actions={<Link className={styles.primary} href="/admin/blog/create"><Plus size={15} aria-hidden="true"/>New Post</Link>}/>
+    <div className={styles.stats}>{stats.map(item=><div className={styles.stat} key={item.key}><span className={styles.statIcon}><item.icon size={18} aria-hidden="true"/></span><div><span className={styles.statLabel}>{item.label}</span>{data?<strong className={styles.statValue}>{data.stats[item.key]}</strong>:<Skeleton className="h-7 w-12"/>}</div></div>)}</div>
+    {feedback&&<div className={styles.notice} role="status">{feedback}</div>}
+    {error&&<div className={styles.notice+' '+styles.error} role="alert">{error}<button type="button" className={styles.button} onClick={()=>setVersion(n=>n+1)}>Retry</button></div>}
+    <section className={styles.panel} aria-label="Article management" aria-busy={loading}>
+      <div className={styles.panelHeader}><div><p className={styles.eyebrow}>Your publication</p><h2>Articles</h2><p>A clear view of everything in your editorial pipeline.</p></div><button type="button" className={styles.button} disabled={loading} onClick={()=>setVersion(n=>n+1)}><RefreshCw size={13} aria-hidden="true"/>Refresh</button></div>
+      <div className={styles.filters}>
+        <label htmlFor="posts-search">Search<input id="posts-search" type="search" placeholder="Search posts…" value={filters.q} onChange={e=>filter('q',e.target.value)} maxLength={100}/></label>
+        <label htmlFor="posts-status">Status<select id="posts-status" value={filters.status} onChange={e=>filter('status',e.target.value)}><option value="all">All statuses</option><option value="published">Published</option><option value="draft">Drafts</option></select></label>
+        <label htmlFor="posts-category">Category<select id="posts-category" value={filters.category} onChange={e=>filter('category',e.target.value)}><option value="">All categories</option>{data?.categories.map(c=><option key={c.slug} value={c.name}>{c.name}</option>)}</select></label>
+        <label htmlFor="posts-author">Author<input id="posts-author" list="blog-authors" placeholder="All authors" value={filters.author} onChange={e=>filter('author',e.target.value)}/><datalist id="blog-authors">{data?.authors.map(author=><option key={author} value={author}/>)}</datalist></label>
+        <label htmlFor="posts-sort">Sort by<select id="posts-sort" value={filters.sort} onChange={e=>filter('sort',e.target.value)}><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="updated">Recently updated</option></select></label>
       </div>
-    </AdminPage>
-  )
+      <div className={styles.resultLine}><span aria-live="polite">{loading?'Loading articles…':data?data.total+' '+(data.total===1?'article':'articles'):'Articles unavailable'}</span>{active&&<button type="button" onClick={()=>setFilters({q:'',status:'all',category:'',author:'',sort:'newest',page:1})}>Clear filters</button>}</div>
+      {loading?<div className={styles.skeletonRows} role="status" aria-label="Loading articles">{[1,2,3].map(i=><div className={styles.skeletonRow} key={i}><Skeleton className={styles.skeletonImage}/><div className={styles.skeletonText}><Skeleton className={styles.skeletonTitle}/><Skeleton className={styles.skeletonLine}/></div></div>)}</div>:data?.posts.length?<>
+        <table className={styles.table}><thead><tr><th scope="col">Article</th><th scope="col">Status</th><th scope="col">Last updated</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead><tbody>{data.posts.map(post=><tr key={post.id}><td>{identity(post)}</td><td>{status(post)}</td><td><time dateTime={post.updated_at||post.created_at}>{editorialDate(post.updated_at||post.created_at)}</time>{post.published_at&&<span className={styles.rowDate}>Published {editorialDate(post.published_at)}</span>}</td><td>{actions(post)}</td></tr>)}</tbody></table>
+        <div className={styles.mobilePosts}>{data.posts.map(post=><article key={post.id} className={styles.mobileCard}>{identity(post)}<div className={styles.mobileMeta}>{status(post)}<span className={styles.rowDate}>Updated {editorialDate(post.updated_at||post.created_at)}</span></div>{actions(post)}</article>)}</div>
+      </>:!error&&<AdminEmptyState icon={FileText} title={active?'No matching articles':'Start your next great story'} description={active?'Try another search or clear your filters.':'Create your first draft and turn an idea into an insight.'} action={<Link className={styles.button} href="/admin/blog/create">New Post</Link>}/>}
+      {data&&data.total>0&&<nav className={styles.pagination} aria-label="Article pagination"><span>Showing {(filters.page-1)*12+1}–{Math.min(filters.page*12,data.total)} of {data.total}</span><div className={styles.paginationControls}><button className={styles.button} disabled={filters.page<=1||loading} onClick={()=>setFilters(f=>({...f,page:f.page-1}))}><ChevronLeft size={14} aria-hidden="true"/>Previous</button><span>Page {filters.page} of {pages}</span><button className={styles.button} disabled={filters.page>=pages||loading} onClick={()=>setFilters(f=>({...f,page:f.page+1}))}>Next<ChevronRight size={14} aria-hidden="true"/></button></div></nav>}
+    </section>
+    <Dialog open={Boolean(target)} onOpenChange={open=>{if(!open&&!busy)setTarget(null)}}><DialogContent className={ccFontVariables+' workspace-overlay '+styles.dialog} role="alertdialog"><DialogTitle className={styles.dialogTitle}>Delete article?</DialogTitle><DialogDescription className={styles.dialogDescription}>“{target?.title}” will be permanently removed from the publication. This cannot be undone.</DialogDescription>{error&&<p role="alert" className={styles.danger}>{error}</p>}<div className={styles.dialogFooter}><button type="button" className={styles.button} disabled={Boolean(busy)} onClick={()=>setTarget(null)}>Cancel</button><button type="button" className={styles.primary} disabled={Boolean(busy)} onClick={()=>target&&mutate(target,'delete')}>{busy?'Deleting…':'Delete article'}</button></div></DialogContent></Dialog>
+  </AdminPage>
 }

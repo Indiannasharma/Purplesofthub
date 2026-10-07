@@ -50,8 +50,8 @@ const allowed = new Set(['operation', 'id', 'slug', 'title', 'content', 'excerpt
   'featured_image_alt', 'category', 'tags', 'seo_title', 'seo_description', 'status', 'author',
   'author_type', 'source_urls', 'content_format', 'expected_updated_at'])
 const stringLimits: Record<string, number> = { title: 200, content: 100000, excerpt: 500,
-  slug: MAX_BLOG_SLUG_LENGTH, featured_image: 2048, featured_image_alt: 300, category: 100,
-  seo_title: 70, seo_description: 160, author: 120, id: 36, expected_updated_at: 40 }
+  slug: 1000, featured_image: 2048, featured_image_alt: 300, category: 100,
+  seo_title: 200, seo_description: 500, author: 120, id: 36, expected_updated_at: 40 }
 export function parsePublishingInput(input: unknown): Record<string, unknown> {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new BlogPublishingError(400, 'invalid_request', 'Send a JSON object as the article payload.')
@@ -112,14 +112,15 @@ export async function publishBlog(input: unknown, db: BlogRepository, options: {
   const seoDescription = text('seo_description', existing?.seo_description || '') || excerptDescription(excerpt)
   const fields: Record<string, string> = {}
   if (!title) fields.title = 'Title is required, including for drafts.'
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > MAX_BLOG_SLUG_LENGTH) fields.slug = 'Use 1–100 lowercase ASCII letters, numbers and single hyphens.'
+  if (!(existing?.published_at && slug === existing.slug) && (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > MAX_BLOG_SLUG_LENGTH)) fields.slug = 'Use 1–100 lowercase ASCII letters, numbers and single hyphens.'
   if (existing?.published_at && slug !== existing.slug) fields.slug = 'The slug of an article that has been published cannot change.'
   if (categoryInput && !category) fields.category = 'Choose an existing category name or slug; no category was created.'
   if (imageUrl && !httpsUrl(imageUrl)) fields.featured_image = 'Use a secure HTTPS image URL or attach an image file.'
   const sourceUrls = list('source_urls')
   if (sourceUrls.some(u => !httpsUrl(u))) fields.source_urls = 'Source URLs must use HTTPS and cannot contain credentials.'
   if (options.image && body.featured_image) fields.featured_image = 'Supply either an image file or a URL, not both.'
-  if ((imageUrl || options.image) && !imageAlt) fields.featured_image_alt = 'Describe the featured image for accessibility.'
+  const needsImageAlt = status === 'published' || Boolean(options.image) || (body.featured_image !== undefined && imageUrl !== existing?.featured_image)
+  if (needsImageAlt && (imageUrl || options.image) && !imageAlt) fields.featured_image_alt = 'Describe the featured image for accessibility.'
   if (status === 'published') {
     if (!content) fields.content = 'Content is required to publish.'
     if (!excerpt) fields.excerpt = 'An excerpt is required to publish.'

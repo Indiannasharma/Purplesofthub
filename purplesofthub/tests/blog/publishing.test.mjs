@@ -135,3 +135,14 @@ test('same-origin cookies use the actual Host when Next normalizes its internal 
   const denied = await authorizeBlogRequest(new Request('http://localhost:3031/api/admin/blog/publish',{method:'POST',headers:{Host:'127.0.0.1:3031',Origin:'http://untrusted.example'}}),deps)
   assert.equal(denied.status,403)
 })
+
+test('unchanged legacy published slugs are preserved without creating a new URL', async () => {
+  const db=repository();const post=(await publishBlog({...article,status:'published'},db)).post;
+  const legacy='-legacy-'+('long-'.repeat(30));db.rows.set(post.id,{...post,slug:legacy});
+  const updated=await publishBlog({operation:'update',id:post.id,slug:legacy,excerpt:'Revised introduction'},db);
+  assert.equal(updated.post.slug,legacy);assert.equal(updated.post.id,post.id);assert.equal(db.rows.size,1)
+})
+test('SEO guidance is not a hard publication limit', async () => {
+  const db=repository();const result=await publishBlog({...article,status:'published',seo_title:'A'.repeat(75),seo_description:'Useful context. '.repeat(12)},db);
+  assert.equal(result.post.seo_title.length,75);assert.ok(result.post.seo_description.length>160)
+})

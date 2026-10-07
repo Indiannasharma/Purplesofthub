@@ -10,13 +10,14 @@ import PersistentTypewriter from "@/components/common/PersistentTypewriter";
 import {
   FadeInUp,
   StaggerContainer,
-  StaggerItem,
-  AnimatedCard,
-  FadeIn
+  StaggerItem
 } from "@/components/motion";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import HomeBlogSection, { HomeBlogSkeleton } from "@/components/blog/HomeBlogSection";
 import HomePortfolio from "@/components/HomePortfolio";
 import { PORTFOLIO_PROJECTS } from "@/app/portfolio/_data/portfolio";
+
+export const dynamic = 'force-dynamic';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://purplesofthub.com";
 
@@ -113,34 +114,7 @@ const TYPEWRITER_WORDS = [
   "Media Houses", "Event Planners", "Law Firms",
 ];
 
-function hasUsableSupabaseEnv() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !key) return false;
-  if (/placeholder|your_|changeme|example|xxx|todo|replace/i.test(`${url} ${key}`)) {
-    return false;
-  }
-
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export default async function Home() {
-  const trendingPostsData = hasUsableSupabaseEnv()
-    ? (await (await createClient())
-        .from('blog_posts')
-        .select('id, title, slug, excerpt, read_time, comment_count, likes_count')
-        .eq('status', 'published')
-        .order('published_at', { ascending: false })
-        .limit(3)).data
-    : [];
-
-  const trendingPosts = trendingPostsData || [];
 
   return (
     <main style={{ background: "var(--cyber-bg)", color: "var(--cyber-heading)", minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
@@ -660,47 +634,7 @@ export default async function Home() {
       </section>
 
       {/* ── TRENDING BLOG POSTS ── */}
-      <section style={{ padding: "90px 5%", background: "var(--cyber-bg2)", borderTop: "1px solid var(--cyber-border)", borderBottom: "1px solid var(--cyber-border)", position: "relative", zIndex: 2 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <Reveal>
-            <div style={{ textAlign: "center", marginBottom: 60 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3, color: "#a855f7", textTransform: "uppercase", marginBottom: 12 }}>Latest Insights</p>
-              <h2 className="cyber-section-heading" style={{ fontFamily: "Outfit", fontSize: "clamp(28px,3.5vw,48px)", fontWeight: 900, letterSpacing: "-1.5px" }}>
-                Trending <span className="grad-text">Blog Posts</span>
-              </h2>
-            </div>
-          </Reveal>
-          {trendingPosts.length > 0 ? (
-            <StaggerContainer style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
-              {trendingPosts.map((post) => (
-                <StaggerItem key={post.id}>
-                  <Link href={`/blog/${post.slug}`}>
-                    <div className="cyber-card" style={{ padding: "28px 24px", position: "relative", overflow: "hidden", cursor: "pointer", transition: "all 0.3s ease" }}>
-                      <div className="cyber-corner-tl" />
-                      <div className="cyber-corner-br" />
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#7c3aed,#22d3ee,#a855f7)" }} />
-                      <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 17, color: "var(--cyber-heading)", marginBottom: 12, lineHeight: 1.4 }}>{post.title}</div>
-                      <p style={{ color: "var(--cyber-body)", fontSize: 14, lineHeight: 1.6, marginBottom: 18 }}>{post.excerpt}</p>
-                      <div style={{ display: "flex", gap: 16, fontSize: 13, color: "var(--cyber-muted)", marginBottom: 16, flexWrap: "wrap" }}>
-                        <span>🕐 {post.read_time} min read</span>
-                        <span>💬 {post.comment_count || 0}</span>
-                        <span>💜 {post.likes_count || 0}</span>
-                      </div>
-                      <button className="cyber-btn-small" style={{ padding: "8px 18px", fontSize: 13 }}>
-                        Read More →
-                      </button>
-                    </div>
-                  </Link>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          ) : (
-            <div style={{ textAlign: "center", color: "var(--cyber-muted)", padding: "40px 20px" }}>
-              <p>Check back soon for trending blog posts</p>
-            </div>
-          )}
-        </div>
-      </section>
+      <Suspense fallback={<HomeBlogSkeleton />}><HomeBlogSection /></Suspense>
 
       {/* ── FINAL CTA ── */}
       <section style={{ padding: "100px 5%", textAlign: "center", position: "relative", overflow: "hidden", zIndex: 2 }}>

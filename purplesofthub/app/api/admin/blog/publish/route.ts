@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireBlogAdmin } from '@/lib/blog/admin-auth'
+import { revalidatePath } from 'next/cache'
 import { createServiceRoleClient } from '@/lib/supabase/admin'
-import { authorizeBlogRequest } from '@/lib/blog/authorization'
 import { blogImageUpload } from '@/lib/blog/cloudinary'
 import { BlogPublishingError, publishBlog, type BlogPost, type BlogRepository, type BlogValues } from '@/lib/blog/publishing'
 
@@ -9,25 +9,6 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 const MAX_REQUEST_BYTES = 4 * 1024 * 1024
 const response = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { 'Cache-Control': 'no-store' } })
-async function authenticate(request: Request) {
-  return authorizeBlogRequest(request, {
-    async verifyAdminToken(token) {
-      const db = createServiceRoleClient()
-      if (!db) return { ok: false, status: 503, error: 'Publishing is not configured.' }
-      const { data: { user }, error } = await db.auth.getUser(token)
-      if (error || !user) return { ok: false, status: 401, error: 'Invalid or expired admin access token.' }
-      const { data: profile, error: profileError } = await db.from('profiles').select('role').eq('id', user.id).maybeSingle()
-      if (profileError) return { ok: false, status: 503, error: 'Authorization is temporarily unavailable.' }
-      if (profile?.role !== 'admin') return { ok: false, status: 403, error: 'Admin access is required.' }
-      return { ok: true, userId: user.id }
-    },
-    async sessionAdmin() {
-      const result = await requireAdmin()
-      if (!result.ok) return { ok: false, status: result.response.status, error: result.response.status === 401 ? 'Unauthorized' : 'Admin access is required.' }
-      return { ok: true, userId: result.userId }
-    },
-  })
-}
 function repository(): BlogRepository {
   const db = createServiceRoleClient()
   if (!db) throw new BlogPublishingError(503, 'publisher_unavailable', 'Publishing is not configured.')
@@ -85,17 +66,20 @@ function failure(error: unknown) {
 }
 export async function POST(request: NextRequest) {
   try {
-    const auth = await authenticate(request)
+    const auth = await requireBlogAdmin(request)
     if (!auth.ok) return response({ ok: false, code: 'unauthorized', error: auth.error }, auth.status)
     const { payload, file } = await readPayload(request)
     const image = file ? await blogImageUpload(file) : undefined
     const result = await publishBlog(payload, repository(), { image })
+    revalidatePath('/')
+    revalidatePath('/blog')
+    revalidatePath('/blog/' + result.post.slug)
     return response(result, result.operation === 'create' ? 201 : 200)
   } catch (error) { return failure(error) }
 }
 export async function GET(request: NextRequest) {
   try {
-    const auth = await authenticate(request)
+    const auth = await requireBlogAdmin(request)
     if (!auth.ok) return response({ ok: false, code: 'unauthorized', error: auth.error }, auth.status)
     const db = repository()
     const id = request.nextUrl.searchParams.get('id')
@@ -107,15 +91,18 @@ export async function GET(request: NextRequest) {
 }
 export async function DELETE(request: NextRequest) {
   try {
-    const auth = await authenticate(request)
+    const auth = await requireBlogAdmin(request)
     if (!auth.ok) return response({ ok: false, code: 'unauthorized', error: auth.error }, auth.status)
     const id = request.nextUrl.searchParams.get('id')
     if (!id || !/^[a-f0-9-]{36}$/i.test(id)) throw new BlogPublishingError(422, 'validation_failed', 'Supply the existing article UUID.')
     const db = createServiceRoleClient()
     if (!db) throw new BlogPublishingError(503, 'publisher_unavailable', 'Publishing is not configured.')
-    const { data, error } = await db.from('blog_posts').delete().eq('id', id).select('id').maybeSingle()
+    const { data, error } = await db.from('blog_posts').delete().eq('id', id).select('id,slug').maybeSingle()
     if (error) throw new BlogPublishingError(503, 'delete_failed', 'The article could not be deleted.')
     if (!data) throw new BlogPublishingError(404, 'post_not_found', 'Article not found.')
+    revalidatePath('/')
+    revalidatePath('/blog')
+    revalidatePath('/blog/' + data.slug)
     return response({ ok: true, id: data.id })
   } catch (error) { return failure(error) }
 }

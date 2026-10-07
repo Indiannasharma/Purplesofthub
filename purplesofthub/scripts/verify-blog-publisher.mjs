@@ -54,6 +54,12 @@ try {
   assert.ok(new URL(uploadedUrl).pathname.includes('/purplesofthub/blog/')); assert.equal((await fetch(uploadedUrl,{method:'HEAD'})).status,200)
   assert.equal(post.category,'Technology'); assert.equal(post.seo_title,title); assert.equal(post.seo_description,excerpt)
   assert.equal((await fetch(new URL('/blog/'+post.slug,site))).status,404)
+  const overview=await fetch(new URL('/api/admin/blog?q='+encodeURIComponent(title)+'&status=draft',site),{headers:{Authorization:'Bearer '+token}})
+  assert.equal(overview.status,200);const overviewData=await overview.json();assert.equal(overviewData.total,1);assert.equal(overviewData.posts[0].id,id);assert.ok(!('content' in overviewData.posts[0]));assert.ok(overviewData.stats.drafts>=1)
+  assert.ok(!overviewData.stats.views);assert.equal(overviewData.pageSize,12)
+  const draftHome=await(await fetch(new URL('/',site))).text();assert.ok(!draftHome.includes('data-article-slug="'+post.slug+'"'))
+  const draftArchive=await(await fetch(new URL('/blog?q='+encodeURIComponent(nonce),site))).text();assert.ok(!draftArchive.includes('data-article-slug="'+post.slug+'"'))
+  console.log('ADMIN DASHBOARD / SEARCH / STATUS FILTER / REAL COUNTS / BOUNDED DATA / PUBLIC DRAFT PROTECTION: PASS')
   console.log('CREATE DRAFT / AUTOMATIC SLUG / DEFAULT AUTHOR / CLOUDINARY / ALT / SEO: PASS')
   stage='draft update and validation'
   const revised='## Updated draft\n\nA verified paragraph with **bold** and _emphasis_.\n\n### Details\n\n1. First\n2. Second\n\n<script>window.__blogVerificationInjected=true</script>\n\n[Unsafe](javascript:alert(1))'
@@ -84,6 +90,12 @@ try {
   assert.ok(html.includes('rel="canonical" href="'+canonical+'"')); assert.ok(html.includes('property="og:url" content="'+canonical+'"'))
   assert.ok(html.includes('name="twitter:card" content="summary_large_image"'))
   const listing=await fetch(new URL('/blog',site)); assert.equal(listing.status,200); assert.ok((await listing.text()).includes('/blog/'+post.slug))
+  const homeAfter=await(await fetch(new URL('/',site))).text();assert.ok(homeAfter.includes('data-article-slug="'+post.slug+'"'))
+  assert.ok(homeAfter.includes('View All Articles'));assert.ok(homeAfter.includes('href="/blog"'))
+  const searched=await(await fetch(new URL('/blog?q='+encodeURIComponent(nonce)+'&category=technology',site))).text();assert.ok(searched.includes('data-article-slug="'+post.slug+'"'))
+  const filtered=await fetch(new URL('/api/admin/blog?q='+encodeURIComponent(nonce)+'&status=published&category=Technology&author=PurpleSoftHub&sort=updated',site),{headers:{Authorization:'Bearer '+token}})
+  assert.equal(filtered.status,200);assert.equal((await filtered.json()).total,1)
+  console.log('HOMEPAGE AUTO-PUBLICATION / VIEW ALL / ARCHIVE SEARCH / CATEGORY & AUTHOR FILTERS: PASS')
   console.log('PUBLISH / ARTICLE RENDERING / CANONICAL / JSON-LD / SOCIAL METADATA / LISTING: PASS')
   stage='published update and database write protection'
   updated=await call({operation:'update',id,excerpt:'Updated verification summary.',seo_description:''})

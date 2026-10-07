@@ -47,8 +47,8 @@ The command prints the saved article ID, slug, status, author and URL. It never 
 | category | Optional existing category name or slug. The stored value is the existing canonical category name. Unknown categories are rejected; no category is created. |
 | tags | Optional array of at most 20 strings, 50 characters each; deduplicated. |
 | source_urls | Optional array of at most 20 HTTPS URLs, 2,048 characters each; deduplicated, rendered as Sources and included in structured data. URLs containing credentials are rejected. |
-| seo_title | Optional, at most 70 characters. Blank/missing on creation derives from the title. |
-| seo_description | Optional, at most 160 characters. Blank/missing on creation derives from the excerpt at a word boundary. |
+| seo_title | Optional, at most 200 characters (50–70 recommended). Blank/missing on creation derives from the title. |
+| seo_description | Optional, at most 500 characters (140–160 recommended). Blank/missing on creation derives from the excerpt at a word boundary. |
 | slug | Optional on creation; automatically generated from the title. Maximum 100 lowercase ASCII characters, separated by single hyphens. Supply a Latin slug for titles with no Latin letters/numbers. |
 | author | Defaults to PurpleSoftHub. An explicit other publication/person name is accepted; no author accounts are created. |
 | author_type | Person or Organization for an explicitly supplied author. PurpleSoftHub always uses Organization. |
@@ -111,3 +111,9 @@ Apply supabase/migrations/20261007000000_blog_publishing_workflow.sql once and d
 To run local behavioural tests: node --test tests/blog/publishing.test.mjs. The one-time release also verifies the authenticated lifecycle with a disposable article and removes that article after the checks.
 
 The controlled release script is scripts/verify-blog-publisher.mjs. It requires an existing admin token and the server environment for test-asset cleanup; production use requires --allow-production. It creates only one disposable verification article and removes it and its uploaded image.
+
+## Editorial CMS and public feed
+
+The homepage shows the three most recently published articles, ordered by publication date. The editorial heading remains Trending Blog Posts; this is a recent-publication feed, not a fabricated engagement ranking. View tracking does not exist, so no view analytics are displayed. The homepage and archive fetch published metadata server-side with no-store, and the publishing operation revalidates the homepage, archive and affected article. New publication is visible on the next fresh request without deployment.
+
+The CMS uses GET /api/admin/blog for paginated article summaries, real statistics and existing category/author suggestions. The write interface remains POST /api/admin/blog/publish. Draft previews require admin authorization. Newly generated slugs remain bounded to 100 ASCII characters; an unchanged URL from a previously published legacy article is preserved. SEO recommendations are guidance rather than publication blockers; the application caps title/description input at 200/500 characters.
