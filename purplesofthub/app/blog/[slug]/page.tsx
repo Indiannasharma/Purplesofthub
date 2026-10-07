@@ -9,6 +9,8 @@ import BlogComments from '@/components/blog/BlogComments'
 
 export const dynamic = 'force-dynamic'
 
+const SITE_URL = 'https://www.purplesofthub.com'
+
 interface Props {
   params: Promise<{ slug: string }>
 }
@@ -60,19 +62,23 @@ export async function generateMetadata(
 
   const ogImage = 
     post.featured_image ||
-    'https://www.purplesofthub.com/opengraph-image'
+    `${SITE_URL}/opengraph-image`
+  const canonicalUrl = `${SITE_URL}/blog/${post.slug}`
 
   return {
     title: post.seo_title ||
       `${post.title} | PurpleSoftHub Blog`,
     description: 
       post.seo_description || post.excerpt,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       type: 'article',
       title: post.title,
       description: 
         post.seo_description || post.excerpt,
-      url: `https://www.purplesofthub.com/blog/${post.slug}`,
+      url: canonicalUrl,
       images: [{
         url: ogImage,
         width: 1200,
@@ -171,9 +177,49 @@ export default async function BlogPostPage(
   const content = renderMarkdown(
     post.content || ''
   )
+  const canonicalUrl = `${SITE_URL}/blog/${post.slug}`
+  const authorName = post.author_name || 'PurpleSoftHub Team'
+  const featuredImageAlt = post.featured_image_alt || (
+    post.slug === 'whatsapp-blocks-logins-outdated-software'
+      ? 'WhatsApp login blocked on a smartphone because the device software needs updating.'
+      : post.title
+  )
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.seo_description || post.excerpt || undefined,
+    url: canonicalUrl,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+    image: post.featured_image || undefined,
+    datePublished: post.published_at || post.created_at || undefined,
+    dateModified: post.updated_at || undefined,
+    author: {
+      '@type': authorName === 'PurpleSoftHub' ? 'Organization' : 'Person',
+      name: authorName,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'PurpleSoftHub',
+      url: SITE_URL,
+    },
+    articleSection: post.category || undefined,
+    keywords: Array.isArray(post.tags) && post.tags.length > 0
+      ? post.tags.join(', ')
+      : undefined,
+  }
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleJsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
       <Navbar />
 
       <div style={{
@@ -487,7 +533,7 @@ export default async function BlogPostPage(
               }}>
                 <img
                   src={post.featured_image}
-                  alt={post.title}
+                  alt={featuredImageAlt}
                   style={{
                     width: '100%',
                     height: 'clamp(200px, 40vw, 460px)',
