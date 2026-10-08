@@ -21,3 +21,12 @@ export function publishedParams(options: { limit?:number;page?:number;search?:st
   const term=searchTerm(options.search);if(term)params.set('or','(title.ilike.%'+term+'%,excerpt.ilike.%'+term+'%)');
   if(options.category)params.set('category','eq.'+options.category);return params
 }
+
+/** PostgREST reports a valid total even when the requested offset exceeds the dataset. */
+export function exhaustedPublishedPage(status:number,range:string|null):number|null {
+  if(status!==416||!range)return null
+  const match=range.match(/^\*\/(\d+)$/)
+  if(!match)return null
+  const total=Number(match[1])
+  return Number.isSafeInteger(total)?total:null
+}

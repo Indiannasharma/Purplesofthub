@@ -1,5 +1,5 @@
 import 'server-only'
-import { publishedParams } from './queries'
+import { publishedParams, exhaustedPublishedPage } from './queries'
 export type PublicArticle = { id: string; title: string; slug: string; excerpt: string; featured_image: string | null;
   featured_image_alt: string | null; category: string | null; author_name: string | null; published_at: string | null }
 export const PUBLIC_ARTICLE_FIELDS = 'id,title,slug,excerpt,featured_image,featured_image_alt,category,author_name,published_at'
@@ -12,6 +12,8 @@ export async function publishedArticles(options: { limit?: number; page?: number
   try {
     const params = publishedParams({ ...options, limit, page })
     const response = await fetch(base + '/rest/v1/blog_posts?' + params, { cache:'no-store', headers:{ apikey:key, Authorization:'Bearer ' + key, Prefer:'count=exact' }, signal:AbortSignal.timeout(10000) })
+    const exhaustedTotal=exhaustedPublishedPage(response.status,response.headers.get('content-range'))
+    if(exhaustedTotal!==null)return {ok:true as const,posts:[] as PublicArticle[],total:exhaustedTotal}
     if (!response.ok) throw new Error('Feed query failed')
     const posts = await response.json()
     const total = Number(response.headers.get('content-range')?.split('/')[1])
