@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useInView } from 'framer-motion'
 
 interface CountUpProps {
   end: number
@@ -16,41 +15,40 @@ export function CountUp({
   suffix = '',
   prefix = ''
 }: CountUpProps) {
-  const [count, setCount] = useState(0)
-  const ref = useRef(null)
-  const isInView = useInView(ref, {
-    once: true
-  })
-  const hasStarted = useRef(false)
+  const [count, setCount] = useState(end)
+  const ref = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    if (!isInView || hasStarted.current) return
-
-    hasStarted.current = true
-
-    const startTime = Date.now()
-    const endTime = startTime + duration * 1000
-
-    const timer = setInterval(() => {
-      const now = Date.now()
-      const progress = Math.min(
-        (now - startTime) / (duration * 1000),
-        1
-      )
-
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3)
-
-      setCount(Math.floor(eased * end))
-
-      if (now >= endTime) {
-        setCount(end)
-        clearInterval(timer)
-      }
-    }, 16)
-
-    return () => clearInterval(timer)
-  }, [isInView, end, duration])
+    const node = ref.current
+    if (!node || duration <= 0 || typeof IntersectionObserver !== 'function' || typeof window.matchMedia !== 'function') return
+    let started = false
+    let active = true
+    let observer: IntersectionObserver | undefined
+    let timer: ReturnType<typeof setInterval> | undefined
+    try {
+      const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+      if (media.matches) return
+      observer = new IntersectionObserver(([entry]) => {
+        if (!active || started || !entry?.isIntersecting) return
+        started = true
+        observer?.disconnect()
+        const startTime = Date.now()
+        timer = setInterval(() => {
+          const progress = Math.min((Date.now() - startTime) / (duration * 1000), 1)
+          if (media.matches || progress >= 1) {
+            setCount(end)
+            clearInterval(timer)
+            return
+          }
+          setCount(Math.floor((1 - Math.pow(1 - progress, 3)) * end))
+        }, 16)
+      }, { threshold: 0.1 })
+      observer.observe(node)
+    } catch {
+      observer?.disconnect()
+    }
+    return () => { active = false; observer?.disconnect(); if (timer !== undefined) clearInterval(timer) }
+  }, [end, duration])
 
   return (
     <span ref={ref}>

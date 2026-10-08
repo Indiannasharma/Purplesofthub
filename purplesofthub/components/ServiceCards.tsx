@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import Link from 'next/link'
 
 type Service = {
@@ -21,27 +20,6 @@ const PROGRESS: Record<string, { pct: number; label: string; color: string; grad
 }
 
 export default function ServiceCards({ services }: { services: Service[] }) {
-  useEffect(() => {
-    const bars = document.querySelectorAll<HTMLDivElement>('.service-progress-bar')
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const bar = entry.target as HTMLDivElement
-            const target = bar.style.getPropertyValue('--target-width') || bar.dataset.width || '80%'
-            setTimeout(() => { bar.style.width = target }, 200)
-            observer.unobserve(bar)
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
-
-    bars.forEach((bar) => observer.observe(bar))
-    return () => observer.disconnect()
-  }, [])
-
   return (
     <div className="home-service-grid">
       {services.map((s) => {
@@ -88,7 +66,7 @@ export default function ServiceCards({ services }: { services: Service[] }) {
                     className="service-progress-bar"
                     style={{
                       height: '100%',
-                      width: '0%',
+                      width: `${p.pct}%`,
                       borderRadius: 100,
                       background: p.gradient,
                       transition: 'width 1.5s ease 0.3s',

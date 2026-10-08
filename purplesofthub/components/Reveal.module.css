@@ -1,0 +1,15 @@
+.root { opacity: 1; visibility: visible; }
+.entered { animation: public-enter 500ms cubic-bezier(.21,.47,.32,.98) both; }
+.gradient { background-position: 0% 50%; animation: public-shimmer 5s linear infinite; }
+@keyframes public-shimmer {
+  50% { background-position: 100% 50%; }
+}
+@keyframes public-enter {
+  from { transform: translateY(8px); }
+  to { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .entered { animation: none; transform: none; }
+  .card { transform: none !important; }
+  .gradient { animation: none !important; }
+}

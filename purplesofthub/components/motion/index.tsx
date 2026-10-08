@@ -1,13 +1,8 @@
 'use client'
 
-import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
-import {
-  fadeInUp,
-  staggerContainer,
-  staggerItem,
-  fadeIn
-} from '@/lib/animations'
+import { motion } from 'framer-motion'
+import Reveal from '@/components/Reveal'
+import styles from '@/components/Reveal.module.css'
 
 type MotionDivExtraProps = {
   id?: string
@@ -15,7 +10,7 @@ type MotionDivExtraProps = {
   'aria-label'?: string
 }
 
-// Scroll-triggered fade in from bottom
+// Visible content with optional, observer-triggered movement.
 export function FadeInUp({
   children,
   delay = 0,
@@ -26,28 +21,17 @@ export function FadeInUp({
   delay?: number
   className?: string
 } & MotionDivExtraProps) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, {
-    once: true,
-    margin: '-50px'
-  })
-
   return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      variants={fadeInUp}
-      transition={{ delay }}
+    <Reveal delay={delay}
       className={className}
       {...props}
     >
       {children}
-    </motion.div>
+    </Reveal>
   )
 }
 
-// Stagger container — animates children one by one
+// Preserve the caller's layout without a shared animated paint layer.
 export function StaggerContainer({
   children,
   className = '',
@@ -58,24 +42,14 @@ export function StaggerContainer({
   className?: string
   style?: React.CSSProperties
 } & MotionDivExtraProps) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, {
-    once: true,
-    margin: '-50px'
-  })
-
   return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? 'visible' : 'hidden'}
-      variants={staggerContainer}
+    <div
       className={className}
       style={style}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -88,12 +62,11 @@ export function StaggerItem({
   className?: string
 }) {
   return (
-    <motion.div
-      variants={staggerItem}
+    <Reveal
       className={className}
     >
       {children}
-    </motion.div>
+    </Reveal>
   )
 }
 
@@ -127,7 +100,7 @@ export function AnimatedCard({
           }
         }
       }}
-      className={className}
+      className={`${styles.card} ${className}`.trim()}
       style={style}
     >
       {children}
@@ -145,27 +118,12 @@ export function FadeIn({
   delay?: number
   className?: string
 }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, {
-    once: true
-  })
-
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: isInView ? 1 : 0
-      }}
-      transition={{
-        duration: 0.5,
-        delay,
-        ease: 'easeOut'
-      }}
+    <Reveal delay={delay}
       className={className}
     >
       {children}
-    </motion.div>
+    </Reveal>
   )
 }
 
@@ -178,23 +136,14 @@ export function GradientText({
   className?: string
 }) {
   return (
-    <motion.span
-      className={className}
-      initial={{ backgroundPosition: '0% 50%' }}
-      animate={{
-        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-      }}
-      transition={{
-        duration: 5,
-        ease: 'linear',
-        repeat: Infinity
-      }}
+    <span
+      className={`${styles.gradient} ${className}`.trim()}
       style={{
         backgroundSize: '200% 200%'
       }}
     >
       {children}
-    </motion.span>
+    </span>
   )
 }
 

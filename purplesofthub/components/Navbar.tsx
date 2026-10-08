@@ -544,13 +544,13 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div variants={mobileMenuVariants} initial="closed" animate="open" exit="closed" style={{
+          <motion.div className="public-mobile-menu" variants={mobileMenuVariants} initial={false} animate="open" exit="closed" style={{
             position: "fixed", top: 72, left: 0, right: 0,
             background: dark ? "rgba(6, 3, 15, 0.98)" : "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)",
             borderBottom: `1px solid ${dark ? "rgba(124, 58, 237, 0.25)" : "rgba(124, 58, 237, 0.12)"}`,
             boxShadow: dark ? "0 16px 48px rgba(124, 58, 237, 0.15)" : "0 16px 48px rgba(124, 58, 237, 0.08)",
-            padding: "24px 5% 32px", zIndex: 999, overflow: "hidden",
+            padding: "24px 5% 32px", zIndex: 999, overflowX: "hidden", overflowY: "auto",
           }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {NAV_LINKS.map((l, i) => (

@@ -34,14 +34,18 @@ export default function PersistentTypewriter({
   className,
   style,
 }: PersistentTypewriterProps) {
-  const [displayText, setDisplayText] = useState('')
+  const [displayText, setDisplayText] = useState(words[0] || '')
   const stateRef = useRef<TypewriterState>(DEFAULT_STATE)
   const timeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!words.length) return
 
-    const saved = window.localStorage.getItem(storageKey)
+    let saved: string | null = null
+    try {
+      if (typeof window.matchMedia !== 'function' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      saved = window.localStorage.getItem(storageKey)
+    } catch { return }
     if (saved) {
       try {
         const parsed = JSON.parse(saved) as Partial<TypewriterState>
@@ -56,7 +60,7 @@ export default function PersistentTypewriter({
     }
 
     const persist = () => {
-      window.localStorage.setItem(storageKey, JSON.stringify(stateRef.current))
+      try { window.localStorage.setItem(storageKey, JSON.stringify(stateRef.current)) } catch { /* Persistence is optional; typing can continue. */ }
     }
 
     const syncDisplay = () => {

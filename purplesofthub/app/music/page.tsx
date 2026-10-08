@@ -153,7 +153,7 @@ export default function MusicPage() {
         <div className="music-hero-inner">
           <motion.div
             className="music-hero-copy"
-            initial={{ opacity: 0, y: 26 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
@@ -196,7 +196,7 @@ export default function MusicPage() {
           <motion.div
             className="music-visual"
             aria-label="Music distribution and promotion dashboard preview"
-            initial={{ opacity: 0, scale: 0.96, y: 22 }}
+            initial={false}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
           >

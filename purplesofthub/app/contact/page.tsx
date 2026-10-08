@@ -104,6 +104,7 @@ export default function ContactPage() {
                 <p style={{ fontFamily: "Outfit", fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginBottom: 6 }}>Send us a message</p>
                 <p style={{ color: "var(--text-muted)", fontSize: 14 }}>Tell us about your project and we&apos;ll get back to you within 24 hours.</p>
               </div>
+              <noscript><p style={{ color: "var(--text-muted)", marginBottom: 20, lineHeight: 1.7 }}>The online form requires JavaScript. You can <a href="mailto:hello@purplesofthub.com">email hello@purplesofthub.com</a> or use Telegram Support.</p></noscript>
               <ContactForm />
             </div>
           </Reveal>

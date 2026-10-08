@@ -5935,3 +5935,17 @@ html:not(.dark) .pf-cs-nav-link:hover {
     padding: 38px 0;
   }
 }
+
+/* Public visual enhancement: readable surfaces without backdrop filtering. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .premium-navbar, .premium-navbar .public-mobile-menu { background: var(--bg-primary) !important; }
+  .glass-card { background: var(--bg-secondary); }
+}
+.public-mobile-menu { max-height: calc(100vh - 72px); max-height: calc(100dvh - 72px); overscroll-behavior: contain; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  main:has(.premium-navbar) *, main:has(.premium-navbar) *::before, main:has(.premium-navbar) *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .psh-home-hero__copy, .psh-home-hero__visual-reveal, .home-work-card { will-change: auto; }
+  .psh-home-hero__visual-reveal { animation: none; filter: none; transform: none; }
+  .premium-navbar .public-mobile-menu { transition: none !important; }
+}

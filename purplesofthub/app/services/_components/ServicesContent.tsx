@@ -1,51 +1,16 @@
 ﻿"use client";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { CountUp } from "@/components/motion/CountUp";
 import Link from "next/link";
 import type { Service } from "@/app/services/_data/services";
 
 // CountUp animation component for stats
 function CountUpStat({ value, label }: { value: string; label: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const [count, setCount] = useState(0);
-
-  // Parse the value to get the number
   const numValue = parseInt(value.replace(/[^0-9]/g, ''));
   const suffix = value.replace(/[0-9]/g, '');
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-          let startTime: number;
-          const duration = 2000; // 2 seconds
-          const animate = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            // Ease out cubic
-            const easeProgress = 1 - Math.pow(1 - progress, 3);
-            const current = Math.floor(easeProgress * numValue);
-            setCount(current);
-            if (progress < 1) {
-              requestAnimationFrame(animate);
-            }
-          };
-          requestAnimationFrame(animate);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [numValue, hasAnimated]);
-
   return (
-    <div ref={ref}>
+    <div>
       <div style={{
         fontFamily: "Outfit",
         fontSize: "clamp(36px,4vw,52px)",
@@ -56,7 +21,7 @@ function CountUpStat({ value, label }: { value: string; label: string }) {
         marginBottom: 8,
         textShadow: "0 0 30px rgba(168,85,247,0.3)",
       }}>
-        {hasAnimated ? `${count.toLocaleString()}${suffix}` : `0${suffix}`}
+        <CountUp end={numValue} suffix={suffix} />
       </div>
       <div style={{ color: "var(--text-muted)", fontSize: 14, fontWeight: 500 }}>{label}</div>
     </div>
