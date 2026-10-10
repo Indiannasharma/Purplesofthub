@@ -177,3 +177,44 @@ test('no-script contact fallback uses the existing address and does not change t
   assert.match(source('components/ContactForm.tsx'), /fetch\("\/api\/contact"/);
   assert.match(source('components/ScrollToTop.tsx'), /behavior: reduced \? 'auto' : 'smooth'/);
 });
+
+
+test('hero artwork preserves the original ellipse geometry, fill and front/back SVG layers', () => {
+  const scene = source('components/HeroCosmosScene.tsx');
+  const artwork = scene.slice(scene.indexOf('const RING_STROKES'), scene.indexOf('export default function HeroCosmosScene'));
+  assert.equal(require('node:crypto').createHash('sha256').update(artwork).digest('hex'), 'b0c3e6eab7c1b4d440591fd3cc6022fb62e378a18a00fdb77ee15a17a9eb6cc1');
+  const component = loader({ '@/context/ThemeContext': { useTheme: () => ({ theme: 'dark' }) } })('components/HeroCosmosScene.tsx').default;
+  const html = renderToStaticMarkup(React.createElement(component));
+  assert.equal((html.match(/<ellipse/g) || []).length, 12);
+  assert.equal((html.match(/viewBox="0 0 920 660"/g) || []).length, 2);
+  assert.ok(html.indexOf('psh-planet-rings--back') < html.indexOf('class="psh-planet"'));
+  assert.ok(html.indexOf('class="psh-planet"') < html.indexOf('psh-planet-rings--front'));
+});
+
+test('hero centering is static while the common scene owns floating motion', () => {
+  const scene = source('components/HeroCosmosScene.tsx');
+  const css = postcss.parse(scene.slice(scene.indexOf('const styles = ')+16, scene.lastIndexOf('`;')));
+  const rule = selector => css.nodes.find(node => node.type === 'rule' && node.selector === selector);
+  const value = (selector, prop) => rule(selector).nodes.find(node => node.prop === prop)?.value;
+  for (const selector of ['.psh-planet', '.psh-planet-rings', '.psh-planet-scene__aura']) {
+    assert.equal(value(selector, 'left'), '50%');
+    assert.equal(value(selector, 'top'), '50%');
+  }
+  assert.equal(value('.psh-planet', 'transform'), 'translate(-50%, -50%)');
+  assert.equal(value('.psh-planet', 'animation'), undefined);
+  assert.match(value('.psh-planet-scene', 'animation'), /^pshPlanetFloat/);
+  assert.equal(value('.psh-planet-rings', 'width'), '100%');
+  assert.doesNotMatch(scene, /min\(68vw|right: 50%|min-width: 1440px|translateZ\(0\)/);
+  assert.match(scene, /\.psh-ring-stroke--dash,[\s\S]*animation: none !important/);
+});
+
+test('hero visual is hidden by default and has one continuous desktop visibility threshold', () => {
+  const css = postcss.parse(source('app/globals.css'));
+  const base = css.nodes.find(node => node.type === 'rule' && node.selector === '.psh-home-hero__visual');
+  assert.equal(base.nodes.find(node => node.prop === 'display').value, 'none');
+  const desktop = css.nodes.find(node => node.type === 'atrule' && node.name === 'media' && node.params === '(min-width: 1024px)' && node.nodes.some(child => child.selector === '.psh-home-hero__visual'));
+  const visual = desktop.nodes.find(node => node.selector === '.psh-home-hero__visual');
+  assert.equal(visual.nodes.find(node => node.prop === 'display').value, 'block');
+  assert.equal(visual.nodes.some(node => node.prop === 'transform'), false);
+  assert.doesNotMatch(source('app/globals.css'), /width: min\(58vw, 900px\)/);
+});

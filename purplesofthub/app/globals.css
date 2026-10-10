@@ -2310,8 +2310,8 @@ html:not(.dark) .hero-section {
   position: relative;
   isolation: isolate;
   display: flex;
-  min-height: min(760px, calc(100vh - 80px));
-  min-height: min(760px, calc(100dvh - 80px));
+  min-height: auto;
+  padding: 64px 24px !important;
   overflow: visible;
   scroll-margin-top: 72px;
   color: var(--psh-hero-heading);
@@ -2356,7 +2356,7 @@ html.dark .psh-home-hero {
   width: min(100%, 1440px);
   margin: 0 auto;
   padding: 8px clamp(28px, 5vw, 76px) 24px;
-  grid-template-columns: minmax(0, 0.48fr) minmax(0, 0.52fr);
+  grid-template-columns: 1fr;
   gap: clamp(24px, 3vw, 56px);
   align-items: center;
 }
@@ -2515,24 +2515,24 @@ html.dark .psh-home-hero {
 .psh-home-hero__visual {
   position: relative;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  display: none;
   min-width: 0;
-  transform: translate(10px, -10px);
+  width: 100%;
   overflow: visible;
 }
 
 .psh-home-hero__visual-reveal {
   width: 100%;
-  will-change: opacity, transform;
   animation: pshHeroPlanetReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.56s both;
 }
 
 .psh-home-hero__visual-stage {
   position: relative;
   isolation: isolate;
+  display: grid;
+  place-items: center;
   width: 100%;
+  aspect-ratio: 1;
   min-width: 0;
   overflow: visible;
 }
@@ -2585,92 +2585,37 @@ html.dark .psh-home-hero {
   }
 }
 
-@media (max-width: 1023px) {
-  .psh-home-hero {
-    min-height: auto;
-    overflow: hidden;
-  }
-
-  .psh-home-hero__inner {
-    grid-template-columns: 1fr;
-    gap: 26px;
-    padding: 38px 24px 54px;
-  }
-
-  .psh-home-hero__copy {
-    max-width: 720px;
-    margin: 0 auto;
-    text-align: center;
-    z-index: 4;
-    transform: none;
-  }
-
-  .psh-home-hero__badge {
-    margin-bottom: 24px;
-  }
-
-  .psh-home-hero__title {
-    font-size: 54px;
-    line-height: 1.02;
-  }
-
-  .psh-home-hero__title span:nth-child(-n + 3) {
-    white-space: normal;
-  }
-
-  .psh-home-hero__subtext {
-    margin-right: auto;
-    margin-left: auto;
-    font-size: clamp(10px, 2.55vw, 17px);
-    white-space: nowrap;
-  }
-
-  .psh-home-hero__actions {
-    justify-content: center;
-    margin-top: 32px;
-  }
-
-  .psh-home-hero__visual {
-    justify-content: center;
-    min-height: 330px;
-    transform: none;
-  }
-
-  .psh-home-hero__visual-stage {
-    overflow: hidden;
-  }
-}
+/* Mobile-first hero: one layout owns every width below the desktop query. */
+.psh-home-hero__inner { gap: 26px; padding: 38px 24px 54px; }
+.psh-home-hero__copy { max-width: 720px; margin: 0 auto; text-align: center; transform: none; }
+.psh-home-hero__badge { margin-bottom: 24px; }
+.psh-home-hero__title { font-size: 54px; line-height: 1.02; }
+.psh-home-hero__title span:nth-child(-n + 3) { white-space: normal; }
+.psh-home-hero__subtext { margin-right: auto; margin-left: auto; font-size: clamp(10px, 2.55vw, 17px); }
+.psh-home-hero__actions { justify-content: center; margin-top: 32px; }
 
 @media (min-width: 1024px) {
-  .psh-home-hero__copy {
-    position: relative;
-    z-index: 5;
-  }
-
-  .psh-home-hero__visual {
-    justify-self: end;
-    align-self: center;
-    width: min(58vw, 900px);
-    max-width: 900px;
-    min-width: 0;
-    transform: translate(clamp(34px, 4vw, 76px), -10px);
-    z-index: 2;
-    overflow: visible;
-  }
-
-  .psh-home-hero__visual-stage {
-    overflow: visible;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
+  .psh-home-hero { padding: 90px 5% !important; }
   .psh-home-hero__inner {
+    grid-template-columns: minmax(0, 0.48fr) minmax(0, 0.52fr);
+    gap: clamp(24px, 3vw, 56px);
+    padding: 8px clamp(28px, 5vw, 76px) 24px;
     min-height: min(760px, calc(100vh - 90px));
     min-height: min(760px, calc(100dvh - 90px));
   }
+  .psh-home-hero__copy { max-width: 680px; margin: 0; text-align: left; transform: translateY(-54px); }
+  .psh-home-hero__badge { margin-bottom: 26px; }
+  .psh-home-hero__title { line-height: .98; }
+  .psh-home-hero__title span:nth-child(-n + 3) { white-space: nowrap; }
+  .psh-home-hero__subtext { margin: 24px 0 0; font-size: clamp(8.5px, 1.08vw, 19px); }
+  .psh-home-hero__visual { display: block; align-self: center; }
+}
+@media (min-width: 1201px) {
+  .psh-home-hero__title { font-size: 56px; }
 }
 
 @media (max-width: 640px) {
+  .psh-home-hero { padding: 48px 16px !important; }
   .psh-home-hero__inner {
     padding: 24px 16px 42px;
   }
@@ -2714,9 +2659,6 @@ html.dark .psh-home-hero {
     justify-self: center;
   }
 
-  .psh-home-hero__visual {
-    min-height: 285px;
-  }
 }
 
 @media (max-width: 390px) {

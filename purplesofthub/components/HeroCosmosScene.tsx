@@ -284,11 +284,11 @@ export default function HeroCosmosScene({ variant = "planet" }: HeroCosmosSceneP
               {
                 left: `${particle.left}%`,
                 top: `${particle.top}%`,
-                width: `${particle.size}px`,
-                height: `${particle.size}px`,
+                width: `${particle.size}em`,
+                height: `${particle.size}em`,
                 color: ACCENT[particle.color],
                 background: ACCENT[particle.color],
-                ["--particle-drift" as string]: `${particle.drift}px`,
+                ["--particle-drift" as string]: `${particle.drift}em`,
                 animationDuration: `${particle.duration}s`,
                 animationDelay: `${particle.delay}s`,
               } as CSSProperties
@@ -321,7 +321,7 @@ const styles = `
     --cosmos-nebula-magenta: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
     --planet-base: radial-gradient(circle at 27% 18%, #f5d7ff 0%, #d58aff 10%, #9b4dff 27%, #4c168f 56%, #15072d 78%, #05020c 100%);
     --planet-rim: radial-gradient(circle at 72% 33%, rgba(34, 211, 238, 0.48), transparent 38%);
-    --planet-shadow: 0 0 90px rgba(168, 85, 247, 0.5), 0 0 170px rgba(34, 211, 238, 0.28), inset -76px -66px 104px rgba(2, 1, 9, 0.9), inset 18px 18px 36px rgba(255, 255, 255, 0.16);
+    --planet-shadow: 0 0 90em rgba(168, 85, 247, 0.5), 0 0 170em rgba(34, 211, 238, 0.28), inset -76em -66em 104em rgba(2, 1, 9, 0.9), inset 18em 18em 36em rgba(255, 255, 255, 0.16);
     --ring-core: rgba(103, 232, 249, 0.72);
     --ring-violet: rgba(192, 132, 252, 0.66);
     --ring-faint: rgba(255, 255, 255, 0.14);
@@ -341,7 +341,7 @@ const styles = `
     --cosmos-nebula-magenta: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
     --planet-base: radial-gradient(circle at 27% 18%, #fffdfd 0%, #f2d8ff 11%, #c476ff 30%, #6f39c9 58%, #22113d 80%, #090416 100%);
     --planet-rim: radial-gradient(circle at 72% 33%, rgba(124, 58, 237, 0.32), transparent 38%);
-    --planet-shadow: 0 0 82px rgba(124, 58, 237, 0.2), 0 0 150px rgba(34, 211, 238, 0.12), inset -68px -60px 94px rgba(7, 3, 18, 0.72), inset 18px 18px 34px rgba(255, 255, 255, 0.2);
+    --planet-shadow: 0 0 82em rgba(124, 58, 237, 0.2), 0 0 150em rgba(34, 211, 238, 0.12), inset -68em -60em 94em rgba(7, 3, 18, 0.72), inset 18em 18em 34em rgba(255, 255, 255, 0.2);
     --ring-core: rgba(8, 145, 178, 0.52);
     --ring-violet: rgba(124, 58, 237, 0.44);
     --ring-faint: rgba(76, 29, 149, 0.1);
@@ -452,9 +452,9 @@ const styles = `
 
   .psh-cosmos--planet {
     position: relative;
-    width: min(63vw, 860px);
-    max-width: 100%;
-    aspect-ratio: 1.52 / 1;
+    width: 87.4%;
+    max-width: 700px;
+    aspect-ratio: 920 / 660;
     overflow: visible;
     contain: none;
   }
@@ -463,9 +463,9 @@ const styles = `
     position: absolute;
     inset: 0;
     overflow: visible;
-    perspective: 1100px;
-    perspective-origin: 67% 46%;
-    transform: translateZ(0);
+    /* The scene owns movement; child centering transforms stay static. */
+    font-size: clamp(0.4px, 0.065vw, 1px);
+    animation: pshPlanetFloat 7.5s ease-in-out infinite;
   }
 
   .psh-planet-scene__aura,
@@ -477,16 +477,16 @@ const styles = `
   }
 
   .psh-planet-scene__aura {
-    right: -2%;
+    left: 50%;
     top: 50%;
-    width: 84%;
+    width: 108%;
     aspect-ratio: 1;
-    transform: translateY(-50%);
-    border-radius: 999px;
+    transform: translate(-50%, -50%);
+    border-radius: 999em;
     background:
       radial-gradient(circle, rgba(34, 211, 238, 0.34) 0%, transparent 54%),
       radial-gradient(circle, rgba(168, 85, 247, 0.48) 0%, transparent 66%);
-    filter: blur(54px);
+    filter: blur(54em);
     opacity: 0.86;
     animation: pshAuraPulse 7s ease-in-out infinite alternate;
   }
@@ -496,11 +496,11 @@ const styles = `
   }
 
   .psh-planet-scene__scan {
-    right: -4%;
+    right: 0;
     width: 48%;
     height: 18%;
-    border-top: 1px solid var(--cosmos-circuit);
-    border-right: 1px solid var(--cosmos-circuit);
+    border-top: 1em solid var(--cosmos-circuit);
+    border-right: 1em solid var(--cosmos-circuit);
     opacity: 0.54;
   }
 
@@ -515,9 +515,9 @@ const styles = `
   }
 
   .psh-planet-rings {
-    left: 71%;
-    top: 52%;
-    width: min(68vw, 760px);
+    left: 50%;
+    top: 50%;
+    width: 100%;
     aspect-ratio: 920 / 660;
     transform: translate(-50%, -50%) rotate(-14deg);
     z-index: 4;
@@ -525,6 +525,8 @@ const styles = `
     overflow: visible;
     mix-blend-mode: screen;
     filter: saturate(1.08);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.42) 10%, #000 24%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.42) 10%, #000 24%, #000 92%, transparent 100%);
   }
 
   .psh-planet-rings--back {
@@ -558,17 +560,16 @@ const styles = `
   }
 
   .psh-planet {
-    right: 6%;
+    left: 50%;
     top: 50%;
-    width: min(29vw, 360px);
+    width: 51.428571%;
     aspect-ratio: 1;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     overflow: hidden;
     z-index: 5;
     border-radius: 50%;
     background: var(--planet-base);
     box-shadow: var(--planet-shadow);
-    animation: pshPlanetFloat 7.5s ease-in-out infinite;
   }
 
   .psh-planet::before,
@@ -587,7 +588,7 @@ const styles = `
       radial-gradient(circle at 30% 64%, rgba(124, 58, 237, 0.34) 0%, transparent 20%),
       radial-gradient(circle at 64% 58%, rgba(34, 211, 238, 0.18) 0%, transparent 20%),
       conic-gradient(from 124deg, transparent 0 18%, rgba(255, 255, 255, 0.1) 20%, transparent 34%, rgba(34, 211, 238, 0.09) 48%, transparent 65%, rgba(236, 72, 153, 0.08) 78%, transparent 100%);
-    filter: blur(3px);
+    filter: blur(3em);
     opacity: 0.9;
   }
 
@@ -620,14 +621,14 @@ const styles = `
 
   .psh-planet__rim {
     background: var(--planet-rim);
-    box-shadow: inset -12px 0 24px rgba(34, 211, 238, 0.42), inset 8px -10px 30px rgba(168, 85, 247, 0.22);
+    box-shadow: inset -12em 0 24em rgba(34, 211, 238, 0.42), inset 8em -10em 30em rgba(168, 85, 247, 0.22);
     mix-blend-mode: screen;
     opacity: 0.78;
   }
 
   .psh-cosmos[data-theme="light"] .psh-planet__rim {
     background: radial-gradient(circle at 72% 33%, rgba(124, 58, 237, 0.24), transparent 38%);
-    box-shadow: inset -10px 0 22px rgba(124, 58, 237, 0.2), inset 8px -10px 28px rgba(34, 211, 238, 0.12);
+    box-shadow: inset -10em 0 22em rgba(124, 58, 237, 0.2), inset 8em -10em 28em rgba(34, 211, 238, 0.12);
     opacity: 0.72;
   }
 
@@ -635,7 +636,7 @@ const styles = `
     background:
       radial-gradient(circle at 26% 17%, rgba(255, 255, 255, 0.42) 0%, transparent 18%),
       radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.16) 0%, transparent 20%);
-    filter: blur(1px);
+    filter: blur(1em);
   }
 
   .psh-cosmos[data-theme="light"] .psh-planet__shine {
@@ -649,7 +650,7 @@ const styles = `
     background:
       radial-gradient(ellipse at 28% 52%, rgba(226, 170, 255, 0.28) 0%, transparent 32%),
       radial-gradient(ellipse at 62% 48%, rgba(34, 211, 238, 0.12) 0%, transparent 30%);
-    filter: blur(10px);
+    filter: blur(10em);
     transform: rotate(-14deg);
     mix-blend-mode: screen;
   }
@@ -659,7 +660,7 @@ const styles = `
     background:
       radial-gradient(ellipse at 48% 42%, rgba(124, 58, 237, 0.34) 0%, transparent 40%),
       radial-gradient(ellipse at 72% 62%, rgba(0, 0, 0, 0.55) 0%, transparent 30%);
-    filter: blur(13px);
+    filter: blur(13em);
     transform: rotate(18deg);
   }
 
@@ -682,7 +683,7 @@ const styles = `
       radial-gradient(circle at 42% 22%, rgba(236, 72, 153, 0.22) 0 2%, transparent 12%),
       radial-gradient(circle at 55% 44%, rgba(168, 85, 247, 0.26) 0 3%, transparent 17%),
       radial-gradient(circle at 66% 72%, rgba(34, 211, 238, 0.16) 0 2%, transparent 12%);
-    filter: blur(7px);
+    filter: blur(7em);
     opacity: 0.86;
   }
 
@@ -691,7 +692,7 @@ const styles = `
     background:
       linear-gradient(18deg, transparent 0 30%, rgba(255, 255, 255, 0.08) 32%, transparent 38%),
       linear-gradient(-24deg, transparent 0 56%, rgba(34, 211, 238, 0.1) 58%, transparent 64%);
-    filter: blur(8px);
+    filter: blur(8em);
     opacity: 0.7;
     animation: pshSurfaceShift 24s linear infinite;
   }
@@ -706,6 +707,8 @@ const styles = `
   }
 
   .psh-planet-particle {
+    animation-name: pshPlanetParticleDrift;
+    box-shadow: 0 0 14em currentColor, 0 0 28em currentColor;
     z-index: 10;
     opacity: 0.72;
   }
@@ -729,19 +732,24 @@ const styles = `
     48% { opacity: 1; transform: translate3d(10px, calc(-1 * var(--particle-drift)), 0) scale(1.16); }
   }
 
+  @keyframes pshPlanetParticleDrift {
+    0%, 100% { opacity: 0.48; transform: translate3d(0, 0, 0) scale(0.92); }
+    48% { opacity: 1; transform: translate3d(10em, calc(-1 * var(--particle-drift)), 0) scale(1.16); }
+  }
+
   @keyframes pshFloatDrift {
     0%, 100% { transform: translate3d(0, 0, 0) scale(0.92); }
     50% { transform: translate3d(var(--float-drift-x), calc(-1 * var(--float-drift-y)), 0) scale(1.08); }
   }
 
   @keyframes pshAuraPulse {
-    from { transform: translateY(-50%) scale(0.96); opacity: 0.58; }
-    to { transform: translateY(-50%) scale(1.05); opacity: 0.92; }
+    from { transform: translate(-50%, -50%) scale(0.96); opacity: 0.58; }
+    to { transform: translate(-50%, -50%) scale(1.05); opacity: 0.92; }
   }
 
   @keyframes pshPlanetFloat {
-    0%, 100% { transform: translateY(-50%) translateY(0); }
-    50% { transform: translateY(-50%) translateY(-12px); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12em); }
   }
 
   @keyframes pshSurfaceShift {
@@ -754,74 +762,15 @@ const styles = `
     to { stroke-dashoffset: -260; }
   }
 
-  @media (max-width: 1023px) {
+  /* Percentage geometry remains usable without container-unit support. */
+  @supports (container-type: inline-size) and (font-size: 1cqw) {
+    .psh-cosmos--planet { container-type: inline-size; }
+    .psh-planet-scene { font-size: calc(100cqw / 700); }
+  }
+
+  @media (width < 1024px) {
     .psh-cosmos-grid {
       background-size: 48px 48px, 48px 48px, 96px 96px, 96px 96px;
-    }
-
-    .psh-cosmos-circuit--two,
-    .psh-cosmos-circuit--three {
-      display: none;
-    }
-
-    .psh-cosmos--planet {
-      width: min(100%, 560px);
-      aspect-ratio: 1.2 / 1;
-    }
-
-    .psh-planet {
-      right: 50%;
-      width: min(64vw, 320px);
-      transform: translate(50%, -50%);
-    }
-
-    .psh-planet-scene__aura {
-      right: 50%;
-      width: min(84vw, 410px);
-      transform: translate(50%, -50%);
-    }
-
-    .psh-planet-rings {
-      left: 50%;
-      top: 52%;
-      width: min(96vw, 560px);
-    }
-
-    .psh-planet-scene__scan {
-      display: none;
-    }
-  }
-
-  @media (max-width: 520px) {
-    .psh-cosmos--planet {
-      aspect-ratio: 1 / 0.9;
-    }
-
-    .psh-planet {
-      width: min(72vw, 280px);
-    }
-
-    .psh-planet-rings {
-      width: min(102vw, 420px);
-    }
-  }
-
-  @media (min-width: 1440px) {
-    .psh-planet-rings {
-      left: 69.5%;
-      top: 52%;
-      width: min(62vw, 700px);
-    }
-
-    .psh-cosmos--planet {
-      width: min(67vw, 920px);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .psh-planet-rings {
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.42) 10%, #000 24%, #000 92%, transparent 100%);
-      mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.42) 10%, #000 24%, #000 92%, transparent 100%);
     }
   }
 
@@ -830,7 +779,9 @@ const styles = `
     .psh-cosmos-star,
     .psh-cosmos-float,
     .psh-cosmos-particle,
+    .psh-planet-scene,
     .psh-planet-scene__aura,
+    .psh-ring-stroke--dash,
     .psh-planet,
     .psh-planet__texture--two,
     .psh-planet-particle {

@@ -39,7 +39,7 @@ export default function HomeHero() {
           </div>
         </div>
 
-        <div className="psh-home-hero__visual">
+        <div className="psh-home-hero__visual" aria-hidden="true">
           <div className="psh-home-hero__visual-reveal">
             <div className="psh-home-hero__visual-stage">
               <HeroCosmosScene />
