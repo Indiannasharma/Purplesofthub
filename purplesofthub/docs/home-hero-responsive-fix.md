@@ -36,7 +36,7 @@ Before: at 900/768 px, globe-ring center error -160 px; rings 700 px at 1440 but
 
 Values are CSS dimensions before the temporary entrance transform. The light/dark visual matrices also capture bounding boxes during that decorative entrance. The small size reduction between 1600 and 1920 follows the existing capped grid/container gap, without a breakpoint jump or globe/ring ratio change.
 
-## Validation so far
+## Validation
 
 Independent TypeScript: passed. Changed-file ESLint: passed, zero diagnostics. Focused rendering regressions: 18/18 passed. Full suite: 215 tests, 210 passed, five inherited Blog contract failures (two compatibility-retirement cases and three admin-sprint request contracts). All affected Blog sources and fixtures are byte-identical to the starting baseline. No snapshot, lint configuration or business source was changed to force a pass.
 
@@ -46,7 +46,7 @@ Production build: passed with exit code 0, including TypeScript, all 133 entries
 
 All 732 tracked paths were hashed before editing. Only the three authorized hero sources and the focused regression file differ; the requested document is new. app/page.tsx, template/Reveal hardening, navigation, Nova, auth, Workspace/Admin, payments, APIs, schemas, pricing, package/lock files and existing audit documents remain unchanged.
 
-Ellipse fill remains the original default black fill. Changing it to fill:none is a separate optional visual refinement and is deliberately excluded. Physical Samsung/Android and other engine parity are not claimed. Deployment and production verification are pending the validated release.
+Ellipse fill remains the original default black fill. Changing it to fill:none is a separate optional visual refinement and is deliberately excluded. Physical Samsung/Android and other engine parity are not claimed. The implementation release and production verification are complete; evidence is recorded below.
 
 ## Completed local visual QA
 
@@ -60,3 +60,11 @@ Evidence files in C:/Users/HP/.codex/visualizations/2026/10/01/01a0f513-b343-744
 
 The React best-practices review found no new hooks, subscriptions, event listeners, client data flows or business-controller changes. The decorative group is aria-hidden, has no interactive children, and cannot intercept pointers. Core server-rendered content does not depend on the particle timer, motion initialization, container units or IntersectionObserver.
 
+
+## Release and production verification
+
+Implementation commit: 3bcdac68e5abe4bb263e0ccc4d9dda2deb12b94d, `fix(home): stabilize responsive planet and orbital rings`. Normal push to origin/main succeeded. Vercel reported success for this exact commit: https://vercel.com/purplesofthub-9836s-projects/purplesofthub/BLa4G3BGok1XYZKnfCuGK4h583HV.
+
+After reloading https://www.purplesofthub.com/, production passed all fourteen requested widths in each theme (28 samples), plus one down/up resize cycle (11 samples). No failed alignment, frame containment, horizontal overflow, headline visibility or CTA visibility checks. The entire decorative scene was hidden below 1024 px; desktop globe/ring center differences stayed within 0.01 px. Production screenshots were captured at 1440 dark and 390 light.
+
+Production evidence in the artifact directory above: hero-fix-production-qa.json, hero-fix-production-1440-dark.jpg and hero-fix-production-mobile-light.jpg. The same fractional-width, reduced-motion emulation and physical-browser limitations apply to production.
