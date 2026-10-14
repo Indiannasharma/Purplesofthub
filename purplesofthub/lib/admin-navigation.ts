@@ -18,6 +18,7 @@ import {
   Settings,
   FolderPlus,
   GraduationCap,
+  ChartNoAxesCombined,
   type LucideIcon,
 } from "lucide-react";
 
@@ -48,7 +49,7 @@ export type AdminNavSection = {
 };
 
 export const adminNavigationSections: AdminNavSection[] = [
-  { id: "overview", title: "Overview", items: [{ id: "dashboard", title: "Dashboard", href: "/admin", icon: LayoutDashboard }] },
+  { id: "overview", title: "Overview", items: [{ id: "dashboard", title: "Dashboard", href: "/admin", icon: LayoutDashboard }, { id: "analytics", title: "Analytics", href: "/admin/analytics", icon: ChartNoAxesCombined }] },
   { id: "business", title: "Business", items: [
     { id: "clients", title: "Clients", href: "/admin/clients", icon: Users },
     { id: "leads", title: "Leads", href: "/admin/leads", icon: Inbox },
@@ -95,6 +96,7 @@ export const adminQuickActions: AdminNavItem[] = [
 
 /** Static segment labels used by breadcrumbs. Unknown segments (ids) are skipped. */
 const STATIC_SEGMENT_LABELS: Record<string, string> = {
+  pages: "Page performance",
   new: "New",
   create: "Create",
   edit: "Edit",
