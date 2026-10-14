@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } 
   from 'next/server'
-import { createServerClient } from 
-  '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { normalizeEmail } from '@/lib/newsletter/policy'
+import { createNewsletterClient, newsletterAvailable } from '@/lib/newsletter/server'
 
 export const dynamic = 'force-dynamic'
+
+/** No subscriber records are returned. Capability checking never performs a write. */
+export async function GET() {
+  const available = await newsletterAvailable()
+  return NextResponse.json({ available }, { headers: { 'Cache-Control': 'no-store' } })
+}
 
 export async function POST(
   request: NextRequest
 ) {
   try {
     const body = await request.json()
-    const { email, source } = body
+    const email = body?.email
+    const source = ['homepage', 'blog-insights', 'newsletter-popup', 'website'].includes(body?.source) ? body.source : 'website'
 
     // Validate email
     if (!email) {
@@ -21,58 +27,33 @@ export async function POST(
       )
     }
 
-    const emailRegex = 
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
+    const safeEmail = normalizeEmail(email)
+    if (!safeEmail) {
       return NextResponse.json(
         { error: 'Invalid email address' },
         { status: 400 }
       )
     }
 
-    const safeEmail = email
-      .toLowerCase()
-      .trim()
-      .slice(0, 200)
-
     // Save to Supabase
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env
-        .NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(
-                ({ name, value, options }) =>
-                  cookieStore.set(
-                    name, value, options
-                  )
-              )
-            } catch {}
-          },
-        },
-      }
-    )
+    const supabase = createNewsletterClient()
+    if (!supabase) return NextResponse.json({ error: 'Newsletter signup is temporarily unavailable.' }, { status: 503 })
 
     // Check if already subscribed
-    const { data: existing } = 
+    const { data: existing, error: lookupError } =
       await supabase
         .from('newsletter_subscribers')
         .select('id, email, status')
         .eq('email', safeEmail)
         .maybeSingle()
 
+    if (lookupError) return NextResponse.json({ error: 'Newsletter signup is temporarily unavailable.' }, { status: 503 })
+
     if (existing) {
       if (existing.status === 
         'unsubscribed') {
         // Reactivate
-        await supabase
+        const { data: updated, error: updateError } = await supabase
           .from('newsletter_subscribers')
           .update({ 
             status: 'active',
@@ -80,6 +61,10 @@ export async function POST(
               new Date().toISOString()
           })
           .eq('id', existing.id)
+          .select('id')
+          .maybeSingle()
+
+        if (updateError || !updated) return NextResponse.json({ error: 'Could not confirm your subscription. Please try again.' }, { status: 503 })
 
         return NextResponse.json({
           success: true,
@@ -87,6 +72,7 @@ export async function POST(
         })
       }
 
+      if (existing.status !== 'active') return NextResponse.json({ error: 'Could not confirm your subscription. Please try again.' }, { status: 503 })
       return NextResponse.json({
         success: true,
         message: 'You are already subscribed!'
@@ -106,12 +92,13 @@ export async function POST(
         })
 
     if (insertError) {
-      console.error(
-        'Supabase insert error:', 
-        insertError
-      )
+      // A concurrent signup may win the unique-email constraint; verify its active state.
+      if (insertError.code === '23505') {
+        const { data: concurrent, error: checkError } = await supabase.from('newsletter_subscribers').select('status').eq('email', safeEmail).maybeSingle()
+        if (!checkError && concurrent?.status === 'active') return NextResponse.json({ success: true, message: 'You are already subscribed!' })
+      }
       
-      // If table doesn't exist create it
+      // Schema setup is an operator task; never create tables from a public request.
       if (insertError.code === '42P01') {
         return NextResponse.json(
           { 
@@ -125,7 +112,6 @@ export async function POST(
       return NextResponse.json(
         { 
           error: 'Failed to save subscription',
-          details: insertError.message
         },
         { status: 500 }
       )
@@ -279,10 +265,7 @@ export async function POST(
     } catch (emailError) {
       // Email failed but subscription 
       // was saved — that's okay
-      console.error(
-        'Email send failed:', 
-        emailError
-      )
+      void emailError
     }
 
     return NextResponse.json({
@@ -290,18 +273,10 @@ export async function POST(
       message: 'Successfully subscribed! Check your inbox for a welcome email.'
     })
 
-  } catch (error: any) {
-    console.error(
-      'Newsletter route error:', 
-      error
-    )
+  } catch {
     return NextResponse.json(
       { 
         error: 'Something went wrong. Please try again.',
-        details: process.env.NODE_ENV === 
-          'development' 
-          ? error.message 
-          : undefined
       },
       { status: 500 }
     )

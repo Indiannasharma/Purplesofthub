@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
 import AnalyticsPreferences from "@/components/analytics/AnalyticsPreferences";
+import NewsletterPopupController from "@/components/newsletter/NewsletterPopupController";
 import { Providers } from "@/app/Providers";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
@@ -145,6 +146,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             {children}
             <ChatBot />
             <ScrollToTop />
+            <NewsletterPopupController />
             <Toaster richColors closeButton />
           </Providers>
         </ThemeProvider>

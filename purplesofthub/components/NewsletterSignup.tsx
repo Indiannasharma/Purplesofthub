@@ -1,19 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import TurnstileWidget from "@/components/TurnstileWidget";
+import { NewsletterSubmission, recordNewsletterSuccess } from '@/lib/newsletter/client';
+import { normalizeEmail } from '@/lib/newsletter/policy';
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [captchaToken, setCaptchaToken] = useState("");
+  const [, setCaptchaToken] = useState("");
   const [captchaReset, setCaptchaReset] = useState(0);
   const captchaEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+  const submission = useRef(new NewsletterSubmission());
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     
-    if (!email || !email.includes('@')) {
+    if (submission.current.pending) return;
+    if (!normalizeEmail(email)) {
       setMessage('Please enter a valid email')
       setStatus("error")
       return
@@ -21,34 +25,20 @@ export default function NewsletterSignup() {
 
     setStatus("loading");
     setMessage("");
-    setStatus("idle")
 
     try {
-      const res = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          email: email.trim(),
-          source: 'homepage'
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setMessage(data.error || "Failed to subscribe. Please try again.")
-        setStatus("error")
-        return
-      }
+      const message = await submission.current.submit(email, 'homepage');
+      if (message === null) return;
       
       setStatus("success");
-      setMessage(data.message || "Successfully subscribed! Check your inbox for a welcome email.");
+      setMessage(message);
+      recordNewsletterSuccess();
       setEmail("");
       setCaptchaToken("");
       setCaptchaReset((v) => v + 1);
-    } catch (err) {
+    } catch {
       setMessage("Connection error. Please check your internet and try again.")
       setStatus("error")
-    } finally {
-      setStatus("loading")
     }
   };
 
