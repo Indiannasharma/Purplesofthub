@@ -153,6 +153,35 @@ test('browser adapter gates native history before URL mutation and clears only t
   } finally { for (const [name, descriptor] of saved) { if (descriptor) Object.defineProperty(globalThis, name, descriptor); else delete globalThis[name]; } }
 });
 
+test('gtag adapter forwards native Arguments objects required by the real Google SDK', () => {
+  const saved = ['window', 'document'].map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]);
+  const scripts = [];
+  const win = { location: { pathname: '/', hostname: 'localhost' } };
+  const doc = { referrer: '', cookie: '', querySelector: () => null,
+    createElement: () => ({ remove() {} }), head: { appendChild: script => scripts.push(script) } };
+  try {
+    for (const [name, value] of Object.entries({ window: win, document: doc })) Object.defineProperty(globalThis, name, { configurable: true, writable: true, value });
+    const runtime = load('lib/analytics/browser.ts').browserRuntime(ID);
+    runtime.rendered('/');
+    assert.equal(win.gtag, undefined, 'adapter absent before consent');
+    runtime.choose('accepted');
+    scripts[0].onload();
+    assert.deepEqual(win.dataLayer.map(command => command[0]), ['consent', 'js', 'config', 'set', 'event']);
+    for (const command of win.dataLayer) {
+      assert.equal(Array.isArray(command), false, 'arrays are not native gtag command objects');
+      assert.equal(Object.prototype.toString.call(command), '[object Arguments]');
+    }
+    const config = win.dataLayer.find(command => command[0] === 'config');
+    assert.equal(config[1], ID);
+    assert.equal(config[2].send_page_view, false);
+    const event = win.dataLayer.find(command => command[0] === 'event');
+    assert.equal(event[1], 'page_view');
+    assert.equal(event[2].page_location, 'https://www.purplesofthub.com/');
+  } finally {
+    for (const [name, descriptor] of saved) { if (descriptor) Object.defineProperty(globalThis, name, descriptor); else delete globalThis[name]; }
+  }
+});
+
 test('preference UI exposes equally named accept/reject and keyboard withdrawal controls without motion', () => {
   const render = (choice, open) => {
     let stateIndex = 0;

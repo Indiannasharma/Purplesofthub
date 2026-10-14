@@ -12,7 +12,11 @@ export function browserRuntime(id: string) {
     disable: disabled => { (window as unknown as Record<string, unknown>)[`ga-disable-${id}`] = disabled; },
     load: (ready, failed) => {
       tag.dataLayer = tag.dataLayer || [];
-      tag.gtag = tag.gtag || ((...args: unknown[]) => { tag.dataLayer?.push(args); });
+      tag.gtag = tag.gtag || function () {
+        // Google's SDK recognizes native Arguments objects as gtag commands.
+        // eslint-disable-next-line prefer-rest-params
+        tag.dataLayer?.push(arguments);
+      };
       const script = document.createElement("script");
       script.async = true;
       script.referrerPolicy = "no-referrer";
