@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import type { Service, ServicePlan } from '@/lib/payments/service-plans'
 import { formatPrice } from '@/lib/payments/service-plans'
 import { useCurrency } from '@/context/CurrencyContext'
 import { formatRegionalPrice } from '@/lib/pricing/currency'
+import { loadPaystack } from '@/lib/payments/paystack-loader'
 
 interface Props {
   service: Service
@@ -19,12 +20,8 @@ interface Props {
 
 type Step = 'details' | 'payment' | 'processing' | 'success'
 
-type PaystackResponse = { reference: string }
 type FlutterwaveResponse = { status: string; transaction_id: string | number }
 type PaymentWindow = Window & {
-  PaystackPop?: {
-    setup: (config: { callback: (response: PaystackResponse) => Promise<void>; onClose: () => void; [key: string]: unknown }) => { openIframe: () => void }
-  }
   FlutterwaveCheckout?: (config: { callback: (response: FlutterwaveResponse) => Promise<void>; onclose: () => void; [key: string]: unknown }) => void
 }
 
@@ -87,6 +84,13 @@ export default function UniversalCheckoutModal({
     password: '',
   })
   const billingSummary = getBillingSummary(plan)
+  const checkoutActive = useRef(true)
+  const paystackOpening = useRef(false)
+
+  useEffect(() => {
+    checkoutActive.current = true
+    return () => { checkoutActive.current = false }
+  }, [])
 
   useEffect(() => {
     const checkAndPrefill = async () => {
@@ -143,41 +147,47 @@ export default function UniversalCheckoutModal({
     return true
   }
 
-  const handlePaystack = () => {
-    if (!validate()) return
+  const handlePaystack = async () => {
+    if (paystackOpening.current || !validate()) return
+    paystackOpening.current = true
     setStep('processing')
-    const paymentWindow = window as PaymentWindow
-    if (!paymentWindow.PaystackPop) {
-      setError('Paystack is unavailable. Please refresh and try again.')
-      setStep('payment')
-      return
+    try {
+      const paystack = await loadPaystack()
+      if (!checkoutActive.current) return
+      const handler = paystack.setup({
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
+        email: form.email,
+        amount: plan.priceNGN * 100,
+        currency: 'NGN',
+        ref: createPaymentReference(service.id, plan.id),
+        metadata: {
+          service_id: service.id,
+          service_name: service.name,
+          plan_id: plan.id,
+          plan_name: plan.name,
+          billing_type: plan.billingType,
+          amount: plan.priceNGN,
+          customer_email: form.email,
+          customer_name: `${form.firstName} ${form.lastName}`.trim(),
+          customer_phone: form.phone,
+          custom_fields: [
+            { display_name: 'Service', variable_name: 'service', value: service.name },
+            { display_name: 'Plan', variable_name: 'plan', value: plan.name },
+            { display_name: 'Client Name', variable_name: 'name', value: `${form.firstName} ${form.lastName}`.trim() },
+          ],
+        },
+        callback: async (response) => { await processPayment(response.reference, 'paystack') },
+        onClose: () => setStep('payment'),
+      })
+      handler.openIframe()
+    } catch {
+      if (checkoutActive.current) {
+        setError('Paystack is unavailable. Please try again.')
+        setStep('payment')
+      }
+    } finally {
+      paystackOpening.current = false
     }
-    const handler = paymentWindow.PaystackPop.setup({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-      email: form.email,
-      amount: plan.priceNGN * 100,
-      currency: 'NGN',
-      ref: createPaymentReference(service.id, plan.id),
-      metadata: {
-        service_id: service.id,
-        service_name: service.name,
-        plan_id: plan.id,
-        plan_name: plan.name,
-        billing_type: plan.billingType,
-        amount: plan.priceNGN,
-        customer_email: form.email,
-        customer_name: `${form.firstName} ${form.lastName}`.trim(),
-        customer_phone: form.phone,
-        custom_fields: [
-          { display_name: 'Service', variable_name: 'service', value: service.name },
-          { display_name: 'Plan', variable_name: 'plan', value: plan.name },
-          { display_name: 'Client Name', variable_name: 'name', value: `${form.firstName} ${form.lastName}`.trim() },
-        ],
-      },
-      callback: async (response: PaystackResponse) => { await processPayment(response.reference, 'paystack') },
-      onClose: () => setStep('payment'),
-    })
-    handler.openIframe()
   }
 
   const handleFlutterwave = () => {

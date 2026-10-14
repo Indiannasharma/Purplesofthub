@@ -49,7 +49,7 @@ const SECTIONS = [
   {
     title: "5. Third-Party Services",
     content:
-      "Our website may use third-party services such as analytics providers, email services, and communication tools to improve functionality. These services may collect information according to their own privacy policies.",
+      "We use Google Analytics 4 only after you accept optional analytics. It measures visits to eligible public marketing pages using cookies and sends analytics data to Google. Private workspaces, authentication, checkout, recovery submissions and previews are excluded. We remove URL query strings and fragments and do not send form values, names, emails, account identifiers or payment references. Advertising personalization and Google signals are disabled. Google processes analytics according to its privacy policies; property-level retention is managed in Google Analytics.\n\nUse Analytics preferences to accept, reject or withdraw consent. We remember your choice for up to 180 days in this browser. Withdrawal stops further collection and removes accessible Google Analytics cookies; it does not erase previously received data. If browser storage is unavailable, your choice applies only to the current tab. Other services, including email and communications, continue independently of your analytics choice.",
   },
   {
     title: "6. Your Privacy Rights",

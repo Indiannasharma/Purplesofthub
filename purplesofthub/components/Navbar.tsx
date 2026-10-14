@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -95,13 +95,19 @@ const listItemVariants = {
   }),
 };
 
+const subscribeToHydration = () => () => {};
+const clientHydrationSnapshot = () => true;
+const serverHydrationSnapshot = () => false;
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const dark = theme === "dark";
+  // Match server markup through hydration; resolve the saved theme afterwards.
+  const hydrated = useSyncExternalStore(subscribeToHydration, clientHydrationSnapshot, serverHydrationSnapshot);
+  const dark = hydrated && theme === "dark";
   const portalHref = isAdmin ? '/admin' : '/dashboard';
   const portalLabel = isAdmin ? 'Admin Panel' : 'Dashboard';
 

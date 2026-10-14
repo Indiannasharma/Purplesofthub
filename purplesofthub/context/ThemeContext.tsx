@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useMemo } from "react"
+import React, { createContext, useContext, useMemo, useSyncExternalStore } from "react"
 import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from "next-themes"
 
 export type ThemeMode = "light" | "dark" | "system"
@@ -15,14 +15,19 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const subscribeToHydration = () => () => {}
+const clientHydrationSnapshot = () => true
+const serverHydrationSnapshot = () => false
 
 function ThemeContextBridge({ children }: { children: React.ReactNode }) {
   const { theme, resolvedTheme, setTheme } = useNextTheme()
+  const hydrated = useSyncExternalStore(subscribeToHydration, clientHydrationSnapshot, serverHydrationSnapshot)
 
   const value = useMemo<ThemeContextType>(() => {
-    const currentResolvedTheme =
-      (resolvedTheme as ThemeResolved | undefined) ||
-      (theme === "dark" ? "dark" : "light")
+    // All consumers must share the server fallback during initial hydration.
+    const currentResolvedTheme = hydrated
+      ? (resolvedTheme as ThemeResolved | undefined) || (theme === "dark" ? "dark" : "light")
+      : "light"
 
     const toggleTheme = () => {
       setTheme(currentResolvedTheme === "dark" ? "light" : "dark")
@@ -31,11 +36,11 @@ function ThemeContextBridge({ children }: { children: React.ReactNode }) {
     return {
       theme: currentResolvedTheme,
       resolvedTheme: currentResolvedTheme,
-      mode: (theme as ThemeMode) || "system",
+      mode: hydrated ? (theme as ThemeMode) || "system" : "system",
       setTheme: (nextTheme: ThemeMode) => setTheme(nextTheme),
       toggleTheme,
     }
-  }, [resolvedTheme, setTheme, theme])
+  }, [hydrated, resolvedTheme, setTheme, theme])
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }

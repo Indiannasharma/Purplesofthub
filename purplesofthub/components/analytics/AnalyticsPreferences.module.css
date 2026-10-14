@@ -1,0 +1,12 @@
+.root { position: fixed; left: 16px; bottom: 16px; z-index: 2147483000; max-width: min(520px, calc(100vw - 32px)); font-family: inherit; color: var(--text-primary); }
+.trigger { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
+.panel { margin-top: 8px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-primary); color: var(--text-primary); box-shadow: 0 6px 28px rgba(0,0,0,.18); max-height: 70dvh; overflow-y: auto; }
+.panel h2 { font-size: 18px; line-height: 1.4; margin-bottom: 10px; color: inherit; }
+.panel p { font-size: 14px; line-height: 1.6; margin-bottom: 12px; color: inherit; }
+.panel a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.status { font-weight: 600; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions button { min-height: 44px; flex: 1 1 140px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary); font: inherit; font-size: 14px; cursor: pointer; }
+.actions button:disabled { opacity: .6; cursor: default; }
+.root :is(button,a):focus-visible, .panel:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+@media (max-width: 640px) { .panel { padding: 16px; } }

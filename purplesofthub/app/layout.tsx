@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import AnalyticsPreferences from "@/components/analytics/AnalyticsPreferences";
 import { Providers } from "@/app/Providers";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ChatBot from "@/components/ChatBot";
@@ -148,14 +148,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Toaster richColors closeButton />
           </Providers>
         </ThemeProvider>
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
-        {/* Payment Gateway Scripts */}
-        <Script
-          src="https://js.paystack.co/v1/inline.js"
-          strategy="afterInteractive"
-        />
+        <AnalyticsPreferences measurementId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+        {/* Paystack is loaded on demand by its inline checkout consumer. */}
         <Script
           src="https://checkout.flutterwave.com/v3.js"
           strategy="afterInteractive"
