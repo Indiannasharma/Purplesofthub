@@ -182,10 +182,10 @@ test('gtag adapter forwards native Arguments objects required by the real Google
   }
 });
 
-test('existing compact banner has equal accept/reject, Customize and withdrawal without automatic modal', () => {
-  const render = (choice, open, preferencesOpen = false, measurementId = ID) => {
+test('existing compact banner preserves choices, saved-choice dismissal and explicit customization', () => {
+  const render = (choice, open, preferencesOpen = false, measurementId = ID, restored = true) => {
     let stateIndex = 0;
-    const values = [choice, open, preferencesOpen, false];
+    const values = [choice, open, preferencesOpen, false, restored, choice !== 'unknown', false, false];
     const component = loader({ react: { ...React, useEffect: () => {}, useRef: () => ({ current: null }), useState: () => [values[stateIndex++], () => {}] },
       'next/navigation': { usePathname: () => '/' }, 'next/link': { __esModule: true, default: ({ children, ...props }) => React.createElement('a', props, children) },
       '@/lib/analytics/browser': { browserRuntime: () => {}, guardNavigation: () => {} },
@@ -211,16 +211,35 @@ test('existing compact banner has equal accept/reject, Customize and withdrawal 
   assert.match(unconfigured, /disabled=""[^>]*>Accept All/);
   assert.match(unconfigured, /Reject Optional/);
   assert.match(unconfigured, /Customize/);
-  assert.match(render('accepted', true), /Withdraw consent/);
+  assert.doesNotMatch(render('accepted', true), /role="region"|Withdraw consent/);
+  assert.doesNotMatch(render('rejected', true), /role="region"/);
+  assert.doesNotMatch(render('unknown', false, false, ID, false), /role="region"/);
   const preferences = render('unknown', false, true);
   assert.match(preferences, /role="dialog"/);
   assert.match(preferences, /Always on/);
   assert.match(preferences, /Save Preferences/);
   assert.doesNotMatch(preferences, /checked=""/);
   const css = readFileSync(path.join(root, 'components/analytics/AnalyticsPreferences.module.css'), 'utf8');
-  assert.match(css, /focus-visible/); assert.doesNotMatch(css, /animation|transition/);
+  assert.match(css, /focus-visible/); assert.match(css, /privacy-dismiss 240ms/);
+  assert.match(css, /prefers-reduced-motion: reduce/);
   assert.match(css, /left: 16px; bottom: 16px/);
   assert.match(css, /max-width: min\(520px, calc\(100vw - 32px\)\)/);
+});
+
+test('persistence succeeds before analytics activation and failure always leaves tracking off', () => {
+  const { saveConsent } = loader()('lib/analytics/preferences.ts');
+  for (const choice of ['accepted', 'rejected']) {
+    let value; const calls=[];
+    const storage={setItem(key,record){value=record;calls.push('stored')},getItem(){return value}};
+    assert.equal(saveConsent(choice,storage,c=>calls.push(c)),true);
+    assert.equal(policy.readPreference(value),choice);
+    if(choice==='accepted')assert.deepEqual(calls,['stored','accepted']);
+    else assert.equal(calls[0],'rejected');
+    for(const broken of [{setItem(){throw Error('blocked')},getItem(){return null}},{setItem(){},getItem(){return null}},{setItem(){},getItem(){throw Error('blocked')}}]){
+      const applied=[]; assert.equal(saveConsent(choice,broken,c=>applied.push(c)),false);
+      assert.ok(applied.length);assert.ok(applied.every(c=>c==='rejected'));
+    }
+  }
 });
 
 test('footer privacy control opens the existing controller without storing or changing consent', () => {

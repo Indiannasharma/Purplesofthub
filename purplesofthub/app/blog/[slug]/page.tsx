@@ -11,7 +11,7 @@ import StoryCard, {StoryImage} from '@/components/blog/StoryCard'
 import PublicationMasthead from '@/components/blog/PublicationMasthead'
 import AdSlot from '@/components/blog/AdSlot'
 import {HouseAd} from '@/components/blog/EditorialSidebar'
-import { renderBlogMarkdown } from '@/lib/blog/rendering'
+import ArticleBody from '@/components/blog/ArticleBody'
 import { blogPosting, serializeBlogPosting } from '@/lib/blog/structured-data'
 import {readingMinutes,relatedStories,articleMarkdown} from '@/lib/blog/editorial'
 import {publicBlogCategories,type PublicArticle} from '@/lib/blog/public-feed'
@@ -93,7 +93,7 @@ export default async function BlogPostPage({params}:Props) {
     <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><Link href="/blog">Insights</Link>{post.category&&<><span aria-hidden="true">/</span><Link href={'/blog?'+new URLSearchParams({category:category?.slug||post.category})}>{post.category}</Link></>}</nav>
     <article><header className={styles.articleHeader}>{post.category&&<p className={styles.category}>{post.category}</p>}<h1>{post.title}</h1>{post.excerpt&&<p className={styles.articleDeck}>{post.excerpt}</p>}<div className={styles.articleMeta}><strong>{authorName}</strong><time dateTime={post.published_at||post.created_at}>{editorialDate(post.published_at||post.created_at)}</time><span>{readingMinutes(post.content||'')} min read</span></div></header>
     {post.featured_image&&<div className={styles.articleHero}><StoryImage post={post} lead sizes="(max-width: 1024px) 100vw, 1000px"/></div>}
-    <div className={styles.readingLayout}><div className={styles.readingColumn}><div id="article-body" className={styles.body} dangerouslySetInnerHTML={{__html:renderBlogMarkdown(articleMarkdown(post.content||'',post.title)).replace(/<h1 class="article-h1">/g,'<h2 class="article-h2">').replace(/<\/h1>/g,'</h2>')}}/>
+    <div className={styles.readingLayout}><div className={styles.readingColumn}><div id="article-body" className={styles.body}><ArticleBody content={articleMarkdown(post.content||'',post.title)} demoteTitle/></div>
     {sources.length>0&&<section className={[styles.body,styles.sources].join(' ')} aria-labelledby="sources-heading"><h2 id="sources-heading">Sources</h2><ul>{sources.map((url:string)=><li key={url}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul></section>}
     {Array.isArray(post.tags)&&post.tags.length>0&&<div className={styles.tags} aria-label="Article topics">{post.tags.map((tag:string)=><span key={tag}>{tag}</span>)}</div>}
     <div className={styles.engagement}><BlogReactions postId={post.id}/><BlogComments postId={post.id}/></div></div>

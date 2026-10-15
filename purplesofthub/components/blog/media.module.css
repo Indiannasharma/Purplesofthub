@@ -1,0 +1,14 @@
+.media{margin:32px 0;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg-secondary);color:var(--text-primary);max-width:100%;font-family:inherit}
+.source{display:flex;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary)}
+.stage{position:relative;width:100%;overflow:hidden;background:var(--bg-primary);min-height:240px}
+.wide{aspect-ratio:16/9;min-height:240px}.vertical{aspect-ratio:9/16;max-width:420px;margin:auto}.audio{height:360px}.post{height:560px}
+.compactAudio{height:260px}.compactAudio .symbol{display:none}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg-primary)}
+.placeholder{display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:12px;padding:28px;min-height:100%;box-sizing:border-box}
+.symbol{font-size:32px;color:var(--brand-primary,#8a42ed)}.placeholder strong{font-size:19px;line-height:1.35}.placeholder p{max-width:440px;font-size:13px;line-height:1.7;color:var(--text-secondary);margin:0}
+.media button{border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);border-radius:8px;padding:10px 16px;font:inherit;font-size:13px;min-height:44px;cursor:pointer}.placeholder button{margin-top:4px;font-weight:600}
+.links{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 20px;border-top:1px solid var(--border)}.links a{color:inherit;font-size:12px;text-decoration:underline;text-underline-offset:3px}.links button{padding:6px 12px}
+.media figcaption,.note{font-size:12px;line-height:1.6;color:var(--text-secondary);padding:0 20px 16px;margin:0}.media figcaption{font-style:italic}.loading{position:absolute;inset:0;display:grid;place-content:center;font-size:13px;margin:0;color:var(--text-secondary)}
+.media :is(button,a):focus-visible{outline:3px solid var(--ring);outline-offset:3px}
+@media(max-width:640px){.placeholder{padding:20px;gap:10px}.wide{aspect-ratio:auto;min-height:300px}.vertical{min-height:460px}.audio{height:380px}.source,.links{padding:12px 16px}.post{height:560px}}
+@media(max-width:640px){.compactAudio{height:300px}}

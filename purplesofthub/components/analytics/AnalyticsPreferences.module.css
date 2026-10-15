@@ -1,4 +1,7 @@
 .root { position: fixed; left: 16px; bottom: 16px; z-index: 2147483000; max-width: min(520px, calc(100vw - 32px)); font-family: inherit; color: var(--text-primary); }
+.exiting { animation: privacy-dismiss 240ms ease-out both; pointer-events: none; }
+@keyframes privacy-dismiss { to { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .exiting { animation: none; } }
 .trigger { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
 .panel { margin-top: 8px; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-primary); color: var(--text-primary); box-shadow: 0 6px 28px rgba(0,0,0,.18); max-height: 70dvh; overflow-y: auto; }
 .panel h2 { font-size: 18px; line-height: 1.4; margin-bottom: 10px; color: inherit; }

@@ -8,7 +8,8 @@ build and focused staging review. Production smoke results are reported with the
 
 `components/analytics/AnalyticsPreferences.tsx` remains the single consent controller.
 Its bottom-left root (16px offsets), 520px maximum width, existing panel/trigger styles,
-theme tokens, responsive padding, focus rules and motion-free behavior are retained.
+theme tokens, responsive padding and focus rules are retained. Dismissal now uses a subtle
+240ms opacity/8px translation animation, skipped for reduced-motion preferences.
 The compact panel is not replaced by a modal or another consent system.
 
 The existing `purplesofthub-analytics-preference` version-1 record and 180-day expiry
@@ -19,7 +20,8 @@ GA4 runtime, route restrictions, URL/referrer sanitization and deduplication are
 ## Actions and state changes
 
 - Banner: Accept All, Reject Optional and Customize. Accept and reject use identical button
-  styling and minimum sizes. Accepted visitors retain an explicit withdrawal button when expanded.
+  styling and minimum sizes. The standalone withdrawal action is removed. Visitors revoke
+  consent by turning analytics off and saving, or by selecting Reject Optional.
 - Customize opens a separate Radix dialog only after user action. Unknown/rejected consent
   starts with optional analytics unchecked. A valid existing acceptance is reflected accurately.
 - Strictly necessary functions are described as always on. Optional analytics is the only
@@ -27,12 +29,19 @@ GA4 runtime, route restrictions, URL/referrer sanitization and deduplication are
   stay disabled; no inactive marketing toggles or unsupported category promises were added.
 - Checkbox edits are drafts until Save Preferences. Escape, outside click and Close cancel
   drafts, preserve saved consent and restore focus. Acceptance/rejection/withdrawal use the
-  existing synchronous runtime handler before storage or UI updates.
+  existing runtime. Rejection stops tracking before storage work; acceptance enables tracking
+  only after storage write/read-back succeeds. Failed saves keep analytics off and show an error.
 - Footer Privacy Preferences dispatches a local UI event to this controller. It has no store,
   provider, runtime or separate banner. It also works on public pages excluded from tracking;
   choosing analytics there does not bypass the runtime's route gate.
 - The same existing storage listener handles cross-tab updates. Storage exceptions remain
-  safe and the current tab can still reject or withdraw. Tracking stays off until acceptance.
+  safe: the current tab stops analytics, while the banner or modal remains open with a retry
+  message. A failed save is never presented as a persisted choice.
+- After successful accept, reject or Customize-save, the entire compact banner becomes inert
+  and fades out, then unmounts. Reduced motion unmounts immediately. Saved choices are read
+  before mounting a banner on refresh, avoiding a flash for returning visitors. Expired/invalid
+  records prompt again. The footer is always available; changes there never reintroduce the
+  initial banner. Focus moves to the permanent footer control when its prior banner disappears.
 - The existing newsletter controller recognizes both the unchanged banner region and the
   modal's standard dialog semantics, avoiding an automatic newsletter interruption.
 
@@ -41,7 +50,8 @@ GA4 runtime, route restrictions, URL/referrer sanitization and deduplication are
 The modal uses the installed Radix dialog for title/description associations, focus trapping,
 Escape/outside dismissal, background interaction blocking and focus restoration. The optional
 checkbox has a visible associated label and description. Footer controls and modal inputs have
-visible keyboard focus. The dialog is viewport-bounded and scrollable; no new motion was added.
+visible keyboard focus. The dialog is viewport-bounded and scrollable. Exit animation timers
+are cleaned up; the exiting banner cannot receive keyboard focus or pointer interaction.
 The privacy disclosure explains categories, purpose, provider, decision persistence and withdrawal.
 
 This is a consent interface for the existing GA4 integration, not a claim of legal certification
@@ -55,7 +65,7 @@ Guidance used for the interface decisions:
 - [EDPB cookie-banner taskforce report](https://www.edpb.europa.eu/system/files/2023-01/edpb_20230118_report_cookie_banner_taskforce_en.pdf): rejection in the first layer and avoiding deceptive choice design.
 - [NDPC GAID 2025](https://ndpc.gov.ng/wp-content/uploads/2025/07/NDP-ACT-GAID-2025-MARCH-20TH.pdf): cookie/tracking transparency and conspicuous notices consistent with data-protection principles.
 
-## Verification
+## Original release verification
 
 The first production smoke check found that `NEXT_PUBLIC_GA_ID` was absent from the
 linked Vercel Production environment. The owner authorized adding the expected public
@@ -84,3 +94,15 @@ and rejection/customization remain available. Its targeted regression test passe
 - Final release production build passed (Next.js 16.1.6, TypeScript and 132 generated entries).
   Only the eight consent UI, footer, disclosure, policy event, test and documentation files
   belong to this release; unrelated audits, historic screenshots and generated files are excluded.
+
+## Dismissal refinement verification
+
+- Focused tests cover persistence success/read-back, thrown/blocked storage, no-op writes,
+  default analytics gating, the updated controls, saved-choice unmounting and reduced-motion CSS.
+- Real isolated Chrome against the local app passed 28 checks: 240ms inert fade, full unmount,
+  accept/reject/customize-save, refresh persistence, footer reopening, analytics-off save withdrawal,
+  no later GA4 collection on navigation, reduced-motion immediate removal, visible storage error
+  and successful retry. Acceptance produced one real GA4 collection request.
+- No standalone Withdraw Consent button remains. Only analytics is optional in the actual
+  architecture; advertising/marketing storage stays denied. No nonfunctional category was added.
+- Evidence: `C:/Users/HP/AppData/Local/Temp/psh-consent-wdhR2i/verification.json`.

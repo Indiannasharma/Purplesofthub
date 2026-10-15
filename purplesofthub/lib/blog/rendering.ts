@@ -1,4 +1,4 @@
-import { Marked, Renderer } from 'marked'
+import { Marked, Renderer, Lexer, type TokensList } from 'marked'
 const SITE_URL = 'https://www.purplesofthub.com'
 function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -26,8 +26,11 @@ renderer.image = ({ href, text, title }) => {
 }
 const markdown = new Marked({ renderer, gfm: true, breaks: false, async: false })
 /** Markdown only. Raw HTML is escaped and non-web link protocols are rejected. */
-export function renderBlogMarkdown(content: string): string {
-  return (markdown.parse(content, { async: false }) as string)
+export function renderBlogMarkdown(content: string, references?: TokensList['links']): string {
+  const lexer = new Lexer(markdown.defaults)
+  if (references) lexer.tokens.links = { ...references }
+  const tokens = lexer.lex(content)
+  return markdown.parser(tokens)
     .replace(/<h([1-6])>/g, '<h$1 class="article-h$1">')
     .replace(/<p>/g, '<p class="article-p">').replace(/<ul>/g, '<ul class="article-ul">')
     .replace(/<ol(?: start="(\d+)")?>/g, '<ol class="article-ul" start="$1">')
