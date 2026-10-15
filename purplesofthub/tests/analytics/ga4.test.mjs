@@ -182,20 +182,53 @@ test('gtag adapter forwards native Arguments objects required by the real Google
   }
 });
 
-test('preference UI exposes equally named accept/reject and keyboard withdrawal controls without motion', () => {
-  const render = (choice, open) => {
+test('existing compact banner has equal accept/reject, Customize and withdrawal without automatic modal', () => {
+  const render = (choice, open, preferencesOpen = false) => {
     let stateIndex = 0;
-    const values = [choice, open];
+    const values = [choice, open, preferencesOpen, false];
     const component = loader({ react: { ...React, useEffect: () => {}, useRef: () => ({ current: null }), useState: () => [values[stateIndex++], () => {}] },
       'next/navigation': { usePathname: () => '/' }, 'next/link': { __esModule: true, default: ({ children, ...props }) => React.createElement('a', props, children) },
       '@/lib/analytics/browser': { browserRuntime: () => {}, guardNavigation: () => {} },
       './AnalyticsPreferences.module.css': { __esModule: true, default: {} },
+      '@radix-ui/react-dialog': {
+        Root: ({ open, children }) => open ? children : null,
+        Portal: ({ children }) => children,
+        Overlay: () => null,
+        Content: ({ children }) => React.createElement('div', { role: 'dialog' }, children),
+        Title: ({ children }) => React.createElement('h2', {}, children),
+        Description: ({ children }) => React.createElement('p', {}, children),
+        Close: ({ children, ...props }) => React.createElement('button', props, children),
+      },
     })('components/analytics/AnalyticsPreferences.tsx').default;
     return renderToStaticMarkup(React.createElement(component, { measurementId: ID }));
   };
   const html = render('unknown', false);
-  assert.match(html, /Accept analytics/); assert.match(html, /Reject analytics/); assert.match(html, /role="region"/); assert.match(html, /aria-controls="analytics-preferences"/);
+  assert.match(html, /Accept All/); assert.match(html, /Reject Optional/); assert.match(html, /Customize/); assert.match(html, /role="region"/); assert.match(html, /aria-controls="analytics-preferences"/);
+  assert.doesNotMatch(html, /role="dialog"/);
   assert.match(render('accepted', true), /Withdraw consent/);
+  const preferences = render('unknown', false, true);
+  assert.match(preferences, /role="dialog"/);
+  assert.match(preferences, /Always on/);
+  assert.match(preferences, /Save Preferences/);
+  assert.doesNotMatch(preferences, /checked=""/);
   const css = readFileSync(path.join(root, 'components/analytics/AnalyticsPreferences.module.css'), 'utf8');
   assert.match(css, /focus-visible/); assert.doesNotMatch(css, /animation|transition/);
+  assert.match(css, /left: 16px; bottom: 16px/);
+  assert.match(css, /max-width: min\(520px, calc\(100vw - 32px\)\)/);
+});
+
+test('footer privacy control opens the existing controller without storing or changing consent', () => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'window');
+  const events = [];
+  try {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: { dispatchEvent: event => events.push(event.type) } });
+    const Button = loader({ './AnalyticsPreferences.module.css': { __esModule: true, default: {} } })('components/analytics/PrivacyPreferencesButton.tsx').default;
+    const button = Button();
+    assert.equal(button.props.children, 'Privacy Preferences');
+    assert.equal(button.props['aria-haspopup'], 'dialog');
+    button.props.onClick();
+    assert.deepEqual(events, [policy.PRIVACY_PREFERENCES_EVENT]);
+  } finally {
+    if (descriptor) Object.defineProperty(globalThis, 'window', descriptor); else delete globalThis.window;
+  }
 });

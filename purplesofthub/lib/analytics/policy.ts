@@ -1,5 +1,6 @@
 export type AnalyticsChoice = "accepted" | "rejected" | "unknown";
 export const CONSENT_KEY = "purplesofthub-analytics-preference";
+export const PRIVACY_PREFERENCES_EVENT = "purplesofthub:open-privacy-preferences";
 export const CONSENT_MAX_AGE = 180 * 24 * 60 * 60 * 1000;
 export const PUBLIC_ORIGIN = "https://www.purplesofthub.com";
 

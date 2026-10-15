@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import PrivacyPreferencesButton from '@/components/analytics/PrivacyPreferencesButton'
 
 const serviceLinks = [
   { label: 'Web Development', href: '/services/web-development' },
@@ -207,6 +208,7 @@ export default function Footer() {
               © {year} PurpleSoftHub. All rights reserved.
             </p>
             <div className="purplefoot-bottom-links">
+              <PrivacyPreferencesButton />
               <Link href="/privacy" className="purplefoot-link">
                 Privacy Policy
               </Link>
