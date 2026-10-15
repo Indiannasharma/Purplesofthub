@@ -11,6 +11,7 @@ import ProjectMedia from "../_components/ProjectMedia";
 import CaseStudyGallery from "../_components/CaseStudyGallery";
 import CaseStudyToc, { type CaseStudySection } from "../_components/CaseStudyToc";
 import { getProjectBySlug } from "@/lib/portfolio.server";
+import { allowedPortfolioFallback } from "@/lib/portfolio-public.server";
 import { isRemovedDemoPortfolioProject } from "@/lib/portfolio-demo-projects";
 import { authoredContentMap, normalizeProject } from "@/lib/portfolio-normalize";
 import { PORTFOLIO_PROJECTS, RAW_PROJECTS } from "../_data/portfolio";
@@ -48,6 +49,8 @@ async function loadProject(slug: string): Promise<LoadedProject | null> {
     return { project: normalizeProject(remote), raw: remote as unknown as Record<string, unknown> };
   }
 
+  const allowed = await allowedPortfolioFallback();
+  if (!allowed.some(project => project.slug === slug)) return null;
   const seed = RAW_PROJECTS.find((project) => project.slug === slug && !isRemovedDemoPortfolioProject(project));
   if (!seed) return null;
   return { project: normalizeProject(seed), raw: seed as unknown as Record<string, unknown> };

@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { AdminPage } from "@/components/admin/AdminPage";
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toSlug } from "@/lib/portfolio"
+import { portfolioInputError } from "@/lib/portfolio-validation"
 
 const CATEGORIES = ["Web", "Brand", "Mobile", "Music", "UI/UX", "Marketing"]
 
@@ -52,6 +53,7 @@ export default function ProjectForm({
 }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const submitting = useRef(false)
   const [error, setError] = useState("")
   const [form, setForm] = useState<FormState>({
     title: initial?.title || "",
@@ -63,18 +65,18 @@ export default function ProjectForm({
     cover: initial?.cover || "",
     youtube: initial?.youtube || "",
     featured: initial?.featured || false,
-    status: initial?.status || "published",
+    status: initial?.status || "draft",
   })
 
   const set = (key: keyof FormState, value: string | boolean) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
   async function save() {
+    if (submitting.current) return
     if (!form.title.trim()) {
       setError("Name is required")
       return
     }
-    setSaving(true)
     setError("")
     const payload: Record<string, unknown> = {
       title: form.title.trim(),
@@ -91,20 +93,26 @@ export default function ProjectForm({
       color: "#7c3aed",
     }
     if (projectId) payload.id = projectId
-
-    const res = await fetch("/api/portfolio", {
-      method: projectId ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-    const json = await res.json()
-    setSaving(false)
-    if (!res.ok) {
-      setError(json.error || "Could not save")
-      return
+    const invalid = portfolioInputError(payload, Boolean(projectId))
+    if (invalid) { setError(invalid); return }
+    submitting.current = true
+    setSaving(true)
+    try {
+      const res = await fetch("/api/portfolio", {
+        method: projectId ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error || "Could not save"); return }
+      router.push("/admin/portfolio")
+      router.refresh()
+    } catch {
+      setError("Could not save. Check your connection and try again.")
+    } finally {
+      submitting.current = false
+      setSaving(false)
     }
-    router.push("/admin/portfolio")
-    router.refresh()
   }
 
   return (
@@ -137,7 +145,7 @@ export default function ProjectForm({
       </div>
 
       {error ? (
-        <p style={{ color: "#fca5a5", fontSize: 13, marginBottom: 16 }}>{error}</p>
+        <p role="alert" style={{ color: "var(--cc-error)", fontSize: 13, marginBottom: 16 }}>{error}</p>
       ) : null}
 
       <div style={{ display: "grid", gap: 18 }}>
@@ -158,6 +166,7 @@ export default function ProjectForm({
         <div>
           <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-4">Category</label>
           <select value={form.category} onChange={(e) => set("category", e.target.value)} style={{ ...field, cursor: "pointer" }}  id="admin-portfoliocomponentsProjectFormtsx-4">
+            {!CATEGORIES.includes(form.category) && <option value={form.category}>{form.category}</option>}
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
@@ -184,13 +193,13 @@ export default function ProjectForm({
             <input type="checkbox" checked={form.featured} onChange={(e) => set("featured", e.target.checked)} />
             Featured on home
           </label>
-          <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
-            <input
-              type="checkbox"
-              checked={form.status === "published"}
-              onChange={(e) => set("status", e.target.checked ? "published" : "draft")}
-            />
-            Published
+          <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            Status
+            <select aria-label="Project status" value={form.status} onChange={(event) => set("status", event.target.value)} style={{ ...field, width: "auto" }}>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
           </label>
         </div>
       </div>

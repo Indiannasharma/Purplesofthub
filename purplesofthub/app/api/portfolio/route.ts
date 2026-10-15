@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth'
 import { toSlug } from '@/lib/portfolio'
 import { excludeRemovedDemoPortfolioProjects } from '@/lib/portfolio-demo-projects'
+import { isPortfolioId, portfolioInputError, portfolioPageRange, portfolioSearch } from '@/lib/portfolio-validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,8 +17,9 @@ export async function GET(request: NextRequest) {
     const service = searchParams.get('service')
     const featured = searchParams.get('featured')
     const search = searchParams.get('search')
-    const limit = parseInt(searchParams.get('limit') || '50')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const range = portfolioPageRange(searchParams)
+    if (!range || (search && search.length > 120)) return NextResponse.json({ error: 'Invalid pagination or search' }, { status: 400 })
+    const { limit, offset } = range
 
     let query = supabase
       .from('portfolio_projects')
@@ -31,8 +33,8 @@ export async function GET(request: NextRequest) {
     if (service) query = query.eq('service', service)
     if (featured === 'true') query = query.eq('featured', true)
     if (search) {
-      const q = search.toLowerCase()
-      query = query.or(`title.ilike.%${q}%,client_name.ilike.%${q}%,industry.ilike.%${q}%,category.ilike.%${q}%`)
+      const q = portfolioSearch(search)
+      if (q) query = query.or(`title.ilike.%${q}%,client_name.ilike.%${q}%,industry.ilike.%${q}%,category.ilike.%${q}%`)
     }
 
     const { data, error, count } = await query
@@ -57,6 +59,8 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     const body = await request.json()
+    const invalid = portfolioInputError(body)
+    if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
     const slug = body.slug || toSlug(body.title || '')
 
     if (!body.title) return NextResponse.json({ error: 'Title is required' }, { status: 400 })
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase.from('portfolio_projects').insert(payload).select('*').single()
     if (error) {
       console.error('[portfolio] POST failed:', error.code, error.message)
-      return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
+      return NextResponse.json({ error: error.code === '23505' ? 'A project with this slug already exists' : 'Failed to create project' }, { status: error.code === '23505' ? 409 : 500 })
     }
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
@@ -96,14 +100,17 @@ export async function PUT(request: NextRequest) {
   try {
     const supabase = await createClient()
     const body = await request.json()
+    const invalid = portfolioInputError(body, true)
+    if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
     const projectId = body.id
 
     if (!projectId) return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
 
-    const { id: _id, ...rest } = body
+    const rest = { ...body }
+    delete rest.id
     const payload = {
       ...rest,
-      slug: body.slug || toSlug(body.title || ''),
+      ...(body.slug || body.title ? { slug: body.slug || toSlug(body.title) } : {}),
       updated_at: new Date().toISOString(),
     }
 
@@ -112,12 +119,13 @@ export async function PUT(request: NextRequest) {
       .update(payload)
       .eq('id', projectId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('[portfolio] PUT failed:', error.code, error.message)
-      return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
+      return NextResponse.json({ error: error.code === '23505' ? 'A project with this slug already exists' : 'Failed to update project' }, { status: error.code === '23505' ? 409 : 500 })
     }
+    if (!data) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     return NextResponse.json({ data })
   } catch (error) {
     console.error('[portfolio] PUT failed:', error)
@@ -135,19 +143,20 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('id')
 
-    if (!projectId) return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
+    if (!isPortfolioId(projectId)) return NextResponse.json({ error: 'A valid project ID is required' }, { status: 400 })
 
     const { data, error } = await supabase
       .from('portfolio_projects')
       .update({ status: 'archived', updated_at: new Date().toISOString() })
       .eq('id', projectId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('[portfolio] DELETE failed:', error.code, error.message)
       return NextResponse.json({ error: 'Failed to archive project' }, { status: 500 })
     }
+    if (!data) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     return NextResponse.json({ data })
   } catch (error) {
     console.error('[portfolio] DELETE failed:', error)

@@ -63,7 +63,7 @@ export function normalizeProject(input: RawPortfolioProject | PortfolioProject |
   const industry = asNullable(pick(raw, 'industry'))
   const overview = asNullable(pick(raw, 'overview'))
   const challenge = asNullable(pick(raw, 'challenge'))
-  const finalSolution = asNullable(pick(raw, 'finalSolution', 'solution'))
+  const finalSolution = asNullable(pick(raw, 'finalSolution', 'final_solution', 'solution'))
   const deliverables = asStringArray(pick(raw, 'deliverables'))
   const servicesUsed = asStringArray(pick(raw, 'servicesUsed', 'services_used'))
   const tags = asStringArray(pick(raw, 'tags'))
@@ -228,7 +228,7 @@ export function matchesShowcaseSearch(project: PortfolioProject, query: string):
 const AUTHORED_ALIASES: Record<string, string[]> = {
   overview: ['overview'],
   challenge: ['challenge'],
-  solution: ['finalSolution', 'solution'],
+  solution: ['finalSolution', 'final_solution', 'solution'],
   research: ['research'],
   strategy: ['strategy'],
   creativeDirection: ['creativeDirection', 'creative_direction'],

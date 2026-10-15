@@ -14,8 +14,7 @@ import {
 } from "@/components/motion";
 import { Suspense } from "react";
 import HomeBlogSection, { HomeBlogSkeleton } from "@/components/blog/HomeBlogSection";
-import HomePortfolio from "@/components/HomePortfolio";
-import { PORTFOLIO_PROJECTS } from "@/app/portfolio/_data/portfolio";
+import HomePortfolioSection from "@/components/HomePortfolioSection";
 
 export const dynamic = 'force-dynamic';
 
@@ -194,7 +193,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <HomePortfolio projects={PORTFOLIO_PROJECTS} />
+      <Suspense fallback={null}><HomePortfolioSection /></Suspense>
 
       {/* ── PREMIUM DIAGONAL DIVIDER ── */}
       <div

@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { PortfolioProject } from "@/types/portfolio";
 
 export default function HomePortfolio({ projects }: { projects: PortfolioProject[] }) {
-  const published = projects.filter((p) => p.status !== "archived");
+  const published = projects.filter((p) => p.status === "published");
   const withoutNova = published.filter((p) => !/nova ai brand launch/i.test(p.title));
   const featured = withoutNova.filter((p) => p.featured);
   const legjit = withoutNova.find((p) => p.slug === "legjit-baby-food");

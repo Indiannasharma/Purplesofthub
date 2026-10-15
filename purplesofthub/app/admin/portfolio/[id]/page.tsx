@@ -5,11 +5,13 @@ import { useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { normalizeProject } from "@/lib/portfolio-normalize"
 import ProjectForm from "../_components/ProjectForm"
+import { isPortfolioId } from "@/lib/portfolio-validation"
 
 export default function EditPortfolioProjectPage() {
   const params = useParams<{ id: string }>()
   const projectId = params?.id
   const [ready, setReady] = useState(false)
+  const [error, setError] = useState("")
   const [initial, setInitial] = useState<{
     title: string
     client: string
@@ -24,13 +26,14 @@ export default function EditPortfolioProjectPage() {
   }>()
 
   useEffect(() => {
-    if (!projectId) {
-      setReady(true)
-      return
-    }
+    let active = true
     const supabase = createClient()
-    supabase.from("portfolio_projects").select("*").eq("id", projectId).maybeSingle().then(({ data }) => {
-      if (data) {
+    async function load() {
+      try {
+        if (!isPortfolioId(projectId)) throw new Error('Invalid project')
+        const { data, error: readError } = await supabase.from("portfolio_projects").select("*").eq("id", projectId).maybeSingle()
+        if (!active) return
+        if (readError || !data) throw new Error('Project unavailable')
         const project = normalizeProject(data)
         setInitial({
           title: project.title,
@@ -44,11 +47,17 @@ export default function EditPortfolioProjectPage() {
           featured: project.featured,
           status: project.status,
         })
+      } catch {
+        if (active) setError("This project could not be loaded. Return to Work and try again.")
+      } finally {
+        if (active) setReady(true)
       }
-      setReady(true)
-    })
+    }
+    void Promise.resolve().then(load)
+    return () => { active = false }
   }, [projectId])
 
   if (!ready) return <p style={{ color: "#9d8fd4" }}>Loading…</p>
+  if (error) return <p role="alert" style={{ color: "var(--cc-error)" }}>{error}</p>
   return <ProjectForm projectId={projectId} initial={initial} />
 }

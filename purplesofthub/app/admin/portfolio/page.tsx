@@ -14,6 +14,8 @@ export default function AdminPortfolioPage() {
   const [projects, setProjects] = useState<PortfolioProject[]>([])
   const [loading, setLoading] = useState(true)
   const [readError, setReadError] = useState(false);
+  const [archiveError, setArchiveError] = useState("")
+  const [archiving, setArchiving] = useState<string | null>(null)
 
   async function load() {
     try {
@@ -31,9 +33,19 @@ export default function AdminPortfolioPage() {
 
 
   async function archive(id: string) {
+    if (archiving) return
     if (!confirm("Remove this project from the site?")) return
-    await fetch(`/api/portfolio?id=${id}`, { method: "DELETE" })
-    setProjects((p) => p.filter((item) => item.id !== id))
+    setArchiveError("")
+    setArchiving(id)
+    try {
+      const response = await fetch(`/api/portfolio?id=${encodeURIComponent(id)}`, { method: "DELETE" })
+      if (!response.ok) throw new Error('Archive failed')
+      setProjects((p) => p.filter((item) => item.id !== id))
+    } catch {
+      setArchiveError("Could not archive the project. No changes are shown; try again.")
+    } finally {
+      setArchiving(null)
+    }
   }
 
   useEffect(() => {
@@ -62,6 +74,7 @@ export default function AdminPortfolioPage() {
           New project
         </Link>} />
 
+      {archiveError && <p role="alert" style={{ color: "var(--cc-error)" }}>{archiveError}</p>}
       {loading ? (
         <p style={{ color: "var(--cc-text-secondary)" }}>Loading…</p>
       ) : projects.length === 0 ? (
@@ -106,6 +119,7 @@ export default function AdminPortfolioPage() {
                 <button
                   type="button"
                   onClick={() => archive(project.id)}
+                  disabled={Boolean(archiving)}
                   style={{ background: "none", border: "none", color: "var(--cc-error)", cursor: "pointer", fontSize: 13 }}
                 >
                   Remove
