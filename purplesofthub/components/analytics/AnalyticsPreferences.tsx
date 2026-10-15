@@ -67,7 +67,7 @@ export default function AnalyticsPreferences({ measurementId }: { measurementId:
   }
 
   const configured = validMeasurementId(measurementId);
-  const expanded = open || (choice === "unknown" && configured);
+  const expanded = open || choice === "unknown";
   return <>
     {visible && <div className={styles.root}>
     <button ref={trigger} type="button" className={styles.trigger} aria-expanded={expanded} aria-controls="analytics-preferences" onClick={() => setOpen(value => !value)}>Analytics preferences</button>

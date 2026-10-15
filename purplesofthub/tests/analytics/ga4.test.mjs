@@ -183,7 +183,7 @@ test('gtag adapter forwards native Arguments objects required by the real Google
 });
 
 test('existing compact banner has equal accept/reject, Customize and withdrawal without automatic modal', () => {
-  const render = (choice, open, preferencesOpen = false) => {
+  const render = (choice, open, preferencesOpen = false, measurementId = ID) => {
     let stateIndex = 0;
     const values = [choice, open, preferencesOpen, false];
     const component = loader({ react: { ...React, useEffect: () => {}, useRef: () => ({ current: null }), useState: () => [values[stateIndex++], () => {}] },
@@ -200,11 +200,17 @@ test('existing compact banner has equal accept/reject, Customize and withdrawal 
         Close: ({ children, ...props }) => React.createElement('button', props, children),
       },
     })('components/analytics/AnalyticsPreferences.tsx').default;
-    return renderToStaticMarkup(React.createElement(component, { measurementId: ID }));
+    return renderToStaticMarkup(React.createElement(component, { measurementId }));
   };
   const html = render('unknown', false);
   assert.match(html, /Accept All/); assert.match(html, /Reject Optional/); assert.match(html, /Customize/); assert.match(html, /role="region"/); assert.match(html, /aria-controls="analytics-preferences"/);
   assert.doesNotMatch(html, /role="dialog"/);
+  const unconfigured = render('unknown', false, false, '');
+  assert.match(unconfigured, /role="region"/);
+  assert.match(unconfigured, /Analytics is not configured/);
+  assert.match(unconfigured, /disabled=""[^>]*>Accept All/);
+  assert.match(unconfigured, /Reject Optional/);
+  assert.match(unconfigured, /Customize/);
   assert.match(render('accepted', true), /Withdraw consent/);
   const preferences = render('unknown', false, true);
   assert.match(preferences, /role="dialog"/);

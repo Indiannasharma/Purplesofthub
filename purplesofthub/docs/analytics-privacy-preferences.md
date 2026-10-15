@@ -57,6 +57,12 @@ Guidance used for the interface decisions:
 
 ## Verification
 
+The first production smoke check found that `NEXT_PUBLIC_GA_ID` was absent from the
+linked Vercel Production environment. The owner authorized adding the expected public
+measurement ID. A follow-up one-line correction makes unknown-consent banner expansion
+independent of GA4 configuration. Without configuration, acceptance remains disabled,
+and rejection/customization remain available. Its targeted regression test passed.
+
 - 14 focused analytics tests passed, retaining route/privacy/gating/deduplication/withdrawal
   regressions and adding banner, explicit-modal, optional-default and footer-opener checks.
 - TypeScript and changed-file ESLint passed; Git diff check passed.
