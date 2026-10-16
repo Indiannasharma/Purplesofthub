@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
     const image = file ? await blogImageUpload(file) : undefined
     const result = await publishBlog(payload, repository(), { image })
     revalidatePath('/')
-    revalidatePath('/blog')
-    revalidatePath('/blog/' + result.post.slug)
+    revalidatePath('/insights')
+    revalidatePath('/insights/' + result.post.slug)
     return response(result, result.operation === 'create' ? 201 : 200)
   } catch (error) { return failure(error) }
 }
@@ -101,8 +101,8 @@ export async function DELETE(request: NextRequest) {
     if (error) throw new BlogPublishingError(503, 'delete_failed', 'The article could not be deleted.')
     if (!data) throw new BlogPublishingError(404, 'post_not_found', 'Article not found.')
     revalidatePath('/')
-    revalidatePath('/blog')
-    revalidatePath('/blog/' + data.slug)
+    revalidatePath('/insights')
+    revalidatePath('/insights/' + data.slug)
     return response({ ok: true, id: data.id })
   } catch (error) { return failure(error) }
 }

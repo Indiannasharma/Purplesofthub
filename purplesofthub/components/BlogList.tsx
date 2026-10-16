@@ -58,7 +58,7 @@ export default function BlogList({ posts }: { posts: PostMeta[] }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 24 }}>
           {filtered.map((p, i) => (
             <Reveal key={p.slug} delay={i * 0.05}>
-              <Link href={`/blog/${p.slug}`} style={{ textDecoration: "none", display: "block", height: "100%" }}>
+              <Link href={`/insights/${p.slug}`} style={{ textDecoration: "none", display: "block", height: "100%" }}>
                 <div className="glass-card" style={{ overflow: "hidden", height: "100%", display: "flex", flexDirection: "column" }}>
                   <div style={{ height: 150, background: "linear-gradient(135deg,rgba(124,58,237,.2),rgba(168,85,247,.1))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 52 }}>
                     {TAG_EMOJI[p.tag] || "📝"}

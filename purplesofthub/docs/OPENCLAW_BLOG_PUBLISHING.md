@@ -1,4 +1,11 @@
-# PurpleSoftHub blog publishing
+# PurpleSoftHub Insights publishing
+
+Public articles use `/insights/{slug}` and categories use `/insights/category/{slug}`.
+Legacy `/blog` links redirect permanently, preserving article slugs and query filters.
+The CMS remains at `/admin/blog` (also available at `/admin/insights`) and all
+authenticated `/api/admin/blog` endpoints and OpenClaw payloads stay unchanged.
+Run `node scripts/verify-insights-routing.mjs` for read-only production routing checks;
+pass `http://localhost:3110` to check a local production build instead.
 
 The one-time application deployment and database migration install the publisher. **Normal article creation and updates only call the publisher; they never require Git changes or a Vercel deployment.** The existing Supabase blog and Cloudinary account remain the source of truth.
 
@@ -75,7 +82,7 @@ Images support JPG, PNG, WebP and AVIF, maximum **3 MB**. The whole request is l
 
 Submit Markdown, not HTML. H2/H3 headings, paragraphs, ordered/unordered lists, emphasis, fenced code and links are supported. Raw HTML is escaped; javascript:, data: and other unsafe link schemes are removed. Source links can be written inline or submitted in source_urls. Do not fetch a source automatically as part of publication: OpenClaw prepares and reviews the article first.
 
-The live route reads actual database values on every request. It generates the canonical URL https://www.purplesofthub.com/blog/{slug}, Open Graph, Twitter metadata and escaped BlogPosting JSON-LD. PurpleSoftHub is an Organization author and publisher. Missing dates or other data are omitted rather than invented. The visible byline uses the stored author name. Articles immediately appear in the dynamic blog listing after publication.
+The live route reads actual database values on every request. It generates the canonical URL https://www.purplesofthub.com/insights/{slug}, Open Graph, Twitter metadata and escaped BlogPosting JSON-LD. PurpleSoftHub is an Organization author and publisher. Missing dates or other data are omitted rather than invented. The visible byline uses the stored author name. Articles immediately appear in the dynamic blog listing after publication.
 
 ## Multimedia content (same publishing contract)
 
@@ -124,7 +131,7 @@ Social post (illustrative X URL; replace with an actual public post):
 ```
 ````
 
-Optional approved native video and homepage Blog preview (illustrative asset):
+Optional approved native video and homepage Insights preview (illustrative asset):
 
 ````text
 ```psh-media
@@ -132,7 +139,7 @@ Optional approved native video and homepage Blog preview (illustrative asset):
 ```
 ````
 
-The first Cloudinary video block supplies the homepage Blog card preview. The full
+The first Cloudinary video block supplies the homepage Insights card preview. The full
 article renders it as a click-to-load native player. Homepage cards derive a six-second,
 720px `q_auto` delivery URL, mute and loop, with no video request until hover intent or
 explicit play. Supply only approved MP4/WebM upload assets; YouTube/TikTok pages are
@@ -158,7 +165,7 @@ Successful creation returns 201; an update returns 200:
   "ok": true,
   "operation": "create",
   "post": { "id": "saved-uuid", "slug": "article-slug", "status": "draft", "author_name": "PurpleSoftHub" },
-  "url": "https://www.purplesofthub.com/blog/article-slug",
+  "url": "https://www.purplesofthub.com/insights/article-slug",
   "content_format": "markdown"
 }
 ```
@@ -186,6 +193,6 @@ The controlled release script is scripts/verify-blog-publisher.mjs. It requires 
 
 ## Editorial CMS and public feed
 
-The homepage shows the three most recently published articles, ordered by publication date. The editorial heading remains Trending Blog Posts; this is a recent-publication feed, not a fabricated engagement ranking. View tracking does not exist, so no view analytics are displayed. The homepage and archive fetch published metadata server-side with no-store, and the publishing operation revalidates the homepage, archive and affected article. New publication is visible on the next fresh request without deployment.
+The homepage shows the three most recently published articles, ordered by publication date. The editorial heading remains Latest Insights; this is a recent-publication feed, not a fabricated engagement ranking. View tracking does not exist, so no view analytics are displayed. The homepage and archive fetch published metadata server-side with no-store, and the publishing operation revalidates the homepage, archive and affected article. New publication is visible on the next fresh request without deployment.
 
 The CMS uses GET /api/admin/blog for paginated article summaries, real statistics and existing category/author suggestions. The write interface remains POST /api/admin/blog/publish. Draft previews require admin authorization. Newly generated slugs remain bounded to 100 ASCII characters; an unchanged URL from a previously published legacy article is preserved. SEO recommendations are guidance rather than publication blockers; the application caps title/description input at 200/500 characters.

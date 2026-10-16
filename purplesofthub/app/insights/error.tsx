@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 
-export default function BlogError({
+export default function InsightsError({
   error,
   reset,
 }: {
@@ -11,7 +11,7 @@ export default function BlogError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Blog error:', error)
+    console.error('Insights error:', error)
   }, [error])
 
   return (
@@ -36,7 +36,7 @@ export default function BlogError({
         color: 'var(--heading, #1a1a1a)',
         margin: '0 0 8px',
       }}>
-        Blog Error
+        Insights Error
       </h2>
       <p style={{
         fontSize: '14px',

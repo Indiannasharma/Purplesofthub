@@ -3,7 +3,7 @@ export const PREFERENCE_KEY = 'purplesofthub-newsletter-v1';
 export const SESSION_KEY = 'purplesofthub-newsletter-shown';
 export const CHANGE_EVENT = 'purplesofthub:newsletter';
 
-const publicPages = new Set(['/', '/about', '/contact', '/services', '/portfolio', '/blog', '/academy', '/music']);
+const publicPages = new Set(['/', '/about', '/contact', '/services', '/portfolio', '/blog', '/insights', '/academy', '/music']);
 export function newsletterEligible(path: string, search = ''): boolean {
   const query = new URLSearchParams(search);
   if (['preview', 'draft', 'token', 'code', 'session', 'payment'].some(key => query.has(key))) return false;
@@ -12,7 +12,8 @@ export function newsletterEligible(path: string, search = ''): boolean {
   const parts = normalized.split('/').slice(1);
   if (parts.some(part => /^(checkout|payment|callback|preview|draft|account-recovery)$/.test(part))) return false;
   if (!/^[a-z0-9-]+$/.test(parts[1] || '')) return false;
-  return (['blog', 'portfolio'].includes(parts[0]) && parts.length === 2) ||
+  return (parts[0] === 'insights' && parts[1] === 'category' && parts.length === 3 && /^[a-z0-9-]+$/.test(parts[2])) ||
+    (['blog', 'insights', 'portfolio'].includes(parts[0]) && parts.length === 2) ||
     (parts[0] === 'services' && (parts.length === 2 || (parts.length === 3 && parts[2] === 'pricing')));
 }
 

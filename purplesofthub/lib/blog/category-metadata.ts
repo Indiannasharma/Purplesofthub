@@ -28,20 +28,17 @@ export function categoryPresentation(category?: { name: string; slug: string }) 
 
 export function archiveMetadata(category?: { name: string; slug: string }): Metadata {
   const presentation = categoryPresentation(category)
-  if (!presentation || !category) return {
-    title: 'Blog',
-    description: 'Insights on technology, web development, digital marketing and digital growth from PurpleSoftHub.',
-    alternates: { canonical: SITE_URL + '/blog' },
-  }
-  const canonical = SITE_URL + '/blog?' + new URLSearchParams({ category: category.slug })
+  const canonical = SITE_URL + '/insights' + (category ? '/category/' + encodeURIComponent(category.slug) : '')
+  const title = category ? presentation?.title || category.name + ' | PurpleSoftHub Insights' : 'PurpleSoftHub Insights | Technology, Business & Creativity'
+  const description = category ? presentation?.description || 'Explore '+category.name+' articles and perspectives from PurpleSoftHub Insights.' : 'Insights on technology, web development, digital marketing and digital growth from PurpleSoftHub.'
   const image = SITE_URL + '/og-image.png'
   return {
-    title: { absolute: presentation.title },
-    description: presentation.description,
+    title: { absolute: title },
+    description,
     alternates: { canonical },
-    openGraph: { type: 'website', siteName: 'PurpleSoftHub Insights', title: presentation.title,
-      description: presentation.description, url: canonical, images: [image] },
-    twitter: { card: 'summary_large_image', title: presentation.title,
-      description: presentation.description, images: [image] },
+    openGraph: { type: 'website', siteName: 'PurpleSoftHub Insights', title,
+      description, url: canonical, images: [image] },
+    twitter: { card: 'summary_large_image', title,
+      description, images: [image] },
   }
 }

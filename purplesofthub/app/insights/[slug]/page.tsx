@@ -17,6 +17,7 @@ import {readingMinutes,relatedStories,articleMarkdown} from '@/lib/blog/editoria
 import {publicBlogCategories,type PublicArticle} from '@/lib/blog/public-feed'
 import {editorialDate} from '@/lib/blog/queries'
 import {httpsUrl} from '@/lib/blog/publishing'
+import {categoryPath} from '@/lib/blog/urls'
 import styles from '@/components/blog/magazine.module.css'
 export const dynamic = 'force-dynamic'
 const SITE_URL = 'https://www.purplesofthub.com'
@@ -44,11 +45,11 @@ export async function generateMetadata(
   const ogImage = 
     post.featured_image ||
     `${SITE_URL}/opengraph-image`
-  const canonicalUrl = `${SITE_URL}/blog/${post.slug}`
+  const canonicalUrl = `${SITE_URL}/insights/${post.slug}`
 
   return {
     title: post.seo_title ||
-      `${post.title} | PurpleSoftHub Blog`,
+      `${post.title} | PurpleSoftHub Insights`,
     description: 
       post.seo_description || post.excerpt,
     alternates: {
@@ -85,12 +86,12 @@ export default async function BlogPostPage({params}:Props) {
   const [related,categories]=await Promise.all([getRelated(post),publicBlogCategories()])
   const authorName=post.author_name?.trim()||'PurpleSoftHub'
   const sources=(Array.isArray(post.source_urls)?post.source_urls:[]).filter((url:unknown):url is string=>typeof url==='string'&&Boolean(httpsUrl(url)))
-  const canonicalUrl=SITE_URL+'/blog/'+post.slug
+  const canonicalUrl=SITE_URL+'/insights/'+post.slug
   const category=categories.find(item=>item.name===post.category)
   const share=[{name:'Share on X',href:'https://twitter.com/intent/tweet?'+new URLSearchParams({text:post.title,url:canonicalUrl})},{name:'Share on WhatsApp',href:'https://wa.me/?'+new URLSearchParams({text:post.title+' — '+canonicalUrl})},{name:'Share on Telegram',href:'https://t.me/share/url?'+new URLSearchParams({url:canonicalUrl,text:post.title})}]
   return <><script type="application/ld+json" dangerouslySetInnerHTML={{__html:serializeBlogPosting(blogPosting(post))}}/><Navbar/><main className={styles.publicationPage}><a className={styles.skipLink} href="#article-body">Skip to article</a><div className={styles.container}>
     <PublicationMasthead categories={categories.length?categories:post.category?[{name:post.category,slug:post.category}]:[]}/>
-    <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><Link href="/blog">Insights</Link>{post.category&&<><span aria-hidden="true">/</span><Link href={'/blog?'+new URLSearchParams({category:category?.slug||post.category})}>{post.category}</Link></>}</nav>
+    <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><Link href="/insights">Insights</Link>{post.category&&<><span aria-hidden="true">/</span><Link href={categoryPath(category?.slug||post.category)}>{post.category}</Link></>}</nav>
     <article><header className={styles.articleHeader}>{post.category&&<p className={styles.category}>{post.category}</p>}<h1>{post.title}</h1>{post.excerpt&&<p className={styles.articleDeck}>{post.excerpt}</p>}<div className={styles.articleMeta}><strong>{authorName}</strong><time dateTime={post.published_at||post.created_at}>{editorialDate(post.published_at||post.created_at)}</time><span>{readingMinutes(post.content||'')} min read</span></div></header>
     {post.featured_image&&<div className={styles.articleHero}><StoryImage post={post} lead sizes="(max-width: 1024px) 100vw, 1000px"/></div>}
     <div className={styles.readingLayout}><div className={styles.readingColumn}><div id="article-body" className={styles.body}><ArticleBody content={articleMarkdown(post.content||'',post.title)} demoteTitle/></div>
@@ -98,6 +99,6 @@ export default async function BlogPostPage({params}:Props) {
     {Array.isArray(post.tags)&&post.tags.length>0&&<div className={styles.tags} aria-label="Article topics">{post.tags.map((tag:string)=><span key={tag}>{tag}</span>)}</div>}
     <div className={styles.engagement}><BlogReactions postId={post.id}/><BlogComments postId={post.id}/></div></div>
     <aside className={styles.articleRail} aria-label="Article sharing and advertisement"><div className={styles.share}><h2>Share this perspective</h2>{share.map(item=><a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer">{item.name} ↗</a>)}</div><AdSlot placement="sidebar"/></aside></div></article>
-    <div className={styles.related}>{related.length>0&&<section aria-labelledby="related-heading"><div className={styles.sectionHeading}><h2 id="related-heading">Related stories</h2><Link href="/blog">More from PurpleSoftHub ↗</Link></div><div className={styles.latestGrid}>{related.map(story=><StoryCard key={story.id} post={story}/>)}</div></section>}<div style={{maxWidth:750,margin:'48px auto 0'}}><AdSlot placement="after-article" house={<HouseAd/>}/></div><p style={{marginTop:32}}><Link href="/blog">← More from PurpleSoftHub</Link></p></div>
+    <div className={styles.related}>{related.length>0&&<section aria-labelledby="related-heading"><div className={styles.sectionHeading}><h2 id="related-heading">Related stories</h2><Link href="/insights">More from PurpleSoftHub ↗</Link></div><div className={styles.latestGrid}>{related.map(story=><StoryCard key={story.id} post={story}/>)}</div></section>}<div style={{maxWidth:750,margin:'48px auto 0'}}><AdSlot placement="after-article" house={<HouseAd/>}/></div><p style={{marginTop:32}}><Link href="/insights">← More from PurpleSoftHub</Link></p></div>
   </div></main><Footer/></>
 }

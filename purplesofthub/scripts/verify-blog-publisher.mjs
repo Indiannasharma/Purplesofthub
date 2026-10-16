@@ -53,12 +53,12 @@ try {
   assert.equal(post.featured_image_alt,alt); assert.ok(uploadedUrl.startsWith('https://res.cloudinary.com/'))
   assert.ok(new URL(uploadedUrl).pathname.includes('/purplesofthub/blog/')); assert.equal((await fetch(uploadedUrl,{method:'HEAD'})).status,200)
   assert.equal(post.category,'Technology'); assert.equal(post.seo_title,title); assert.equal(post.seo_description,excerpt)
-  assert.equal((await fetch(new URL('/blog/'+post.slug,site))).status,404)
+  assert.equal((await fetch(new URL('/insights/'+post.slug,site))).status,404)
   const overview=await fetch(new URL('/api/admin/blog?q='+encodeURIComponent(title)+'&status=draft',site),{headers:{Authorization:'Bearer '+token}})
   assert.equal(overview.status,200);const overviewData=await overview.json();assert.equal(overviewData.total,1);assert.equal(overviewData.posts[0].id,id);assert.ok(!('content' in overviewData.posts[0]));assert.ok(overviewData.stats.drafts>=1)
   assert.ok(!overviewData.stats.views);assert.equal(overviewData.pageSize,12)
   const draftHome=await(await fetch(new URL('/',site))).text();assert.ok(!draftHome.includes('data-article-slug="'+post.slug+'"'))
-  const draftArchive=await(await fetch(new URL('/blog?q='+encodeURIComponent(nonce),site))).text();assert.ok(!draftArchive.includes('data-article-slug="'+post.slug+'"'))
+  const draftArchive=await(await fetch(new URL('/insights?q='+encodeURIComponent(nonce),site))).text();assert.ok(!draftArchive.includes('data-article-slug="'+post.slug+'"'))
   console.log('ADMIN DASHBOARD / SEARCH / STATUS FILTER / REAL COUNTS / BOUNDED DATA / PUBLIC DRAFT PROTECTION: PASS')
   console.log('CREATE DRAFT / AUTOMATIC SLUG / DEFAULT AUTHOR / CLOUDINARY / ALT / SEO: PASS')
   stage='draft update and validation'
@@ -78,21 +78,21 @@ try {
   stage='publish and rendering'
   const published=await call({operation:'update',id,status:'published'}); assert.equal(published.status,200); post=published.data.post
   assert.ok(post.published_at); const firstDate=post.published_at
-  const page=await fetch(new URL('/blog/'+post.slug,site)); assert.equal(page.status,200); const html=await page.text()
+  const page=await fetch(new URL('/insights/'+post.slug,site)); assert.equal(page.status,200); const html=await page.text()
   assert.ok(html.includes('alt="'+alt+'"')); assert.ok(html.includes('<h2 class="article-h2">Updated draft</h2>'))
   assert.ok(html.includes('<h3 class="article-h3">Details</h3>')); assert.ok(html.includes('<ol ')); assert.ok(html.includes('<strong>bold</strong>'))
   assert.ok(html.includes('&lt;script&gt;window.__blogVerificationInjected=true&lt;/script&gt;'))
   assert.ok(!html.includes('<script>window.__blogVerificationInjected=true</script>')); assert.ok(!html.includes('href="javascript:'))
   const structured=[...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1])).find(v=>v['@type']==='BlogPosting')
   assert.deepEqual(structured.author,{'@type':'Organization',name:'PurpleSoftHub'})
-  const canonical='https://www.purplesofthub.com/blog/'+post.slug
+  const canonical='https://www.purplesofthub.com/insights/'+post.slug
   assert.equal(structured.mainEntityOfPage['@id'],canonical)
   assert.ok(html.includes('rel="canonical" href="'+canonical+'"')); assert.ok(html.includes('property="og:url" content="'+canonical+'"'))
   assert.ok(html.includes('name="twitter:card" content="summary_large_image"'))
-  const listing=await fetch(new URL('/blog',site)); assert.equal(listing.status,200); assert.ok((await listing.text()).includes('/blog/'+post.slug))
+  const listing=await fetch(new URL('/insights',site)); assert.equal(listing.status,200); assert.ok((await listing.text()).includes('/insights/'+post.slug))
   const homeAfter=await(await fetch(new URL('/',site))).text();assert.ok(homeAfter.includes('data-article-slug="'+post.slug+'"'))
-  assert.ok(homeAfter.includes('View All Articles'));assert.ok(homeAfter.includes('href="/blog"'))
-  const searched=await(await fetch(new URL('/blog?q='+encodeURIComponent(nonce)+'&category=technology',site))).text();assert.ok(searched.includes('data-article-slug="'+post.slug+'"'))
+  assert.ok(homeAfter.includes('View All Articles'));assert.ok(homeAfter.includes('href="/insights"'))
+  const searched=await(await fetch(new URL('/insights?q='+encodeURIComponent(nonce)+'&category=technology',site))).text();assert.ok(searched.includes('data-article-slug="'+post.slug+'"'))
   const filtered=await fetch(new URL('/api/admin/blog?q='+encodeURIComponent(nonce)+'&status=published&category=Technology&author=PurpleSoftHub&sort=updated',site),{headers:{Authorization:'Bearer '+token}})
   assert.equal(filtered.status,200);assert.equal((await filtered.json()).total,1)
   console.log('HOMEPAGE AUTO-PUBLICATION / VIEW ALL / ARCHIVE SEARCH / CATEGORY & AUTHOR FILTERS: PASS')

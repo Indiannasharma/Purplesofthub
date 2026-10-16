@@ -3,7 +3,7 @@ type StructuredPost = { title: string; slug: string; seo_description?: string | 
   author_name?: string | null; author_type?: string | null; category?: string | null; tags?: string[] | null; source_urls?: string[] | null }
 export function blogPosting(post: StructuredPost) {
   const site = 'https://www.purplesofthub.com'
-  const url = site + '/blog/' + post.slug
+  const url = site + '/insights/' + post.slug
   const author = post.author_name || 'PurpleSoftHub'
   return { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title,
     description: post.seo_description || post.excerpt || undefined, url,

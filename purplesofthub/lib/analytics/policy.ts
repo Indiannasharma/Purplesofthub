@@ -4,7 +4,7 @@ export const PRIVACY_PREFERENCES_EVENT = "purplesofthub:open-privacy-preferences
 export const CONSENT_MAX_AGE = 180 * 24 * 60 * 60 * 1000;
 export const PUBLIC_ORIGIN = "https://www.purplesofthub.com";
 
-const pages = new Set(["/", "/about", "/services", "/portfolio", "/academy", "/music", "/blog", "/contact"]);
+const pages = new Set(["/", "/about", "/services", "/portfolio", "/academy", "/music", "/blog", "/insights", "/contact"]);
 const services = new Set([
   "web-development", "mobile-app-development", "digital-marketing", "ui-ux-design", "saas-development",
   "music-promotion", "music-distribution", "branding-design", "branding-creative-design", "logo-design",
@@ -23,7 +23,8 @@ export function eligiblePage(input: string): string | null {
   const segments = path.split("/").slice(1);
   if (segments[0] === "services" && services.has(segments[1]) &&
       (segments.length === 2 || (segments.length === 3 && segments[2] === "pricing"))) return path;
-  if ((segments[0] === "blog" || segments[0] === "portfolio") && segments.length === 2 &&
+  if (segments[0] === 'insights' && segments[1] === 'category' && segments.length === 3 && /^[a-z0-9-]+$/.test(segments[2])) return path;
+  if ((segments[0] === "blog" || segments[0] === "insights" || segments[0] === "portfolio") && segments.length === 2 &&
       /^[a-z0-9-]+$/.test(segments[1])) return path;
   return null;
 }
@@ -59,6 +60,6 @@ export function safeReferrer(raw: string): string {
 
 export function pagePayload(path: string, referrer: string) {
   const section = path.split("/")[1];
-  const titles: Record<string, string> = { about: "About", services: "Services", portfolio: "Portfolio", academy: "Academy", music: "Music", blog: "Insights", contact: "Contact" };
+  const titles: Record<string, string> = { about: "About", services: "Services", portfolio: "Portfolio", academy: "Academy", music: "Music", blog: "Insights", insights: "Insights", contact: "Contact" };
   return { page_location: PUBLIC_ORIGIN + path, page_title: `PurpleSoftHub — ${titles[section] || "Home"}`, page_referrer: safeReferrer(referrer) };
 }

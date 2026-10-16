@@ -30,8 +30,8 @@ export function publicReportPath(value: string): string | null {
   return eligiblePage(value) ? value : null
 }
 const serviceSlugs = ['web-development','mobile-app-development','digital-marketing','ui-ux-design','saas-development','music-promotion','music-distribution','branding-design','branding-creative-design','logo-design','social-media-management','seo','seo-content','content-creation','video-content-creation','facebook-and-instagram-ads','facebook-ads','google-ads','ecommerce-development']
-const fixed = ['/', '/about', '/contact', '/services', '/portfolio', '/blog', '/academy', '/music', ...serviceSlugs.flatMap(slug => ['/services/' + slug, '/services/' + slug + '/pricing'])].filter(path => publicReportPath(path))
-export const PUBLIC_PATH_PATTERN = '^(' + fixed.map(path => path === '/' ? '/' : path + '/?').join('|') + '|/(blog|portfolio)/[a-z0-9-]+/?)$'
+const fixed = ['/', '/about', '/contact', '/services', '/portfolio', '/insights', '/blog', '/academy', '/music', ...serviceSlugs.flatMap(slug => ['/services/' + slug, '/services/' + slug + '/pricing'])].filter(path => publicReportPath(path))
+export const PUBLIC_PATH_PATTERN = '^(' + fixed.map(path => path === '/' ? '/' : path + '/?').join('|') + '|/(blog|insights|portfolio)/[a-z0-9-]+/?|/insights/category/[a-z0-9-]+/?)$'
 export const PRIVATE_PATH_PATTERN = '/(preview|draft|checkout|payment|callback|account-recovery)(/|$)'
 
 export type Summary = { users: number; sessions: number; views: number; engagement: number }

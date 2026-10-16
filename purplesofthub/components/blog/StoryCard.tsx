@@ -16,7 +16,7 @@ export function StoryByline({post}: {post:Pick<PublicArticle,'author_name'|'publ
 export default function StoryCard({post,variant='standard'}: {post:PublicArticle;variant?:'lead'|'standard'|'compact'|'feature'}) {
   const compact=variant==='compact'
   return <article className={[styles.story,styles[variant]].join(' ')} data-article-slug={post.slug}>
-    <Link href={'/blog/'+post.slug} className={styles.storyLink}>
+    <Link href={'/insights/'+post.slug} className={styles.storyLink}>
       <StoryImage post={post} lead={variant==='lead'} sizes={variant==='lead'?'(max-width: 767px) 100vw, (max-width: 1280px) 65vw, 820px':compact?'(max-width: 640px) 112px, 160px':undefined}/>
       <div className={styles.storyText}>{post.category && <p className={styles.category}>{post.category}</p>}<h3>{post.title}</h3>{!compact && post.excerpt && <p className={styles.deck}>{post.excerpt}</p>}<StoryByline post={post}/>{!compact && <span className={styles.read}>Read article <span aria-hidden="true">↗</span></span>}</div>
     </Link>

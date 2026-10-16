@@ -147,7 +147,7 @@ export async function publishBlog(input: unknown, db: BlogRepository, options: {
     }
     const post = existing ? await db.update(existing.id, values, existing.updated_at) : await db.insert(values)
     if (!post) throw new BlogPublishingError(409, 'post_changed', 'The article changed or was removed. Reload before saving.')
-    return { ok: true as const, operation, post, url: BLOG_SITE_URL + '/blog/' + post.slug, content_format: 'markdown' as const }
+    return { ok: true as const, operation, post, url: BLOG_SITE_URL + '/insights/' + post.slug, content_format: 'markdown' as const }
   } catch (error) {
     if (uploaded && options.image) { try { await options.image.remove(uploaded.publicId) } catch { console.error('[blog publisher] Failed to clean up an unused image.') } }
     throw error

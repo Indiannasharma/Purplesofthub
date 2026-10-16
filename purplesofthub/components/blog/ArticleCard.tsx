@@ -13,14 +13,14 @@ export default function ArticleCard({ post }: { post: PublicArticle }) {
   try { if(hasImage) optimize=new URL(image).hostname==='res.cloudinary.com' } catch { optimize=false }
   return <article className={styles.card} data-article-slug={post.slug} data-preview-card>
       <div className={styles.image}>
-        <Link href={'/blog/'+post.slug} className={styles.posterLink} aria-label={'Read '+post.title}>
+        <Link href={'/insights/'+post.slug} className={styles.posterLink} aria-label={'Read '+post.title}>
         <Image src={image} alt={post.featured_image_alt|| (hasImage ? post.title : 'PurpleSoftHub publication')}
           fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading="lazy" fetchPriority="low" unoptimized={!optimize}
           className={hasImage?styles.cover:styles.brandFallback}/>
         </Link>
         <CardVideoPreview src={post.preview_video} title={post.title}/>
       </div>
-    <Link href={'/blog/'+post.slug} className={styles.cardLink} aria-label={'Read '+post.title}>
+    <Link href={'/insights/'+post.slug} className={styles.cardLink} aria-label={'Read '+post.title}>
       <div className={styles.cardBody}>
         {post.category&&<span className={styles.category}>{post.category}</span>}
         <h3>{post.title}</h3><p className={styles.excerpt}>{post.excerpt}</p>

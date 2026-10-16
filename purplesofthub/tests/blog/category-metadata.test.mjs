@@ -10,7 +10,7 @@ test('new category SEO has exact titles and stable canonicals independent of sea
   const titles=['Gaming News, Reviews & Updates | PurpleSoftHub Insights','How-To Guides & Tutorials | PurpleSoftHub Insights']
   for(const [i,category] of categories.entries()) {
     const metadata=archiveMetadata(category)
-    const canonical='https://www.purplesofthub.com/blog?category='+category.slug
+    const canonical='https://www.purplesofthub.com/insights/category/'+category.slug
     assert.deepEqual(metadata.title,{absolute:titles[i]})
     assert.equal(metadata.alternates.canonical,canonical)
     assert.equal(metadata.openGraph.url,canonical)
@@ -21,10 +21,10 @@ test('new category SEO has exact titles and stable canonicals independent of sea
   }
 })
 
-test('default and existing category metadata retain their previous canonical and title',()=>{
+test('archive and all existing categories have Insights metadata',()=>{
   for(const category of [undefined,{name:'Technology',slug:'technology'},{name:'Unknown',slug:'__proto__'},{name:'Not Gaming',slug:'gaming'}]) {
-    assert.equal(archiveMetadata(category).title,'Blog')
-    assert.equal(archiveMetadata(category).alternates.canonical,'https://www.purplesofthub.com/blog')
+    assert.deepEqual(archiveMetadata(category).title,{absolute:category?category.name+' | PurpleSoftHub Insights':'PurpleSoftHub Insights | Technology, Business & Creativity'})
+    assert.equal(archiveMetadata(category).alternates.canonical,'https://www.purplesofthub.com/insights'+(category?'/category/'+category.slug:''))
     assert.equal(categoryPresentation(category),undefined)
   }
 })

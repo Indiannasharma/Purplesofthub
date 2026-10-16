@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  async redirects() {
+    return [{ source: '/blog/:path*', destination: '/insights/:path*', permanent: true }];
+  },
+  async rewrites() {
+    return [{ source: '/admin/insights/:path*', destination: '/admin/blog/:path*' }];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },

@@ -120,7 +120,7 @@ test('unsafe HTML and URL protocols cannot execute in rendered content', () => {
 test('JSON-LD uses real values and escapes script terminators', () => {
   const json = blogPosting({ ...article, slug: 'article', title: '</script><script>evil</script>', author_name: 'PurpleSoftHub', published_at: '2026-10-07T12:00:00Z' })
   assert.deepEqual(json.author, { '@type': 'Organization', name: 'PurpleSoftHub' })
-  assert.equal(json.mainEntityOfPage['@id'], 'https://www.purplesofthub.com/blog/article')
+  assert.equal(json.mainEntityOfPage['@id'], 'https://www.purplesofthub.com/insights/article')
   const serialized = serializeBlogPosting(json); assert.ok(!serialized.includes('</script>')); assert.deepEqual(JSON.parse(serialized), JSON.parse(JSON.stringify(json)))
   assert.equal(blogPosting({ title: 'No known date', slug: 'article' }).datePublished, undefined)
 })

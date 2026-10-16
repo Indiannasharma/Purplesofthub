@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { PUBLICATION_ORIGIN } from '@/lib/blog/urls'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,11 +21,11 @@ export async function GET() {
       console.error('RSS feed error:', error.message)
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.purplesofthub.com'
+    const baseUrl = PUBLICATION_ORIGIN
     const items = (posts || [])
       .filter((p) => p.slug && p.title)
       .map((post) => {
-        const postUrl = `${baseUrl}/blog/${post.slug}`
+        const postUrl = `${baseUrl}/insights/${post.slug}`
         const pubDate = new Date(post.published_at || post.created_at).toUTCString()
         return `
     <item>
@@ -42,12 +43,12 @@ export async function GET() {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>PurpleSoftHub Blog</title>
-    <link>${baseUrl}/blog</link>
+    <title>PurpleSoftHub Insights</title>
+    <link>${baseUrl}/insights</link>
     <description>Insights on web development, digital marketing, music and tech from PurpleSoftHub, a Digital Innovation Studio.</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${baseUrl}/blog/feed" rel="self" type="application/rss+xml" />
+    <atom:link href="${baseUrl}/insights/rss" rel="self" type="application/rss+xml" />
     ${items}
   </channel>
 </rss>`

@@ -54,7 +54,7 @@ export default function BlogManager() {
   }
   function actions(post:Row){return <div className={styles.rowActions}>
     <Link className={styles.button} href={'/admin/blog/edit/'+post.id}><PencilLine size={12} aria-hidden="true"/>Edit</Link>
-    <Link className={styles.button} href={post.status==='published'?'/blog/'+post.slug:'/admin/blog/preview/'+post.id} target="_blank" rel="noopener noreferrer"><Eye size={12} aria-hidden="true"/>{post.status==='published'?'View':'Preview'}</Link>
+    <Link className={styles.button} href={post.status==='published'?'/insights/'+post.slug:'/admin/blog/preview/'+post.id} target="_blank" rel="noopener noreferrer"><Eye size={12} aria-hidden="true"/>{post.status==='published'?'View':'Preview'}</Link>
     <button className={styles.button} type="button" disabled={Boolean(busy)} onClick={()=>mutate(post,'status')} aria-label={(post.status==='published'?'Unpublish ':'Publish ')+post.title}><Send size={12} aria-hidden="true"/>{post.status==='published'?'Unpublish':'Publish'}</button>
     <button className={styles.button+' '+styles.danger} type="button" disabled={Boolean(busy)} onClick={()=>setTarget(post)} aria-label={'Delete '+post.title}><Trash2 size={12} aria-hidden="true"/></button>
   </div>}
@@ -64,7 +64,7 @@ export default function BlogManager() {
   const active=filters.q||filters.status!=='all'||filters.category||filters.author
   const stats=[{key:'total',label:'Total posts',icon:FileText},{key:'published',label:'Published',icon:CheckCircle2},{key:'drafts',label:'Drafts',icon:PencilLine},{key:'categories',label:'Categories',icon:Tags}] as const
   return <AdminPage className={'cc-module '+styles.dashboard}>
-    <AdminPageHeader title="Blog Management" description="Create, manage and publish PurpleSoftHub insights." breadcrumbs={[{label:'Editorial'},{label:'Blog Management'}]} actions={<Link className={styles.primary} href="/admin/blog/create"><Plus size={15} aria-hidden="true"/>New Post</Link>}/>
+    <AdminPageHeader title="Insights Management" description="Create, manage and publish PurpleSoftHub insights." breadcrumbs={[{label:'Editorial'},{label:'Insights Management'}]} actions={<Link className={styles.primary} href="/admin/blog/create"><Plus size={15} aria-hidden="true"/>New Post</Link>}/>
     <div className={styles.stats}>{stats.map(item=><div className={styles.stat} key={item.key}><span className={styles.statIcon}><item.icon size={18} aria-hidden="true"/></span><div><span className={styles.statLabel}>{item.label}</span>{data?<strong className={styles.statValue}>{data.stats[item.key]}</strong>:<Skeleton className="h-7 w-12"/>}</div></div>)}</div>
     {feedback&&<div className={styles.notice} role="status">{feedback}</div>}
     {error&&<div className={styles.notice+' '+styles.error} role="alert">{error}<button type="button" className={styles.button} onClick={()=>setVersion(n=>n+1)}>Retry</button></div>}
