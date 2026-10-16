@@ -71,7 +71,8 @@ test('initial SSR contains readable content and local placeholders, never provid
 });
 test('activated frames are reconstructed and sandboxed; scripts are isolated in generated documents',()=>{
  const Render=loader({react:{...React,useEffect:()=>{},useState:()=>['loading',()=>{}]}})('components/blog/RichMediaEmbed.tsx').default;
- const html=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia(cases[0][1])}));assert.match(html,/<iframe/);assert.match(html,/youtube-nocookie.com/);assert.match(html,/referrerPolicy="no-referrer"/i);assert.match(html,/sandbox="allow-scripts/);assert.match(html,/Close media/);assert.doesNotMatch(html,/allow-top-navigation|allow-forms/);
+ const html=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia(cases[0][1])}));assert.match(html,/<iframe/);assert.match(html,/youtube-nocookie.com/);assert.match(html,/referrerPolicy="strict-origin-when-cross-origin"/i);assert.match(html,/enablejsapi=1/);assert.match(html,/sandbox="allow-scripts/);assert.match(html,/Close media/);assert.doesNotMatch(html,/allow-top-navigation|allow-forms/);
+ const tiktok=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia(cases[2][1])}));assert.match(tiktok,/referrerPolicy="no-referrer"/i);
  const document=mediaDocument(recognizeMedia(cases[6][1]));assert.match(document,/platform.twitter.com\/widgets.js/);assert.doesNotMatch(document,/<script>alert|parent\./);
  const xhtml=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia(cases[6][1])}));assert.match(xhtml,/srcDoc=/i);assert.doesNotMatch(xhtml,/allow-same-origin/);
 });
@@ -79,4 +80,70 @@ test('unavailable and unsupported player states retain a safe original link',()=
  const Render=loader({react:{...React,useEffect:()=>{},useState:()=>['unavailable',()=>{}]}})('components/blog/RichMediaEmbed.tsx').default;
  const html=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia(cases[0][1])}));assert.match(html,/could not be loaded/);assert.match(html,/Try again/);assert.match(html,/Open original/);assert.doesNotMatch(html,/<iframe/);
  const artist=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia('https://music.apple.com/us/artist/example/1234567890')}));assert.match(artist,/does not offer a supported player/);assert.doesNotMatch(artist,/<iframe|Try again/);
+});
+
+test('Instagram and native clips retain the versioned media contract; provider pages never become previews',()=>{
+ const {articlePreviewVideo}=load('lib/blog/media-content.ts');
+ const clip='https://res.cloudinary.com/approved/video/upload/v123/editorial/preview.mp4';
+ const spec=recognizeMedia(clip,'Approved preview');assert.equal(spec.provider,'cloudinary');
+ assert.equal(articlePreviewVideo('Text'+serializeMedia(spec)),clip);
+ assert.equal(articlePreviewVideo(serializeMedia(recognizeMedia(cases[0][1]))),null);
+ const instagram=recognizeMedia('https://www.instagram.com/reel/ABC_def123/?utm_source=x');
+ assert.equal(instagram.frameUrl,'https://www.instagram.com/reel/ABC_def123/embed/');
+ assert.equal(recognizeMedia('https://instagram.com/accounts/login/'),null);
+ assert.equal(recognizeMedia('https://res.cloudinary.com/approved/image/upload/picture.mp4'),null);
+ const Native=loader({react:{...React,useEffect:()=>{},useState:()=>['loading',()=>{}]}})('components/blog/RichMediaEmbed.tsx').default;
+ const html=renderToStaticMarkup(React.createElement(Native,{block:spec}));assert.match(html,/<video/);assert.match(html,/controls=""/);assert.doesNotMatch(html,/<iframe/);
+});
+
+test('only authenticated TikTok frame messages can report readiness, playback or failure',()=>{
+ const {tiktokPlayerEvent}=load('lib/blog/player-events.ts');
+ const msg={'x-tiktok-player':true,type:'onPlayerReady'};
+ assert.equal(tiktokPlayerEvent('https://www.tiktok.com',true,msg),'ready');
+ assert.equal(tiktokPlayerEvent('https://evil.test',true,msg),null);
+ assert.equal(tiktokPlayerEvent('https://www.tiktok.com',false,msg),null);
+ assert.equal(tiktokPlayerEvent('https://www.tiktok.com',true,{...msg,'x-tiktok-player':false}),null);
+ assert.equal(tiktokPlayerEvent('https://www.tiktok.com',true,{...msg,type:'onPlayerError'}),'error');
+ assert.equal(tiktokPlayerEvent('https://www.tiktok.com',true,{...msg,type:'onStateChange',value:1}),'playing');
+});
+
+test('long social posts offer expansion and a frame load never claims playback',()=>{
+ const Render=loader({react:{...React,useEffect:()=>{},useState:()=>['loaded',()=>{}]}})('components/blog/RichMediaEmbed.tsx').default;
+ const html=renderToStaticMarkup(React.createElement(Render,{block:recognizeMedia(cases[6][1])}));
+ assert.match(html,/content availability is not confirmed/);assert.match(html,/post height|Expand post/);assert.doesNotMatch(html,/Playback started/);
+ const css=readFileSync(path.join(root,'components/blog/media.module.css'),'utf8');assert.match(css,/\.post\.expanded/);assert.match(css,/@media\(max-width:640px\)/);
+});
+
+test('image-only cards have no player; eligible preview SSR has controls but no video source',()=>{
+ const Preview=load('components/media/CardVideoPreview.tsx').default;
+ assert.equal(renderToStaticMarkup(React.createElement(Preview,{title:'Existing image-only card'})),'');
+ const html=renderToStaticMarkup(React.createElement(Preview,{title:'Approved clip',src:'https://res.cloudinary.com/approved/video/upload/v123/preview.mp4'}));
+ assert.match(html,/Play muted preview/);assert.match(html,/preload="none"/);assert.match(html,/playsInline|playsinline/);assert.doesNotMatch(html,/<video[^>]*\bsrc=/);
+});
+
+test('YouTube API loads once after activation, uses identification and resets after a script failure',async()=>{
+ const originalWindow=globalThis.window,originalDocument=globalThis.document;
+ const appended=[];const timers=new Map();let next=0;
+ try {
+  globalThis.window={setTimeout(fn){timers.set(++next,fn);return next}};
+  globalThis.document={createElement(){return {remove(){this.removed=true}}},head:{appendChild(script){appended.push(script)}}};
+  const {youtubeApi}=loader()('lib/blog/youtube-client.ts');
+  assert.equal(appended.length,0);
+  const first=youtubeApi(),second=youtubeApi();assert.equal(first,second);assert.equal(appended.length,1);
+  assert.equal(appended[0].src,'https://www.youtube.com/iframe_api');assert.equal(appended[0].referrerPolicy,'strict-origin-when-cross-origin');
+  appended[0].onerror();await assert.rejects(first,/unavailable/);assert.equal(appended[0].removed,true);
+  const retry=youtubeApi();assert.equal(appended.length,2);const api={Player:class {}};window.YT=api;window.onYouTubeIframeAPIReady();assert.equal(await retry,api);assert.equal(await youtubeApi(),api);
+ } finally {globalThis.window=originalWindow;globalThis.document=originalDocument}
+});
+
+test('homepage preview lookup sends only the derived URL to cards; normal feeds keep their small projection',async()=>{
+ const previousFetch=globalThis.fetch,previousBase=process.env.NEXT_PUBLIC_SUPABASE_URL,previousKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+ const urls=[];const clip='https://res.cloudinary.com/approved/video/upload/v123/preview.mp4';
+ try {
+  process.env.NEXT_PUBLIC_SUPABASE_URL='https://example.test';process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY='test-public-key';
+  globalThis.fetch=async url=>{urls.push(new URL(url));return new Response(JSON.stringify([{id:'published',title:'Story',content:'Article text'+serializeMedia(recognizeMedia(clip))}]),{headers:{'content-range':'0-0/1'}})};
+  const {publishedArticles}=loader({'server-only':{}})('lib/blog/public-feed.ts');
+  const preview=await publishedArticles({limit:3,previews:true});assert.equal(preview.posts[0].preview_video,clip);assert.equal('content' in preview.posts[0],false);assert.match(urls[0].searchParams.get('select'),/,content$/);
+  await publishedArticles({limit:3});assert.doesNotMatch(urls[1].searchParams.get('select'),/content/);
+ } finally {globalThis.fetch=previousFetch;if(previousBase===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_URL;else process.env.NEXT_PUBLIC_SUPABASE_URL=previousBase;if(previousKey===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;else process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY=previousKey}
 });

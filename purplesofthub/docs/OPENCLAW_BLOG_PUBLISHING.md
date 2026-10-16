@@ -77,7 +77,79 @@ Submit Markdown, not HTML. H2/H3 headings, paragraphs, ordered/unordered lists, 
 
 The live route reads actual database values on every request. It generates the canonical URL https://www.purplesofthub.com/blog/{slug}, Open Graph, Twitter metadata and escaped BlogPosting JSON-LD. PurpleSoftHub is an Organization author and publisher. Missing dates or other data are omitted rather than invented. The visible byline uses the stored author name. Articles immediately appear in the dynamic blog listing after publication.
 
-## Success and failure
+## Multimedia content (same publishing contract)
+
+Place each media object in a top-level fenced `psh-media` block inside the existing
+`content` Markdown string. Do not send a new top-level `media` or `preview_video`
+field. Raw iframe/script HTML remains escaped. The CMS Insert Media Embed dialog
+creates the same blocks and can edit captions, replace URLs, reorder and remove them.
+
+YouTube video (the official YouTube API documentation sample):
+
+````text
+```psh-media
+{"version":1,"provider":"youtube","sourceUrl":"https://www.youtube.com/watch?v=M7lc1UVf-VE","contentId":"M7lc1UVf-VE","caption":"YouTube player demonstration","variant":"wide"}
+```
+````
+
+TikTok video (full canonical URL; resolve share links in your browser first):
+
+````text
+```psh-media
+{"version":1,"provider":"tiktok","sourceUrl":"https://www.tiktok.com/@scout2015/video/6718335390845095173","contentId":"6718335390845095173","caption":"TikTok video","variant":"vertical"}
+```
+````
+
+Spotify audio:
+
+````text
+```psh-media
+{"version":1,"provider":"spotify","sourceUrl":"https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC","contentId":"4uLU6hMCjMI75M1A2tKUQC","caption":"Listen on Spotify","variant":"audio"}
+```
+````
+
+Apple Music (illustrative identifiers: replace with the actual reviewed album/track):
+
+````text
+```psh-media
+{"version":1,"provider":"apple-music","sourceUrl":"https://music.apple.com/us/album/example/1234567890?i=1234567891","contentId":"1234567891","caption":"Listen on Apple Music","variant":"audio"}
+```
+````
+
+Social post (illustrative X URL; replace with an actual public post):
+
+````text
+```psh-media
+{"version":1,"provider":"x","sourceUrl":"https://x.com/example/status/1234567890","contentId":"1234567890","caption":"Original announcement","variant":"post"}
+```
+````
+
+Optional approved native video and homepage Blog preview (illustrative asset):
+
+````text
+```psh-media
+{"version":1,"provider":"cloudinary","sourceUrl":"https://res.cloudinary.com/approved/video/upload/v123/editorial/preview.mp4","contentId":"v123/editorial/preview.mp4","caption":"Approved editorial clip","variant":"wide"}
+```
+````
+
+The first Cloudinary video block supplies the homepage Blog card preview. The full
+article renders it as a click-to-load native player. Homepage cards derive a six-second,
+720px `q_auto` delivery URL, mute and loop, with no video request until hover intent or
+explicit play. Supply only approved MP4/WebM upload assets; YouTube/TikTok pages are
+never native sources. No database migration or article source change is required for
+image-only cards. Portfolio's optional Homepage video preview field stores `videos.preview`
+in the existing JSON object and preserves the other video slots. Cards prefer that field,
+then reuse eligible native `promo`, `animation` or `walkthrough` assets. No schema changes.
+
+Instagram supports canonical public `/p/{shortcode}/` and `/reel/{shortcode}/` URLs
+through a fixed provider frame; private/restricted posts may require Open original.
+Every provider is opt-in. Frame loading is not proof of playable content: YouTube and
+TikTok have provider readiness/error signals; other frames explicitly report that
+availability is unconfirmed. Shortened TikTok URLs remain rejected: no server-side
+redirect resolver or SSRF surface is introduced. Never publish a test article without
+the owner's explicit approval.
+
+## Success and failure responses
 
 Successful creation returns 201; an update returns 200:
 

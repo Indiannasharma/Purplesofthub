@@ -63,6 +63,7 @@ export interface PortfolioProject {
 
   // Videos (NEW)
   videos: {
+    preview?: string
     promo?: string
     walkthrough?: string
     animation?: string

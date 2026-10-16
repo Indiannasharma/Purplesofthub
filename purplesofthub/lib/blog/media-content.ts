@@ -1,6 +1,11 @@
 import { Lexer } from 'marked';
 import { validateMediaBlock, serializeMedia, type MediaBlock } from './media';
+import { previewVideoUrl } from '../media-preview';
 export type ArticleSegment = { type: 'markdown'; text: string } | { type: 'media'; block: MediaBlock; start: number; end: number };
+export function articlePreviewVideo(content: string): string | null {
+  const media = articleSegments(content).find(segment => segment.type === 'media' && segment.block.provider === 'cloudinary');
+  return media?.type === 'media' ? previewVideoUrl(media.block.sourceUrl) : null;
+}
 
 /** Only top-level fenced structured blocks become media; nested/code examples remain literal. */
 export function articleSegments(content: string): ArticleSegment[] {

@@ -5,7 +5,7 @@ import ArticleCard from './ArticleCard'
 import styles from './editorial.module.css'
 function Heading() { return <div className={styles.sectionHeader}><div><p className={styles.eyebrow}>Latest Insights</p><h2>Trending Blog Posts</h2><p className={styles.subtitle}>Ideas, updates, and practical perspectives for a digital world.</p></div><Link href="/blog" className={styles.viewAll}>View All Articles <ArrowRight size={17} aria-hidden="true"/></Link></div> }
 export default async function HomeBlogSection() {
-  const result=await publishedArticles({limit:3})
+  const result=await publishedArticles({limit:3,previews:true})
   return <section id="latest-insights" className={styles.section} aria-label="Latest blog insights" data-testid="homepage-blog"><div className={styles.container}><Heading/>
     {!result.ok?<div className={styles.empty} role="status"><Newspaper size={28} aria-hidden="true"/><h3>Insights are temporarily unavailable</h3><p>Please try again soon, or explore our article archive.</p></div>
       :result.posts.length?<div className={styles.grid}>{result.posts.map(post=><ArticleCard key={post.id} post={post}/>)}</div>

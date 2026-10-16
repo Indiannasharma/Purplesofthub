@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 import { normalizeProject } from "@/lib/portfolio-normalize"
 import ProjectForm from "../_components/ProjectForm"
 import { isPortfolioId } from "@/lib/portfolio-validation"
+import type { PortfolioProject } from '@/types/portfolio'
 
 export default function EditPortfolioProjectPage() {
   const params = useParams<{ id: string }>()
@@ -21,6 +22,8 @@ export default function EditPortfolioProjectPage() {
     body: string
     cover: string
     youtube: string
+    preview: string
+    videos: PortfolioProject['videos']
     featured: boolean
     status: string
   }>()
@@ -44,6 +47,8 @@ export default function EditPortfolioProjectPage() {
           body: project.finalSolution || "",
           cover: project.coverImage || "",
           youtube: project.videos?.youtube || "",
+          preview: project.videos?.preview || "",
+          videos: project.videos,
           featured: project.featured,
           status: project.status,
         })

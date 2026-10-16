@@ -2894,6 +2894,12 @@ html:not(.dark) select option {
   background: linear-gradient(135deg, #18072f, #4c1d95);
 }
 
+.home-work-poster{position:absolute;inset:0;display:block}
+.home-work-body{color:inherit;text-decoration:none}
+.home-work-poster:focus-visible,.home-work-body:focus-visible{outline:3px solid #c4b5fd;outline-offset:-3px}
+.home-work-shade,.home-work-category{pointer-events:none}
+@media(prefers-reduced-motion:reduce){.home-work-card,.home-work-media img{transition:none!important}.home-work-card:hover{transform:none!important}.home-work-card:hover .home-work-media img{transform:none!important;filter:none!important}}
+
 .home-work-media img {
   width: 100%;
   height: 100%;

@@ -21,6 +21,7 @@ function loader(overrides = {}) {
     }).outputText
     new Function('require', 'module', 'exports', code)(name => {
       if (Object.hasOwn(overrides, name)) return overrides[name]
+      if (name.endsWith('.css')) return { __esModule: true, default: {} }
       if (name === 'server-only') return {}
       if (name.startsWith('@/') || name.startsWith('./') || name.startsWith('../')) {
         const base = name.startsWith('@/') ? name.slice(2) : path.join(path.dirname(file), name)
@@ -54,6 +55,8 @@ test('project validation rejects invalid statuses, IDs and unsafe media URLs', (
   assert.equal(validation.portfolioInputError({ id, status: 'archived' }, true), null)
   assert.equal(validation.portfolioInputError({ title: 'X', cover_image: '/images/project.png' }), null)
   assert.equal(validation.portfolioInputError({ title: 'X', cover_image: 'https://res.cloudinary.com/test/image.png' }), null)
+  assert.ok(validation.portfolioInputError({title:'X',videos:{preview:'https://youtu.be/M7lc1UVf-VE'}}))
+  assert.equal(validation.portfolioInputError({title:'X',videos:{preview:'https://res.cloudinary.com/approved/video/upload/v123/preview.mp4'}}),null)
 })
 
 function fixture(initial = [], behavior = {}) {

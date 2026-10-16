@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toSlug } from "@/lib/portfolio"
 import { portfolioInputError } from "@/lib/portfolio-validation"
+import { portfolioVideoValues, previewVideoUrl } from '@/lib/media-preview'
+import type { PortfolioProject } from '@/types/portfolio'
 
 const CATEGORIES = ["Web", "Brand", "Mobile", "Music", "UI/UX", "Marketing"]
 
@@ -40,6 +42,7 @@ type FormState = {
   body: string
   cover: string
   youtube: string
+  preview: string
   featured: boolean
   status: string
 }
@@ -49,7 +52,7 @@ export default function ProjectForm({
   initial,
 }: {
   projectId?: string
-  initial?: Partial<FormState>
+  initial?: Partial<FormState> & { videos?: PortfolioProject['videos'] }
 }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
@@ -64,6 +67,7 @@ export default function ProjectForm({
     body: initial?.body || "",
     cover: initial?.cover || "",
     youtube: initial?.youtube || "",
+    preview: initial?.preview || "",
     featured: initial?.featured || false,
     status: initial?.status || "draft",
   })
@@ -75,6 +79,10 @@ export default function ProjectForm({
     if (submitting.current) return
     if (!form.title.trim()) {
       setError("Name is required")
+      return
+    }
+    if (form.preview.trim() && !previewVideoUrl(form.preview.trim())) {
+      setError('Use an approved Cloudinary MP4/WebM video upload URL for the preview.')
       return
     }
     setError("")
@@ -89,7 +97,7 @@ export default function ProjectForm({
       cover_image: form.cover.trim() || null,
       featured: form.featured,
       status: form.status,
-      videos: form.youtube.trim() ? { youtube: form.youtube.trim() } : {},
+      videos: portfolioVideoValues(initial?.videos, form.youtube, form.preview),
       color: "#7c3aed",
     }
     if (projectId) payload.id = projectId
@@ -187,6 +195,11 @@ export default function ProjectForm({
         <div>
           <label style={label} htmlFor="admin-portfoliocomponentsProjectFormtsx-8">YouTube (optional)</label>
           <input value={form.youtube} onChange={(e) => set("youtube", e.target.value)} placeholder="https://youtube.com/watch?v=…" style={field}   id="admin-portfoliocomponentsProjectFormtsx-8"/>
+        </div>
+        <div>
+          <label style={label} htmlFor="portfolio-preview-video">Homepage video preview (optional)</label>
+          <input id="portfolio-preview-video" type="url" value={form.preview} onChange={event => set('preview',event.target.value)} placeholder="https://res.cloudinary.com/your-cloud/video/upload/preview.mp4" style={field} aria-describedby="portfolio-preview-help"/>
+          <p id="portfolio-preview-help" style={{fontSize:12,color:'var(--cc-text-secondary)'}}>Use an approved MP4/WebM clip. The poster remains visible until hover or Play. YouTube links are separate.</p>
         </div>
         <div style={{ display: "flex", gap: 20, alignItems: "center", color: "var(--cc-text-secondary)", fontSize: 14 }}>
           <label style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>

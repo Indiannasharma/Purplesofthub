@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from 'next/image';
+import CardVideoPreview from '@/components/media/CardVideoPreview';
+import { portfolioPreview } from '@/lib/media-preview';
 import type { PortfolioProject } from "@/types/portfolio";
 
 export default function HomePortfolio({ projects }: { projects: PortfolioProject[] }) {
@@ -31,24 +34,26 @@ export default function HomePortfolio({ projects }: { projects: PortfolioProject
         </div>
 
         <div className="home-work-grid">
-          {visible.map((project) => (
-            <Link key={project.slug} href={`/portfolio/${project.slug}`} className="home-work-card">
+          {visible.map((project) => {
+            const image = project.coverImage || project.featuredThumbnail || project.heroBanner || project.gallery?.[0];
+            const optimize = !image || image.startsWith('/') || /^https:\/\/res\.cloudinary\.com\//.test(image);
+            return <article key={project.slug} className="home-work-card" data-preview-card>
               <div className="home-work-media">
-                {project.coverImage || project.featuredThumbnail || project.heroBanner || project.gallery?.[0] ? (
-                  <img
-                    src={project.coverImage || project.featuredThumbnail || project.heroBanner || project.gallery?.[0] || ""}
-                    alt={project.title}
-                  />
+                <Link href={`/portfolio/${project.slug}`} className="home-work-poster" aria-label={'View case study: '+project.title}>
+                {image ? (
+                  <Image src={image} alt={project.title} fill sizes="(max-width: 767px) 90vw, (max-width: 1100px) 45vw, 33vw" loading="lazy" unoptimized={!optimize}/>
                 ) : (
                   <div className="home-work-fallback" aria-hidden="true">
                     <span>{project.emoji || "PSH"}</span>
                   </div>
                 )}
+                </Link>
+                <CardVideoPreview src={portfolioPreview(project.videos)} title={project.title}/>
                 <div className="home-work-shade" />
                 <span className="home-work-category">{project.category || "Case study"}</span>
               </div>
 
-              <div className="home-work-body">
+              <Link href={`/portfolio/${project.slug}`} className="home-work-body">
                 <div>
                   <p className="home-work-client">{project.clientName || project.industry || "PurpleSoftHub client"}</p>
                   <h3>{project.title}</h3>
@@ -67,9 +72,9 @@ export default function HomePortfolio({ projects }: { projects: PortfolioProject
                   View case study
                   <span aria-hidden="true">→</span>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            </article>
+          })}
         </div>
 
         <div className="home-work-action">

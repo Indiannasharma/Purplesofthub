@@ -1,4 +1,5 @@
-export type MediaProvider = 'youtube' | 'tiktok' | 'facebook' | 'x' | 'threads' | 'reddit' | 'spotify' | 'audiomack' | 'apple-music';
+import { previewVideoUrl } from '../media-preview';
+export type MediaProvider = 'youtube' | 'tiktok' | 'facebook' | 'x' | 'threads' | 'reddit' | 'spotify' | 'audiomack' | 'apple-music' | 'instagram' | 'cloudinary';
 export type MediaVariant = 'wide' | 'vertical' | 'audio' | 'post';
 export type MediaBlock = { version: 1; provider: MediaProvider; sourceUrl: string; contentId: string; caption: string; variant: MediaVariant };
 export type MediaSpec = MediaBlock & { label: string; frameUrl?: string; script?: string };
@@ -12,6 +13,8 @@ export const MEDIA_PROVIDERS: Record<MediaProvider, { label: string; hosts: stri
   spotify: { label: 'Spotify', hosts: ['open.spotify.com'] },
   audiomack: { label: 'Audiomack', hosts: ['audiomack.com', 'www.audiomack.com'] },
   'apple-music': { label: 'Apple Music', hosts: ['music.apple.com'] },
+  instagram: { label: 'Instagram', hosts: ['instagram.com', 'www.instagram.com'] },
+  cloudinary: { label: 'Video', hosts: ['res.cloudinary.com'] },
 };
 
 /** No remote lookup, redirects, iframe snippets or user-provided embed endpoints. */
@@ -28,6 +31,13 @@ export function recognizeMedia(input: unknown, caption = ''): MediaSpec | null {
   let variant: MediaVariant = 'post';
   let match: RegExpMatchArray | null;
   switch (provider) {
+    case 'cloudinary':
+      sourceUrl = previewVideoUrl(input) || ''; if (!sourceUrl) return null;
+      contentId = path.split('/video/upload/')[1]; variant = 'wide'; break;
+    case 'instagram':
+      match = path.match(/^\/(p|reel)\/([\w-]{5,40})$/); if (!match) return null;
+      contentId = match[2]; sourceUrl = 'https://www.instagram.com' + path + '/';
+      variant = 'post'; frameUrl = sourceUrl + 'embed/'; break;
     case 'youtube': {
       contentId = url.hostname === 'youtu.be' ? path.slice(1) : path === '/watch' ? url.searchParams.get('v') || '' : path.match(/^\/(?:shorts|embed)\/([\w-]{11})$/)?.[1] || '';
       if (!/^[\w-]{11}$/.test(contentId)) return null;
@@ -105,6 +115,6 @@ export function mediaDocument(block: MediaBlock): string | undefined {
   const spec = recognizeMedia(block.sourceUrl);
   if (!spec?.script) return undefined;
   const href = escape(spec.sourceUrl);
-  const markup = spec.provider === 'x' ? `<blockquote class="twitter-tweet"><a href="${href}">View post on X</a></blockquote>` : spec.provider === 'threads' ? `<blockquote class="text-post-media" data-text-post-permalink="${href}"><a href="${href}">View post on Threads</a></blockquote>` : `<blockquote class="reddit-embed-bq"><a href="${href}">View post on Reddit</a></blockquote>`;
+  const markup = spec.provider === 'x' ? `<blockquote class="twitter-tweet"><a href="${href}">View post on X</a></blockquote>` : spec.provider === 'threads' ? `<blockquote class="text-post-media" data-text-post-permalink="${href}" data-text-post-version="0"><a href="${href}">View post on Threads</a></blockquote>` : `<blockquote class="reddit-embed-bq"><a href="${href}">View post on Reddit</a></blockquote>`;
   return '<!doctype html><html><head><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:0;padding:0;background:transparent}blockquote{margin:0}iframe{max-width:100%}</style></head><body>' + markup + '<script async src="' + spec.script + '"></script></body></html>';
 }

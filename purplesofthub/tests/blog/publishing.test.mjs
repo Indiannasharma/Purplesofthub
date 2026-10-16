@@ -31,6 +31,21 @@ test('create draft: automatic slug, organization author, SEO and no publication 
   assert.equal(result.post.category, 'Technology'); assert.equal(result.post.seo_title, article.title)
   assert.equal(result.post.seo_description, article.excerpt); assert.equal(db.rows.size, 1)
 })
+
+test('OpenClaw structured media content survives creation, publishing and partial updates without new fields',async()=>{
+ const blocks=[
+  {provider:'youtube',sourceUrl:'https://www.youtube.com/watch?v=M7lc1UVf-VE',contentId:'M7lc1UVf-VE',variant:'wide'},
+  {provider:'tiktok',sourceUrl:'https://www.tiktok.com/@scout2015/video/6718335390845095173',contentId:'6718335390845095173',variant:'vertical'},
+  {provider:'spotify',sourceUrl:'https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC',contentId:'4uLU6hMCjMI75M1A2tKUQC',variant:'audio'},
+  {provider:'apple-music',sourceUrl:'https://music.apple.com/us/album/example/1234567890?i=1234567891',contentId:'1234567891',variant:'audio'},
+  {provider:'cloudinary',sourceUrl:'https://res.cloudinary.com/approved/video/upload/v123/preview.mp4',contentId:'v123/preview.mp4',variant:'wide'},
+ ];
+ const content='## Multimedia\n\n'+blocks.map(block=>'```psh-media\n'+JSON.stringify({version:1,...block,caption:'Reviewed caption'})+'\n```').join('\n\n');
+ const db=repository();const created=(await publishBlog({...article,content},db,{now})).post;
+ const published=(await publishBlog({operation:'update',id:created.id,status:'published'},db,{now})).post;
+ const updated=(await publishBlog({operation:'update',id:created.id,excerpt:'Updated summary'},db,{now})).post;
+ assert.equal(updated.content,content);assert.equal(updated.published_at,published.published_at);assert.equal(db.rows.size,1);
+})
 test('draft update, first publish and published update preserve ID, content and publication date', async () => {
   const db = repository(); const created = (await publishBlog(article, db, { now })).post
   const updated = (await publishBlog({ operation: 'update', id: created.id, content: '## New section\n\nRevised content' }, db, { now })).post

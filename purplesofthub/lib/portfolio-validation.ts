@@ -1,4 +1,5 @@
 import { toSlug } from '@/lib/portfolio'
+import { previewVideoUrl } from './media-preview'
 
 export const isPortfolioId = (value: unknown): value is string =>
   typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
@@ -27,6 +28,10 @@ export function portfolioInputError(value: unknown, updating = false): string | 
   if (body.slug !== undefined && (typeof body.slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.slug) || body.slug.length > 180)) return 'Invalid project slug'
   if (body.status !== undefined && (typeof body.status !== 'string' || !['draft', 'published', 'archived'].includes(body.status))) return 'Invalid project status'
   if (body.featured !== undefined && typeof body.featured !== 'boolean') return 'Featured must be true or false'
+  if (body.videos && typeof body.videos === 'object' && 'preview' in body.videos) {
+    const preview = (body.videos as Record<string, unknown>).preview
+    if (preview !== '' && !previewVideoUrl(preview)) return 'Use an approved Cloudinary MP4/WebM upload URL for the preview'
+  }
   if (body.client_id !== undefined && body.client_id !== null && !isPortfolioId(body.client_id)) return 'Invalid client ID'
   if (body.cover_image !== undefined && body.cover_image !== null && body.cover_image !== '') {
     if (typeof body.cover_image !== 'string') return 'Invalid cover image URL'

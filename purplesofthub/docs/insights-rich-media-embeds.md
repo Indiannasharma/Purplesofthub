@@ -41,6 +41,8 @@ Facebook watch IDs and Apple track selections are retained as content identifier
 | Spotify | `/track/ID`, `/album/ID`, `/playlist/ID`, `/artist/ID`; optional `intl-xx` prefix | Official `/embed/{type}/{ID}` |
 | Audiomack | `/{creator}/song/{slug}`, `/album/{slug}`, `/playlist/{slug}` | Official `/embed/{creator}/{type}/{slug}` |
 | Apple Music | `/{country}/{song,album,playlist}/{slug}/{id}`, album `?i=trackId` | embed.music.apple.com; artist URLs are original-link fallback |
+| Instagram | `/p/{shortcode}/`, `/reel/{shortcode}/` | Fixed instagram.com content frame; original-link fallback always present |
+| Cloudinary native video | `res.cloudinary.com/{cloud}/video/upload/...mp4` or `.webm` | Native controls in articles; optional homepage card preview |
 
 Arbitrary provider pages, unsupported content types and unresolved short redirects are
 rejected with guidance to paste the full original URL. youtu.be is deterministic and needs
@@ -74,11 +76,13 @@ ports, and bounded identifiers are required; JavaScript/data URLs, iframe snippe
 path separators and deceptive domains are rejected. Captions are React text, never HTML.
 No server URL fetching means no new SSRF/redirect-resolution endpoint.
 
-Frames use no-referrer and a restricted sandbox without top navigation or forms. Direct
+Frames use no-referrer except YouTube, which uses strict-origin-when-cross-origin to
+provide the identification required by the provider. A restricted sandbox excludes top navigation and forms. Direct
 cross-origin provider frames need scripts/same-origin for the provider's own storage and
 player operation. X/Threads/Reddit scripts are generated from fixed templates in a sandboxed
-srcDoc frame **without** same-origin privileges; no provider script is placed in the parent
-document. Only fixed official script URLs and validated source URLs enter that template.
+srcDoc frame **without** same-origin privileges. Only fixed official script URLs and validated source URLs enter that template.
+After deliberate YouTube activation, its fixed official iframe API is loaded once in the
+parent to receive onReady/onError/onStateChange. No YouTube SDK is loaded before activation.
 Provider policies, storage restrictions or opaque-origin incompatibility may prevent rendering;
 the original-link action remains available.
 
@@ -87,12 +91,15 @@ the original-link action remains available.
 Existing typography/tokens are reused, with quiet attribution, rounded borders and responsive
 wide, vertical, audio and post containers. Dimensions are reserved before activation; the
 mobile widescreen placeholder keeps a readable minimum height. Frame creation is lazy and
-scoped to activation. An accessible connecting status and a 15-second timeout provide a
+scoped to activation. An accessible connecting status and a 20-second timeout provide a
 retry/link fallback on errors or slow loading. No new package or global SDK was added.
 
 Cross-origin documents cannot be inspected reliably. An iframe load event means its document
 loaded, **not** that a private, removed, age/region-restricted or embedding-disabled item is
-playable. Open Original is always present, including after load, so articles remain usable.
+playable. YouTube API events and source/origin-validated TikTok messages distinguish player
+ready, playing and errors. Other providers say "Frame loaded; content availability is not
+confirmed". Native clips use canplay/playing/error. Long posts scroll inside the frame and
+offer an expanded 1000px view. Open Original is always present, including after load, so articles remain usable.
 No player availability, third-party cookie compliance or full-provider compatibility claim is
 made merely from URL recognition. Manual provider restrictions are not bypassed.
 
@@ -101,7 +108,35 @@ retain block-version compatibility, add valid/malicious URL and serialization te
 verify zero provider traffic before activation and an explicit click with a public sample.
 Do not accept arbitrary HTML, add broad hostname suffix matching or auto-resolve redirects.
 
-## Validation
+## Homepage previews and rollout
+
+`CardVideoPreview` shares one controller across cards. Fine-pointer hover waits 250ms,
+then plays a muted looping native preview. Exit, blur, leaving the viewport, hidden pages,
+another active preview and preference changes pause/reset it. Touch and keyboard use a
+separate accessible play/pause button outside the poster/title links. Reduced motion
+disables automatic hover playback; explicit user play remains available. No `src` is emitted
+in server HTML; `preload=none` and a static image preserve the existing card dimensions.
+Native preview URLs are restricted to Cloudinary video uploads. Delivery derives a six-second,
+720px, quality-auto version of the approved asset; failure retains the poster and navigation.
+Portfolio images now use responsive Next Image, optimizing configured/local hosts and
+retaining external legacy sources unoptimized. Blog images retain their existing optimization.
+
+No approved video has been assigned to production content by this implementation. Portfolio
+prefers the CMS Homepage video preview field (`videos.preview` in the existing JSON),
+then existing `promo`/`animation`/`walkthrough`; Blog uses its first native `psh-media`
+block and derives only the URL server-side for the three homepage stories. Full article
+content is never serialized into homepage cards. Existing API fields/schema are unchanged.
+See `OPENCLAW_BLOG_PUBLISHING.md` for exact versioned block examples.
+The Portfolio editor preserves other video slots on save. Strict or signed Cloudinary
+delivery configurations must allow the derived transformation; blocked delivery falls
+back to the poster. No upload or Cloudinary account setting is changed automatically.
+
+Instagram uses only canonical public content URLs and the provider's fixed frame endpoint;
+availability/sign-in requirements remain unverified until checked with a real public post.
+TikTok short links remain unsupported after evaluation: automatic resolution would add a
+server redirect/SSRF boundary. Editors instead open the short link and copy the full URL.
+
+## Previous validation (multimedia foundation)
 
 - 47 focused analytics, media, publishing and editorial tests passed, including legacy Markdown,
   URL attacks, serialization, insertion/replacement/reordering/removal, safe frame construction,
