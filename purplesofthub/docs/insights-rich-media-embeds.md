@@ -92,7 +92,8 @@ Existing typography/tokens are reused, with quiet attribution, rounded borders a
 wide, vertical, audio and post containers. Dimensions are reserved before activation; the
 mobile widescreen placeholder keeps a readable minimum height. Frame creation is lazy and
 scoped to activation. An accessible connecting status and a 20-second timeout provide a
-retry/link fallback on errors or slow loading. No new package or global SDK was added.
+retry/link fallback on errors or slow loading. No new package is added; the official
+YouTube iframe API is loaded globally only after deliberate YouTube activation.
 
 Cross-origin documents cannot be inspected reliably. An iframe load event means its document
 loaded, **not** that a private, removed, age/region-restricted or embedding-disabled item is
@@ -120,6 +121,9 @@ Native preview URLs are restricted to Cloudinary video uploads. Delivery derives
 720px, quality-auto version of the approved asset; failure retains the poster and navigation.
 Portfolio images now use responsive Next Image, optimizing configured/local hosts and
 retaining external legacy sources unoptimized. Blog images retain their existing optimization.
+Missing local Portfolio image files are excluded from homepage candidates; an available
+image from the same project is preferred, otherwise the existing branded fallback renders.
+This changes presentation only, never the stored project record.
 
 No approved video has been assigned to production content by this implementation. Portfolio
 prefers the CMS Homepage video preview field (`videos.preview` in the existing JSON),

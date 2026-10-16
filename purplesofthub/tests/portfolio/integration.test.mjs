@@ -184,3 +184,9 @@ test('admin create/edit forms render draft/published/archived choices and preser
   assert.match(edit, /value="archived" selected/)
   assert.match(edit, /Custom category/)
 })
+
+test('homepage skips missing local covers and retains real project images without mutating records',async()=>{
+ const project={title:'Real project',slug:'real',coverImage:'/images/missing.jpg',featuredThumbnail:null,heroBanner:null,gallery:['/images/real.jpg','/images/also-missing.jpg'],status:'published'};
+ const Section=loader({'@/lib/portfolio-public.server':{publicPortfolioCatalog:async()=>[project]},'@/components/HomePortfolio':{__esModule:true,default:()=>null},'node:fs':{existsSync:file=>file.endsWith('real.jpg')}})('components/HomePortfolioSection.tsx').default;
+ const rendered=await Section();assert.equal(rendered.props.projects[0].coverImage,null);assert.deepEqual(rendered.props.projects[0].gallery,['/images/real.jpg']);assert.equal(project.coverImage,'/images/missing.jpg');assert.equal(project.gallery.length,2);
+})
