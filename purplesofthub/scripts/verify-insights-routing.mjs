@@ -5,8 +5,15 @@ const origin=process.argv[2]||'https://www.purplesofthub.com';
 const canonicalOrigin='https://www.purplesofthub.com';
 const checks=[];
 async function request(path,redirect='manual') {
- const response=await fetch(origin+path,{redirect,signal:AbortSignal.timeout(30000)});
- return {status:response.status,location:response.headers.get('location'),text:await response.text(),url:response.url};
+ for(let attempt=0;attempt<3;attempt++) {
+  try {
+   const response=await fetch(origin+path,{redirect,signal:AbortSignal.timeout(30000)});
+   return {status:response.status,location:response.headers.get('location'),text:await response.text(),url:response.url};
+  } catch(error) {
+   if(attempt===2)throw error;
+   await new Promise(resolve=>setTimeout(resolve,1000));
+  }
+ }
 }
 function canonical(html,url) {
  assert.ok(html.includes('<link rel="canonical" href="'+url+'"'),`Missing canonical ${url}`);

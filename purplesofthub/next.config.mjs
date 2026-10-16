@@ -2,7 +2,10 @@
 const nextConfig = {
   output: "standalone",
   async redirects() {
-    return [{ source: '/blog/:path*', destination: '/insights/:path*', permanent: true }];
+    return [
+      { source: '/blog', destination: '/insights', permanent: true },
+      { source: '/blog/:path*', destination: '/insights/:path*', permanent: true },
+    ];
   },
   async rewrites() {
     return [{ source: '/admin/insights/:path*', destination: '/admin/blog/:path*' }];

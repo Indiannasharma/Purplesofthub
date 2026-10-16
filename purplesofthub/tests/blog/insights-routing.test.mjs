@@ -35,7 +35,7 @@ const {newsletterEligible}=loader()('lib/newsletter/policy.ts');
 const Link=({href,children,...props})=>React.createElement('a',{href,...props},children);
 const categories=[{name:'Gaming',slug:'gaming'},{name:'Technology',slug:'technology'}];
 test('permanent redirects cover legacy public paths; CMS alias preserves original endpoints',async()=>{
- assert.deepEqual(await config.redirects(),[{source:'/blog/:path*',destination:'/insights/:path*',permanent:true}]);
+ assert.deepEqual(await config.redirects(),[{source:'/blog',destination:'/insights',permanent:true},{source:'/blog/:path*',destination:'/insights/:path*',permanent:true}]);
  assert.deepEqual(await config.rewrites(),[{source:'/admin/insights/:path*',destination:'/admin/blog/:path*'}]);
 });
 test('canonical URL builders retain search and pagination and encode path/query values',()=>{
